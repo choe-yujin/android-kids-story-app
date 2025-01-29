@@ -9,6 +9,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
+/*
+epub 파일 파싱 및 리소스 추출 로직 담당
+결과로 StoryResource 반환
+*/
+
 class ExtractEpubUseCase(
     private val context: Context,
     private val fileUtils: FileUtils = FileUtils(context)  // 기본값 제공
