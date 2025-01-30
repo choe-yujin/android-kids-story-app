@@ -8,6 +8,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 
+// 파일 처리 관련 유틸리티 클래스
 class FileUtils(private val context: Context) {
     fun sanitizeFileName(fileName: String): String =
         fileName.replace(Regex("[^a-zA-Z0-9.-]"), "_")
