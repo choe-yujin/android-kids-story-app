@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "KidsStory"
 include(":app")
- 
+include(":epub-extractor")
