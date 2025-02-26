@@ -14,10 +14,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.timor.kidsstory.presentation.navigation.NavGraph
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 // 앱의 진입점으로 가로 모드 설정, 전체화면 설정 등 기본 UI 설정을 담당
 //NavGraph를 통해 네비게이션 구성
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +43,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavGraph(application = application)
+                    NavGraph()
                 }
             }
         }
