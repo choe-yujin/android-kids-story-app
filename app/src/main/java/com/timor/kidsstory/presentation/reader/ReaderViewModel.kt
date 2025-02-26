@@ -1,29 +1,39 @@
 package com.timor.kidsstory.presentation.reader
 
-import android.app.Application
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.timor.kidsstory.KidsStoryApplication
 import com.timor.kidsstory.domain.model.NavigationDirection
 import com.timor.kidsstory.domain.usecase.GetStoryUseCase
 import com.timor.kidsstory.domain.usecase.PageNavigationUseCase
 import com.timor.kidsstory.presentation.reader.model.PageUiState
 import com.timor.kidsstory.presentation.reader.model.ReaderUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 // 읽기 화면 뷰모델
-class ReaderViewModel(
+@HiltViewModel
+class ReaderViewModel @Inject constructor(
     private val getStoryUseCase: GetStoryUseCase,
     private val pageNavigationUseCase: PageNavigationUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = MutableStateFlow(ReaderUiState())
     val state = _state.asStateFlow()
 
-    fun loadStory(storyId: String) {
+    private val storyId: String? = savedStateHandle["storyId"]
+
+    init {
+        storyId?.let { id ->
+            loadStory(id)
+        }
+    }
+
+    private fun loadStory(storyId: String) {
         Log.d("ReaderViewModel", "Loading story: $storyId")
         viewModelScope.launch {
             try {
@@ -67,22 +77,5 @@ class ReaderViewModel(
                 // 에러 처리
             }
         }
-    }
-
-    companion object {
-        fun factory(app: Application): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    if (modelClass.isAssignableFrom(ReaderViewModel::class.java)) {
-                        val application = app as KidsStoryApplication
-                        return ReaderViewModel(
-                            application.getStoryUseCase,
-                            application.pageNavigationUseCase,
-                        ) as T
-                    }
-                    throw IllegalArgumentException("Unknown ViewModel class")
-                }
-            }
     }
 }
