@@ -2,14 +2,16 @@ package com.timor.kidsstory.domain.util
 
 import android.content.Context
 import android.util.Log
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.util.zip.ZipInputStream
+import javax.inject.Inject
 
 // 파일 처리 관련 유틸리티 클래스
-class FileUtils(private val context: Context) {
+class FileUtils @Inject constructor(@ApplicationContext private val context: Context) {
     fun sanitizeFileName(fileName: String): String =
         fileName.replace(Regex("[^a-zA-Z0-9.-]"), "_")
 

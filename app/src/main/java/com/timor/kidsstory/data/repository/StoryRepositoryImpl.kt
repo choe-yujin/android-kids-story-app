@@ -5,13 +5,15 @@ import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.model.StoryResource
 import com.timor.kidsstory.domain.repository.StoryRepository
 import com.timor.kidsstory.domain.util.FileUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import javax.inject.Inject
 
 // StoryRepository 구현체, epub 파일 파싱 및 데이터 관리
-class StoryRepositoryImpl(
-    private val context: Context,
+class StoryRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val fileUtils: FileUtils
 ) : StoryRepository {
     private val parsedStories = mutableMapOf<String, StoryResource>()
