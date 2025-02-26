@@ -1,11 +1,9 @@
 package com.timor.kidsstory.presentation.navigation
 
-import android.app.Application
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,25 +27,13 @@ sealed class Screen(val route: String) {
 @Composable
 fun NavGraph(
     navController: NavHostController = rememberNavController(),
-    application: Application
 ) {
     NavHost(
         navController = navController,
         startDestination = Screen.Bookshelf.route
     ) {
         composable(Screen.Bookshelf.route) {
-            val viewModel: BookshelfViewModel = viewModel(
-                factory = BookshelfViewModel.factory(application)
-            )
-
-            // 초기 데이터 로드
-            /*LaunchedEffect는 Composable의 생명주기에 따라 코루틴을 실행하는 함수
-            Unit을 키로 사용하면 컴포지션이 처음 시작될 때 한 번만 실행됨
-            화면이 처음 생성될 때만 stories를 로드하도록*/
-            LaunchedEffect(Unit) {
-                viewModel.loadStories()
-            }
-
+            val viewModel: BookshelfViewModel = hiltViewModel()
             val state by viewModel.state.collectAsState()
 
             BookshelfScreen(
@@ -65,18 +51,8 @@ fun NavGraph(
         composable(
             route = Screen.Reader.route,
             arguments = listOf(navArgument("storyId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val storyId = backStackEntry.arguments?.getString("storyId")
-            val viewModel: ReaderViewModel = viewModel(
-                factory = ReaderViewModel.factory(application)
-            )
-
-            // storyId를 사용하여 해당 스토리 로드
-            LaunchedEffect(storyId) {
-                storyId?.let { id ->
-                    viewModel.loadStory(id)
-                }
-            }
+        ) {
+            val viewModel: ReaderViewModel = hiltViewModel()
 
             val state by viewModel.state.collectAsState()
 

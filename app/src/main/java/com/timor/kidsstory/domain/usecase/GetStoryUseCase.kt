@@ -4,9 +4,10 @@ import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.model.PageDetail
 import com.timor.kidsstory.domain.model.StoryDetail
 import com.timor.kidsstory.domain.repository.StoryRepository
+import javax.inject.Inject
 
 // 스토리 조회 통합 유스케이스
-class GetStoryUseCase(
+class GetStoryUseCase @Inject constructor(
     private val storyRepository: StoryRepository
 ) {
     operator fun invoke(storyId: String): Result<StoryDetail> {
