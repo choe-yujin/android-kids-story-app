@@ -21,3 +21,9 @@ local.properties
 *.log
 *.swp
 *.tmp
+
+# 릴리스 파일
+/app/release/
+
+# EPUB 추출기 빌드 파일
+/epub-extractor/build/
