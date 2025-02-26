@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +19,8 @@ import com.timor.kidsstory.presentation.reader.model.PageUiState
 @Composable
 fun StoryTextSection(
     state: PageUiState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onTextToSpeech: (List<String>) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -47,5 +49,14 @@ fun StoryTextSection(
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 16.dp)
         )
+
+        Button(
+            modifier = Modifier.align(Alignment.TopEnd),
+            onClick = {
+                onTextToSpeech(state.texts)
+            }
+        ) {
+            Text(text = "음성 말하기")
+        }
     }
 }
