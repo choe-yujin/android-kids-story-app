@@ -31,7 +31,7 @@ class TextToSpeechHelper @Inject constructor(
         if (status == TextToSpeech.SUCCESS) {
 
             // 영어 설정
-            tts?.language = Locale.T
+            tts?.language = Locale.ENGLISH
 
             _isTTSInitialized.value = true
         }
