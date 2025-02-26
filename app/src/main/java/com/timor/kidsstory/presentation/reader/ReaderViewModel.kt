@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.timor.kidsstory.domain.model.NavigationDirection
 import com.timor.kidsstory.domain.usecase.GetStoryUseCase
 import com.timor.kidsstory.domain.usecase.PageNavigationUseCase
+import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import com.timor.kidsstory.presentation.reader.model.PageUiState
 import com.timor.kidsstory.presentation.reader.model.ReaderUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,17 +21,34 @@ import javax.inject.Inject
 class ReaderViewModel @Inject constructor(
     private val getStoryUseCase: GetStoryUseCase,
     private val pageNavigationUseCase: PageNavigationUseCase,
+    private val textToSpeechHelper: TextToSpeechHelper,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = MutableStateFlow(ReaderUiState())
     val state = _state.asStateFlow()
 
+    private val _isTTSInitialized = MutableStateFlow(false)
+    val isTTSInitialized = _isTTSInitialized.asStateFlow()
+
+    // 전달한 storyId값
     private val storyId: String? = savedStateHandle["storyId"]
 
     init {
         storyId?.let { id ->
             loadStory(id)
         }
+
+        // tts 초기화 상태
+        viewModelScope.launch {
+            textToSpeechHelper.isTTSInitialized.collect { isInitialized ->
+                _isTTSInitialized.value = isInitialized
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        textToSpeechHelper.stop()
     }
 
     private fun loadStory(storyId: String) {
@@ -75,6 +93,16 @@ class ReaderViewModel @Inject constructor(
                 _state.value = _state.value.copy(currentPage = validatedPage)
             } catch (e: Exception) {
                 // 에러 처리
+            }
+        }
+    }
+
+
+    // tts 테스트
+    fun ttsSpeak(content: List<String>) {
+        if (_isTTSInitialized.value) {
+            content.forEach { text ->
+                textToSpeechHelper.speak(text)
             }
         }
     }

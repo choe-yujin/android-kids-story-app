@@ -61,7 +61,8 @@ fun NavGraph(
                 onBackToBookshelf = {
                     navController.popBackStack()
                 },
-                onPageChanged = viewModel::onPageChanged
+                onPageChanged = viewModel::onPageChanged,
+                onTextToSpeech = viewModel::ttsSpeak
             )
         }
     }
