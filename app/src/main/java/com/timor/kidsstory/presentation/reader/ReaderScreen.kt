@@ -7,14 +7,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.timor.kidsstory.presentation.reader.components.StoryPage
+import com.timor.kidsstory.presentation.reader.components.PageContent
 import com.timor.kidsstory.presentation.reader.components.pagetest.FlipPager
 import com.timor.kidsstory.presentation.reader.model.ReaderUiState
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
@@ -25,7 +21,7 @@ fun StoryDetailScreen(
     state: ReaderUiState,
     onBackToBookshelf: () -> Unit,
     onPageChanged: (Int) -> Unit,
-    onTextToSpeech: (List<String>) -> Unit
+    onTextToSpeech: (List<String>) -> Unit,
 ) {
     if (state.pages.isEmpty()) {
         // 로딩 상태나 빈 상태 표시
@@ -47,13 +43,12 @@ fun StoryDetailScreen(
         onPageChanged(pagerState.currentPage)
     }
 
-
     // Flip 효과를 넣은 Horizontal Pager
     FlipPager(
         state = pagerState,
         modifier = Modifier.fillMaxWidth(),
     ) { pageIndex ->
-        StoryPage(
+        PageContent(
             state = state.pages[pageIndex],
             onBackToBookshelf = onBackToBookshelf,
             modifier = Modifier.fillMaxSize(),
