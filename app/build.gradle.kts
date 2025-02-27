@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    kotlin("plugin.serialization") version "2.1.10"
 }
 
 android {
@@ -71,6 +72,12 @@ dependencies {
     //Ktor
     implementation("io.ktor:ktor-client-android:3.1.0")
     implementation("io.ktor:ktor-client-cio:3.1.0")
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.0")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.0")
+    implementation("io.ktor:ktor-client-logging:3.1.0")
+
+    // Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     // hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
