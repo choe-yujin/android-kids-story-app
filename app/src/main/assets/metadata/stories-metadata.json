@@ -1,0 +1,623 @@
+{"stories": [
+  {
+    "storyId": "801_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 19,
+    "pageCount": 14,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "801 Tetum",
+      "ko": "801 Ko-kr",
+      "en": "801 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 5477591,
+    "coverImage": "cover_801_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 28
+  },
+  {
+    "storyId": "801_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 19,
+    "pageCount": 14,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "801 Tetum",
+      "ko": "801 Ko-kr",
+      "en": "801 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 5085546,
+    "coverImage": "cover_801_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 28
+  },
+  {
+    "storyId": "801_tetum",
+    "ageRange": "5-9",
+    "imageCount": 19,
+    "pageCount": 14,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "801 Tetum",
+      "ko": "801 Ko-kr",
+      "en": "801 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 5085546,
+    "coverImage": "cover_801_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 28
+  },
+  {
+    "storyId": "802_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 20,
+    "pageCount": 15,
+    "level": 3,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "802 Tetum",
+      "ko": "802 Ko-kr",
+      "en": "802 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 5061122,
+    "coverImage": "cover_802_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 30
+  },
+  {
+    "storyId": "802_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 20,
+    "pageCount": 15,
+    "level": 3,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "802 Tetum",
+      "ko": "802 Ko-kr",
+      "en": "802 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4807529,
+    "coverImage": "cover_802_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 30
+  },
+  {
+    "storyId": "802_tetum",
+    "ageRange": "5-9",
+    "imageCount": 20,
+    "pageCount": 15,
+    "level": 3,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "802 Tetum",
+      "ko": "802 Ko-kr",
+      "en": "802 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4807529,
+    "coverImage": "cover_802_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 30
+  },
+  {
+    "storyId": "806_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 16,
+    "pageCount": 11,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "806 Tetum",
+      "ko": "806 Ko-kr",
+      "en": "806 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 3606499,
+    "coverImage": "cover_806_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 22
+  },
+  {
+    "storyId": "806_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 16,
+    "pageCount": 11,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "806 Tetum",
+      "ko": "806 Ko-kr",
+      "en": "806 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 3570166,
+    "coverImage": "cover_806_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 22
+  },
+  {
+    "storyId": "806_tetum",
+    "ageRange": "5-9",
+    "imageCount": 16,
+    "pageCount": 11,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "806 Tetum",
+      "ko": "806 Ko-kr",
+      "en": "806 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 3570166,
+    "coverImage": "cover_806_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 22
+  },
+  {
+    "storyId": "807_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 21,
+    "pageCount": 16,
+    "level": 3,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "807 Tetum",
+      "ko": "807 Ko-kr",
+      "en": "807 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4676914,
+    "coverImage": "cover_807_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 32
+  },
+  {
+    "storyId": "807_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 21,
+    "pageCount": 16,
+    "level": 3,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "807 Tetum",
+      "ko": "807 Ko-kr",
+      "en": "807 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4392985,
+    "coverImage": "cover_807_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 32
+  },
+  {
+    "storyId": "807_tetum",
+    "ageRange": "5-9",
+    "imageCount": 21,
+    "pageCount": 16,
+    "level": 3,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "807 Tetum",
+      "ko": "807 Ko-kr",
+      "en": "807 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4392985,
+    "coverImage": "cover_807_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 32
+  },
+  {
+    "storyId": "810_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 18,
+    "pageCount": 13,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "810 Tetum",
+      "ko": "810 Ko-kr",
+      "en": "810 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 5429485,
+    "coverImage": "cover_810_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 26
+  },
+  {
+    "storyId": "810_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 18,
+    "pageCount": 13,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "810 Tetum",
+      "ko": "810 Ko-kr",
+      "en": "810 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 5315833,
+    "coverImage": "cover_810_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 26
+  },
+  {
+    "storyId": "810_tetum",
+    "ageRange": "5-9",
+    "imageCount": 18,
+    "pageCount": 13,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "810 Tetum",
+      "ko": "810 Ko-kr",
+      "en": "810 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 5315833,
+    "coverImage": "cover_810_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 26
+  },
+  {
+    "storyId": "816_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 18,
+    "pageCount": 13,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "816 Tetum",
+      "ko": "816 Ko-kr",
+      "en": "816 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 6253257,
+    "coverImage": "cover_816_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 26
+  },
+  {
+    "storyId": "816_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 18,
+    "pageCount": 13,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "816 Tetum",
+      "ko": "816 Ko-kr",
+      "en": "816 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 6020670,
+    "coverImage": "cover_816_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 26
+  },
+  {
+    "storyId": "816_tetum",
+    "ageRange": "5-9",
+    "imageCount": 18,
+    "pageCount": 13,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "816 Tetum",
+      "ko": "816 Ko-kr",
+      "en": "816 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 6020670,
+    "coverImage": "cover_816_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 26
+  },
+  {
+    "storyId": "817_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 20,
+    "pageCount": 15,
+    "level": 3,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "817 Tetum",
+      "ko": "817 Ko-kr",
+      "en": "817 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4861870,
+    "coverImage": "cover_817_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 30
+  },
+  {
+    "storyId": "817_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 20,
+    "pageCount": 15,
+    "level": 3,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "817 Tetum",
+      "ko": "817 Ko-kr",
+      "en": "817 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4743562,
+    "coverImage": "cover_817_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 30
+  },
+  {
+    "storyId": "817_tetum",
+    "ageRange": "5-9",
+    "imageCount": 20,
+    "pageCount": 15,
+    "level": 3,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "817 Tetum",
+      "ko": "817 Ko-kr",
+      "en": "817 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4743562,
+    "coverImage": "cover_817_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 30
+  },
+  {
+    "storyId": "819_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 19,
+    "pageCount": 14,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "819 Tetum",
+      "ko": "819 Ko-kr",
+      "en": "819 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 5082017,
+    "coverImage": "cover_819_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 28
+  },
+  {
+    "storyId": "819_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 19,
+    "pageCount": 14,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "819 Tetum",
+      "ko": "819 Ko-kr",
+      "en": "819 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4891603,
+    "coverImage": "cover_819_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 28
+  },
+  {
+    "storyId": "819_tetum",
+    "ageRange": "5-9",
+    "imageCount": 19,
+    "pageCount": 14,
+    "level": 2,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "819 Tetum",
+      "ko": "819 Ko-kr",
+      "en": "819 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 4891603,
+    "coverImage": "cover_819_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 28
+  },
+  {
+    "storyId": "821_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 14,
+    "pageCount": 9,
+    "level": 1,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "821 Tetum",
+      "ko": "821 Ko-kr",
+      "en": "821 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 2754152,
+    "coverImage": "cover_821_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 18
+  },
+  {
+    "storyId": "821_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 14,
+    "pageCount": 9,
+    "level": 1,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "821 Tetum",
+      "ko": "821 Ko-kr",
+      "en": "821 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 2802808,
+    "coverImage": "cover_821_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 18
+  },
+  {
+    "storyId": "821_tetum",
+    "ageRange": "5-9",
+    "imageCount": 14,
+    "pageCount": 9,
+    "level": 1,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "821 Tetum",
+      "ko": "821 Ko-kr",
+      "en": "821 En-ph"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 2802808,
+    "coverImage": "cover_821_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 18
+  }
+]}

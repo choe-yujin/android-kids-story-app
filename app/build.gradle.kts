@@ -74,5 +74,34 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
+    // EPUB 추출기 모듈 추가
+    implementation(project(":epub-extractor"))
+}
 
+// EPUB 리소스 추출 태스크
+// 태스크 의존성으로 설정
+tasks.register("extractEpubResources") {
+    dependsOn(":epub-extractor:fatJar")
+
+    doLast {
+        val epubSourceDir = rootProject.file("epub-source").absolutePath
+        val outputAssetsDir = file("src/main/assets").absolutePath
+        val metadataFile = file("src/main/assets/metadata/stories-metadata.json").absolutePath
+
+        // Fat JAR 경로
+        val epubExtractorJar = project(":epub-extractor").layout.buildDirectory
+            .dir("libs").get().asFile.listFiles()
+            ?.firstOrNull { it.name.contains("fat") && it.name.endsWith(".jar") }
+            ?.absolutePath ?: throw GradleException("epub-extractor Fat JAR not found")
+
+        exec {
+            executable = "java"
+            args = listOf(
+                "-jar", epubExtractorJar,
+                epubSourceDir,
+                outputAssetsDir,
+                metadataFile
+            )
+        }
+    }
 }
