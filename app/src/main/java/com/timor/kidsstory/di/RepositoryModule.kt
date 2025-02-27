@@ -1,9 +1,7 @@
 package com.timor.kidsstory.di
 
 import com.timor.kidsstory.data.repository.BookRepositoryImpl
-import com.timor.kidsstory.data.repository.StoryRepositoryImpl
 import com.timor.kidsstory.domain.repository.BookRepository
-import com.timor.kidsstory.domain.repository.StoryRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
