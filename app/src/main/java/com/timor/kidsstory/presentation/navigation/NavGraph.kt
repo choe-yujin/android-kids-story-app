@@ -1,5 +1,6 @@
 package com.timor.kidsstory.presentation.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,7 +17,6 @@ import com.timor.kidsstory.presentation.reader.ReaderViewModel
 import com.timor.kidsstory.presentation.reader.StoryDetailScreen
 
 // 네비게이션 그래프 정의
-
 sealed class Screen(val route: String) {
     data object Bookshelf : Screen("bookshelf")
     data object Reader : Screen("reader/{storyId}") {
@@ -39,9 +39,10 @@ fun NavGraph(
             BookshelfScreen(
                 state = state,
                 onBookSelected = { index ->
-                    viewModel.onBookSelected(index)?.let { story ->
-                        navController.navigate(Screen.Reader.createRoute(story.storyId)) {
-                            launchSingleTop = true // 동일한 화면이 백스택에 중복으로 쌓이는 것을 방지
+                    viewModel.onBookSelected(index)?.let { book ->
+                        Log.d("NavGraph", "Navigating to book: ${book.storyId}")
+                        navController.navigate(Screen.Reader.createRoute(book.storyId)) {
+                            launchSingleTop = true
                         }
                     }
                 }
@@ -51,9 +52,11 @@ fun NavGraph(
         composable(
             route = Screen.Reader.route,
             arguments = listOf(navArgument("storyId") { type = NavType.StringType })
-        ) {
-            val viewModel: ReaderViewModel = hiltViewModel()
+        ) { backStackEntry ->
+            val storyId = backStackEntry.arguments?.getString("storyId") ?: ""
+            Log.d("NavGraph", "Reading storyId from NavArgs: $storyId")
 
+            val viewModel: ReaderViewModel = hiltViewModel()
             val state by viewModel.state.collectAsState()
 
             StoryDetailScreen(
