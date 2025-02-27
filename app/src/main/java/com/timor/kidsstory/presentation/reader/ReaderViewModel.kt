@@ -4,9 +4,6 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.timor.kidsstory.domain.model.NavigationDirection
-import com.timor.kidsstory.domain.usecase.GetStoryUseCase
-import com.timor.kidsstory.domain.usecase.PageNavigationUseCase
 import com.timor.kidsstory.domain.usecase.book.GetBookDetailUseCase
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import com.timor.kidsstory.presentation.reader.model.PageUiState
@@ -22,9 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ReaderViewModel @Inject constructor(
     private val getBookDetailUseCase: GetBookDetailUseCase,
-    private val pageNavigationUseCase: PageNavigationUseCase,
     private val textToSpeechHelper: TextToSpeechHelper,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = MutableStateFlow(ReaderUiState())
     val state = _state.asStateFlow()
@@ -32,18 +28,14 @@ class ReaderViewModel @Inject constructor(
     private val _isTTSInitialized = MutableStateFlow(false)
     val isTTSInitialized = _isTTSInitialized.asStateFlow()
 
-    // storyId 가져오기
     private val storyId: String = savedStateHandle.get<String>("storyId") ?: ""
 
     init {
         Log.d("ReaderViewModel", "Initializing with storyId: $storyId")
 
         if (storyId.isNotEmpty()) {
-            // 짧은 지연 후 로드
-            viewModelScope.launch {
-                kotlinx.coroutines.delay(200)
-                loadStory(storyId)
-            }
+            loadStory(storyId)
+
         } else {
             Log.e("ReaderViewModel", "No storyId provided")
             _state.update { it.copy(error = "책 ID가 제공되지 않았습니다") }
@@ -60,7 +52,6 @@ class ReaderViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         textToSpeechHelper.stop()
-        textToSpeechHelper.shutDown()
     }
 
     private fun loadStory(storyId: String) {
@@ -68,13 +59,17 @@ class ReaderViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
 
             try {
-                // ID에서 기본 부분만 추출 (예: 801_en-ph -> 801)
+                // 기본 ID 추출 (예: 801_en-ph -> 801)
                 val baseId = storyId.split("_").firstOrNull() ?: storyId
                 Log.d("ReaderViewModel", "Loading story with base ID: $baseId")
 
-                getBookDetailUseCase(baseId).fold(
+                // storyId 그대로 전달 (원본 ID 유지)
+                getBookDetailUseCase(storyId).fold(
                     onSuccess = { storyDetail ->
-                        Log.d("ReaderViewModel", "Story loaded with ${storyDetail.pages.size} pages")
+                        Log.d(
+                            "ReaderViewModel",
+                            "Story loaded with ${storyDetail.pages.size} pages"
+                        )
 
                         if (storyDetail.pages.isEmpty()) {
                             Log.e("ReaderViewModel", "Story has no pages")
@@ -134,8 +129,6 @@ class ReaderViewModel @Inject constructor(
             content.forEach { text ->
                 textToSpeechHelper.speak(text)
             }
-        } else {
-            Log.w("ReaderViewModel", "TTS가 초기화되지 않았습니다")
         }
     }
 }
