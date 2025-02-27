@@ -13,22 +13,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.timor.kidsstory.presentation.reader.model.ImageSectionUiState
-import java.io.File
 
 // 읽기 화면 하위 컴포넌트들
 @Composable
-fun StoryImageSection(
+fun PageImageSection(
     state: ImageSectionUiState,
     onBackToBookshelf: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxHeight()) {
         AsyncImage(
-            model = File(LocalContext.current.filesDir, state.imageUrl),
+            model = "file:///android_asset/images/${state.imageUrl}",
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()

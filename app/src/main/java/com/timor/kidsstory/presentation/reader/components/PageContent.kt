@@ -11,19 +11,19 @@ import com.timor.kidsstory.presentation.reader.model.PageUiState
 
 // 읽기 화면 하위 컴포넌트들
 @Composable
-fun StoryPage(
+fun PageContent(
     state: PageUiState,
     onBackToBookshelf: () -> Unit,
     modifier: Modifier = Modifier,
     onTextToSpeech: (List<String>) -> Unit
 ) {
     Row(modifier = modifier.fillMaxSize()) {
-        StoryImageSection(
+        PageImageSection(
             state = ImageSectionUiState(imageUrl = state.imageUrl),
             onBackToBookshelf = onBackToBookshelf,
             modifier = Modifier.weight(1f)
         )
-        StoryTextSection(
+        PageTextSection(
             state = state,
             modifier = Modifier
                 .weight(1f)
