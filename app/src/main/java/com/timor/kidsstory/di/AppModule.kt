@@ -24,18 +24,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideBookMapper(): BookMapper {
-        return BookMapper()
-    }
-
-    @Provides
-    @Singleton
-    fun providePageMapper(): PageMapper {
-        return PageMapper()
-    }
-
-    @Provides
-    @Singleton
     fun provideTextToSpeechHelper(@ApplicationContext context: Context): TextToSpeechHelper {
         return TextToSpeechHelper(context)
     }
