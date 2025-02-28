@@ -2,6 +2,7 @@ package com.timor.kidsstory.presentation.bookshelf.components
 
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -38,9 +39,8 @@ fun BookCover(
             model = "file:///android_asset/$imagePath",
             contentDescription = state.title,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp),
-            contentScale = ContentScale.Crop
+                .fillMaxSize(),
+            contentScale = ContentScale.Fit
         )
     }
 }
