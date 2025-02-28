@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +7,10 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization") version "2.1.10"
+}
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
 }
 
 android {
@@ -19,6 +25,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties["GEMINI_API_KEY"]}\"")
     }
 
     buildTypes {
@@ -39,7 +47,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
+
 }
 
 dependencies {
@@ -70,11 +81,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //Ktor
-    implementation("io.ktor:ktor-client-android:3.1.0")
-    implementation("io.ktor:ktor-client-cio:3.1.0")
-    implementation("io.ktor:ktor-client-content-negotiation:3.1.0")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.0")
-    implementation("io.ktor:ktor-client-logging:3.1.0")
+    implementation("io.ktor:ktor-client-android:2.3.12")
+    implementation("io.ktor:ktor-client-cio:2.3.12")
+    implementation("io.ktor:ktor-client-core:2.3.12")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
+    implementation("io.ktor:ktor-client-logging:2.3.12")
+    implementation("io.ktor:ktor-client-okhttp:2.3.12")
 
     // Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
@@ -84,6 +97,13 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+
+    // Logger
+    implementation("com.orhanobut:logger:2.2.0")
+
+    // Gemini - ai
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
     // EPUB 추출기 모듈 추가
     implementation(project(":epub-extractor"))

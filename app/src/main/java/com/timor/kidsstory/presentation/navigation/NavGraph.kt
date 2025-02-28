@@ -13,6 +13,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.timor.kidsstory.presentation.bookshelf.BookshelfScreen
 import com.timor.kidsstory.presentation.bookshelf.BookshelfViewModel
+import com.timor.kidsstory.presentation.chatbot.ChatbotScreen
+import com.timor.kidsstory.presentation.chatbot.ChatbotScreenViewModel
 import com.timor.kidsstory.presentation.reader.ReaderViewModel
 import com.timor.kidsstory.presentation.reader.StoryDetailScreen
 
@@ -22,6 +24,8 @@ sealed class Screen(val route: String) {
     data object Reader : Screen("reader/{storyId}") {
         fun createRoute(storyId: String) = "reader/$storyId"
     }
+
+    data object ChatBot : Screen(route = "chatbot")
 }
 
 @Composable
@@ -66,6 +70,19 @@ fun NavGraph(
                 },
                 onPageChanged = viewModel::onPageChanged,
                 onTextToSpeech = viewModel::ttsSpeak
+            )
+        }
+
+        // 챗봇 화면
+        composable(
+            route = Screen.ChatBot.route,
+        ) { backStackEntry ->
+            val viewModel: ChatbotScreenViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsState()
+
+            ChatbotScreen(
+                viewModel = viewModel,
+                state = state
             )
         }
     }

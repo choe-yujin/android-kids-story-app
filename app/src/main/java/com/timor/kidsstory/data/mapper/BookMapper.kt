@@ -4,9 +4,8 @@ import android.util.Log
 import com.timor.kidsstory.data.dto.BookDto
 import com.timor.kidsstory.data.dto.TitlesDto
 import com.timor.kidsstory.domain.model.Book
-import javax.inject.Inject
 
-class BookMapper @Inject constructor() {
+object BookMapper {
     fun mapToDomain(dto: BookDto, language: String): Book {
         val title = getLocalizedTitle(dto.titles, language)
 
