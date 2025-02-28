@@ -49,12 +49,6 @@ fun NavGraph(
                             launchSingleTop = true
                         }
                     }
-                },
-                // TODO: 챗봇 화면으로 이동 임시 Nav 로직 추가
-                onChatbotClick = {
-                    navController.navigate(Screen.ChatBot.route) {
-                        launchSingleTop = true
-                    }
                 }
             )
         }
