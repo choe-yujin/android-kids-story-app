@@ -1,6 +1,7 @@
 package com.timor.kidsstory.presentation.bookshelf.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,8 @@ import com.timor.kidsstory.domain.model.Language
 @Composable
 fun BookshelfHeader(
     currentLanguage: Language,
+    onMakerClick: () -> Unit,
+    onLanguageClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -50,6 +53,7 @@ fun BookshelfHeader(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.White)
+                .clickable(onClick = onMakerClick)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Text(
@@ -84,7 +88,8 @@ fun BookshelfHeader(
 
             // 언어 선택 버튼
             LanguageSelector(
-                currentLanguage = currentLanguage
+                currentLanguage = currentLanguage,
+                onClick = onLanguageClick
             )
         }
     }
