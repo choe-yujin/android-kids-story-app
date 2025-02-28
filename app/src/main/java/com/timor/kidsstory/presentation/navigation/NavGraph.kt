@@ -11,8 +11,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.bookshelf.BookshelfScreen
 import com.timor.kidsstory.presentation.bookshelf.BookshelfViewModel
+import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreen
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreenViewModel
 import com.timor.kidsstory.presentation.reader.ReaderViewModel
@@ -49,8 +51,19 @@ fun NavGraph(
                             launchSingleTop = true
                         }
                     }
-                }
+                },
+                onMakerClick = { viewModel.onMakerClick() },
+                onLanguageClick = { viewModel.showLanguageSelector() }
             )
+            // 언어 선택 다이얼로그 표시
+            if (state.showLanguageDialog) {
+                LanguageDialog(
+                    languages = LanguageConstants.SUPPORTED_LANGUAGES,
+                    selectedLanguage = state.currentLanguage,
+                    onLanguageSelected = { viewModel.changeLanguage(it) },
+                    onDismiss = { viewModel.hideLanguageSelector() }
+                )
+            }
         }
 
         composable(

@@ -33,6 +33,8 @@ import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 fun BookshelfScreen(
     state: BookshelfUiState,
     onBookSelected: (Int) -> Unit,
+    onMakerClick: () -> Unit,
+    onLanguageClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -47,6 +49,8 @@ fun BookshelfScreen(
             // 헤더 추가
             BookshelfHeader(
                 currentLanguage = state.currentLanguage,
+                onMakerClick = onMakerClick,
+                onLanguageClick = onLanguageClick
             )
 
             LazyVerticalGrid(

@@ -2,6 +2,7 @@ package com.timor.kidsstory.presentation.bookshelf.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -27,13 +28,15 @@ import com.timor.kidsstory.domain.model.Language
  */
 @Composable
 fun LanguageSelector(
-    currentLanguage: Language
+    currentLanguage: Language,
+    onClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .background(Color.White)
             .padding(horizontal = 12.dp, vertical = 8.dp)
+            .clickable(onClick = onClick)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
