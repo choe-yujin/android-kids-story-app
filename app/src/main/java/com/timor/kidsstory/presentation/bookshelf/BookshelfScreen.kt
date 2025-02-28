@@ -23,7 +23,7 @@ import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 @Composable
 fun BookshelfScreen(
     state: BookshelfUiState,
-    onBookSelected: (Int) -> Unit
+    onBookSelected: (Int) -> Unit,
 ) {
     Column(
         modifier = Modifier

@@ -11,8 +11,6 @@ import javax.inject.Inject
 
 class BookRepositoryImpl @Inject constructor(
     private val assetDataSource: AssetDataSource,
-    private val bookMapper: BookMapper,
-    private val pageMapper: PageMapper
 ) : BookRepository {
 
     override suspend fun getBooks(language: String): Result<List<Book>> {
@@ -32,7 +30,7 @@ class BookRepositoryImpl @Inject constructor(
                 }
 
                 Log.d("BookRepositoryImpl", "Found ${filteredBooks.size} books for language $language")
-                filteredBooks.map { bookMapper.mapToDomain(it, language) }
+                filteredBooks.map { BookMapper.mapToDomain(it, language) }
             }
         } catch (e: Exception) {
             Log.e("BookRepositoryImpl", "Error getting books", e)
@@ -86,7 +84,7 @@ class BookRepositoryImpl @Inject constructor(
 
             Log.d("BookRepositoryImpl", "Selected book: ${selectedBook.storyId}")
 
-            Result.success(bookMapper.mapToDomain(selectedBook, language))
+            Result.success(BookMapper.mapToDomain(selectedBook, language))
         } catch (e: Exception) {
             Log.e("BookRepositoryImpl", "Error getting book by ID", e)
             Result.failure(e)
@@ -111,7 +109,7 @@ class BookRepositoryImpl @Inject constructor(
             Log.d("BookRepositoryImpl", "Loading pages for full story ID: $fullStoryId")
 
             assetDataSource.loadBookPages(fullStoryId, language).map { response ->
-                val pages = response.pages.map { pageMapper.mapToDomain(it, baseId) }
+                val pages = response.pages.map { PageMapper.mapToDomain(it, baseId) }
                 Log.d("BookRepositoryImpl", "Loaded ${pages.size} pages for book: $baseId")
                 pages
             }
