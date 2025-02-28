@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.MaterialTheme
@@ -59,6 +60,7 @@ fun FlipPager(
         state = state,
         modifier = modifier
             .fillMaxSize()
+            .navigationBarsPadding()
             .nestedScroll(nestedScrollConnection),
         pageContent = {
             Content(
