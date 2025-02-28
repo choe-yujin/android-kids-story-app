@@ -1,7 +1,7 @@
 package com.timor.kidsstory.di
 
-import com.timor.kidsstory.data.repository.StoryRepositoryImpl
-import com.timor.kidsstory.domain.repository.StoryRepository
+import com.timor.kidsstory.data.repository.BookRepositoryImpl
+import com.timor.kidsstory.domain.repository.BookRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,7 +14,7 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindStoryRepository(
-        storyRepositoryImpl: StoryRepositoryImpl
-    ): StoryRepository
+    abstract fun bindBookRepository(
+        bookRepositoryImpl: BookRepositoryImpl
+    ): BookRepository
 }
