@@ -41,7 +41,7 @@ fun BookshelfHeader(
             .fillMaxWidth()
             .height(60.dp)
             .background(Color(0xFFFDD25A))
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 48.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -61,10 +61,10 @@ fun BookshelfHeader(
 
         // 앱 제목
         Text(
-            text = "TetumDreams",
-            style = MaterialTheme.typography.titleLarge,
+            text = "TetumDream",
+            style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF202020)
+            color = Color(0xFF121212)
         )
 
         // 챗봇 아이콘과 언어 선택 버튼을 묶는 Row
