@@ -4,6 +4,7 @@ import android.content.Context
 import com.timor.kidsstory.data.local.assets.AssetDataSource
 import com.timor.kidsstory.data.mapper.BookMapper
 import com.timor.kidsstory.data.mapper.PageMapper
+import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,5 +32,11 @@ object AppModule {
     @Singleton
     fun providePageMapper(): PageMapper {
         return PageMapper()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTextToSpeechHelper(@ApplicationContext context: Context): TextToSpeechHelper {
+        return TextToSpeechHelper(context)
     }
 }
