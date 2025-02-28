@@ -23,7 +23,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // 가로 모드 고정
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
