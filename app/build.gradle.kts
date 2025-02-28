@@ -85,6 +85,10 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
+
+    // Logger
+    implementation("com.orhanobut:logger:2.2.0")
+
     // EPUB 추출기 모듈 추가
     implementation(project(":epub-extractor"))
 }
