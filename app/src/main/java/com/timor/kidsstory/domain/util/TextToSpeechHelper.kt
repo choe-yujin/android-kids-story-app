@@ -18,6 +18,7 @@ class TextToSpeechHelper @Inject constructor(
 ) : TextToSpeech.OnInitListener {
 
     private var tts: TextToSpeech? = null
+
     // 초기화 상태를 viewModel에서 판단하기위함
     private val _isTTSInitialized = MutableStateFlow(false)
     val isTTSInitialized = _isTTSInitialized.asStateFlow()
