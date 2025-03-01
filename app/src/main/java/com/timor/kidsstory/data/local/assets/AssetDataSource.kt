@@ -39,21 +39,25 @@ class AssetDataSource @Inject constructor(
     // 특정 책의 페이지 정보 로드
     suspend fun loadBookPages(storyId: String, language: String): Result<PageContentResponse> = withContext(Dispatchers.IO) {
         try {
-            // 기본 ID 추출 (예: 801_en-ph -> 801)
+            // 기본 ID 추출 (801_en-ph -> 801)
             val baseId = storyId.split("_").firstOrNull() ?: storyId
 
-            // 언어 접미사 결정
-            val languageSuffix = when {
-                language.startsWith("ko") -> "ko-kr"
-                language.startsWith("tet") -> "tetum"
-                else -> "en-ph"
+            // 언어 폴더명 결정
+            val languageFolder = when {
+                language.startsWith("ko") -> "ko"
+                language.startsWith("tet") -> "tet"
+                else -> "en"
             }
 
-            // 정확한 파일 경로 구성 (예: 801_en-ph.json)
-            val fileName = "${baseId}_${languageSuffix}.json"
+            // 언어 파일명 결정
+            val fileName = when {
+                language.startsWith("ko") -> "${baseId}_ko-kr.json"
+                language.startsWith("tet") -> "${baseId}_tetum.json"
+                else -> "${baseId}_en-ph.json"
+            }
 
-            // 첫 번째로 시도할 경로: translations/[언어코드]/[파일명]
-            val firstPath = "${languageSuffix.split("-").firstOrNull() ?: "en"}/$fileName"
+            // 첫 번째로 시도할 경로: translations/[언어폴더]/[파일명]
+            val firstPath = "$languageFolder/$fileName"
             Log.d("AssetDataSource", "Trying to load from: translations/$firstPath")
 
             try {
@@ -70,7 +74,7 @@ class AssetDataSource @Inject constructor(
                 Log.w("AssetDataSource", "Failed to load from translations/$firstPath, trying fallback", e)
 
                 // 영어 버전으로 폴백
-                if (languageSuffix != "en-ph") {
+                if (languageFolder != "en") {
                     val fallbackFileName = "${baseId}_en-ph.json"
                     val fallbackPath = "en/$fallbackFileName"
                     Log.d("AssetDataSource", "Trying fallback: translations/$fallbackPath")
