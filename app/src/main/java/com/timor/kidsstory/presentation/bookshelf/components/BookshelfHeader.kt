@@ -1,6 +1,7 @@
 package com.timor.kidsstory.presentation.bookshelf.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -35,13 +36,15 @@ import com.timor.kidsstory.domain.model.Language
 @Composable
 fun BookshelfHeader(
     currentLanguage: Language,
+    onMakerClick: () -> Unit,
+    onLanguageClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
             .background(Color(0xFFFDD25A))
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 48.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -50,6 +53,7 @@ fun BookshelfHeader(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.White)
+                .clickable(onClick = onMakerClick)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Text(
@@ -61,10 +65,10 @@ fun BookshelfHeader(
 
         // 앱 제목
         Text(
-            text = "TetumDreams",
-            style = MaterialTheme.typography.titleLarge,
+            text = "TetumDream",
+            style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF202020)
+            color = Color(0xFF121212)
         )
 
         // 챗봇 아이콘과 언어 선택 버튼을 묶는 Row
@@ -84,7 +88,8 @@ fun BookshelfHeader(
 
             // 언어 선택 버튼
             LanguageSelector(
-                currentLanguage = currentLanguage
+                currentLanguage = currentLanguage,
+                onClick = onLanguageClick
             )
         }
     }
