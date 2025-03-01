@@ -6,11 +6,15 @@ import androidx.lifecycle.viewModelScope
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.usecase.book.GetBooksUseCase
+import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
+import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
+import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,7 +22,9 @@ import javax.inject.Inject
 // 책장 화면 뷰모델
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
-    private val getBooksUseCase: GetBooksUseCase
+    private val getBooksUseCase: GetBooksUseCase,
+    private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
+    private val saveUserPreferenceUseCase: SaveUserPreferenceUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
@@ -27,7 +33,52 @@ class BookshelfViewModel @Inject constructor(
     private var bookList = listOf<Book>()
 
     init {
-        loadStories(_state.value.currentLanguage.code)
+        // 앱 시작 시 초기 데이터 로딩
+        loadInitialData()
+        // 이후 사용자 설정 변경 관찰
+        observeUserPreference()
+    }
+
+    private fun loadInitialData() {
+        viewModelScope.launch {
+            val preference = getUserPreferenceUseCase().first() // 현재 설정값 가져오기
+
+            val languageCode = if (preference.languageCode.isBlank()) {
+                LanguageConstants.DEFAULT_LANGUAGE.code
+            } else {
+                preference.languageCode
+            }
+
+            val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
+                it.code == languageCode
+            } ?: LanguageConstants.DEFAULT_LANGUAGE
+
+            _state.update { it.copy(currentLanguage = language) }
+            loadStories(language.code)
+        }
+    }
+
+    private fun observeUserPreference() {
+        viewModelScope.launch {
+            getUserPreferenceUseCase().collect { preference ->
+                val languageCode = if (preference.languageCode.isBlank()) {
+                    // 저장된 언어가 없으면 기본 언어 사용
+                    LanguageConstants.DEFAULT_LANGUAGE.code
+                } else {
+                    preference.languageCode
+                }
+
+                val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
+                    it.code == languageCode
+                } ?: LanguageConstants.DEFAULT_LANGUAGE
+
+                // 언어가 변경되었을 때만 상태 업데이트 및 책 로딩
+                if (language.code != _state.value.currentLanguage.code) {
+                    _state.update { it.copy(currentLanguage = language) }
+                    loadStories(language.code)
+                }
+            }
+        }
     }
 
     private fun loadStories(languageCode: String) {
@@ -47,9 +98,6 @@ class BookshelfViewModel @Inject constructor(
                         _state.update {
                             it.copy(
                                 books = books.map { book ->
-                                    Log.d("BookshelfViewModel", "Creating UI state for book: ${book.title}, ID: ${book.storyId}, Cover: ${book.coverImage}")
-
-                                    // 메타데이터에서 제공된 coverImage 필드는 파일명만 포함하므로 그대로 사용
                                     BookCoverUiState(
                                         imageUrl = book.coverImage,
                                         title = book.title,
@@ -108,9 +156,13 @@ class BookshelfViewModel @Inject constructor(
         Log.d("BookshelfViewModel", "Changing language to: ${language.code}")
 
         if (language.code != _state.value.currentLanguage.code) {
-            _state.update { it.copy(currentLanguage = language, showLanguageDialog = false) }
-            // 언어가 변경되면 해당 언어로 책 목록을 새로 로드
-            loadStories(language.code)
+            // 다이얼로그 닫기
+            _state.update { it.copy(showLanguageDialog = false) }
+
+            // 선택한 언어를 저장
+            viewModelScope.launch {
+                saveUserPreferenceUseCase.updateLanguage(language.code)
+            }
         } else {
             _state.update { it.copy(showLanguageDialog = false) }
         }
