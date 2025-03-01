@@ -20,6 +20,7 @@ class ChatbotScreenViewModel @Inject constructor(
     private val chatModel: GenerativeModel,
     private val speechRecognizerHelper: SpeechRecognizerHelper
 ) : ViewModel() {
+
     private val _state = MutableStateFlow(ChatbotUiState())
     val state = _state.asStateFlow()
 
@@ -28,19 +29,24 @@ class ChatbotScreenViewModel @Inject constructor(
         _state.update { it.copy(currentInput = newInput) }
     }
 
-
     // 메시지 전송
     fun sendMessage(inputText: String) {
+
         if (inputText.isBlank()) return        // 내용이 비어있으면 return
+
+        // 중복 메시지 전송 방지 (마지막 메시지와 동일한지 확인)
+        if (state.value.messages.isNotEmpty() && state.value.messages.last().text == inputText) {
+            return
+        }
 
         val newMessage = ChatMessage(
             text = inputText, isFromUser = true,
         )
 
-        _state.update {
-            it.copy(
-                messages = it.messages + newMessage, currentInput = "", isLoading = true, error = null,
-            )
+        _state.update { currentState ->
+            val updatedMessages = currentState.messages.toMutableList()
+            updatedMessages.add(newMessage)
+            currentState.copy(messages = updatedMessages, currentInput = "", isLoading = true, error = null)
         }
 
         viewModelScope.launch {
@@ -52,10 +58,10 @@ class ChatbotScreenViewModel @Inject constructor(
                     text = response, isFromUser = false
                 )
 
-                _state.update {
-                    it.copy(
-                        messages = it.messages + botMessage, isLoading = false, error = null,
-                    )
+                _state.update { currentState ->
+                    val updatedMessages = currentState.messages.toMutableList()
+                    updatedMessages.add(botMessage)
+                    currentState.copy(messages = updatedMessages, isLoading = false, error = null)
                 }
             } catch (e: Exception) {
                 _state.update {
@@ -83,23 +89,38 @@ class ChatbotScreenViewModel @Inject constructor(
     * ------------ 음성 인식 관련 ---------------
     * */
     fun startVoiceSearch() {
-        _state.update { it.copy(isLoading = true) }
-        speechRecognizerHelper.startListening { speechText ->
-            _state.update { it.copy(voiceInput = speechText, isLoading = false) }
-            sendMessage(speechText)
-        }
+        _state.update { it.copy(isRecording = true) }
+
+        speechRecognizerHelper.startListening(object : SpeechStateCallback {
+            override fun onListeningStarted() {
+                // 음성 인식 시작시 처리 (UI 업데이트 처리 필요)
+                _state.update { it.copy(isRecording = true) }
+            }
+
+            override fun onListeningEnded() {
+                // 음성 인식 종료 시 처리
+                _state.update { it.copy(isRecording = false) }
+            }
+
+            override fun onSpeechResult(result: String) {
+                // 음성 인식 결과 받기
+                _state.update { it.copy(voiceInput = result) }
+                sendMessage(result)
+            }
+
+        })
     }
 
 
     fun stopVoiceSearch() {
+        _state.update { it.copy(isRecording = false) }
         speechRecognizerHelper.stopListening()
-        _state.update { it.copy(isLoading = false) }
     }
 
 
     fun cancelVoiceSearch() {
+        _state.update { it.copy(isRecording = false) }
         speechRecognizerHelper.cancelListening()
-        _state.update { it.copy(isLoading = false) }
     }
 
 
