@@ -30,6 +30,8 @@ class BookRepositoryImpl @Inject constructor(
                 }
 
                 Log.d("BookRepositoryImpl", "Found ${filteredBooks.size} books for language $language")
+
+                // BookMapper가 내부적으로 이미지 경로를 처리
                 filteredBooks.map { BookMapper.mapToDomain(it, language) }
             }
         } catch (e: Exception) {
@@ -39,7 +41,7 @@ class BookRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBookById(storyId: String, language: String): Result<Book?> {
-        // 입력받은 storyId에서 기본 ID 추출 (예: 801_en-ph -> 801)
+        // 입력받은 storyId에서 기본 ID 추출 (801_en-ph -> 801)
         val baseId = storyId.split("_").firstOrNull() ?: storyId
 
         Log.d("BookRepositoryImpl", "Getting book by ID: $baseId, full storyId: $storyId")
@@ -108,10 +110,17 @@ class BookRepositoryImpl @Inject constructor(
             val fullStoryId = "${baseId}_${languageCode}"
             Log.d("BookRepositoryImpl", "Loading pages for full story ID: $fullStoryId")
 
-            assetDataSource.loadBookPages(fullStoryId, language).map { response ->
-                val pages = response.pages.map { PageMapper.mapToDomain(it, baseId) }
-                Log.d("BookRepositoryImpl", "Loaded ${pages.size} pages for book: $baseId")
-                pages
+            // 페이지 로드 및 매핑
+            val pagesResult = assetDataSource.loadBookPages(fullStoryId, language)
+
+            pagesResult.map { response ->
+                // 개별 페이지 매핑
+                val mappedPages = response.pages.map { pageDto ->
+                    PageMapper.mapToDomain(pageDto, baseId)
+                }.sortedBy { it.pageNumber }
+
+                // totalPages 정보 추가
+                PageMapper.addTotalPagesInfo(mappedPages)
             }
         } catch (e: Exception) {
             Log.e("BookRepositoryImpl", "Error getting book pages", e)
