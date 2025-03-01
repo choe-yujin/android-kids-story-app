@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.timor.kidsstory.domain.util.PermissionRequest
 import com.timor.kidsstory.presentation.chatbot.components.MessageBox
 
@@ -56,6 +59,39 @@ fun ChatbotScreen(
         }
     )
 
+    // 음성 인식 중일 때 다이얼로그 표시
+    if (state.isRecording) {
+        Dialog(onDismissRequest = { viewModel.stopVoiceSearch() }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .fillMaxHeight(0.8f)
+                    .background(Color.White, shape = RoundedCornerShape(10.dp))
+                    .padding(16.dp)
+            ) {
+
+                Text(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    text = "음성 인식 중 입니다.."
+                )
+
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
+                Button(
+                    onClick = viewModel::stopVoiceSearch,
+                    colors = ButtonColors(
+                        containerColor = Color(0xFFFDDE5A),
+                        contentColor = Color.Black, disabledContentColor = Color.Gray, disabledContainerColor = Color.Gray
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                ) {
+                    Text(text = "음성 검색 중지")
+                }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,10 +111,6 @@ fun ChatbotScreen(
 
         if (state.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-        }
-
-        if (state.error != null) {
-            Text(text = "Error: ${state.error}")
         }
 
         Row(
@@ -102,8 +134,6 @@ fun ChatbotScreen(
         }
     }
 }
-
-
 
 
 @Preview
