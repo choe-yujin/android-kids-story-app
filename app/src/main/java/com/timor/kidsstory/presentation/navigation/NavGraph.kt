@@ -53,7 +53,8 @@ fun NavGraph(
                     }
                 },
                 onMakerClick = { viewModel.onMakerClick() },
-                onLanguageClick = { viewModel.showLanguageSelector() }
+                onLanguageClick = { viewModel.showLanguageSelector() },
+                onChatbotClick = { navController.navigate(Screen.ChatBot.route) }
             )
             // 언어 선택 다이얼로그 표시
             if (state.showLanguageDialog) {
