@@ -34,7 +34,8 @@ fun BookshelfScreen(
     state: BookshelfUiState,
     onBookSelected: (Int) -> Unit,
     onMakerClick: () -> Unit,
-    onLanguageClick: () -> Unit
+    onLanguageClick: () -> Unit,
+    onChatbotClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -50,7 +51,8 @@ fun BookshelfScreen(
             BookshelfHeader(
                 currentLanguage = state.currentLanguage,
                 onMakerClick = onMakerClick,
-                onLanguageClick = onLanguageClick
+                onLanguageClick = onLanguageClick,
+                onChatbotClick = onChatbotClick,
             )
 
             LazyVerticalGrid(
