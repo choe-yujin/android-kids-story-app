@@ -8,6 +8,7 @@ data class ChatbotUiState(
     val voiceInput: String = ""
 )
 
+// text: 메세지, isFromUser: 사용자인지 봇인지
 data class ChatMessage(
     val text: String,
     val isFromUser: Boolean,
