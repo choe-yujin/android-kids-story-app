@@ -20,9 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.timor.kidsstory.domain.model.Language
+import com.timor.kidsstory.domain.util.LanguageConstants
+import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 /**
  * 언어 선택 다이얼로그
@@ -91,6 +94,66 @@ private fun LanguageItem(
             text = language.displayName,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
+    }
+}
+
+@Preview(
+    name = "LanguageDialog - English Selected",
+    group = "LanguageDialog",
+    showBackground = true,
+    widthDp = 800,
+    heightDp = 360,
+    device = "spec:width=800dp,height=360dp,orientation=landscape"
+)
+@Composable
+fun LanguageDialogPreviewEnglish() {
+    KidsStoryTheme {
+        LanguageDialog(
+            languages = LanguageConstants.SUPPORTED_LANGUAGES,
+            selectedLanguage = LanguageConstants.ENGLISH,
+            onLanguageSelected = {},
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview(
+    name = "LanguageDialog - Korean Selected",
+    group = "LanguageDialog",
+    showBackground = true,
+    widthDp = 800,
+    heightDp = 360,
+    device = "spec:width=800dp,height=360dp,orientation=landscape"
+)
+@Composable
+fun LanguageDialogPreviewKorean() {
+    KidsStoryTheme {
+        LanguageDialog(
+            languages = LanguageConstants.SUPPORTED_LANGUAGES,
+            selectedLanguage = LanguageConstants.KOREAN,
+            onLanguageSelected = {},
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview(
+    name = "LanguageDialog - Tetum Selected",
+    group = "LanguageDialog",
+    showBackground = true,
+    widthDp = 800,
+    heightDp = 360,
+    device = "spec:width=800dp,height=360dp,orientation=landscape"
+)
+@Composable
+fun LanguageDialogPreviewTetum() {
+    KidsStoryTheme {
+        LanguageDialog(
+            languages = LanguageConstants.SUPPORTED_LANGUAGES,
+            selectedLanguage = LanguageConstants.TETUM,
+            onLanguageSelected = {},
+            onDismiss = {}
         )
     }
 }

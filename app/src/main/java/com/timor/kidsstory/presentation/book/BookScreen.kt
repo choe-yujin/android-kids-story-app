@@ -1,4 +1,4 @@
-package com.timor.kidsstory.presentation.reader
+package com.timor.kidsstory.presentation.book
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,15 +10,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.timor.kidsstory.presentation.reader.components.PageContent
-import com.timor.kidsstory.presentation.reader.components.pagetest.FlipPager
-import com.timor.kidsstory.presentation.reader.model.ReaderUiState
+import com.timor.kidsstory.presentation.book.components.PageContent
+import com.timor.kidsstory.presentation.book.components.pagetest.FlipPager
+import com.timor.kidsstory.presentation.book.model.BookUiState
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 // 읽기 화면 UI 컴포넌트
 @Composable
-fun StoryDetailScreen(
-    state: ReaderUiState,
+fun BookScreen(
+    state: BookUiState,
     onBackToBookshelf: () -> Unit,
     onPageChanged: (Int) -> Unit,
     onTextToSpeech: (List<String>) -> Unit,
@@ -35,7 +35,7 @@ fun StoryDetailScreen(
     }
 
     val pagerState = rememberPagerState(
-        initialPage = state.currentPage,
+        initialPage = state.currentPageIndex,
         pageCount = { state.pages.size }
     )
 
@@ -61,10 +61,10 @@ fun StoryDetailScreen(
 
 @Preview(showBackground = true, heightDp = 360, widthDp = 800)
 @Composable
-private fun StoryDetailScreenPreview() {
+private fun BookScreenPreview() {
     KidsStoryTheme {
-        StoryDetailScreen(
-            state = ReaderUiState(currentPage = 0, pages = listOf()),
+        BookScreen(
+            state = BookUiState(currentPageIndex = 0, pages = listOf()),
             onBackToBookshelf = {},
             onPageChanged = {},
             onTextToSpeech = {}

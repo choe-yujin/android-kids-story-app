@@ -22,9 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.Language
+import com.timor.kidsstory.domain.util.LanguageConstants
+import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 /**
  * 책장 화면 상단의 헤더 컴포넌트
@@ -95,5 +98,65 @@ fun BookshelfHeader(
                 onClick = onLanguageClick
             )
         }
+    }
+}
+
+@Preview(
+    name = "BookshelfHeader - English",
+    group = "BookshelfHeader",
+    showBackground = true,
+    backgroundColor = 0xFFFDD25A,
+    widthDp = 800,
+    device = "spec:width=800dp,height=360dp,orientation=landscape"
+)
+@Composable
+fun BookshelfHeaderPreviewEnglish() {
+    KidsStoryTheme {
+        BookshelfHeader(
+            currentLanguage = LanguageConstants.ENGLISH,
+            onMakerClick = {},
+            onLanguageClick = {},
+            onChatbotClick = {}
+        )
+    }
+}
+
+@Preview(
+    name = "BookshelfHeader - Korean",
+    group = "BookshelfHeader",
+    showBackground = true,
+    backgroundColor = 0xFFFDD25A,
+    widthDp = 800,
+    device = "spec:width=800dp,height=360dp,orientation=landscape"
+)
+@Composable
+fun BookshelfHeaderPreviewKorean() {
+    KidsStoryTheme {
+        BookshelfHeader(
+            currentLanguage = LanguageConstants.KOREAN,
+            onMakerClick = {},
+            onLanguageClick = {},
+            onChatbotClick = {}
+        )
+    }
+}
+
+@Preview(
+    name = "BookshelfHeader - Tetum",
+    group = "BookshelfHeader",
+    showBackground = true,
+    backgroundColor = 0xFFFDD25A,
+    widthDp = 800,
+    device = "spec:width=800dp,height=360dp,orientation=landscape"
+)
+@Composable
+fun BookshelfHeaderPreviewTetum() {
+    KidsStoryTheme {
+        BookshelfHeader(
+            currentLanguage = LanguageConstants.TETUM,
+            onMakerClick = {},
+            onLanguageClick = {},
+            onChatbotClick = {}
+        )
     }
 }
