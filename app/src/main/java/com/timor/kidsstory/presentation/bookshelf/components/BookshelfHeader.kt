@@ -37,7 +37,8 @@ import com.timor.kidsstory.domain.model.Language
 fun BookshelfHeader(
     currentLanguage: Language,
     onMakerClick: () -> Unit,
-    onLanguageClick: () -> Unit
+    onLanguageClick: () -> Unit,
+    onChatbotClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -79,7 +80,9 @@ fun BookshelfHeader(
             Icon(
                 painter = painterResource(id = R.drawable.ic_chatbot),
                 contentDescription = "Chatbot",
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable(onClick = onChatbotClick),
                 tint = Color.Unspecified
             )
 

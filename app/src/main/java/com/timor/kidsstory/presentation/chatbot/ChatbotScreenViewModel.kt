@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.google.ai.client.generativeai.type.content
-import com.timor.kidsstory.BuildConfig
+import com.timor.kidsstory.domain.util.SpeechRecognizerHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,47 +16,52 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ChatbotScreenViewModel @Inject constructor() : ViewModel() {
+class ChatbotScreenViewModel @Inject constructor(
+    private val chatModel: GenerativeModel,
+    private val speechRecognizerHelper: SpeechRecognizerHelper
+) : ViewModel() {
+
     private val _state = MutableStateFlow(ChatbotUiState())
     val state = _state.asStateFlow()
-
-    private val chatModel: GenerativeModel = GenerativeModel(modelName = "gemini-1.5-pro", apiKey = BuildConfig.GEMINI_API_KEY)
-
 
     // 사용자가 입력할때 마다 호출
     fun onInputChange(newInput: String) {
         _state.update { it.copy(currentInput = newInput) }
     }
 
-
     // 메시지 전송
-    fun sendMessage() {
-        val userMessage = state.value.currentInput
-        if (userMessage.isBlank()) return        // 내용이 비어있으면 return
+    fun sendMessage(inputText: String) {
+
+        if (inputText.isBlank()) return        // 내용이 비어있으면 return
+
+        // 중복 메시지 전송 방지 (마지막 메시지와 동일한지 확인)
+        if (state.value.messages.isNotEmpty() && state.value.messages.last().text == inputText) {
+            return
+        }
 
         val newMessage = ChatMessage(
-            text = userMessage, isFromUser = true,
+            text = inputText, isFromUser = true,
         )
 
-        _state.update {
-            it.copy(
-                messages = it.messages + newMessage, currentInput = "", isLoading = true, error = null,
-            )
+        _state.update { currentState ->
+            val updatedMessages = currentState.messages.toMutableList()
+            updatedMessages.add(newMessage)
+            currentState.copy(messages = updatedMessages, currentInput = "", isLoading = true, error = null)
         }
 
         viewModelScope.launch {
             try {
                 // Gemini의 응답을 받음
-                val response = receiveGeminiResponse(userMessage)
+                val response = receiveGeminiResponse(inputText)
 
                 val botMessage = ChatMessage(
                     text = response, isFromUser = false
                 )
 
-                _state.update {
-                    it.copy(
-                        messages = it.messages + botMessage, isLoading = false, error = null,
-                    )
+                _state.update { currentState ->
+                    val updatedMessages = currentState.messages.toMutableList()
+                    updatedMessages.add(botMessage)
+                    currentState.copy(messages = updatedMessages, isLoading = false, error = null)
                 }
             } catch (e: Exception) {
                 _state.update {
@@ -78,4 +83,45 @@ class ChatbotScreenViewModel @Inject constructor() : ViewModel() {
         val response: GenerateContentResponse = chatModel.generateContent(prompt)
         response.text ?: "NO Response"
     }
+
+
+    /*
+    * ------------ 음성 인식 관련 ---------------
+    * */
+    fun startVoiceSearch() {
+        _state.update { it.copy(isRecording = true) }
+
+        speechRecognizerHelper.startListening(object : SpeechStateCallback {
+            override fun onListeningStarted() {
+                // 음성 인식 시작시 처리 (UI 업데이트 처리 필요)
+                _state.update { it.copy(isRecording = true) }
+            }
+
+            override fun onListeningEnded() {
+                // 음성 인식 종료 시 처리
+                _state.update { it.copy(isRecording = false) }
+            }
+
+            override fun onSpeechResult(result: String) {
+                // 음성 인식 결과 받기
+                _state.update { it.copy(voiceInput = result) }
+                sendMessage(result)
+            }
+
+        })
+    }
+
+
+    fun stopVoiceSearch() {
+        _state.update { it.copy(isRecording = false) }
+        speechRecognizerHelper.stopListening()
+    }
+
+
+    fun cancelVoiceSearch() {
+        _state.update { it.copy(isRecording = false) }
+        speechRecognizerHelper.cancelListening()
+    }
+
+
 }
