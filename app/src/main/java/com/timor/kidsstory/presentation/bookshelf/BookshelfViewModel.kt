@@ -99,7 +99,7 @@ class BookshelfViewModel @Inject constructor(
                             it.copy(
                                 books = books.map { book ->
                                     BookCoverUiState(
-                                        imageUrl = book.coverImage,
+                                        imageUrl = book.coverImage, // 이미 정확한 경로 포함
                                         title = book.title,
                                         storyId = book.storyId
                                     )
