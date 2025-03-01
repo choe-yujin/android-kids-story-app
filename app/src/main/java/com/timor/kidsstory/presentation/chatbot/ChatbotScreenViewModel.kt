@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.google.ai.client.generativeai.type.content
-import com.timor.kidsstory.BuildConfig
+import com.timor.kidsstory.domain.util.SpeechRecognizerHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,12 +16,12 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ChatbotScreenViewModel @Inject constructor() : ViewModel() {
+class ChatbotScreenViewModel @Inject constructor(
+    private val chatModel: GenerativeModel,
+    private val speechRecognizerHelper: SpeechRecognizerHelper
+) : ViewModel() {
     private val _state = MutableStateFlow(ChatbotUiState())
     val state = _state.asStateFlow()
-
-    private val chatModel: GenerativeModel = GenerativeModel(modelName = "gemini-1.5-pro", apiKey = BuildConfig.GEMINI_API_KEY)
-
 
     // 사용자가 입력할때 마다 호출
     fun onInputChange(newInput: String) {
@@ -78,4 +78,26 @@ class ChatbotScreenViewModel @Inject constructor() : ViewModel() {
         val response: GenerateContentResponse = chatModel.generateContent(prompt)
         response.text ?: "NO Response"
     }
+
+
+    /*
+    * ------------ 음성 인식 관련 ---------------
+    * */
+    fun startVoiceSearch() {
+        speechRecognizerHelper.startListening { speechText ->
+            _state.update { it.copy(voiceInput = speechText) }
+        }
+    }
+
+
+    fun stopVoiceSearch() {
+        speechRecognizerHelper.stopListening()
+    }
+
+
+    fun cancelVoiceSearch() {
+        speechRecognizerHelper.cancelListening()
+    }
+
+
 }

@@ -4,7 +4,8 @@ data class ChatbotUiState(
     val messages: List<ChatMessage> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val currentInput: String = ""
+    val currentInput: String = "",
+    val voiceInput: String = ""
 )
 
 data class ChatMessage(
