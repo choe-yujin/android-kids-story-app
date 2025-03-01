@@ -6,4 +6,5 @@ package com.timor.kidsstory.domain.model
  */
 data class UserPreference(
     val languageCode: String = "en-ph", // 기본 언어 코드
+    val isMusicOn: Boolean = false      // 배경음 toggle 상태
 )
