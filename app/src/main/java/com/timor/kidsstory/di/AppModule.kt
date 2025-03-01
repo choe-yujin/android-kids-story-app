@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import com.google.ai.client.generativeai.GenerativeModel
+import com.timor.kidsstory.BuildConfig
 import com.timor.kidsstory.data.local.assets.AssetDataSource
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import dagger.Module
@@ -32,6 +34,14 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideChatModel(): GenerativeModel {
+        return GenerativeModel(
+            modelName = "gemini-1.5-pro", apiKey = BuildConfig.GEMINI_API_KEY
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideSpeechRecognizer(@ApplicationContext context: Context): SpeechRecognizer {
         return SpeechRecognizer.createSpeechRecognizer(context)
     }
@@ -44,4 +54,5 @@ object AppModule {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         }
     }
+
 }

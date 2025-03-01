@@ -26,6 +26,7 @@ class SpeechRecognizerHelper @Inject constructor(
                     onResultCallback?.invoke(it)
                 }
             }
+
             override fun onReadyForSpeech(p0: Bundle?) {}
 
             override fun onBeginningOfSpeech() {}
