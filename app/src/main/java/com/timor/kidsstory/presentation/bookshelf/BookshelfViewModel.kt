@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.timor.kidsstory.domain.model.Book
+import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.usecase.book.GetBooksUseCase
 import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
@@ -26,16 +27,16 @@ class BookshelfViewModel @Inject constructor(
     private var bookList = listOf<Book>()
 
     init {
-        loadStories()
+        loadStories(_state.value.currentLanguage.code)
     }
 
-    private fun loadStories() {
+    private fun loadStories(languageCode: String) {
         viewModelScope.launch {
             try {
                 _state.update { it.copy(isLoading = true, error = null) }
 
-                Log.d("BookshelfViewModel", "Loading books...")
-                val result = getBooksUseCase()
+                Log.d("BookshelfViewModel", "Loading books with language: $languageCode")
+                val result = getBooksUseCase(languageCode)
 
                 result.fold(
                     onSuccess = { books ->
@@ -90,5 +91,34 @@ class BookshelfViewModel @Inject constructor(
         val selectedBook = bookList[index]
         Log.d("BookshelfViewModel", "Book selected: ${selectedBook.storyId}")
         return selectedBook
+    }
+
+    // 언어 선택 다이얼로그 표시
+    fun showLanguageSelector() {
+        _state.update { it.copy(showLanguageDialog = true) }
+    }
+
+    // 언어 선택 다이얼로그 숨기기
+    fun hideLanguageSelector() {
+        _state.update { it.copy(showLanguageDialog = false) }
+    }
+
+    // 언어 변경
+    fun changeLanguage(language: Language) {
+        Log.d("BookshelfViewModel", "Changing language to: ${language.code}")
+
+        if (language.code != _state.value.currentLanguage.code) {
+            _state.update { it.copy(currentLanguage = language, showLanguageDialog = false) }
+            // 언어가 변경되면 해당 언어로 책 목록을 새로 로드
+            loadStories(language.code)
+        } else {
+            _state.update { it.copy(showLanguageDialog = false) }
+        }
+    }
+
+    // Maker 화면으로 이동
+    fun onMakerClick() {
+        // 추후 구현
+        Log.d("BookshelfViewModel", "Maker button clicked")
     }
 }
