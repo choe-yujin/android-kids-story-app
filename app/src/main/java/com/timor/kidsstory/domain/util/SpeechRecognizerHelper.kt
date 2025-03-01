@@ -14,16 +14,14 @@ class SpeechRecognizerHelper @Inject constructor(
     private val speechRecognizer: SpeechRecognizer,
     private val recognizerIntent: Intent
 ) {
-    private var onResultCallback: ((String) -> Unit)? = null
 
     // 음성 인식 시작
     fun startListening(onResult: (String) -> Unit) {
-        onResultCallback = onResult
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
             override fun onResults(results: Bundle?) {
                 val speechText = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
-                speechText?.let {
-                    onResultCallback?.invoke(it)
+                speechText?.let { text ->
+                    onResult.invoke(text)
                 }
             }
 
