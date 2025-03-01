@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.timor.kidsstory.presentation.reader.model.ImageSectionUiState
 
-// 읽기 화면 하위 컴포넌트들
 @Composable
 fun PageImageSection(
     state: ImageSectionUiState,
@@ -26,7 +25,7 @@ fun PageImageSection(
 ) {
     Box(modifier = modifier.fillMaxHeight()) {
         AsyncImage(
-            model = "file:///android_asset/images/${state.imageUrl}",
+            model = state.imageUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
