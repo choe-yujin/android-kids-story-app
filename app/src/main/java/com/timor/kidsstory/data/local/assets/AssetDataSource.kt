@@ -92,10 +92,4 @@ class AssetDataSource @Inject constructor(
             Result.failure(e)
         }
     }
-
-    // 이미지 파일 경로 생성
-    fun getImagePath(storyId: String, imageFileName: String): String {
-        val baseId = storyId.split("_").firstOrNull() ?: storyId
-        return "images/$baseId/$imageFileName"
-    }
 }

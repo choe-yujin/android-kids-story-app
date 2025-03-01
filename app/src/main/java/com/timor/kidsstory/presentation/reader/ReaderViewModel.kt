@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.usecase.book.GetBookDetailUseCase
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import com.timor.kidsstory.presentation.reader.model.PageUiState
@@ -15,7 +16,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// 읽기 화면 뷰모델
 @HiltViewModel
 class ReaderViewModel @Inject constructor(
     private val getBookDetailUseCase: GetBookDetailUseCase,
@@ -30,12 +30,13 @@ class ReaderViewModel @Inject constructor(
 
     private val storyId: String = savedStateHandle.get<String>("storyId") ?: ""
 
+    private var pages: List<Page> = emptyList()
+
     init {
         Log.d("ReaderViewModel", "Initializing with storyId: $storyId")
 
         if (storyId.isNotEmpty()) {
             loadStory(storyId)
-
         } else {
             Log.e("ReaderViewModel", "No storyId provided")
             _state.update { it.copy(error = "책 ID가 제공되지 않았습니다") }
@@ -59,19 +60,11 @@ class ReaderViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
 
             try {
-                // 기본 ID 추출 (예: 801_en-ph -> 801)
-                val baseId = storyId.split("_").firstOrNull() ?: storyId
-                Log.d("ReaderViewModel", "Loading story with base ID: $baseId")
-
-                // storyId 그대로 전달 (원본 ID 유지)
                 getBookDetailUseCase(storyId).fold(
-                    onSuccess = { storyDetail ->
-                        Log.d(
-                            "ReaderViewModel",
-                            "Story loaded with ${storyDetail.pages.size} pages"
-                        )
+                    onSuccess = { loadedPages ->
+                        Log.d("ReaderViewModel", "Story loaded with ${loadedPages.size} pages")
 
-                        if (storyDetail.pages.isEmpty()) {
+                        if (loadedPages.isEmpty()) {
                             Log.e("ReaderViewModel", "Story has no pages")
                             _state.update {
                                 it.copy(
@@ -82,15 +75,18 @@ class ReaderViewModel @Inject constructor(
                             return@fold
                         }
 
+                        // 페이지 정보 저장
+                        pages = loadedPages
+
                         _state.update {
                             it.copy(
                                 currentPage = 0,
-                                pages = storyDetail.pages.map { page ->
+                                pages = loadedPages.map { page ->
                                     PageUiState(
                                         imageUrl = page.imageUrl,
                                         texts = page.texts,
                                         pageNumber = page.pageNumber + 1,
-                                        totalPages = storyDetail.pages.size
+                                        totalPages = page.totalPages
                                     )
                                 },
                                 isLoading = false,
