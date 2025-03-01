@@ -1,4 +1,4 @@
-package com.timor.kidsstory.presentation.reader
+package com.timor.kidsstory.presentation.book
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.usecase.book.GetBookDetailUseCase
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
-import com.timor.kidsstory.presentation.reader.model.PageUiState
-import com.timor.kidsstory.presentation.reader.model.ReaderUiState
+import com.timor.kidsstory.presentation.book.model.BookUiState
+import com.timor.kidsstory.presentation.book.model.PageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,13 +17,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ReaderViewModel @Inject constructor(
+class BookViewModel @Inject constructor(
     private val getBookDetailUseCase: GetBookDetailUseCase,
     private val textToSpeechHelper: TextToSpeechHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(ReaderUiState())
+    private val _state = MutableStateFlow(BookUiState())
     val state = _state.asStateFlow()
+
+    // 페이지 상태 관리를 ViewModel로 이동
+    private val _currentPage = MutableStateFlow(0)
+    val currentPage = _currentPage.asStateFlow()
 
     private val _isTTSInitialized = MutableStateFlow(false)
     val isTTSInitialized = _isTTSInitialized.asStateFlow()
@@ -80,7 +84,6 @@ class ReaderViewModel @Inject constructor(
 
                         _state.update {
                             it.copy(
-                                currentPage = 0,
                                 pages = loadedPages.map { page ->
                                     PageUiState(
                                         imageUrl = page.imageUrl,
@@ -116,8 +119,10 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
-    fun onPageChanged(newPage: Int) {
-        _state.update { it.copy(currentPage = newPage) }
+    fun onPageChanged(newPageIndex: Int) {
+        _state.update {
+            it.copy(currentPageIndex = newPageIndex)
+        }
     }
 
     fun ttsSpeak(content: List<String>) {

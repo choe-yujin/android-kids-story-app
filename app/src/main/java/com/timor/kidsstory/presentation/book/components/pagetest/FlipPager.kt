@@ -1,4 +1,4 @@
-package com.timor.kidsstory.presentation.reader.components.pagetest
+package com.timor.kidsstory.presentation.book.components.pagetest
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
