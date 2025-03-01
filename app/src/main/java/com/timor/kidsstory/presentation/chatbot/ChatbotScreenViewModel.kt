@@ -30,12 +30,11 @@ class ChatbotScreenViewModel @Inject constructor(
 
 
     // 메시지 전송
-    fun sendMessage() {
-        val userMessage = state.value.currentInput
-        if (userMessage.isBlank()) return        // 내용이 비어있으면 return
+    fun sendMessage(inputText: String) {
+        if (inputText.isBlank()) return        // 내용이 비어있으면 return
 
         val newMessage = ChatMessage(
-            text = userMessage, isFromUser = true,
+            text = inputText, isFromUser = true,
         )
 
         _state.update {
@@ -47,7 +46,7 @@ class ChatbotScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 // Gemini의 응답을 받음
-                val response = receiveGeminiResponse(userMessage)
+                val response = receiveGeminiResponse(inputText)
 
                 val botMessage = ChatMessage(
                     text = response, isFromUser = false
@@ -84,19 +83,23 @@ class ChatbotScreenViewModel @Inject constructor(
     * ------------ 음성 인식 관련 ---------------
     * */
     fun startVoiceSearch() {
+        _state.update { it.copy(isLoading = true) }
         speechRecognizerHelper.startListening { speechText ->
-            _state.update { it.copy(voiceInput = speechText) }
+            _state.update { it.copy(voiceInput = speechText, isLoading = false) }
+            sendMessage(speechText)
         }
     }
 
 
     fun stopVoiceSearch() {
         speechRecognizerHelper.stopListening()
+        _state.update { it.copy(isLoading = false) }
     }
 
 
     fun cancelVoiceSearch() {
         speechRecognizerHelper.cancelListening()
+        _state.update { it.copy(isLoading = false) }
     }
 
 
