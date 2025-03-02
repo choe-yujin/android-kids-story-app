@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.timor.kidsstory.domain.util.LanguageConstants
+import com.timor.kidsstory.presentation.book.BookScreen
 import com.timor.kidsstory.presentation.bookshelf.BookshelfScreen
 import com.timor.kidsstory.presentation.bookshelf.BookshelfViewModel
 import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
@@ -22,6 +23,7 @@ import com.timor.kidsstory.presentation.reader.ReaderViewModel
 import com.timor.kidsstory.presentation.reader.StoryDetailScreen
 import com.timor.kidsstory.presentation.setting.SettingScreen
 import com.timor.kidsstory.presentation.setting.SettingViewModel
+import com.timor.kidsstory.presentation.book.BookViewModel
 
 // 네비게이션 그래프 정의
 sealed class Screen(val route: String) {
@@ -84,10 +86,10 @@ fun NavGraph(
             val storyId = backStackEntry.arguments?.getString("storyId") ?: ""
             Log.d("NavGraph", "Reading storyId from NavArgs: $storyId")
 
-            val viewModel: ReaderViewModel = hiltViewModel()
+            val viewModel: BookViewModel = hiltViewModel()
             val state by viewModel.state.collectAsState()
 
-            StoryDetailScreen(
+            BookScreen(
                 state = state,
                 onBackToBookshelf = {
                     navController.popBackStack()
