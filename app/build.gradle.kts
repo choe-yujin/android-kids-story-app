@@ -4,10 +4,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
+    // id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization") version "2.1.10"
-    //id("com.google.devtools.ksp")
+    id("com.google.devtools.ksp")
 }
 
 val localProperties = Properties().apply {
@@ -95,8 +95,8 @@ dependencies {
 
     // hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
 
@@ -109,13 +109,13 @@ dependencies {
     // room db
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
     testImplementation("androidx.room:room-testing:$room_version")
     implementation("androidx.room:room-paging:$room_version")
 
     // roomdb 사용시 Kotlin 컴파일러가 생성하는 메타데이터를 읽어들일수있도록 metadata-jvm 강제 업데이트
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:2.1.0")
+    //implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:2.1.0")
 
     // EPUB 추출기 모듈 추가(TODO: devimplementation으로 리팩토링)
     implementation(project(":epub-extractor"))
