@@ -18,4 +18,7 @@ interface UserPreferenceRepository {
 
     // 언어 코드만 업데이트
     suspend fun updateLanguage(languageCode: String)
+
+    // 배경음 설정 추가
+    suspend fun updateMusicSetting(isMusicOn: Boolean)
 }
