@@ -12,10 +12,16 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
@@ -25,11 +31,34 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 @Composable
 fun BookshelfScreen(
     state: BookshelfUiState,
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     onBookSelected: (Int) -> Unit,
     onMakerClick: () -> Unit,
     onLanguageClick: () -> Unit,
     onChatbotClick: () -> Unit,
+    onStartMusic: () -> Unit,
+    onStopMusic: () -> Unit,
 ) {
+    LaunchedEffect(state.isMusicOn) {
+        if (state.isMusicOn) {
+            onStartMusic()
+        } else {
+            onStopMusic()
+        }
+    }
+
+    // 백그라운드로 갔을경우 음악 정지
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_STOP -> onStopMusic() // 앱이 백그라운드로 가면 정지
+                Lifecycle.Event.ON_START -> if (state.isMusicOn) onStartMusic() // 다시 돌아오면 실행
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -77,7 +106,9 @@ private fun BookShelfScreenPreview() {
             onChatbotClick = {},
             onLanguageClick = {},
             onMakerClick = {},
-            onBookSelected = {}
+            onBookSelected = {},
+            onStartMusic = {},
+            onStopMusic = {},
         )
 
     }

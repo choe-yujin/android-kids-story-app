@@ -9,5 +9,6 @@ data class BookshelfUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val currentLanguage: Language = LanguageConstants.DEFAULT_LANGUAGE,
-    val showLanguageDialog: Boolean = false
+    val showLanguageDialog: Boolean = false,
+    val isMusicOn: Boolean = false,
 )

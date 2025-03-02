@@ -56,13 +56,4 @@ object AppModule {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         }
     }
-
-    @Provides
-    @Singleton
-    fun provideMediaPlayer(@ApplicationContext context: Context): MediaPlayer {
-        return MediaPlayer.create(context, R.raw.bgm_bookshelf).apply {
-            isLooping = true
-        }
-    }
-
 }
