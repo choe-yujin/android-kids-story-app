@@ -19,8 +19,6 @@ import com.timor.kidsstory.presentation.bookshelf.BookshelfViewModel
 import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreen
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreenViewModel
-import com.timor.kidsstory.presentation.reader.ReaderViewModel
-import com.timor.kidsstory.presentation.reader.StoryDetailScreen
 import com.timor.kidsstory.presentation.setting.SettingScreen
 import com.timor.kidsstory.presentation.setting.SettingViewModel
 import com.timor.kidsstory.presentation.book.BookViewModel
