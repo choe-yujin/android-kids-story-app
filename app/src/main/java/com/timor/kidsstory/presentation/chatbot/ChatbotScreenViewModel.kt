@@ -18,11 +18,17 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatbotScreenViewModel @Inject constructor(
     private val chatModel: GenerativeModel,
-    private val speechRecognizerHelper: SpeechRecognizerHelper
+    private val speechRecognizerHelper: SpeechRecognizerHelper?
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ChatbotUiState())
     val state = _state.asStateFlow()
+
+    override fun onCleared() {
+        super.onCleared()
+        _state.update { it.copy(isRecording = false) }
+        speechRecognizerHelper?.destroyListening()
+    }
 
     // 사용자가 입력할때 마다 호출
     fun onInputChange(newInput: String) {
@@ -89,6 +95,10 @@ class ChatbotScreenViewModel @Inject constructor(
     * ------------ 음성 인식 관련 ---------------
     * */
     fun startVoiceSearch() {
+        if (speechRecognizerHelper == null) {
+            _state.update { it.copy(isRecording = false, error = "음성 인식 초기화 불가") }
+            return
+        }
         _state.update { it.copy(isRecording = true) }
 
         speechRecognizerHelper.startListening(object : SpeechStateCallback {
@@ -114,14 +124,13 @@ class ChatbotScreenViewModel @Inject constructor(
 
     fun stopVoiceSearch() {
         _state.update { it.copy(isRecording = false) }
-        speechRecognizerHelper.stopListening()
+        speechRecognizerHelper?.stopListening()
     }
 
 
     fun cancelVoiceSearch() {
         _state.update { it.copy(isRecording = false) }
-        speechRecognizerHelper.cancelListening()
+        speechRecognizerHelper?.cancelListening()
     }
-
 
 }

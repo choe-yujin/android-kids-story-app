@@ -55,7 +55,7 @@ fun ChatbotScreen(
         onPermissionGranted = { hasPermission = true },
         onPermissionDenied = { hasPermission = false },
         onShowRationale = {
-            Toast.makeText(context.value, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context.value, "마이크 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
     )
 
@@ -78,7 +78,7 @@ fun ChatbotScreen(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
 
                 Button(
-                    onClick = viewModel::stopVoiceSearch,
+                    onClick = viewModel::cancelVoiceSearch,
                     colors = ButtonColors(
                         containerColor = Color(0xFFFDDE5A),
                         contentColor = Color.Black, disabledContentColor = Color.Gray, disabledContainerColor = Color.Gray
