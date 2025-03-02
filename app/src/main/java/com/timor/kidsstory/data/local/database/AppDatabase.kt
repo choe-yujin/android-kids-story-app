@@ -10,7 +10,7 @@ import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.data.local.database.entity.AvailableBookEntity
 import com.timor.kidsstory.data.local.database.entity.DownloadedBookEntity
 
-@Database(entities = [DownloadedBookEntity::class, AvailableBookEntity::class], version = 1)
+@Database(entities = [DownloadedBookEntity::class, AvailableBookEntity::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun downloadedBooksDao(): DownloadedBooksDao
