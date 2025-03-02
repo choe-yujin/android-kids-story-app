@@ -2,10 +2,12 @@ package com.timor.kidsstory.di
 
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import com.google.ai.client.generativeai.GenerativeModel
 import com.timor.kidsstory.BuildConfig
+import com.timor.kidsstory.R
 import com.timor.kidsstory.data.local.assets.AssetDataSource
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import dagger.Module
@@ -54,5 +56,4 @@ object AppModule {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         }
     }
-
 }

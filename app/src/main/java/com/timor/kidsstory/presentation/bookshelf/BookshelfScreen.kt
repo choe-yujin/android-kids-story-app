@@ -12,11 +12,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
 import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
@@ -27,11 +28,34 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 @Composable
 fun BookshelfScreen(
     state: BookshelfUiState,
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     onBookSelected: (Int) -> Unit,
     onMakerClick: () -> Unit,
     onLanguageClick: () -> Unit,
-    onChatbotClick: () -> Unit
+    onChatbotClick: () -> Unit,
+    onStartMusic: () -> Unit,
+    onStopMusic: () -> Unit,
 ) {
+    LaunchedEffect(state.isMusicOn) {
+        if (state.isMusicOn) {
+            onStartMusic()
+        } else {
+            onStopMusic()
+        }
+    }
+
+    // 백그라운드로 갔을경우 음악 정지
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_STOP -> onStopMusic() // 앱이 백그라운드로 가면 정지
+                Lifecycle.Event.ON_START -> if (state.isMusicOn) onStartMusic() // 다시 돌아오면 실행
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -70,28 +94,21 @@ fun BookshelfScreen(
     }
 }
 
-@Preview(
-    showBackground = true,
-    device = "spec:width=800dp,height=360dp,orientation=landscape"
-)
+
+@Preview(showBackground = true, widthDp = 600, heightDp = 300)
 @Composable
-fun BookshelfScreenPreview() {
+private fun BookShelfScreenPreview() {
     KidsStoryTheme {
         BookshelfScreen(
-            state = BookshelfUiState(
-                books = List(10) { index ->  // 책 10개로 테스트
-                    BookCoverUiState(
-                        imageUrl = "",  // 이미지 없는 테스트 데이터 회색 박스 출력
-                        title = "Sample Book $index",
-                        storyId = "preview_sample_$index"
-                    )
-                },
-                currentLanguage = LanguageConstants.TETUM
-            ),
-            onBookSelected = {},
-            onMakerClick = {},
+            state = BookshelfUiState(),
+            onChatbotClick = {},
             onLanguageClick = {},
-            onChatbotClick = {}
+            onMakerClick = {},
+            onBookSelected = {},
+            onStartMusic = {},
+            onStopMusic = {},
         )
+
     }
 }
+

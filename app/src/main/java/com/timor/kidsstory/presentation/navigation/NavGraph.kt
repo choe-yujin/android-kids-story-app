@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -18,6 +19,10 @@ import com.timor.kidsstory.presentation.bookshelf.BookshelfViewModel
 import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreen
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreenViewModel
+import com.timor.kidsstory.presentation.reader.ReaderViewModel
+import com.timor.kidsstory.presentation.reader.StoryDetailScreen
+import com.timor.kidsstory.presentation.setting.SettingScreen
+import com.timor.kidsstory.presentation.setting.SettingViewModel
 import com.timor.kidsstory.presentation.book.BookViewModel
 
 // 네비게이션 그래프 정의
@@ -28,6 +33,7 @@ sealed class Screen(val route: String) {
     }
 
     data object ChatBot : Screen(route = "chatbot")
+    data object Setting : Screen("setting")
 }
 
 @Composable
@@ -52,9 +58,15 @@ fun NavGraph(
                         }
                     }
                 },
-                onMakerClick = { viewModel.onMakerClick() },
+                onMakerClick = {
+                    navController.navigate(Screen.Setting.route) {
+                        launchSingleTop = true
+                    }
+                },
                 onLanguageClick = { viewModel.showLanguageSelector() },
-                onChatbotClick = { navController.navigate(Screen.ChatBot.route) }
+                onChatbotClick = { navController.navigate(Screen.ChatBot.route) },
+                onStartMusic = viewModel::startMusic,
+                onStopMusic = viewModel::stopMusic
             )
             // 언어 선택 다이얼로그 표시
             if (state.showLanguageDialog) {
@@ -92,12 +104,27 @@ fun NavGraph(
             route = Screen.ChatBot.route,
         ) { backStackEntry ->
             val viewModel: ChatbotScreenViewModel = hiltViewModel()
-            val state by viewModel.state.collectAsState()
+            val state by viewModel.state.collectAsStateWithLifecycle()
 
             ChatbotScreen(
                 viewModel = viewModel,
                 state = state
             )
+        }
+
+
+        // 설정 화면
+        composable(
+            route = Screen.Setting.route
+        ) { backStackEntry ->
+            val viewModel: SettingViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            SettingScreen(
+                state = state,
+                onSwitchClick = viewModel::toggleMusicSetting
+            ) {
+                navController.popBackStack()
+            }
         }
     }
 }

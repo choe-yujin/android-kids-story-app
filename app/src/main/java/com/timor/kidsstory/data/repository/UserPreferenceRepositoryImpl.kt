@@ -1,6 +1,7 @@
 package com.timor.kidsstory.data.repository
 
 import android.content.Context
+import android.provider.Contacts.SettingsColumns.KEY
 import androidx.core.content.edit
 import com.timor.kidsstory.domain.model.UserPreference
 import com.timor.kidsstory.domain.repository.UserPreferenceRepository
@@ -33,6 +34,7 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         // SharedPreferences에 저장
         prefs.edit {
             putString(KEY_LANGUAGE, userPreference.languageCode)
+            putBoolean(KEY_MUSIC_ON, userPreference.isMusicOn)
         }
 
         // 메모리 캐시 업데이트
@@ -45,10 +47,17 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         saveUserPreferences(newPrefs)
     }
 
+    override suspend fun updateMusicSetting(isMusicOn: Boolean) {
+        val currentPrefs = _userPreferencesFlow.value
+        val newPrefs = currentPrefs.copy(isMusicOn = isMusicOn)
+        saveUserPreferences(newPrefs)
+    }
+
     // SharedPreferences에서 설정 로드
     private fun loadFromPreferences(): UserPreference {
         return UserPreference(
-            languageCode = prefs.getString(KEY_LANGUAGE, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
+            languageCode = prefs.getString(KEY_LANGUAGE, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE,
+            isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, false)
         )
     }
 
@@ -56,5 +65,6 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         private const val PREFERENCES_NAME = "tetum_dreams_preferences"
         private const val KEY_LANGUAGE = "language_code"
         private const val DEFAULT_LANGUAGE = "en-ph"
+        private const val KEY_MUSIC_ON = "music_on"
     }
 }

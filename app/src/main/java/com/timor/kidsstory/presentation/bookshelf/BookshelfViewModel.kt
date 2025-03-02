@@ -5,10 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.model.Language
+import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
 import com.timor.kidsstory.domain.usecase.book.GetBooksUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
 import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
+import com.timor.kidsstory.domain.util.MusicManager
 import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +26,9 @@ import javax.inject.Inject
 class BookshelfViewModel @Inject constructor(
     private val getBooksUseCase: GetBooksUseCase,
     private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
-    private val saveUserPreferenceUseCase: SaveUserPreferenceUseCase
+    private val saveUserPreferenceUseCase: SaveUserPreferenceUseCase,
+    private val musicSettingUseCase: MusicSettingUseCase,
+    private val musicManager: MusicManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
@@ -37,6 +41,23 @@ class BookshelfViewModel @Inject constructor(
         loadInitialData()
         // 이후 사용자 설정 변경 관찰
         observeUserPreference()
+
+        // 스위치 상태를 불러오고 배경음 재생 여부 판단
+        loadMusicSetting()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        musicManager.release()
+    }
+
+
+    private fun loadMusicSetting() {
+        viewModelScope.launch {
+            musicSettingUseCase.isMusicOn.collect { isMusicOn ->
+                _state.update { it.copy(isMusicOn = isMusicOn) }
+            }
+        }
     }
 
     private fun loadInitialData() {
@@ -172,5 +193,14 @@ class BookshelfViewModel @Inject constructor(
     fun onMakerClick() {
         // 추후 구현
         Log.d("BookshelfViewModel", "Maker button clicked")
+    }
+
+    // 음악 재생 및 정지
+    fun startMusic() {
+        musicManager.startMusic()
+    }
+
+    fun stopMusic() {
+         musicManager.stopMusic()
     }
 }
