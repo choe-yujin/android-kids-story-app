@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer
 import com.timor.kidsstory.presentation.chatbot.SpeechStateCallback
-import com.timor.kidsstory.presentation.chatbot.VoiceRecognitionState
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,7 +12,7 @@ import javax.inject.Singleton
 // 음성 인식 객체
 @Singleton
 class SpeechRecognizerHelper @Inject constructor(
-    private val speechRecognizer: SpeechRecognizer,
+    private val speechRecognizer: SpeechRecognizer?,
     private val recognizerIntent: Intent
 ) {
 
@@ -21,7 +20,7 @@ class SpeechRecognizerHelper @Inject constructor(
     fun startListening(callback: SpeechStateCallback) {
         // Listening 상태로 업데이트
 
-        speechRecognizer.setRecognitionListener(object : RecognitionListener {
+        speechRecognizer?.setRecognitionListener(object : RecognitionListener {
             override fun onResults(results: Bundle?) {
                 val speechText = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
                 speechText?.let { text ->
@@ -54,16 +53,20 @@ class SpeechRecognizerHelper @Inject constructor(
             override fun onEvent(p0: Int, p1: Bundle?) {}
 
         })
-        speechRecognizer.startListening(recognizerIntent)
+        speechRecognizer?.startListening(recognizerIntent)
     }
 
     // 음성 인식 멈춤
     fun stopListening() {
-        speechRecognizer.stopListening()
+        speechRecognizer?.stopListening()
     }
 
     // 음성 인식 취소
     fun cancelListening() {
-        speechRecognizer.cancel()
+        speechRecognizer?.cancel()
+    }
+
+    fun destroyListening() {
+        speechRecognizer?.destroy()
     }
 }
