@@ -28,7 +28,9 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 @Composable
 fun SettingScreen(
-    modifier: Modifier = Modifier,
+    state: SettingUiState,
+    isMusicOn: Boolean,
+    onSwitchClick: () -> Unit = {},
     onBackButtonClick: () -> Unit = {},
 ) {
     Box(
@@ -82,8 +84,10 @@ fun SettingScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Switch(
-                    checked = false,
-                    onCheckedChange = { }
+                    checked = isMusicOn,
+                    onCheckedChange = {
+                        onSwitchClick()
+                    }
                 )
             }
 
@@ -98,6 +102,9 @@ fun SettingScreen(
 @Composable
 fun SettingScreenPreview() {
     KidsStoryTheme {
-        SettingScreen()
+        SettingScreen(
+            state = SettingUiState(),
+            isMusicOn = false
+        )
     }
 }
