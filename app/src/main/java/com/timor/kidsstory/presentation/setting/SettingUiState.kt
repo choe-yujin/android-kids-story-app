@@ -1,4 +1,5 @@
 package com.timor.kidsstory.presentation.setting
 
-class SettingUiState {
-}
+data class SettingUiState(
+    val isMusicOn: Boolean = false
+)

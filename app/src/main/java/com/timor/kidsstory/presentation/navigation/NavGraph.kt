@@ -20,7 +20,6 @@ import com.timor.kidsstory.presentation.chatbot.ChatbotScreen
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreenViewModel
 import com.timor.kidsstory.presentation.reader.ReaderViewModel
 import com.timor.kidsstory.presentation.reader.StoryDetailScreen
-import com.timor.kidsstory.presentation.setting.MusicSettingViewModel
 import com.timor.kidsstory.presentation.setting.SettingScreen
 import com.timor.kidsstory.presentation.setting.SettingViewModel
 
@@ -63,7 +62,9 @@ fun NavGraph(
                     }
                 },
                 onLanguageClick = { viewModel.showLanguageSelector() },
-                onChatbotClick = { navController.navigate(Screen.ChatBot.route) }
+                onChatbotClick = { navController.navigate(Screen.ChatBot.route) },
+                onStartMusic = viewModel::startMusic,
+                onStopMusic = viewModel::stopMusic
             )
             // 언어 선택 다이얼로그 표시
             if (state.showLanguageDialog) {
@@ -115,13 +116,10 @@ fun NavGraph(
             route = Screen.Setting.route
         ) { backStackEntry ->
             val viewModel: SettingViewModel = hiltViewModel()
-            val musicSettingViewModel: MusicSettingViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
-            val isMusicOn by musicSettingViewModel.isMusicOn.collectAsStateWithLifecycle()
             SettingScreen(
                 state = state,
-                isMusicOn = isMusicOn,
-                onSwitchClick = musicSettingViewModel::toggleMusicSetting
+                onSwitchClick = viewModel::toggleMusicSetting
             ) {
                 navController.popBackStack()
             }
