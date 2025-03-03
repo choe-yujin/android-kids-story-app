@@ -7,6 +7,7 @@ data class ChatbotUiState(
     val currentInput: String = "",
     val voiceInput: String = "",
     val isRecording: Boolean = false,   // 음성 인식 진행 여부
+    val isShowDialog: Boolean = false,
 )
 
 // text: 메세지, isFromUser: 사용자인지 봇인지

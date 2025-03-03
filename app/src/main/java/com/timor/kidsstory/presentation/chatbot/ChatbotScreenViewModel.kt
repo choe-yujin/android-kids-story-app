@@ -18,19 +18,25 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatbotScreenViewModel @Inject constructor(
     private val chatModel: GenerativeModel,
-    private val speechRecognizerHelper: SpeechRecognizerHelper
+    private val speechRecognizerHelper: SpeechRecognizerHelper?
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ChatbotUiState())
     val state = _state.asStateFlow()
 
+    override fun onCleared() {
+        super.onCleared()
+        _state.update { it.copy(isRecording = false) }
+        speechRecognizerHelper?.destroyListening()
+    }
+
     // 사용자가 입력할때 마다 호출
-    fun onInputChange(newInput: String) {
+    private fun onInputChange(newInput: String) {
         _state.update { it.copy(currentInput = newInput) }
     }
 
     // 메시지 전송
-    fun sendMessage(inputText: String) {
+    private fun sendMessage(inputText: String) {
 
         if (inputText.isBlank()) return        // 내용이 비어있으면 return
 
@@ -55,7 +61,7 @@ class ChatbotScreenViewModel @Inject constructor(
                 val response = receiveGeminiResponse(inputText)
 
                 val botMessage = ChatMessage(
-                    text = response, isFromUser = false
+                    text = response.trim(), isFromUser = false
                 )
 
                 _state.update { currentState ->
@@ -75,7 +81,6 @@ class ChatbotScreenViewModel @Inject constructor(
         }
     }
 
-
     // gemini의 응답을 받음
     private suspend fun receiveGeminiResponse(userMessage: String): String = withContext(Dispatchers.IO) {
         val prompt = content { text(userMessage) }
@@ -88,7 +93,20 @@ class ChatbotScreenViewModel @Inject constructor(
     /*
     * ------------ 음성 인식 관련 ---------------
     * */
-    fun startVoiceSearch() {
+    private fun showVoiceDialog(isShow: Boolean) {
+        _state.update {
+            it.copy(
+                isShowDialog = isShow
+            )
+        }
+    }
+
+
+    private fun startVoiceSearch() {
+        if (speechRecognizerHelper == null) {
+            _state.update { it.copy(isRecording = false, error = "음성 인식 초기화 불가") }
+            return
+        }
         _state.update { it.copy(isRecording = true) }
 
         speechRecognizerHelper.startListening(object : SpeechStateCallback {
@@ -99,12 +117,12 @@ class ChatbotScreenViewModel @Inject constructor(
 
             override fun onListeningEnded() {
                 // 음성 인식 종료 시 처리
-                _state.update { it.copy(isRecording = false) }
+                _state.update { it.copy(isRecording = false, isShowDialog = false) }
             }
 
             override fun onSpeechResult(result: String) {
                 // 음성 인식 결과 받기
-                _state.update { it.copy(voiceInput = result) }
+                _state.update { it.copy(voiceInput = result, isShowDialog = false) }
                 sendMessage(result)
             }
 
@@ -114,14 +132,37 @@ class ChatbotScreenViewModel @Inject constructor(
 
     fun stopVoiceSearch() {
         _state.update { it.copy(isRecording = false) }
-        speechRecognizerHelper.stopListening()
+        speechRecognizerHelper?.stopListening()
     }
 
 
     fun cancelVoiceSearch() {
         _state.update { it.copy(isRecording = false) }
-        speechRecognizerHelper.cancelListening()
+        speechRecognizerHelper?.cancelListening()
     }
 
+
+    // Action에 따른 동작 정의
+    fun onAction(action: ChatbotAction) {
+        when (action) {
+            is ChatbotAction.ShowDialog -> {
+                showVoiceDialog(action.isShow)
+            }
+
+            is ChatbotAction.SendMessage -> {
+                sendMessage(action.message)
+            }
+
+            is ChatbotAction.VoiceSearch -> {
+                startVoiceSearch()
+            }
+
+            is ChatbotAction.InputChange -> {
+                onInputChange(action.message)
+            }
+
+            is ChatbotAction.BackScreen -> {}
+        }
+    }
 
 }
