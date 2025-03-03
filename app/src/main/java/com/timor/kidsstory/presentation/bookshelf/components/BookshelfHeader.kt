@@ -2,7 +2,6 @@ package com.timor.kidsstory.presentation.bookshelf.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,29 +10,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.util.LanguageConstants
-import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 /**
  * 책장 화면 상단의 헤더 컴포넌트
  *
- * @param onMakerClick Maker 버튼 클릭 이벤트
+ * @param onSettingClick setting 버튼 클릭 이벤트
  * @param currentLanguage 현재 선택된 언어
  * @param onLanguageClick 언어 선택 버튼 클릭 이벤트
  */
