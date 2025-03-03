@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,7 +70,10 @@ fun ChatbotScreen(
             cancelVoiceSearch = { onAction(ChatbotAction.ShowDialog(false)) },
             onCloseClick = { onAction(ChatbotAction.ShowDialog(false)) },
         )
-        onAction(ChatbotAction.VoiceSearch)
+        // 중복 실행 방지
+        LaunchedEffect(Unit) {
+            onAction(ChatbotAction.VoiceSearch)
+        }
     }
 
     Column(

@@ -117,12 +117,12 @@ class ChatbotScreenViewModel @Inject constructor(
 
             override fun onListeningEnded() {
                 // 음성 인식 종료 시 처리
-                _state.update { it.copy(isRecording = false) }
+                _state.update { it.copy(isRecording = false, isShowDialog = false) }
             }
 
             override fun onSpeechResult(result: String) {
                 // 음성 인식 결과 받기
-                _state.update { it.copy(voiceInput = result) }
+                _state.update { it.copy(voiceInput = result, isShowDialog = false) }
                 sendMessage(result)
             }
 
