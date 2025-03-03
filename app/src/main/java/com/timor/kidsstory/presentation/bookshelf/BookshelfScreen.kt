@@ -27,6 +27,7 @@ import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
 import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
+import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 // 책장 화면 UI 컴포넌트
@@ -59,7 +60,7 @@ fun BookshelfScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFF9E0)) // 전체 배경색 적용
+            .background(AppColors.primary50) // 전체 배경색 적용
     ) {
         Column(
             modifier = Modifier

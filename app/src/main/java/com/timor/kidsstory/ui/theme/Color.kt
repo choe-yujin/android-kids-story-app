@@ -12,6 +12,7 @@ object AppColors {
     val primary500 = Color(0xFFE3C44A)
     val primary600 = Color(0xFFC9A93B)
     val primary700 = Color(0xFFAF8F2D)
+    val primary800 = Color(0xFF624407)
     val primary900 = Color(0xFF7C5C12)
 
     // Secondary colors
