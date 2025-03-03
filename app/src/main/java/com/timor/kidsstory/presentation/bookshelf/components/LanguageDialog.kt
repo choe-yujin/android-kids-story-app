@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.util.LanguageConstants
+import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 /**
@@ -46,12 +47,12 @@ fun LanguageDialog(
             Column(
                 modifier = Modifier.padding(20.dp)
             ) {
-                Text(
-                    text = "Select Language",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+//                Text(
+//                    text = "Select Language",
+//                    style = AppTextStyles.pretendardXLargeSemiBold,
+//                    fontWeight = FontWeight.Bold,
+//                    modifier = Modifier.padding(bottom = 16.dp)
+//                )
 
                 languages.forEach { language ->
                     LanguageItem(
@@ -92,7 +93,7 @@ private fun LanguageItem(
         // 언어 이름
         Text(
             text = language.displayName,
-            style = MaterialTheme.typography.bodyLarge,
+            style = AppTextStyles.pretendardXLargeSemiBold,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
         )
     }
