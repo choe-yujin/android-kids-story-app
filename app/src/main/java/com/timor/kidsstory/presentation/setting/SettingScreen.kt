@@ -29,8 +29,7 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 @Composable
 fun SettingScreen(
     state: SettingUiState,
-    onSwitchClick: () -> Unit = {},
-    onBackButtonClick: () -> Unit = {},
+    onAction: (SettingAction) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -48,7 +47,9 @@ fun SettingScreen(
             ) {
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterStart),
-                    onClick = onBackButtonClick
+                    onClick = {
+                        onAction(SettingAction.BackButtonClick)
+                    }
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_back),
@@ -84,8 +85,8 @@ fun SettingScreen(
 
                 Switch(
                     checked = state.isMusicOn,
-                    onCheckedChange = {
-                        onSwitchClick()
+                    onCheckedChange = { isMusicOn ->
+                        onAction(SettingAction.SwitchClick(isMusicOn))
                     }
                 )
             }
@@ -103,6 +104,7 @@ fun SettingScreenPreview() {
     KidsStoryTheme {
         SettingScreen(
             state = SettingUiState(),
+            onAction = {}
         )
     }
 }

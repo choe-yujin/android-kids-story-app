@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,9 +18,7 @@ import com.timor.kidsstory.presentation.bookshelf.BookshelfScreen
 import com.timor.kidsstory.presentation.bookshelf.BookshelfViewModel
 import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreenRoot
-import com.timor.kidsstory.presentation.chatbot.ChatbotScreenViewModel
-import com.timor.kidsstory.presentation.setting.SettingScreen
-import com.timor.kidsstory.presentation.setting.SettingViewModel
+import com.timor.kidsstory.presentation.setting.SettingScreenRoot
 
 // 네비게이션 그래프 정의
 sealed class Screen(val route: String) {
@@ -101,10 +98,7 @@ fun NavGraph(
         composable(
             route = Screen.ChatBot.route,
         ) { backStackEntry ->
-            val viewModel: ChatbotScreenViewModel = hiltViewModel()
-
             ChatbotScreenRoot(
-                viewModel = viewModel,
                 onBack = {
                     navController.popBackStack()
                 }
@@ -116,14 +110,11 @@ fun NavGraph(
         composable(
             route = Screen.Setting.route
         ) { backStackEntry ->
-            val viewModel: SettingViewModel = hiltViewModel()
-            val state by viewModel.state.collectAsStateWithLifecycle()
-            SettingScreen(
-                state = state,
-                onSwitchClick = viewModel::toggleMusicSetting
-            ) {
-                navController.popBackStack()
-            }
+            SettingScreenRoot(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
