@@ -201,6 +201,6 @@ class BookshelfViewModel @Inject constructor(
     }
 
     fun stopMusic() {
-         musicManager.stopMusic()
+        musicManager.stopMusic()
     }
 }

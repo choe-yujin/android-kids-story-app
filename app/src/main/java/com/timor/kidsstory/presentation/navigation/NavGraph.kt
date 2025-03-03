@@ -14,14 +14,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.book.BookScreen
+import com.timor.kidsstory.presentation.book.BookViewModel
 import com.timor.kidsstory.presentation.bookshelf.BookshelfScreen
 import com.timor.kidsstory.presentation.bookshelf.BookshelfViewModel
 import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
-import com.timor.kidsstory.presentation.chatbot.ChatbotScreen
+import com.timor.kidsstory.presentation.chatbot.ChatbotScreenRoot
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreenViewModel
 import com.timor.kidsstory.presentation.setting.SettingScreen
 import com.timor.kidsstory.presentation.setting.SettingViewModel
-import com.timor.kidsstory.presentation.book.BookViewModel
 
 // 네비게이션 그래프 정의
 sealed class Screen(val route: String) {
@@ -102,11 +102,12 @@ fun NavGraph(
             route = Screen.ChatBot.route,
         ) { backStackEntry ->
             val viewModel: ChatbotScreenViewModel = hiltViewModel()
-            val state by viewModel.state.collectAsStateWithLifecycle()
 
-            ChatbotScreen(
+            ChatbotScreenRoot(
                 viewModel = viewModel,
-                state = state
+                onBack = {
+                    navController.popBackStack()
+                }
             )
         }
 
