@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 // 메세지를 박스 형태로 제작
@@ -41,7 +42,9 @@ fun UserMessageBox(
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(vertical = 8.dp, horizontal = 36.dp),
-            text = text
+            text = text,
+            style = AppTextStyles.gummyMediumSemibold, // 왜 폰트는 적용 안됨?
+            color = AppColors.neutralWhite
         )
 
         Spacer(modifier = Modifier.width(8.dp))

@@ -66,6 +66,15 @@ object AppTextStyles {
 
     // Sour Gummy 스타일
 
+    // sm
+    // 채팅창 텍스트
+    val gummySmall = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 32.sp,
+        fontWeight = FontWeight.W500,
+        fontFamily = sourGummyFamily
+    )
+
     // sm/semibold
     // 카드 타이틀 / 포인트
     val gummySmallSemibold = TextStyle(

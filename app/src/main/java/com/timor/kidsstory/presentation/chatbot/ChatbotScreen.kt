@@ -44,6 +44,7 @@ import com.timor.kidsstory.presentation.chatbot.components.BotMessageBox
 import com.timor.kidsstory.presentation.chatbot.components.UserMessageBox
 import com.timor.kidsstory.presentation.chatbot.components.VoiceDialog
 import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 @Composable
@@ -135,7 +136,10 @@ fun ChatbotScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = AppColors.neutralWhite, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                .background(
+                    color = AppColors.neutralWhite,
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                )
                 .padding(vertical = 6.dp, horizontal = 48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -145,8 +149,13 @@ fun ChatbotScreen(
                     onAction(ChatbotAction.InputChange(newInput))
                 },
                 placeholder = {
-                    Text(text = "Type a message")
+                    Text(
+                        text = "Type a message",
+                        style = AppTextStyles.gummyMediumSemibold,
+                        color = AppColors.neutral400
+                    )
                 },
+                textStyle = AppTextStyles.gummyMediumSemibold, // 입력 텍스트에 스타일 적용 안됨
                 modifier = Modifier
                     .weight(1f),
                 colors = TextFieldDefaults.colors(
@@ -156,6 +165,8 @@ fun ChatbotScreen(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
+                    focusedTextColor = AppColors.neutral900,
+                    unfocusedTextColor = AppColors.neutral900,
                 ),
                 shape = RoundedCornerShape(1000.dp),
             )
