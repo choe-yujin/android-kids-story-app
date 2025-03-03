@@ -24,6 +24,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.timor.kidsstory.R
 import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 @Composable
@@ -43,7 +44,9 @@ fun VoiceDialog(
         )
         {
             Text(
-                text = "Voice recognition is in progress..."
+                text = "Voice recognition is in progress...",
+                style = AppTextStyles.gummyMediumSemibold,
+                color = AppColors.neutralWhite
             )
 
             Spacer(modifier = Modifier.height(22.dp))
@@ -65,7 +68,9 @@ fun VoiceDialog(
             ) {
                 Text(
                     modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp),
-                    text = "Stop voice"
+                    text = "Stop voice",
+                    color = AppColors.neutralWhite,
+                    style = AppTextStyles.gummyMediumSemibold
                 )
             }
         }

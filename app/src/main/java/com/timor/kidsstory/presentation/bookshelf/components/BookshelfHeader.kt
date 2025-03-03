@@ -46,33 +46,28 @@ fun BookshelfHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(56.dp)
             .background(Color(0xFFFDD25A))
             .padding(horizontal = 48.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Maker 버튼
-        Box(
+        // info 버튼
+        Icon(
+            painter = painterResource(id = R.drawable.ic_setting),
+            contentDescription = "setting",
             modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .clickable(onClick = onMakerClick)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Maker",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
-            )
-        }
+                .size(32.dp),
+            tint = Color.Unspecified
+        )
 
         // 앱 제목
-        Text(
-            text = "TetumDream",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF121212)
+        Icon(
+            painter = painterResource(id = R.drawable.ic_logo),
+            contentDescription = "App title",
+            modifier = Modifier
+                .size(96.dp),
+            tint = Color.Unspecified
         )
 
         // 챗봇 아이콘과 언어 선택 버튼을 묶는 Row
