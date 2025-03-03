@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -81,12 +82,13 @@ fun ChatbotScreen(
             .fillMaxSize()
             .background(Color(0xFFE5F2FF))
             .navigationBarsPadding()
+
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .background(color = Color(0xFF2A78DC))
+                .background(color = AppColors.blue600)
                 .padding(horizontal = 38.dp)
 
         ) {
@@ -130,10 +132,6 @@ fun ChatbotScreen(
             }
         }
 
-        if (state.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-        }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -145,6 +143,9 @@ fun ChatbotScreen(
                 value = state.currentInput,
                 onValueChange = { newInput ->
                     onAction(ChatbotAction.InputChange(newInput))
+                },
+                placeholder = {
+                    Text(text = "Type a message")
                 },
                 modifier = Modifier
                     .weight(1f),
@@ -170,6 +171,14 @@ fun ChatbotScreen(
                     tint = Color.Unspecified
                 )
             }
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (state.isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }
 }
