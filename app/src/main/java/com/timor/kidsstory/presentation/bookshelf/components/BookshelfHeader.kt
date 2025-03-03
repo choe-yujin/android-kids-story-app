@@ -39,7 +39,7 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 @Composable
 fun BookshelfHeader(
     currentLanguage: Language,
-    onMakerClick: () -> Unit,
+    onSettingClick: () -> Unit,
     onLanguageClick: () -> Unit,
     onChatbotClick: () -> Unit,
 ) {
@@ -57,7 +57,7 @@ fun BookshelfHeader(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.White)
-                .clickable(onClick = onMakerClick)
+                .clickable(onClick = onSettingClick)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Text(
@@ -114,7 +114,7 @@ fun BookshelfHeaderPreviewEnglish() {
     KidsStoryTheme {
         BookshelfHeader(
             currentLanguage = LanguageConstants.ENGLISH,
-            onMakerClick = {},
+            onSettingClick = {},
             onLanguageClick = {},
             onChatbotClick = {}
         )
@@ -134,9 +134,9 @@ fun BookshelfHeaderPreviewKorean() {
     KidsStoryTheme {
         BookshelfHeader(
             currentLanguage = LanguageConstants.KOREAN,
-            onMakerClick = {},
+            onSettingClick = {},
             onLanguageClick = {},
-            onChatbotClick = {}
+            onChatbotClick = {},
         )
     }
 }
@@ -154,7 +154,7 @@ fun BookshelfHeaderPreviewTetum() {
     KidsStoryTheme {
         BookshelfHeader(
             currentLanguage = LanguageConstants.TETUM,
-            onMakerClick = {},
+            onSettingClick = {},
             onLanguageClick = {},
             onChatbotClick = {}
         )
