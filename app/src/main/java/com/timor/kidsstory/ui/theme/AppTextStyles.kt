@@ -19,6 +19,12 @@ object AppTextStyles {
     )
 
     // Pretendard 스타일
+    val pretendardVSmall = TextStyle(
+        fontSize = 10.sp,
+        lineHeight = 12.sp,
+        fontWeight = FontWeight.W400,
+        fontFamily = pretendardFamily
+    )
     // sm/medium
     // 총 페이지 쪽수
     val pretendardSmallMedium = TextStyle(
@@ -81,7 +87,7 @@ object AppTextStyles {
         fontSize = 16.sp,
         lineHeight = 32.sp,
         fontWeight = FontWeight.W700,
-        fontFamily = sourGummyFamily
+        fontFamily = sourGummyItalicFamily
     )
 
     // vsm/medium
