@@ -19,9 +19,7 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 @Composable
 fun BookScreen(
     state: BookUiState,
-    onBackToBookshelf: () -> Unit,
-    onPageChanged: (Int) -> Unit,
-    onTextToSpeech: (List<String>) -> Unit,
+    onAction: (BookAction) -> Unit,
 ) {
     if (state.pages.isEmpty()) {
         // 로딩 상태나 빈 상태 표시
@@ -40,7 +38,7 @@ fun BookScreen(
     )
 
     LaunchedEffect(pagerState.currentPage) {
-        onPageChanged(pagerState.currentPage)
+        onAction(BookAction.PageChange(pagerState.currentPage))
     }
 
     // Flip 효과를 넣은 Horizontal Pager
@@ -50,10 +48,12 @@ fun BookScreen(
     ) { pageIndex ->
         PageContent(
             state = state.pages[pageIndex],
-            onBackToBookshelf = onBackToBookshelf,
+            onBackToBookshelf = {
+                onAction(BookAction.BackBookShelf)
+            },
             modifier = Modifier.fillMaxSize(),
             onTextToSpeech = { content ->
-                onTextToSpeech(content)
+                onAction(BookAction.TextToSpeak(content))
             }
         )
     }
@@ -65,9 +65,7 @@ private fun BookScreenPreview() {
     KidsStoryTheme {
         BookScreen(
             state = BookUiState(currentPageIndex = 0, pages = listOf()),
-            onBackToBookshelf = {},
-            onPageChanged = {},
-            onTextToSpeech = {}
+            onAction = {}
         )
     }
 }

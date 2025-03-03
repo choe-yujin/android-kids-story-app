@@ -119,17 +119,25 @@ class BookViewModel @Inject constructor(
         }
     }
 
-    fun onPageChanged(newPageIndex: Int) {
+    private fun onPageChanged(newPageIndex: Int) {
         _state.update {
             it.copy(currentPageIndex = newPageIndex)
         }
     }
 
-    fun ttsSpeak(content: List<String>) {
+    private fun ttsSpeak(content: List<String>) {
         if (_isTTSInitialized.value) {
             content.forEach { text ->
                 textToSpeechHelper.speak(text)
             }
+        }
+    }
+
+    fun onAction(action: BookAction) {
+        when (action) {
+            is BookAction.TextToSpeak -> ttsSpeak(action.textList)
+            BookAction.BackBookShelf -> {}
+            is BookAction.PageChange -> onPageChanged(action.page)
         }
     }
 }
