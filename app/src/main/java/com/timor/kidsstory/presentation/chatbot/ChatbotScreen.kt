@@ -89,7 +89,7 @@ fun ChatbotScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE5F2FF))
+            .background(AppColors.blue50)
             .navigationBarsPadding()
 
     ) {
@@ -117,7 +117,9 @@ fun ChatbotScreen(
             Icon(
                 painter = painterResource(R.drawable.chat_logo),
                 contentDescription = null,
-                modifier = Modifier.align(Alignment.Center),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(72.dp),
                 tint = Color.Unspecified,
             )
         }
