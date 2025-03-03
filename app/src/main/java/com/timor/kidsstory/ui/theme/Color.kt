@@ -49,11 +49,13 @@ object AppColors {
     val green700 = Color(0xFF237D38)
 
     // Blue colors
-    val blue50 = Color(0xFFE4F2FF)
+    val blue50 = Color(0xFFE5F2FF)
     val blue100 = Color(0xFFB8DBFF)
     val blue400 = Color(0xFF2E93FF)
     val blue500 = Color(0xFF5A98FD)
+    val blue600 = Color(0xFF2A78DC)
     val blue700 = Color(0xFF1E5FAD)
+
 
     // Purple colors
     val purple700 = Color(0xFF67387A)

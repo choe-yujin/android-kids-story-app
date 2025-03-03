@@ -31,12 +31,12 @@ class ChatbotScreenViewModel @Inject constructor(
     }
 
     // 사용자가 입력할때 마다 호출
-    fun onInputChange(newInput: String) {
+    private fun onInputChange(newInput: String) {
         _state.update { it.copy(currentInput = newInput) }
     }
 
     // 메시지 전송
-    fun sendMessage(inputText: String) {
+    private fun sendMessage(inputText: String) {
 
         if (inputText.isBlank()) return        // 내용이 비어있으면 return
 
@@ -81,7 +81,6 @@ class ChatbotScreenViewModel @Inject constructor(
         }
     }
 
-
     // gemini의 응답을 받음
     private suspend fun receiveGeminiResponse(userMessage: String): String = withContext(Dispatchers.IO) {
         val prompt = content { text(userMessage) }
@@ -94,7 +93,16 @@ class ChatbotScreenViewModel @Inject constructor(
     /*
     * ------------ 음성 인식 관련 ---------------
     * */
-    fun startVoiceSearch() {
+    private fun showVoiceDialog(isShow: Boolean) {
+        _state.update {
+            it.copy(
+                isShowDialog = isShow
+            )
+        }
+    }
+
+
+    private fun startVoiceSearch() {
         if (speechRecognizerHelper == null) {
             _state.update { it.copy(isRecording = false, error = "음성 인식 초기화 불가") }
             return
@@ -131,6 +139,30 @@ class ChatbotScreenViewModel @Inject constructor(
     fun cancelVoiceSearch() {
         _state.update { it.copy(isRecording = false) }
         speechRecognizerHelper?.cancelListening()
+    }
+
+
+    // Action에 따른 동작 정의
+    fun onAction(action: ChatbotAction) {
+        when (action) {
+            is ChatbotAction.ShowDialog -> {
+                showVoiceDialog(action.isShow)
+            }
+
+            is ChatbotAction.SendMessage -> {
+                sendMessage(action.message)
+            }
+
+            is ChatbotAction.VoiceSearch -> {
+                startVoiceSearch()
+            }
+
+            is ChatbotAction.InputChange -> {
+                onInputChange(action.message)
+            }
+
+            is ChatbotAction.BackScreen -> {}
+        }
     }
 
 }
