@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -33,8 +35,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,6 +60,9 @@ fun ChatbotScreen(
     var hasPermission by remember { mutableStateOf(false) }
 
     val context = rememberUpdatedState(LocalContext.current)
+
+    // 임시용 키보드 컨트롤러
+    val focusManager = LocalFocusManager.current
 
     PermissionRequest(
         permission = Manifest.permission.RECORD_AUDIO,
@@ -173,13 +181,38 @@ fun ChatbotScreen(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            IconButton(onClick = {
-                onAction(ChatbotAction.ShowDialog(true))
-            }) {
+            IconButton(
+                onClick = {
+                    focusManager.clearFocus()
+                    onAction(ChatbotAction.SendMessage(state.currentInput))
+                },
+                modifier = Modifier
+                    .clip(CircleShape) // 둥근 모양으로 자르기
+                    .background(AppColors.blue600) // 배경색 설정
+                    .size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_right),
+                    contentDescription = null,
+                    tint = AppColors.neutralWhite, // 아이콘 색상 설정
+                    modifier = Modifier.padding(8.dp) // 아이콘 주변 패딩 설정
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            IconButton(
+                onClick = {
+                    onAction(
+                        ChatbotAction.ShowDialog(true),
+                    )
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_voice),
                     contentDescription = "음성 검색",
-                    tint = Color.Unspecified
+                    tint = Color.Unspecified,
                 )
             }
         }
