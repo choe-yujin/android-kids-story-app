@@ -22,9 +22,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
-import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
+import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
@@ -33,18 +34,13 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 fun BookshelfScreen(
     state: BookshelfUiState,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    onBookSelected: (Int) -> Unit,
-    onMakerClick: () -> Unit,
-    onLanguageClick: () -> Unit,
-    onChatbotClick: () -> Unit,
-    onStartMusic: () -> Unit,
-    onStopMusic: () -> Unit,
+    onAction: (BookShelfAction) -> Unit,
 ) {
     LaunchedEffect(state.isMusicOn) {
         if (state.isMusicOn) {
-            onStartMusic()
+            onAction(BookShelfAction.StartMusic)
         } else {
-            onStopMusic()
+            onAction(BookShelfAction.StopMusic)
         }
     }
 
@@ -52,8 +48,8 @@ fun BookshelfScreen(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_STOP -> onStopMusic() // 앱이 백그라운드로 가면 정지
-                Lifecycle.Event.ON_START -> if (state.isMusicOn) onStartMusic() // 다시 돌아오면 실행
+                Lifecycle.Event.ON_STOP -> onAction(BookShelfAction.StopMusic)// 앱이 백그라운드로 가면 정지
+                Lifecycle.Event.ON_START -> if (state.isMusicOn) onAction(BookShelfAction.StartMusic) // 다시 돌아오면 실행
                 else -> {}
             }
         }
@@ -73,9 +69,15 @@ fun BookshelfScreen(
             // 헤더 추가
             BookshelfHeader(
                 currentLanguage = state.currentLanguage,
-                onMakerClick = onMakerClick,
-                onLanguageClick = onLanguageClick,
-                onChatbotClick = onChatbotClick,
+                onSettingClick = {
+                    onAction(BookShelfAction.SettingClick)
+                },
+                onLanguageClick = {
+                    onAction(BookShelfAction.ShowLanguageDialog(true))
+                },
+                onChatbotClick = {
+                    onAction(BookShelfAction.ChatbotClick)
+                },
             )
 
             LazyVerticalGrid(
@@ -90,10 +92,24 @@ fun BookshelfScreen(
                 items(state.books) { bookState ->
                     BookCover(
                         state = bookState,
-                        onClick = { onBookSelected(state.books.indexOf(bookState)) }
+                        onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(bookState))) }
                     )
                 }
             }
+        }
+
+        // 언어 선택 다이얼로그 표시
+        if (state.showLanguageDialog) {
+            LanguageDialog(
+                languages = LanguageConstants.SUPPORTED_LANGUAGES,
+                selectedLanguage = state.currentLanguage,
+                onLanguageSelected = {
+                    onAction(BookShelfAction.ChangeLanguage(it))
+                },
+                onDismiss = {
+                    onAction(BookShelfAction.ShowLanguageDialog(false))
+                }
+            )
         }
     }
 }
@@ -105,12 +121,7 @@ private fun BookShelfScreenPreview() {
     KidsStoryTheme {
         BookshelfScreen(
             state = BookshelfUiState(),
-            onChatbotClick = {},
-            onLanguageClick = {},
-            onMakerClick = {},
-            onBookSelected = {},
-            onStartMusic = {},
-            onStopMusic = {},
+            onAction = {}
         )
 
     }
