@@ -1,20 +1,31 @@
 package com.timor.kidsstory.presentation.book.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.book.model.PageUiState
+import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 // 읽기 화면 하위 컴포넌트들
@@ -22,7 +33,7 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 fun PageTextSection(
     state: PageUiState,
     modifier: Modifier = Modifier,
-    onTextToSpeech: (List<String>) -> Unit
+    onTextToSpeech: (List<String>) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -38,7 +49,7 @@ fun PageTextSection(
             state.texts.forEach { text ->
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = AppTextStyles.pretendardLargeMedium,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
@@ -46,19 +57,33 @@ fun PageTextSection(
 
         Text(
             text = state.pageDisplay,  // "1/14" ~ "14/14"
-            style = MaterialTheme.typography.labelSmall,
+            style = AppTextStyles.pretendardSmallMedium.copy(
+                color = AppColors.neutral500
+            ),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 16.dp)
         )
 
-        Button(
-            modifier = Modifier.align(Alignment.TopEnd),
-            onClick = {
-                onTextToSpeech(state.texts)
-            }
+        // 음성 말하기 버튼 - 뒤로가기 버튼과 동일한 디자인
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .background(
+                    color = Color.Black.copy(alpha = 0.4f),
+                    shape = CircleShape
+                )
         ) {
-            Text(text = "음성 말하기")
+            IconButton(
+                onClick = { onTextToSpeech(state.texts) },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_play),
+                    contentDescription = "Text to speech",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
         }
     }
 }
