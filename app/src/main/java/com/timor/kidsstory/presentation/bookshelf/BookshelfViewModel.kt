@@ -163,17 +163,13 @@ class BookshelfViewModel @Inject constructor(
     }
 
     // 언어 선택 다이얼로그 표시
-    fun showLanguageSelector() {
-        _state.update { it.copy(showLanguageDialog = true) }
+    private fun handleLanguageSelector(isShow: Boolean) {
+        _state.update { it.copy(showLanguageDialog = isShow) }
     }
 
-    // 언어 선택 다이얼로그 숨기기
-    fun hideLanguageSelector() {
-        _state.update { it.copy(showLanguageDialog = false) }
-    }
 
     // 언어 변경
-    fun changeLanguage(language: Language) {
+    private fun changeLanguage(language: Language) {
         Log.d("BookshelfViewModel", "Changing language to: ${language.code}")
 
         if (language.code != _state.value.currentLanguage.code) {
@@ -196,11 +192,23 @@ class BookshelfViewModel @Inject constructor(
     }
 
     // 음악 재생 및 정지
-    fun startMusic() {
+    private fun startMusic() {
         musicManager.startMusic()
     }
 
-    fun stopMusic() {
+    private fun stopMusic() {
         musicManager.stopMusic()
+    }
+
+    fun onAction(action: BookShelfAction) {
+        when (action) {
+            is BookShelfAction.BookSelect -> onBookSelected(action.index)
+            is BookShelfAction.ChatbotClick -> {}
+            is BookShelfAction.SettingClick -> {}
+            is BookShelfAction.StartMusic -> startMusic()
+            is BookShelfAction.StopMusic -> stopMusic()
+            is BookShelfAction.ChangeLanguage -> changeLanguage(action.language)
+            is BookShelfAction.ShowLanguageDialog -> handleLanguageSelector(action.isShow)
+        }
     }
 }

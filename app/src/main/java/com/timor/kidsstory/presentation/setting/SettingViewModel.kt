@@ -27,9 +27,16 @@ class SettingViewModel @Inject constructor(
     }
 
     // 스위치 조절
-    fun toggleMusicSetting() {
+    private fun toggleMusicSetting(isMusicOn: Boolean) {
         viewModelScope.launch {
-            musicSettingUseCase.toggleMusicSetting(_state.value.isMusicOn)
+            musicSettingUseCase.toggleMusicSetting(isMusicOn)
+        }
+    }
+
+    fun onAction(action: SettingAction) {
+        when (action) {
+            is SettingAction.SwitchClick -> toggleMusicSetting(action.isMusicOn)
+            is SettingAction.BackButtonClick -> {}
         }
     }
 }

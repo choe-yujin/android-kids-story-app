@@ -13,7 +13,7 @@ class MusicSettingUseCase @Inject constructor(
     }
 
     suspend fun toggleMusicSetting(currentState: Boolean) {
-        userPreferenceRepository.updateMusicSetting(!currentState)
+        userPreferenceRepository.updateMusicSetting(currentState)
     }
 
 }

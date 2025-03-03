@@ -39,7 +39,7 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 @Composable
 fun BookshelfHeader(
     currentLanguage: Language,
-    onMakerClick: () -> Unit,
+    onSettingClick: () -> Unit,
     onLanguageClick: () -> Unit,
     onChatbotClick: () -> Unit,
 ) {
@@ -57,9 +57,11 @@ fun BookshelfHeader(
             painter = painterResource(id = R.drawable.ic_setting),
             contentDescription = "setting",
             modifier = Modifier
-                .size(32.dp),
-            tint = Color.Unspecified
-        )
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
+                .clickable(onClick = onSettingClick)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) 
 
         // 앱 제목
         Icon(
@@ -109,7 +111,7 @@ fun BookshelfHeaderPreviewEnglish() {
     KidsStoryTheme {
         BookshelfHeader(
             currentLanguage = LanguageConstants.ENGLISH,
-            onMakerClick = {},
+            onSettingClick = {},
             onLanguageClick = {},
             onChatbotClick = {}
         )
@@ -129,9 +131,9 @@ fun BookshelfHeaderPreviewKorean() {
     KidsStoryTheme {
         BookshelfHeader(
             currentLanguage = LanguageConstants.KOREAN,
-            onMakerClick = {},
+            onSettingClick = {},
             onLanguageClick = {},
-            onChatbotClick = {}
+            onChatbotClick = {},
         )
     }
 }
@@ -149,7 +151,7 @@ fun BookshelfHeaderPreviewTetum() {
     KidsStoryTheme {
         BookshelfHeader(
             currentLanguage = LanguageConstants.TETUM,
-            onMakerClick = {},
+            onSettingClick = {},
             onLanguageClick = {},
             onChatbotClick = {}
         )
