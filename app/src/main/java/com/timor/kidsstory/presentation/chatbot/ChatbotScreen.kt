@@ -96,7 +96,7 @@ fun ChatbotScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
+                .height(56.dp)
                 .background(color = AppColors.blue600)
                 .padding(horizontal = 38.dp)
 
