@@ -61,7 +61,7 @@ class ChatbotScreenViewModel @Inject constructor(
                 val response = receiveGeminiResponse(inputText)
 
                 val botMessage = ChatMessage(
-                    text = response, isFromUser = false
+                    text = response.trim(), isFromUser = false
                 )
 
                 _state.update { currentState ->

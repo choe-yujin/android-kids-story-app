@@ -28,7 +28,6 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 @Composable
 fun VoiceDialog(
-    modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit = { },
     cancelVoiceSearch: () -> Unit = { },
     onCloseClick: () -> Unit = {},

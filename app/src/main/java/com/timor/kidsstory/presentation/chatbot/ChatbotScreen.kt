@@ -3,6 +3,7 @@ package com.timor.kidsstory.presentation.chatbot
 import android.Manifest
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,7 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.util.PermissionRequest
-import com.timor.kidsstory.presentation.chatbot.components.MessageBox
+import com.timor.kidsstory.presentation.chatbot.components.BotMessageBox
+import com.timor.kidsstory.presentation.chatbot.components.UserMessageBox
 import com.timor.kidsstory.presentation.chatbot.components.VoiceDialog
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
@@ -61,12 +63,13 @@ fun ChatbotScreen(
     )
 
     // 음성 인식 중일 때 다이얼로그 표시
-    if (state.isRecording && state.isShowDialog) {
+    if (state.isShowDialog) {
         VoiceDialog(
             onDismissRequest = { onAction(ChatbotAction.ShowDialog(false)) },
             cancelVoiceSearch = { onAction(ChatbotAction.ShowDialog(false)) },
             onCloseClick = { onAction(ChatbotAction.ShowDialog(false)) },
         )
+        onAction(ChatbotAction.VoiceSearch)
     }
 
     Column(
@@ -107,12 +110,19 @@ fun ChatbotScreen(
 
 
         LazyColumn(
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(vertical = 8.dp),
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 50.dp),
+            contentPadding = PaddingValues(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
             reverseLayout = true        // 최근 메시지가 아래 보이도록 설정
         ) {
             items(state.messages) { message ->
-                MessageBox(message)
+                if (message.isFromUser) {
+                    UserMessageBox(message.text)
+                } else {
+                    BotMessageBox(message.text)
+                }
             }
         }
 
@@ -148,7 +158,7 @@ fun ChatbotScreen(
             Spacer(modifier = Modifier.width(16.dp))
 
             IconButton(onClick = {
-                onAction(ChatbotAction.VoiceSearch)
+                onAction(ChatbotAction.ShowDialog(true))
             }) {
                 Icon(
                     painter = painterResource(R.drawable.ic_voice),
