@@ -72,7 +72,7 @@ fun SettingScreen(
                 }
 
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_info),
+                    painter = painterResource(id = R.drawable.info_logo_test),
                     contentDescription = "Info",
                     modifier = Modifier
                         .align(Alignment.Center)
