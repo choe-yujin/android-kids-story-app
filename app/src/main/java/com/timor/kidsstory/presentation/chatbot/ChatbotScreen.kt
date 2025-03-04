@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -76,7 +75,9 @@ fun ChatbotScreen(
     // 음성 인식 중일 때 다이얼로그 표시
     if (state.isShowDialog) {
         VoiceDialog(
-            onDismissRequest = { onAction(ChatbotAction.ShowDialog(false)) },
+            onDismissRequest = {
+                onAction(ChatbotAction.ShowDialog(false))
+            },
             cancelVoiceSearch = { onAction(ChatbotAction.ShowDialog(false)) },
             onCloseClick = { onAction(ChatbotAction.ShowDialog(false)) },
         )

@@ -118,6 +118,7 @@ class ChatbotScreenViewModel @Inject constructor(
             override fun onListeningEnded() {
                 // 음성 인식 종료 시 처리
                 _state.update { it.copy(isRecording = false, isShowDialog = false) }
+                cancelVoiceSearch()
             }
 
             override fun onSpeechResult(result: String) {
@@ -130,13 +131,13 @@ class ChatbotScreenViewModel @Inject constructor(
     }
 
 
-    fun stopVoiceSearch() {
+    private fun stopVoiceSearch() {
         _state.update { it.copy(isRecording = false) }
         speechRecognizerHelper?.stopListening()
     }
 
 
-    fun cancelVoiceSearch() {
+    private fun cancelVoiceSearch() {
         _state.update { it.copy(isRecording = false) }
         speechRecognizerHelper?.cancelListening()
     }
@@ -146,6 +147,7 @@ class ChatbotScreenViewModel @Inject constructor(
     fun onAction(action: ChatbotAction) {
         when (action) {
             is ChatbotAction.ShowDialog -> {
+                if (!action.isShow) cancelVoiceSearch()
                 showVoiceDialog(action.isShow)
             }
 
