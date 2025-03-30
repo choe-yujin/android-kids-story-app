@@ -47,25 +47,6 @@ fun BookCover(
                 )
             }
 
-            // 책 제목
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .background(Color.Black.copy(alpha = 0.6f))
-                    .padding(8.dp)
-            ) {
-                Text(
-                    text = state.title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
             // 다운로드 상태 표시 (다운로드 가능한 경우에만)
             if (state.downloadStatus != DownloadStatus.DOWNLOADED && onDownloadClick != null) {
                 when (state.downloadStatus) {
