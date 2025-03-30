@@ -3,10 +3,16 @@ package com.timor.kidsstory.presentation.bookshelf
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.timor.kidsstory.data.remote.BookDownloader
+import com.timor.kidsstory.data.remote.model.RemoteBook
+import com.timor.kidsstory.data.remote.network.BookNetworkService
 import com.timor.kidsstory.domain.model.Book
+import com.timor.kidsstory.domain.model.DownloadStatus
 import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
+import com.timor.kidsstory.domain.usecase.book.DownloadBookUseCase
 import com.timor.kidsstory.domain.usecase.book.GetBooksUseCase
+import com.timor.kidsstory.domain.usecase.book.GetRemoteBooksUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
 import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
@@ -40,10 +46,17 @@ class BookshelfViewModel @Inject constructor(
     private val saveUserPreferenceUseCase: SaveUserPreferenceUseCase,
     private val musicSettingUseCase: MusicSettingUseCase,
     private val musicManager: MusicManager,
+    private val networkService: BookNetworkService,
+    private val getRemoteBooksUseCase: GetRemoteBooksUseCase,
+    private val downloadBookUseCase: DownloadBookUseCase,
+    private val bookDownloader: BookDownloader
 ) : ViewModel() {
     // UI 상태 관리
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
+
+    // 원격 책 목록 저장
+    private var remoteBooks: List<RemoteBook> = emptyList()
 
     // 실제 Book 객체 저장 (UI 상태와 별도 관리)
     private var bookList = listOf<Book>()
@@ -134,33 +147,37 @@ class BookshelfViewModel @Inject constructor(
     }
 
     /**
-     * 책 목록 로드
+     * 책 목록 로드 (로컬 + 원격)
      *
      * @param languageCode 언어 코드
      */
-
     private fun loadStories(languageCode: String) {
         viewModelScope.launch {
             try {
                 _state.update { it.copy(isLoading = true, error = null) }
 
-                Log.d("BookshelfViewModel", "Loading books with language: $languageCode")
+                // 로컬 책 로드
                 val result = getBooksUseCase(languageCode)
+
+                // 백그라운드에서 원격 책 로드
+                launch {
+                    //loadRemoteBooks(languageCode)
+                }
 
                 result.fold(
                     onSuccess = { books ->
-                        // 책 목록 저장
+                        // 기존 책 처리 유지
                         bookList = books
-                        Log.d("BookshelfViewModel", "Books loaded: ${books.size}")
 
                         // UI 상태 업데이트
                         _state.update {
                             it.copy(
                                 books = books.map { book ->
                                     BookCoverUiState(
-                                        imageUrl = book.coverImage, // 이미 정확한 경로 포함
+                                        imageUrl = book.coverImage,
                                         title = book.title,
-                                        storyId = book.storyId
+                                        storyId = book.storyId,
+                                        downloadStatus = DownloadStatus.DOWNLOADED
                                     )
                                 },
                                 isLoading = false
@@ -168,7 +185,8 @@ class BookshelfViewModel @Inject constructor(
                         }
                     },
                     onFailure = { error ->
-                        Log.e("BookshelfViewModel", "Error loading books: ${error.message}", error)
+                        // 오류 처리 유지
+                        Log.e("BookshelfViewModel", "Error loading books", error)
                         _state.update {
                             it.copy(
                                 isLoading = false,
@@ -178,6 +196,7 @@ class BookshelfViewModel @Inject constructor(
                     }
                 )
             } catch (e: Exception) {
+                // 예외 처리 유지
                 Log.e("BookshelfViewModel", "Exception in loadStories", e)
                 _state.update {
                     it.copy(
@@ -266,6 +285,7 @@ class BookshelfViewModel @Inject constructor(
             is BookShelfAction.StopMusic -> stopMusic()
             is BookShelfAction.ChangeLanguage -> changeLanguage(action.language)
             is BookShelfAction.ShowLanguageDialog -> handleLanguageSelector(action.isShow)
+            is BookShelfAction.DownloadBook -> TODO()
         }
     }
 }
