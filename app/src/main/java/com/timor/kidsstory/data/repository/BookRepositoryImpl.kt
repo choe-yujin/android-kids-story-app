@@ -9,15 +9,28 @@ import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.repository.BookRepository
 import javax.inject.Inject
 
+/**
+ * BookRepository 인터페이스의 구현체
+ * - 실제 데이터 소스에서 책 정보를 가져와 도메인 모델로 변환
+ *
+ * @property assetDataSource 앱 Assets에서 데이터 로드를 담당하는 데이터 소스
+ */
 class BookRepositoryImpl @Inject constructor(
     private val assetDataSource: AssetDataSource,
 ) : BookRepository {
 
+    /**
+     * 특정 언어로 된 모든 책 목록을 가져옴
+     *
+     * @param language 언어 코드
+     * @return 책 목록 또는 오류
+     */
     override suspend fun getBooks(language: String): Result<List<Book>> {
         Log.d("BookRepositoryImpl", "Getting books for language: $language")
 
         return try {
             assetDataSource.loadBooks().map { storyDtos ->
+                // 언어 접두사 결정 (ko, tet, en)
                 val languagePrefix = when {
                     language.startsWith("ko") -> "ko"
                     language.startsWith("tet") -> "tet"
@@ -31,7 +44,7 @@ class BookRepositoryImpl @Inject constructor(
 
                 Log.d("BookRepositoryImpl", "Found ${filteredBooks.size} books for language $language")
 
-                // BookMapper가 내부적으로 이미지 경로를 처리
+                // BookMapper를 통해 DTO를 도메인 모델로 변환
                 filteredBooks.map { BookMapper.mapToDomain(it, language) }
             }
         } catch (e: Exception) {
@@ -40,8 +53,15 @@ class BookRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * ID로 특정 책의 정보를 가져옴
+     *
+     * @param storyId 책 ID (예: "801_en-ph")
+     * @param language 언어 코드
+     * @return 책 정보 또는 오류
+     */
     override suspend fun getBookById(storyId: String, language: String): Result<Book?> {
-        // 입력받은 storyId에서 기본 ID 추출 (801_en-ph -> 801)
+        // storyId에서 기본 ID 추출 (예: "801_en-ph" -> "801")
         val baseId = storyId.split("_").firstOrNull() ?: storyId
 
         Log.d("BookRepositoryImpl", "Getting book by ID: $baseId, full storyId: $storyId")
@@ -51,7 +71,7 @@ class BookRepositoryImpl @Inject constructor(
 
             Log.d("BookRepositoryImpl", "Total books in metadata: ${allBooks.size}")
 
-            // ID가 baseId로 시작하는 모든 책들 찾기
+            // 기본 ID가 일치하는 책들 찾기
             val matchedBooks = allBooks.filter { book ->
                 // storyId에서 기본 ID 부분 추출 (예: 801_en-ph -> 801)
                 val bookBaseId = book.storyId.split("_").firstOrNull() ?: book.storyId
@@ -63,14 +83,11 @@ class BookRepositoryImpl @Inject constructor(
 
             if (matchedBooks.isEmpty()) {
                 Log.e("BookRepositoryImpl", "No books found with base ID: $baseId")
-
-                // 추가 로깅: 모든 책의 ID 출력하여 디버깅
                 Log.d("BookRepositoryImpl", "Available book IDs: ${allBooks.map { it.storyId }}")
-
                 return Result.failure(Exception("책을 찾을 수 없습니다: ID $baseId"))
             }
 
-            // 언어에 맞는 책 찾기
+            // 언어 접두사 결정
             val languagePrefix = when {
                 language.startsWith("ko") -> "ko"
                 language.startsWith("tet") -> "tet"
@@ -93,6 +110,13 @@ class BookRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * 특정 책의 모든 페이지 정보를 가져옴
+     *
+     * @param storyId 책 ID
+     * @param language 언어 코드
+     * @return 페이지 목록 또는 오류
+     */
     override suspend fun getBookPages(storyId: String, language: String): Result<List<Page>> {
         // storyId에서 기본 ID 추출
         val baseId = storyId.split("_").firstOrNull() ?: storyId

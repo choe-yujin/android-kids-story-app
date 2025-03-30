@@ -7,8 +7,11 @@ import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 import dagger.hilt.android.HiltAndroidApp
 
-// 앱의 전역 상태와 의존성을 관리하는 Application 클래스
-// Repository와 UseCase들의 의존성 주입을 담당
+/**
+ * 앱의 Application 클래스
+ * - Hilt를 사용한 의존성 주입 설정
+ * - 앱 시작 시점에 필요한 초기화 작업 수행
+ */
 @HiltAndroidApp
 class KidsStoryApplication : Application() {
 

@@ -1,14 +1,23 @@
 package com.timor.kidsstory.domain.model
 
-// 페이지 도메인 모델
+/**
+ * 책의 한 페이지 정보를 담는 도메인 모델 클래스
+ *
+ * @property pageNumber 페이지 번호 (0부터 시작)
+ * @property imageUrl 페이지 이미지 경로
+ * @property texts 페이지에 표시될 텍스트 목록
+ * @property totalPages 전체 페이지 수
+ */
 data class Page(
     val pageNumber: Int,
-    val imageUrl: String,   // 전체 이미지 경로를 포함
-    val texts: List<String>, // 페이지 내 텍스트 목록
-    val totalPages: Int = 0  // 전체 페이지 수 (컬렉션의 일부로 사용될 때 선택적)
+    val imageUrl: String,
+    val texts: List<String>,
+    val totalPages: Int = 0
 ) {
-    // 편의 메서드
+    // 현재 페이지 표시 형식 반환 (1/20)
     val pageDisplay: String get() = "${pageNumber + 1}/$totalPages"
+    // 첫 페이지 여부 확인
     val isFirstPage: Boolean get() = pageNumber == 0
+    // 마지막 페이지 여부 확인
     val isLastPage: Boolean get() = pageNumber == totalPages - 1
 }

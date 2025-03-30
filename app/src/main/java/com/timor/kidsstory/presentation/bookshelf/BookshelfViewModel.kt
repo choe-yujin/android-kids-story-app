@@ -21,7 +21,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// 책장 화면 뷰모델
+/**
+ * 책장 화면의 상태 관리 및 비즈니스 로직 처리 뷰모델
+ * - 책 목록 로드 및 필터링
+ * - 언어 설정 관리
+ * - 배경 음악 제어
+ *
+ * @property getBooksUseCase 책 목록 가져오기 유스케이스
+ * @property getUserPreferenceUseCase 사용자 설정 가져오기 유스케이스
+ * @property saveUserPreferenceUseCase 사용자 설정 저장 유스케이스
+ * @property musicSettingUseCase 음악 설정 유스케이스
+ * @property musicManager 배경 음악 관리자
+ */
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
     private val getBooksUseCase: GetBooksUseCase,
@@ -30,12 +41,16 @@ class BookshelfViewModel @Inject constructor(
     private val musicSettingUseCase: MusicSettingUseCase,
     private val musicManager: MusicManager,
 ) : ViewModel() {
+    // UI 상태 관리
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
 
-    // 실제 Book 객체 저장
+    // 실제 Book 객체 저장 (UI 상태와 별도 관리)
     private var bookList = listOf<Book>()
 
+    /**
+     * 초기화 - 앱 시작 시 필요한 데이터 로드
+     */
     init {
         // 앱 시작 시 초기 데이터 로딩
         loadInitialData()
@@ -46,12 +61,17 @@ class BookshelfViewModel @Inject constructor(
         loadMusicSetting()
     }
 
+    /**
+     * 뷰모델 종료 시 리소스 해제
+     */
     override fun onCleared() {
         super.onCleared()
         musicManager.release()
     }
 
-
+    /**
+     * 음악 설정 로드 및 관찰
+     */
     private fun loadMusicSetting() {
         viewModelScope.launch {
             musicSettingUseCase.isMusicOn.collect { isMusicOn ->
@@ -60,25 +80,36 @@ class BookshelfViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 초기 데이터 로드
+     * - 사용자 언어 설정 가져오기
+     * - 해당 언어로 책 목록 로드
+     */
     private fun loadInitialData() {
         viewModelScope.launch {
             val preference = getUserPreferenceUseCase().first() // 현재 설정값 가져오기
 
+            // 언어 코드 결정 (저장된 값이 없으면 기본값 사용)
             val languageCode = if (preference.languageCode.isBlank()) {
                 LanguageConstants.DEFAULT_LANGUAGE.code
             } else {
                 preference.languageCode
             }
 
+            // 언어 객체 찾기
             val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
                 it.code == languageCode
             } ?: LanguageConstants.DEFAULT_LANGUAGE
 
             _state.update { it.copy(currentLanguage = language) }
-            loadStories(language.code)
+            loadStories(language.code)  // 해당 언어로 책 로드
         }
     }
 
+    /**
+     * 사용자 설정 변경 관찰
+     * - 언어 변경 시 책 목록 다시 로드
+     */
     private fun observeUserPreference() {
         viewModelScope.launch {
             getUserPreferenceUseCase().collect { preference ->
@@ -102,6 +133,12 @@ class BookshelfViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 책 목록 로드
+     *
+     * @param languageCode 언어 코드
+     */
+
     private fun loadStories(languageCode: String) {
         viewModelScope.launch {
             try {
@@ -116,6 +153,7 @@ class BookshelfViewModel @Inject constructor(
                         bookList = books
                         Log.d("BookshelfViewModel", "Books loaded: ${books.size}")
 
+                        // UI 상태 업데이트
                         _state.update {
                             it.copy(
                                 books = books.map { book ->
@@ -151,6 +189,12 @@ class BookshelfViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 선택된 책 정보 반환
+     *
+     * @param index 책 목록 인덱스
+     * @return 선택된 책 객체 또는 null
+     */
     fun onBookSelected(index: Int): Book? {
         if (index < 0 || index >= bookList.size) {
             Log.e("BookshelfViewModel", "Invalid book index: $index")
@@ -162,13 +206,21 @@ class BookshelfViewModel @Inject constructor(
         return selectedBook
     }
 
-    // 언어 선택 다이얼로그 표시
+    /**
+     * 언어 선택 다이얼로그 표시 제어
+     *
+     * @param isShow 다이얼로그 표시 여부
+     */
     private fun handleLanguageSelector(isShow: Boolean) {
         _state.update { it.copy(showLanguageDialog = isShow) }
     }
 
 
-    // 언어 변경
+    /**
+     * 언어 변경
+     *
+     * @param language 변경할 언어
+     */
     private fun changeLanguage(language: Language) {
         Log.d("BookshelfViewModel", "Changing language to: ${language.code}")
 
@@ -185,21 +237,26 @@ class BookshelfViewModel @Inject constructor(
         }
     }
 
-    // Maker 화면으로 이동
-    fun onMakerClick() {
-        // 추후 구현
-        Log.d("BookshelfViewModel", "Maker button clicked")
-    }
 
-    // 음악 재생 및 정지
+    /**
+     * 음악 재생 시작
+     */
     private fun startMusic() {
         musicManager.startMusic()
     }
 
+    /**
+     * 음악 재생 정지
+     */
     private fun stopMusic() {
         musicManager.stopMusic()
     }
 
+    /**
+     * UI 액션 처리
+     *
+     * @param action 처리할 액션
+     */
     fun onAction(action: BookShelfAction) {
         when (action) {
             is BookShelfAction.BookSelect -> onBookSelected(action.index)

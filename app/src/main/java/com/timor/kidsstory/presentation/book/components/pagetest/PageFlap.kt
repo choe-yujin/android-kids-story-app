@@ -21,6 +21,20 @@ import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * 책 페이지 넘김 효과의 구현 컴포넌트
+ *
+ * 페이지를 넘길 때 실제 종이책처럼 페이지가 구부러지는 3D 효과를 제공합니다.
+ * 이미지 비트맵을 사용하여 페이지의 일부(왼쪽, 오른쪽, 위, 아래)를 회전시켜
+ * 자연스러운 페이지 넘김 애니메이션을 구현합니다.
+ *
+ * @param modifier 레이아웃 수정자
+ * @param pageFlap 페이지의 어느 부분을 회전시킬지 결정하는 열거형 값
+ * @param imageBitmap 페이지 내용의 비트맵을 제공하는 람다
+ * @param state 페이저의 상태
+ * @param page 현재 페이지 인덱스
+ * @param animatedOverscrollAmount 오버스크롤 애니메이션 값을 제공하는 람다
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun BoxScope.PageFlap(
@@ -32,6 +46,7 @@ internal fun BoxScope.PageFlap(
     animatedOverscrollAmount: () -> Float = { 0f },
 ) {
     val density = LocalDensity.current
+    // 비트맵의 크기를 Dp 단위로 변환
     val size by remember {
         derivedStateOf {
             imageBitmap()?.let {
@@ -41,15 +56,20 @@ internal fun BoxScope.PageFlap(
             } ?: DpSize.Zero
         }
     }
+
+    // 페이지 회전 효과 적용
     Canvas(
         modifier
             .size(size)
             .align(Alignment.TopStart)
             .graphicsLayer {
-                shape = pageFlap.shape
+                shape = pageFlap.shape  // 페이지의 특정 부분만 잘라서 표시
                 clip = true
 
+                // 3D 회전 효과를 위한 카메라 거리 설정
                 cameraDistance = 65f
+
+                // 페이지 부분에 따른 회전 각도 결정
                 when (pageFlap) {
                     is PageFlapType.Top -> {
                         rotationX = min(
@@ -81,8 +101,12 @@ internal fun BoxScope.PageFlap(
                 }
             }
     ) {
+        // 비트맵 그리기
         imageBitmap()?.let { imageBitmap ->
+            // 원본 이미지 그리기
             drawImage(imageBitmap)
+
+            // 그림자 효과를 위한 투명도 조절 오버레이 그리기
             drawImage(
                 imageBitmap,
                 colorFilter = ColorFilter.tint(
