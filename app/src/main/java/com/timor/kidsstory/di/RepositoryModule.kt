@@ -18,27 +18,28 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
-
+interface RepositoryModule {
     @Binds
     @Singleton
-    abstract fun bindBookRepository(
+    fun bindBookRepository(
         bookRepositoryImpl: BookRepositoryImpl
     ): BookRepository
 
     @Binds
     @Singleton
-    abstract fun bindUserPreferenceRepository(
+    fun bindUserPreferenceRepository(
         userPreferenceRepositoryImpl: UserPreferenceRepositoryImpl
     ): UserPreferenceRepository
 
-    @Provides
-    @Singleton
-    fun provideBookDownloader(
-        @ApplicationContext context: Context,
-        networkService: BookNetworkService,
-        downloadedBooksDao: DownloadedBooksDao
-    ): BookDownloader {
-        return BookDownloader(context, networkService, downloadedBooksDao)
+    companion object {
+        @Provides
+        @Singleton
+        fun provideBookDownloader(
+            @ApplicationContext context: Context,
+            networkService: BookNetworkService,
+            downloadedBooksDao: DownloadedBooksDao
+        ): BookDownloader {
+            return BookDownloader(context, networkService, downloadedBooksDao)
+        }
     }
 }
