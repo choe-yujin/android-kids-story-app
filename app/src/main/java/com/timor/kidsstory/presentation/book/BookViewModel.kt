@@ -16,26 +16,43 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * 책 읽기 화면의 상태 관리 및 비즈니스 로직 처리 뷰모델
+ * - 책 페이지 로드 및 관리
+ * - 페이지 네비게이션 처리
+ * - 텍스트 음성 변환(TTS) 기능 제공
+ *
+ * @property getBookDetailUseCase 책 상세 정보 가져오기 유스케이스
+ * @property textToSpeechHelper 텍스트 음성 변환 도우미
+ * @property savedStateHandle 네비게이션 인자 저장소
+ */
 @HiltViewModel
 class BookViewModel @Inject constructor(
     private val getBookDetailUseCase: GetBookDetailUseCase,
     private val textToSpeechHelper: TextToSpeechHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+    // UI 상태 관리
     private val _state = MutableStateFlow(BookUiState())
     val state = _state.asStateFlow()
 
-    // 페이지 상태 관리를 ViewModel로 이동
+    // 현재 페이지 관리
     private val _currentPage = MutableStateFlow(0)
     val currentPage = _currentPage.asStateFlow()
 
+    // TTS 초기화 상태 관리
     private val _isTTSInitialized = MutableStateFlow(false)
     val isTTSInitialized = _isTTSInitialized.asStateFlow()
 
+    // 네비게이션 인자에서 책 ID 추출
     private val storyId: String = savedStateHandle.get<String>("storyId") ?: ""
 
+    // 원본 페이지 데이터
     private var pages: List<Page> = emptyList()
 
+    /**
+     * 초기화 - 책 데이터 로드 및 TTS 초기화
+     */
     init {
         Log.d("ReaderViewModel", "Initializing with storyId: $storyId")
 
@@ -46,7 +63,7 @@ class BookViewModel @Inject constructor(
             _state.update { it.copy(error = "책 ID가 제공되지 않았습니다") }
         }
 
-        // TTS 초기화
+        // TTS 초기화 상태 관찰
         viewModelScope.launch {
             textToSpeechHelper.isTTSInitialized.collect { isInitialized ->
                 _isTTSInitialized.value = isInitialized
@@ -54,11 +71,19 @@ class BookViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 뷰모델 종료 시 리소스 해제
+     */
     override fun onCleared() {
         super.onCleared()
-        textToSpeechHelper.stop()
+        textToSpeechHelper.stop()  // TTS 리소스 해제
     }
 
+    /**
+     * 책 데이터 로드
+     *
+     * @param storyId 책 ID
+     */
     private fun loadStory(storyId: String) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
@@ -82,6 +107,7 @@ class BookViewModel @Inject constructor(
                         // 페이지 정보 저장
                         pages = loadedPages
 
+                        // UI 상태 업데이트
                         _state.update {
                             it.copy(
                                 pages = loadedPages.map { page ->
@@ -119,12 +145,22 @@ class BookViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 페이지 변경 처리
+     *
+     * @param newPageIndex 새 페이지 인덱스
+     */
     private fun onPageChanged(newPageIndex: Int) {
         _state.update {
             it.copy(currentPageIndex = newPageIndex)
         }
     }
 
+    /**
+     * 텍스트 음성 변환 실행
+     *
+     * @param content 읽을 텍스트 목록
+     */
     private fun ttsSpeak(content: List<String>) {
         if (_isTTSInitialized.value) {
             content.forEach { text ->
@@ -133,10 +169,15 @@ class BookViewModel @Inject constructor(
         }
     }
 
+    /**
+     * UI 액션 처리
+     *
+     * @param action 처리할 액션
+     */
     fun onAction(action: BookAction) {
         when (action) {
             is BookAction.TextToSpeak -> ttsSpeak(action.textList)
-            BookAction.BackBookShelf -> {}
+            BookAction.BackBookShelf -> {}  // 네비게이션 처리는 컴포저블에서 함
             is BookAction.PageChange -> onPageChanged(action.page)
         }
     }

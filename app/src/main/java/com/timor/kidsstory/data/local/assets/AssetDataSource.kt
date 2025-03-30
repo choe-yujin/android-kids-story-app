@@ -11,16 +11,28 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
+/**
+ * Assets 폴더에서 책 데이터를 로드하는 데이터 소스
+ * - JSON 파일 파싱 및 오프라인 데이터 처리
+ *
+ * @property context 안드로이드 컨텍스트
+ */
 class AssetDataSource @Inject constructor(
     private val context: Context
 ) {
+    // JSON 파싱을 위한 설정 (알 수 없는 키 무시)
     private val json = Json { ignoreUnknownKeys = true }
 
-    // 메타데이터 JSON에서 모든 책 정보 로드
+    /**
+     * 메타데이터 JSON에서 모든 책 정보 로드
+     *
+     * @return DTO 형태의 책 목록
+     */
     suspend fun loadBooks(): Result<List<BookDto>> = withContext(Dispatchers.IO) {
         try {
             Log.d("AssetDataSource", "Loading books from metadata JSON")
 
+            // JSON 파일 읽기
             val jsonString = context.assets.open("metadata/stories-metadata.json").use {
                 it.bufferedReader().readText()
             }
@@ -36,7 +48,15 @@ class AssetDataSource @Inject constructor(
         }
     }
 
-    // 특정 책의 페이지 정보 로드
+    /**
+     * 특정 책의 페이지 정보 로드
+     * - 지정된 언어로 된 JSON 파일 로드 및 파싱
+     * - 해당 언어 파일이 없을 경우 영어 버전으로 대체
+     *
+     * @param storyId 책 ID (예: "801_ko-kr")
+     * @param language 언어 코드
+     * @return 페이지 정보 DTO
+     */
     suspend fun loadBookPages(storyId: String, language: String): Result<PageContentResponse> = withContext(Dispatchers.IO) {
         try {
             // 기본 ID 추출 (801_en-ph -> 801)
@@ -61,6 +81,7 @@ class AssetDataSource @Inject constructor(
             Log.d("AssetDataSource", "Trying to load from: translations/$firstPath")
 
             try {
+                // 지정된 언어 파일 로드 시도
                 val jsonString = context.assets.open("translations/$firstPath").use {
                     it.bufferedReader().readText()
                 }
@@ -71,6 +92,7 @@ class AssetDataSource @Inject constructor(
 
                 return@withContext Result.success(response)
             } catch (e: IOException) {
+                // 파일 못 찾을 경우 영어 버전 시도
                 Log.w("AssetDataSource", "Failed to load from translations/$firstPath, trying fallback", e)
 
                 // 영어 버전으로 폴백

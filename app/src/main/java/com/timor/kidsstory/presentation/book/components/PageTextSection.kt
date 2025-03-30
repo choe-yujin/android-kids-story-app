@@ -28,7 +28,18 @@ import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
-// 읽기 화면 하위 컴포넌트들
+/**
+ * 동화책 페이지의 텍스트 영역 컴포저블
+ *
+ * 페이지 오른쪽에 위치하며, 동화책의 텍스트 내용을 표시합니다.
+ * 오른쪽 상단에는 텍스트를 음성으로 읽어주는 TTS 기능 버튼이 있고,
+ * 오른쪽 하단에는 현재 페이지 번호가 표시됩니다.
+ * 텍스트는 중앙에 배치되며, 여러 줄의 텍스트가 있는 경우 세로로 나열됩니다.
+ *
+ * @param state 페이지 UI 상태 정보
+ * @param modifier 레이아웃 수정자
+ * @param onTextToSpeech 텍스트-음성 변환 실행 콜백
+ */
 @Composable
 fun PageTextSection(
     state: PageUiState,
@@ -40,6 +51,7 @@ fun PageTextSection(
             .fillMaxHeight()
             .padding(16.dp)
     ) {
+        // 텍스트 내용 표시
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,8 +67,9 @@ fun PageTextSection(
             }
         }
 
+        // 페이지 번호 표시 (예: "1/14")
         Text(
-            text = state.pageDisplay,  // "1/14" ~ "14/14"
+            text = state.pageDisplay,
             style = AppTextStyles.pretendardSmallMedium.copy(
                 color = AppColors.neutral500
             ),

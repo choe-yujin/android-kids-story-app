@@ -30,13 +30,23 @@ import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
-// 책장 화면 UI 컴포넌트
+/**
+ * 책장 화면 UI 컴포넌트
+ * - 사용자에게 전체 동화책 목록을 그리드 형태로 표시
+ * - 언어 선택, 설정, 챗봇 기능 접근 제공
+ * - 생명주기에 따른 배경음악 관리
+ *
+ * @param state 책장 화면 UI 상태
+ * @param lifecycleOwner 생명주기 소유자 (기본값: 현재 콤포저블의 생명주기)
+ * @param onAction 사용자 액션 처리 콜백
+ */
 @Composable
 fun BookshelfScreen(
     state: BookshelfUiState,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     onAction: (BookShelfAction) -> Unit,
 ) {
+    // 음악 상태 변경 감지 및 처리
     LaunchedEffect(state.isMusicOn) {
         if (state.isMusicOn) {
             onAction(BookShelfAction.StartMusic)
@@ -45,7 +55,7 @@ fun BookshelfScreen(
         }
     }
 
-    // 백그라운드로 갔을경우 음악 정지
+    // 앱 생명주기에 따른 음악 제어
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -57,6 +67,8 @@ fun BookshelfScreen(
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
+
+    // 메인 UI 구성
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -67,7 +79,7 @@ fun BookshelfScreen(
                 .fillMaxSize()
                 .navigationBarsPadding()
         ) {
-            // 헤더 추가
+            // 헤더 추가 - 언어 선택, 설정, 챗봇 버튼 포함
             BookshelfHeader(
                 currentLanguage = state.currentLanguage,
                 onSettingClick = {
@@ -81,8 +93,9 @@ fun BookshelfScreen(
                 },
             )
 
+            // 책 그리드 표시
             LazyVerticalGrid(
-                columns = GridCells.Fixed(5),
+                columns = GridCells.Fixed(5),  // 5열 그리드
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 contentPadding = PaddingValues(vertical = 16.dp),

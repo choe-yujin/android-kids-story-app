@@ -22,6 +22,17 @@ import coil.compose.AsyncImage
 import com.timor.kidsstory.presentation.book.model.PageUiState
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
+/**
+ * 동화책 페이지의 이미지 영역 컴포저블
+ *
+ * 페이지 왼쪽에 위치하며, 동화책의 일러스트레이션을 표시합니다.
+ * 좌측 상단에는 책장으로 돌아가는 뒤로가기 버튼이 있습니다.
+ * 이미지는 화면에 꽉 차게 표시되며, ContentScale.Crop으로 적절히 크기가 조정됩니다.
+ *
+ * @param state 페이지 UI 상태 정보
+ * @param onBackToBookshelf 책장으로 돌아가기 버튼 클릭 시 실행할 콜백
+ * @param modifier 레이아웃 수정자
+ */
 @Composable
 fun PageImageSection(
     state: PageUiState,
@@ -29,12 +40,15 @@ fun PageImageSection(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxHeight()) {
+        // 페이지 이미지 로드 및 표시
         AsyncImage(
             model = state.imageUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+
+        // 뒤로가기 버튼 - 반투명 원형 배경
         Box(
             modifier = Modifier
                 .padding(16.dp)

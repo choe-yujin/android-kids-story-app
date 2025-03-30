@@ -37,11 +37,20 @@ import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
+/**
+ * 설정 화면 UI 컴포넌트
+ * - 앱 설정, 개발자 정보, 라이센스 등 표시
+ * - 배경 음악 설정 제어
+ *
+ * @param state 설정 화면 UI 상태
+ * @param onAction 사용자 액션 처리 콜백
+ */
 @Composable
 fun SettingScreen(
     state: SettingUiState,
     onAction: (SettingAction) -> Unit,
 ) {
+    // 메인 컨테이너
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -49,7 +58,7 @@ fun SettingScreen(
             .navigationBarsPadding()
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // 헤더 부분
+            // 헤더 부분 - 뒤로가기 버튼과 로고 포함
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -57,6 +66,7 @@ fun SettingScreen(
                     .background(AppColors.primary300)
                     .padding(horizontal = 48.dp)
             ) {
+                // 뒤로가기 (닫기) 버튼
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterStart),
                     onClick = {
@@ -71,6 +81,7 @@ fun SettingScreen(
                     )
                 }
 
+                // 앱 로고
                 Icon(
                     painter = painterResource(id = R.drawable.info_logo_test),
                     contentDescription = "Info",
@@ -81,15 +92,14 @@ fun SettingScreen(
                 )
             }
 
-
-            // 카드 영역
+            // 카드 영역 - 설정, 제작자 정보, 앱 정보 카드 배치
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 48.dp, vertical = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp) // 카드 사이 간격
             ) {
-                // 설정 카드
+                // 설정 카드 - 음악 스위치 포함
                 Card(
                     modifier = Modifier
                         .weight(1f)
@@ -105,6 +115,7 @@ fun SettingScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
+                        // 카드 제목
                         Text(
                             text = "Setting",
                             style = AppTextStyles.gummyMediumSemibold,
@@ -112,6 +123,7 @@ fun SettingScreen(
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
 
+                        // 음악 설정 토글
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -126,6 +138,7 @@ fun SettingScreen(
 
                             Spacer(modifier = Modifier.weight(1f))
 
+                            // 커스텀 토글 스위치
                             CustomToggle(
                                 isChecked = state.isMusicOn,
                                 onToggle = { isMusicOn ->
@@ -136,7 +149,7 @@ fun SettingScreen(
                     }
                 }
 
-                // 제작자 카드
+                // 제작자 카드 - 개발자 정보 표시
                 Card(
                     modifier = Modifier
                         .weight(1f)
@@ -152,6 +165,7 @@ fun SettingScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
+                        // 카드 제목
                         Text(
                             text = "Created by",
                             style = AppTextStyles.gummyMediumSemibold,
@@ -159,6 +173,7 @@ fun SettingScreen(
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
 
+                        // 개발자 목록
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -170,7 +185,7 @@ fun SettingScreen(
                     }
                 }
 
-                // 정보 카드
+                // 정보 카드 - 앱 정보 및 라이센스 표시
                 Card(
                     modifier = Modifier
                         .weight(1f)
@@ -186,6 +201,7 @@ fun SettingScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
+                        // 카드 제목
                         Text(
                             text = "About",
                             style = AppTextStyles.gummyMediumSemibold,
@@ -193,6 +209,7 @@ fun SettingScreen(
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
 
+                        // 앱 정보 박스
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -207,7 +224,7 @@ fun SettingScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // 왼쪽 섹션 - TaleTail
+                                // 왼쪽 섹션 - TaleTail 앱 이름
                                 Text(
                                     text = "TaleTail",
                                     style = AppTextStyles.gummyVSmallMediumItalic,
@@ -236,7 +253,7 @@ fun SettingScreen(
                             }
                         }
 
-                        // 라이센스
+                        // 라이센스 정보
                         Text(
                             text = "License",
                             style = AppTextStyles.gummyMediumSemibold,
@@ -266,6 +283,13 @@ fun SettingScreen(
     }
 }
 
+/**
+ * 커스텀 토글 스위치 컴포넌트
+ * - 음악 켜기/끄기 기능 제공
+ *
+ * @param isChecked 현재 토글 상태
+ * @param onToggle 토글 상태 변경 콜백
+ */
 @Composable
 private fun CustomToggle(
     isChecked: Boolean,
@@ -314,6 +338,14 @@ private fun CustomToggle(
     }
 }
 
+/**
+ * 개발자 정보를 표시하는 행 컴포넌트
+ * - 역할, 이름, 국가 플래그를 함께 표시
+ *
+ * @param role 역할 정보 (예: "Dev/", "Des/")
+ * @param name 개발자 이름
+ * @param flagResId 국가 플래그 리소스 ID
+ */
 @Composable
 private fun DeveloperRow(role: String, name: String, flagResId: Int) {
     // 회색 배경 박스
@@ -328,12 +360,14 @@ private fun DeveloperRow(role: String, name: String, flagResId: Int) {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // 역할 텍스트
             Text(
                 text = role,
                 style = AppTextStyles.gummyVvSmallRegularItalic,
                 color = AppColors.neutral600
             )
 
+            // 이름 텍스트
             Text(
                 text = name,
                 style = AppTextStyles.gummyVSmallMediumItalic,
@@ -342,6 +376,7 @@ private fun DeveloperRow(role: String, name: String, flagResId: Int) {
 
             Spacer(modifier = Modifier.weight(1f))
 
+            // 국가 플래그 아이콘
             Icon(
                 painter = painterResource(id = flagResId),
                 contentDescription = null,

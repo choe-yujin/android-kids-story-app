@@ -10,7 +10,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.timor.kidsstory.presentation.book.model.PageUiState
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
-// 읽기 화면 하위 컴포넌트들
+/**
+ * 동화책 페이지 컨텐츠를 표시하는 컴포저블
+ *
+ * 좌우 분할 화면으로 구성되어 있으며, 좌측에는 [PageImageSection]을 통해 동화책 이미지를,
+ * 우측에는 [PageTextSection]을 통해 텍스트 내용을 표시합니다.
+ * 가로 모드에 최적화된 레이아웃으로 설계되었습니다.
+ *
+ * @param state 페이지 UI 상태 정보
+ * @param onBackToBookshelf 책장으로 돌아가기 버튼 클릭 시 실행할 콜백
+ * @param modifier 레이아웃 수정자
+ * @param onTextToSpeech 텍스트-음성 변환 실행 콜백
+ */
 @Composable
 fun PageContent(
     state: PageUiState,
