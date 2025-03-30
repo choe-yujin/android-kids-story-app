@@ -119,6 +119,7 @@ class BookDownloader @Inject constructor(
                     }
                     // 압축 해제 후 ZIP 파일 삭제
                     zipFile.delete()
+                    Log.d(TAG, "Images ZIP file extracted and deleted")
                 } else {
                     return Result.failure(Exception("Failed to download images"))
                 }
@@ -137,6 +138,7 @@ class BookDownloader @Inject constructor(
             )
 
             downloadedBooksDao.insertDownloadedBook(bookEntity)
+            Log.d(TAG, "Book download completed and saved to database: ${bookEntity.storyId}")
 
             // 5. Book 객체로 변환하여 반환
             val downloadedBook = Book(
@@ -183,26 +185,40 @@ class BookDownloader @Inject constructor(
      * ZIP 파일 압축 해제
      */
     private fun extractZipFile(zipFile: File, destinationDir: File) {
-        ZipInputStream(zipFile.inputStream()).use { zipIn ->
-            var entry = zipIn.nextEntry
-            while (entry != null) {
-                val entryFile = File(destinationDir, entry.name)
+        try {
+            Log.d(TAG, "Extracting ZIP file: ${zipFile.path} to ${destinationDir.path}")
+            ZipInputStream(zipFile.inputStream()).use { zipIn ->
+                var entry = zipIn.nextEntry
+                var entriesExtracted = 0
 
-                // 디렉토리면 생성
-                if (entry.isDirectory) {
-                    entryFile.mkdirs()
-                } else {
-                    // 파일이면 내용 복사
-                    entryFile.parentFile?.mkdirs()
+                while (entry != null) {
+                    val entryFile = File(destinationDir, entry.name)
+                    Log.d(TAG, "Extracting entry: ${entry.name}")
 
-                    FileOutputStream(entryFile).use { output ->
-                        zipIn.copyTo(output)
+                    // 디렉토리면 생성
+                    if (entry.isDirectory) {
+                        entryFile.mkdirs()
+                        Log.d(TAG, "Created directory: ${entryFile.path}")
+                    } else {
+                        // 파일이면 내용 복사
+                        entryFile.parentFile?.mkdirs()
+
+                        FileOutputStream(entryFile).use { output ->
+                            zipIn.copyTo(output)
+                            entriesExtracted++
+                            Log.d(TAG, "Extracted file: ${entryFile.path}")
+                        }
                     }
+
+                    zipIn.closeEntry()
+                    entry = zipIn.nextEntry
                 }
 
-                zipIn.closeEntry()
-                entry = zipIn.nextEntry
+                Log.d(TAG, "ZIP extraction completed. Total entries extracted: $entriesExtracted")
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error extracting ZIP file", e)
+            throw e
         }
     }
 }

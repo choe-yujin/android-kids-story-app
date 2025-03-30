@@ -23,6 +23,8 @@ class BookRepositoryImpl @Inject constructor(
     private val downloadedBooksDao: DownloadedBooksDao
 ) : BookRepository {
 
+    private val TAG = "BookRepositoryImpl"
+
     /**
      * 특정 언어로 된 모든 책 목록을 가져옴
      *
@@ -30,7 +32,7 @@ class BookRepositoryImpl @Inject constructor(
      * @return 책 목록 또는 오류
      */
     override suspend fun getBooks(language: String): Result<List<Book>> {
-        Log.d("BookRepositoryImpl", "Getting books for language: $language")
+        Log.d(TAG, "Getting books for language: $language")
 
         return try {
             assetDataSource.loadBooks().map { storyDtos ->
@@ -46,13 +48,13 @@ class BookRepositoryImpl @Inject constructor(
                     it.storyId.contains(languagePrefix, ignoreCase = true)
                 }
 
-                Log.d("BookRepositoryImpl", "Found ${filteredBooks.size} books for language $language")
+                Log.d(TAG, "Found ${filteredBooks.size} books for language $language")
 
                 // BookMapper를 통해 DTO를 도메인 모델로 변환
                 filteredBooks.map { BookMapper.mapToDomain(it, language) }
             }
         } catch (e: Exception) {
-            Log.e("BookRepositoryImpl", "Error getting books", e)
+            Log.e(TAG, "Error getting books", e)
             Result.failure(e)
         }
     }
@@ -68,7 +70,7 @@ class BookRepositoryImpl @Inject constructor(
         // storyId에서 기본 ID 추출 (예: "801_en-ph" -> "801")
         val baseId = storyId.split("_").firstOrNull() ?: storyId
 
-        Log.d("BookRepositoryImpl", "Getting book by ID: $baseId, full storyId: $storyId")
+        Log.d(TAG, "Getting book by ID: $baseId, full storyId: $storyId")
 
         return try {
             // 먼저 다운로드된 책인지 확인
@@ -76,7 +78,7 @@ class BookRepositoryImpl @Inject constructor(
                 val downloadedBook = downloadedBooksDao.getDownloadedBook(baseId.toInt(), language)
                 if (downloadedBook != null) {
                     // 다운로드된 책이라면 해당 정보로 Book 객체 생성
-                    Log.d("BookRepositoryImpl", "Found downloaded book: ${downloadedBook.storyId}")
+                    Log.d(TAG, "Found downloaded book: ${downloadedBook.storyId}")
                     return Result.success(
                         Book(
                             storyId = downloadedBook.storyId,
@@ -91,28 +93,28 @@ class BookRepositoryImpl @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                Log.e("BookRepositoryImpl", "Error checking downloaded book", e)
+                Log.e(TAG, "Error checking downloaded book", e)
                 // 다운로드 DB 확인 중 오류 발생해도 앱 내장 책 확인 계속 진행
             }
 
             // 앱 내장 책 확인
             val allBooks = assetDataSource.loadBooks().getOrThrow()
 
-            Log.d("BookRepositoryImpl", "Total books in metadata: ${allBooks.size}")
+            Log.d(TAG, "Total books in metadata: ${allBooks.size}")
 
             // 기본 ID가 일치하는 책들 찾기
             val matchedBooks = allBooks.filter { book ->
                 // storyId에서 기본 ID 부분 추출 (예: 801_en-ph -> 801)
                 val bookBaseId = book.storyId.split("_").firstOrNull() ?: book.storyId
-                Log.d("BookRepositoryImpl", "Comparing $bookBaseId with $baseId")
+                Log.d(TAG, "Comparing $bookBaseId with $baseId")
                 bookBaseId == baseId
             }
 
-            Log.d("BookRepositoryImpl", "Found ${matchedBooks.size} books with base ID: $baseId")
+            Log.d(TAG, "Found ${matchedBooks.size} books with base ID: $baseId")
 
             if (matchedBooks.isEmpty()) {
-                Log.e("BookRepositoryImpl", "No books found with base ID: $baseId")
-                Log.d("BookRepositoryImpl", "Available book IDs: ${allBooks.map { it.storyId }}")
+                Log.e(TAG, "No books found with base ID: $baseId")
+                Log.d(TAG, "Available book IDs: ${allBooks.map { it.storyId }}")
                 return Result.failure(Exception("책을 찾을 수 없습니다: ID $baseId"))
             }
 
@@ -130,11 +132,11 @@ class BookRepositoryImpl @Inject constructor(
                 it.storyId.contains("en", ignoreCase = true)
             } ?: matchedBooks.first()
 
-            Log.d("BookRepositoryImpl", "Selected book: ${selectedBook.storyId}")
+            Log.d(TAG, "Selected book: ${selectedBook.storyId}")
 
             Result.success(BookMapper.mapToDomain(selectedBook, language))
         } catch (e: Exception) {
-            Log.e("BookRepositoryImpl", "Error getting book by ID", e)
+            Log.e(TAG, "Error getting book by ID", e)
             Result.failure(e)
         }
     }
@@ -150,7 +152,7 @@ class BookRepositoryImpl @Inject constructor(
         // storyId에서 기본 ID 추출
         val baseId = storyId.split("_").firstOrNull() ?: storyId
 
-        Log.d("BookRepositoryImpl", "Getting book pages for base ID: $baseId, language: $language")
+        Log.d(TAG, "Getting book pages for base ID: $baseId, language: $language")
 
         try {
             // 먼저 다운로드된 책인지 확인
@@ -159,13 +161,17 @@ class BookRepositoryImpl @Inject constructor(
 
                 // 책이 다운로드되어 있는 경우 외부 저장소에서 로드
                 if (downloadedBook != null) {
-                    Log.d("BookRepositoryImpl", "Loading downloaded book from: ${downloadedBook.contentJsonPath}")
+                    Log.d(TAG, "Loading downloaded book from: ${downloadedBook.contentJsonPath}")
 
                     val pagesResult = assetDataSource.loadExternalBookContent(downloadedBook.contentJsonPath)
 
                     return pagesResult.map { response ->
-                        // 다운로드된 책의 이미지 폴더 경로 구성 (contentJsonPath에서 추출)
-                        val imageFolderPath = File(downloadedBook.contentJsonPath).parent + "/images"
+                        // 다운로드된 책의 이미지 폴더 경로 구성
+                        val contentJsonFile = File(downloadedBook.contentJsonPath)
+                        val bookRootDir = contentJsonFile.parentFile?.parentFile
+                        val imageFolderPath = File(bookRootDir, "images").absolutePath
+
+                        Log.d(TAG, "Using image folder path: $imageFolderPath")
 
                         // 개별 페이지 매핑 - 다운로드된 책 처리
                         val mappedPages = response.pages.map { pageDto ->
@@ -181,12 +187,12 @@ class BookRepositoryImpl @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                Log.e("BookRepositoryImpl", "Error checking downloaded book", e)
+                Log.e(TAG, "Error checking downloaded book", e)
                 // 다운로드 확인 중 오류 발생해도 앱 내장 책 로드 계속 진행
             }
 
             // 앱 내장 책은 기존 방식대로 assets에서 로드
-            Log.d("BookRepositoryImpl", "Loading built-in book from assets")
+            Log.d(TAG, "Loading built-in book from assets")
 
             // 언어에 맞는 파일 이름 결정
             val languageCode = when {
@@ -196,7 +202,7 @@ class BookRepositoryImpl @Inject constructor(
             }
 
             val fullStoryId = "${baseId}_${languageCode}"
-            Log.d("BookRepositoryImpl", "Loading pages for full story ID: $fullStoryId")
+            Log.d(TAG, "Loading pages for full story ID: $fullStoryId")
 
             // 페이지 로드 및 매핑
             val pagesResult = assetDataSource.loadBookPages(fullStoryId, language)
@@ -211,7 +217,7 @@ class BookRepositoryImpl @Inject constructor(
                 PageMapper.addTotalPagesInfo(mappedPages)
             }
         } catch (e: Exception) {
-            Log.e("BookRepositoryImpl", "Error getting book pages", e)
+            Log.e(TAG, "Error getting book pages", e)
             return Result.failure(e)
         }
     }

@@ -1,5 +1,6 @@
 package com.timor.kidsstory.data.mapper
 
+import android.util.Log
 import com.timor.kidsstory.data.dto.PageDto
 import com.timor.kidsstory.domain.model.Page
 
@@ -8,6 +9,8 @@ import com.timor.kidsstory.domain.model.Page
  * - 데이터 계층(DTO)과 도메인 계층(Page) 간의 변환 담당
  */
 object PageMapper {
+
+    private const val TAG = "PageMapper"
 
     /**
      * PageDto를 도메인 Page 객체로 변환
@@ -31,8 +34,10 @@ object PageMapper {
 
         // 이미지 경로 - 다운로드된 책은 외부 저장소, 그 외는 assets 경로 사용
         val imageUrl = if (isDownloaded && imageFolderPath != null) {
+            Log.d(TAG, "Using external storage path for image: file://${imageFolderPath}/${imageFileName}")
             "file://${imageFolderPath}/${imageFileName}"
         } else {
+            Log.d(TAG, "Using assets path for image: file:///android_asset/images/${storyBaseId}/${imageFileName}")
             "file:///android_asset/images/${storyBaseId}/${imageFileName}"
         }
 
