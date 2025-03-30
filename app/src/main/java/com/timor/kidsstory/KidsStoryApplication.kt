@@ -1,23 +1,37 @@
 package com.timor.kidsstory
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 /**
  * 앱의 Application 클래스
  * - Hilt를 사용한 의존성 주입 설정
  * - 앱 시작 시점에 필요한 초기화 작업 수행
+ * - WorkManager 초기화
  */
 @HiltAndroidApp
-class KidsStoryApplication : Application() {
+class KidsStoryApplication : Application(), Configuration.Provider {
+
+    // WorkManager Factory 주입
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    // Configuration.Provider 인터페이스 구현
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .build()
 
     override fun onCreate() {
         super.onCreate()
-
         initLogger()
     }
 
