@@ -40,7 +40,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -520,6 +519,36 @@ class BookshelfViewModel @Inject constructor(
             val updatedBooks = currentState.books.toMutableList()
             val updatedBook = updatedBooks[index].copy(downloadStatus = status)
             updatedBooks[index] = updatedBook
+
+            // 다운로드가 완료됐을 때, 책 데이터를 bookList에도 추가
+            if (status == DownloadStatus.DOWNLOADED) {
+                viewModelScope.launch {
+                    val bookState = updatedBooks[index]
+                    val remoteBookId = bookState.remoteId
+                    val storyId = bookState.storyId
+
+                    // 다운로드된 책의 정보를 가져와 bookList에 추가
+                    val downloadedBookEntity = downloadedBooksDao.getDownloadedBook(remoteBookId, _state.value.currentLanguage.code)
+                    if (downloadedBookEntity != null) {
+                        val newBook = Book(
+                            storyId = storyId,
+                            title = downloadedBookEntity.title,
+                            coverImage = downloadedBookEntity.coverImagePath,
+                            level = 1,
+                            category = "",
+                            pageCount = 0,
+                            isDownloaded = true,
+                            isBookmarked = false
+                        )
+
+                        // bookList에 추가
+                        val newBookList = bookList.toMutableList()
+                        newBookList.add(newBook)
+                        bookList = newBookList
+                    }
+                }
+            }
+
             currentState.copy(books = updatedBooks)
         }
     }
@@ -538,7 +567,7 @@ class BookshelfViewModel @Inject constructor(
             is BookShelfAction.StopMusic -> stopMusic()
             is BookShelfAction.ChangeLanguage -> changeLanguage(action.language)
             is BookShelfAction.ShowLanguageDialog -> handleLanguageSelector(action.isShow)
-            is BookShelfAction.DownloadBook -> TODO()
+            is BookShelfAction.DownloadBook -> downloadBook(action.index)
         }
     }
 }
