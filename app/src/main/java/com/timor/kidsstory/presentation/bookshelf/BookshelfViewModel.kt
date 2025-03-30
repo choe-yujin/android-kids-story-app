@@ -14,6 +14,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.timor.kidsstory.data.dto.StoriesResponse
 import com.timor.kidsstory.data.remote.BookDownloader
 import com.timor.kidsstory.data.remote.model.RemoteBook
 import com.timor.kidsstory.data.remote.network.BookNetworkService
@@ -339,10 +340,21 @@ class BookshelfViewModel @Inject constructor(
      * @return 다운로드 가능한 책 목록
      */
     private suspend fun filterDownloadableBooks(remoteBooks: List<RemoteBook>): List<RemoteBook> {
+        // 로컬 assets에서 메타데이터 로드
+        val localAssetBookIds = try {
+            val jsonString = context.assets.open("metadata/stories-metadata.json").bufferedReader().use { it.readText() }
+            val localResponse = json.decodeFromString<StoriesResponse>(jsonString)
+            localResponse.stories.map { it.storyId.split("_").first().toInt() }
+        } catch (e: Exception) {
+            Log.e("BookshelfViewModel", "Error loading local metadata", e)
+            emptyList<Int>()
+        }
+
         return remoteBooks.filter { remoteBook ->
-            // 이미 다운로드된 책인지 확인
-            val downloadedBooks = downloadedBooksDao.getDownloadedBooksByStoryId(remoteBook.id.toString())
-            downloadedBooks.isEmpty()
+            // 조건 1: 로컬 assets에 없는 책
+            !localAssetBookIds.contains(remoteBook.id) &&
+            // 조건 2: 아직 다운로드되지 않은 책 (Room DB에서 확인)
+            downloadedBooksDao.getDownloadedBooksByStoryId(remoteBook.id.toString()).isEmpty()
         }
     }
 
