@@ -39,7 +39,6 @@ class BookNetworkService @Inject constructor(
 
     /**
      * 원격 URL에서 파일 다운로드
-     * - 새로운 책이나 이미지 다운로드에 사용
      *
      * @param url 다운로드할 파일의 URL
      * @param outputFile 저장할 로컬 파일
@@ -51,6 +50,7 @@ class BookNetworkService @Inject constructor(
             if (response.status.isSuccess()) {
                 // IO 작업은 Dispatchers.IO 컨텍스트에서 수행
                 withContext(Dispatchers.IO) {
+                    outputFile.parentFile?.mkdirs()
                     outputFile.outputStream().use { fileOut ->
                         response.bodyAsChannel().copyTo(fileOut)
                     }
