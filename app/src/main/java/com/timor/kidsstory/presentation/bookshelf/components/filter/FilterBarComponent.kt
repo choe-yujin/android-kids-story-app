@@ -75,46 +75,46 @@ data class FilterState(
     val selectedCategory: BookCategory? = null
 )
 
-@Composable
-fun FilterBar(
-    filterState: FilterState,
-    onFilterSelected: (FilterOption) -> Unit,
-    onLevelSelected: (BookLevel) -> Unit,
-    onCategorySelected: (BookCategory) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color(0xFFFFFCF2))
-            .padding(horizontal = 48.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // All 버튼
-        FilterButton(
-            text = "All",
-            isSelected = filterState.selectedFilter == FilterOption.ALL,
-            onClick = { onFilterSelected(FilterOption.ALL) }
-        )
-
-        // Level 버튼과 확장된 옵션들
-        LevelFilterSection(
-            filterState = filterState,
-            isExpanded = filterState.expandedFilter == FilterOption.LEVEL,
-            onLevelFilterClick = { onFilterSelected(FilterOption.LEVEL) },
-            onLevelSelected = onLevelSelected
-        )
-
-        // Category 버튼과 확장된 옵션들
-        CategoryFilterSection(
-            filterState = filterState,
-            isExpanded = filterState.expandedFilter == FilterOption.CATEGORY,
-            onCategoryFilterClick = { onFilterSelected(FilterOption.CATEGORY) },
-            onCategorySelected = onCategorySelected
-        )
-    }
-}
+//@Composable
+//fun FilterBar(
+//    filterState: FilterState,
+//    onFilterSelected: (FilterOption) -> Unit,
+//    onLevelSelected: (BookLevel) -> Unit,
+//    onCategorySelected: (BookCategory) -> Unit,
+//    modifier: Modifier = Modifier
+//) {
+//    Row(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .background(Color(0xFFFFFCF2))
+//            .padding(horizontal = 48.dp, vertical = 8.dp),
+//        horizontalArrangement = Arrangement.spacedBy(12.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        // All 버튼
+//        FilterButton(
+//            text = "All",
+//            isSelected = filterState.selectedFilter == FilterOption.ALL,
+//            onClick = { onFilterSelected(FilterOption.ALL) }
+//        )
+//
+//        // Level 버튼과 확장된 옵션들
+//        LevelFilterSection(
+//            filterState = filterState,
+//            isExpanded = filterState.expandedFilter == FilterOption.LEVEL,
+//            onLevelFilterClick = { onFilterSelected(FilterOption.LEVEL) },
+//            onLevelSelected = onLevelSelected
+//        )
+//
+//        // Category 버튼과 확장된 옵션들
+//        CategoryFilterSection(
+//            filterState = filterState,
+//            isExpanded = filterState.expandedFilter == FilterOption.CATEGORY,
+//            onCategoryFilterClick = { onFilterSelected(FilterOption.CATEGORY) },
+//            onCategorySelected = onCategorySelected
+//        )
+//    }
+//}
 
 @Composable
 fun FilterButton(
@@ -256,61 +256,61 @@ fun LevelBadge(
     }
 }
 
-@Composable
-fun CategoryFilterSection(
-    filterState: FilterState,
-    isExpanded: Boolean,
-    onCategoryFilterClick: () -> Unit,
-    onCategorySelected: (BookCategory) -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Category 버튼 (선택된 카테고리가 있으면 표시)
-        CategoryButton(
-            selectedCategory = filterState.selectedCategory,
-            isSelected = filterState.selectedFilter == FilterOption.CATEGORY,
-            onClick = onCategoryFilterClick
-        )
-
-        // 확장된 카테고리 옵션들
-        AnimatedVisibility(
-            visible = isExpanded,
-            enter = expandHorizontally(),
-            exit = shrinkHorizontally()
-        ) {
-            Row(
-                modifier = Modifier.padding(start = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                CategoryIcon(
-                    category = BookCategory.LEGEND,
-                    icon = Icons.Default.Close,
-                    contentDescription = "Legend",
-                    onCategorySelected = onCategorySelected
-                )
-                CategoryIcon(
-                    category = BookCategory.FOLKTALE,
-                    icon = Icons.Default.DateRange,
-                    contentDescription = "Folktale",
-                    onCategorySelected = onCategorySelected
-                )
-                CategoryIcon(
-                    category = BookCategory.CULTURE,
-                    icon = Icons.Default.Favorite,
-                    contentDescription = "Culture",
-                    onCategorySelected = onCategorySelected
-                )
-                CategoryIcon(
-                    category = BookCategory.LIFE,
-                    icon = Icons.Default.Place,
-                    contentDescription = "Life",
-                    onCategorySelected = onCategorySelected
-                )
-            }
-        }
-    }
-}
+//@Composable
+//fun CategoryFilterSection(
+//    filterState: FilterState,
+//    isExpanded: Boolean,
+//    onCategoryFilterClick: () -> Unit,
+//    onCategorySelected: (BookCategory) -> Unit
+//) {
+//    Row(
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        // Category 버튼 (선택된 카테고리가 있으면 표시)
+//        CategoryButton(
+//            selectedCategory = filterState.selectedCategory,
+//            isSelected = filterState.selectedFilter == FilterOption.CATEGORY,
+//            onClick = onCategoryFilterClick
+//        )
+//
+//        // 확장된 카테고리 옵션들
+//        AnimatedVisibility(
+//            visible = isExpanded,
+//            enter = expandHorizontally(),
+//            exit = shrinkHorizontally()
+//        ) {
+//            Row(
+//                modifier = Modifier.padding(start = 8.dp),
+//                horizontalArrangement = Arrangement.spacedBy(8.dp)
+//            ) {
+//                CategoryIcon(
+//                    category = BookCategory.LEGEND,
+//                    icon = Icons.Default.Close,
+//                    contentDescription = "Legend",
+//                    onCategorySelected = onCategorySelected
+//                )
+//                CategoryIcon(
+//                    category = BookCategory.FOLKTALE,
+//                    icon = Icons.Default.DateRange,
+//                    contentDescription = "Folktale",
+//                    onCategorySelected = onCategorySelected
+//                )
+//                CategoryIcon(
+//                    category = BookCategory.CULTURE,
+//                    icon = Icons.Default.Favorite,
+//                    contentDescription = "Culture",
+//                    onCategorySelected = onCategorySelected
+//                )
+//                CategoryIcon(
+//                    category = BookCategory.LIFE,
+//                    icon = Icons.Default.Place,
+//                    contentDescription = "Life",
+//                    onCategorySelected = onCategorySelected
+//                )
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun CategoryButton(
@@ -369,36 +369,7 @@ fun CategoryButton(
     }
 }
 
-@Composable
-fun CategoryIcon(
-    category: BookCategory,
-    icon: ImageVector,
-    contentDescription: String,
-    onCategorySelected: (BookCategory) -> Unit
-) {
-    val categoryColor = when (category) {
-        BookCategory.LEGEND -> Color(0xFF3F51B5)
-        BookCategory.FOLKTALE -> Color(0xFF009688)
-        BookCategory.CULTURE -> Color(0xFFE91E63)
-        BookCategory.LIFE -> Color(0xFFFF5722)
-    }
 
-    Box(
-        modifier = Modifier
-            .size(32.dp)
-            .clip(CircleShape)
-            .background(categoryColor)
-            .clickable { onCategorySelected(category) },
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = Color.White,
-            modifier = Modifier.size(20.dp)
-        )
-    }
-}
 
 // String의 첫 글자를 대문자로 만드는 확장 함수
 fun String.capitalize(): String {
@@ -418,67 +389,67 @@ fun String.capitalize(): String {
 //    }
 //}
 
-@Preview(showBackground = true, widthDp = 800, heightDp = 120)
-@Composable
-fun FilterBarWithLevelExpandedPreview() {
-    KidsStoryTheme {
-        FilterBar(
-            filterState = FilterState(
-                expandedFilter = FilterOption.LEVEL,
-                selectedFilter = FilterOption.LEVEL
-            ),
-            onFilterSelected = {},
-            onLevelSelected = {},
-            onCategorySelected = {}
-        )
-    }
-}
+//@Preview(showBackground = true, widthDp = 800, heightDp = 120)
+//@Composable
+//fun FilterBarWithLevelExpandedPreview() {
+//    KidsStoryTheme {
+//        FilterBar(
+//            filterState = FilterState(
+//                expandedFilter = FilterOption.LEVEL,
+//                selectedFilter = FilterOption.LEVEL
+//            ),
+//            onFilterSelected = {},
+//            onLevelSelected = {},
+//            onCategorySelected = {}
+//        )
+//    }
+//}
 
-@Preview(showBackground = true, widthDp = 800, heightDp = 120)
-@Composable
-fun FilterBarWithLevelSelectedPreview() {
-    KidsStoryTheme {
-        FilterBar(
-            filterState = FilterState(
-                selectedFilter = FilterOption.LEVEL,
-                selectedLevel = BookLevel.LEVEL_3
-            ),
-            onFilterSelected = {},
-            onLevelSelected = {},
-            onCategorySelected = {}
-        )
-    }
-}
+//@Preview(showBackground = true, widthDp = 800, heightDp = 120)
+//@Composable
+//fun FilterBarWithLevelSelectedPreview() {
+//    KidsStoryTheme {
+//        FilterBar(
+//            filterState = FilterState(
+//                selectedFilter = FilterOption.LEVEL,
+//                selectedLevel = BookLevel.LEVEL_3
+//            ),
+//            onFilterSelected = {},
+//            onLevelSelected = {},
+//            onCategorySelected = {}
+//        )
+//    }
+//}
 
-@Preview(showBackground = true, widthDp = 800, heightDp = 120)
-@Composable
-fun FilterBarWithCategoryExpandedPreview() {
-    KidsStoryTheme {
-        FilterBar(
-            filterState = FilterState(
-                expandedFilter = FilterOption.CATEGORY,
-                selectedFilter = FilterOption.CATEGORY
-            ),
-            onFilterSelected = {},
-            onLevelSelected = {},
-            onCategorySelected = {}
-        )
-    }
-}
+//@Preview(showBackground = true, widthDp = 800, heightDp = 120)
+//@Composable
+//fun FilterBarWithCategoryExpandedPreview() {
+//    KidsStoryTheme {
+//        FilterBar(
+//            filterState = FilterState(
+//                expandedFilter = FilterOption.CATEGORY,
+//                selectedFilter = FilterOption.CATEGORY
+//            ),
+//            onFilterSelected = {},
+//            onLevelSelected = {},
+//            onCategorySelected = {}
+//        )
+//    }
+//}
 
-@Preview(showBackground = true, widthDp = 800, heightDp = 120)
-@Composable
-fun FilterBarWithCategorySelectedPreview() {
-    KidsStoryTheme {
-        FilterBar(
-            filterState = FilterState(
-                selectedFilter = FilterOption.CATEGORY,
-                selectedCategory = BookCategory.FOLKTALE
-            ),
-            onFilterSelected = {},
-            onLevelSelected = {},
-            onCategorySelected = {}
-        )
-    }
-}
-
+//@Preview(showBackground = true, widthDp = 800, heightDp = 120)
+//@Composable
+//fun FilterBarWithCategorySelectedPreview() {
+//    KidsStoryTheme {
+//        FilterBar(
+//            filterState = FilterState(
+//                selectedFilter = FilterOption.CATEGORY,
+//                selectedCategory = BookCategory.FOLKTALE
+//            ),
+//            onFilterSelected = {},
+//            onLevelSelected = {},
+//            onCategorySelected = {}
+//        )
+//    }
+//}
+//

@@ -30,6 +30,7 @@ import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
 import com.timor.kidsstory.presentation.bookshelf.components.filter.FilterBar
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
@@ -109,6 +110,12 @@ fun BookshelfScreen(
                 onCategoryClick = {
                     onAction(BookShelfAction.SelectFilter(FilterBarCategory.CATEGORY))
                 },
+                onLevelClick = { level ->
+                    onAction(BookShelfAction.SelectFilter(stage = level))
+                },
+                onBookCategoryClick = { bookCategory ->
+                    onAction(BookShelfAction.SelectFilter(category = bookCategory))
+                }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -123,7 +130,7 @@ fun BookshelfScreen(
                     .fillMaxSize()
                     .padding(horizontal = 48.dp)
             ) {
-                items(state.books) { bookState ->
+                items(state.filteredBooks) { bookState ->
                     BookCover(
                         state = bookState,
                         onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(bookState))) }

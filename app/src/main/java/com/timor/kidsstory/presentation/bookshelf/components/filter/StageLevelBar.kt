@@ -21,18 +21,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 @Composable
 fun LevelButton(
-    level: BookLevel,
-    onLevelSelected: (BookLevel) -> Unit
+    level: FilterLevel,
+    onLevelSelected: (FilterLevel) -> Unit
 ) {
     val levelColor = when (level) {
-        BookLevel.LEVEL_1 -> Color(0xFF4CAF50) // 녹색
-        BookLevel.LEVEL_2 -> Color(0xFFFFEB3B) // 노란색
-        BookLevel.LEVEL_3 -> Color(0xFFFF9800) // 주황색
-        BookLevel.LEVEL_4 -> Color(0xFFF44336) // 빨간색
+        FilterLevel.ONE   -> Color(0xFF4CAF50) // 녹색
+        FilterLevel.TWO -> Color(0xFFFFEB3B) // 노란색
+        FilterLevel.THREE -> Color(0xFFFF9800) // 주황색
+        FilterLevel.FOUR -> Color(0xFFF44336) // 빨간색
     }
 
     Box(
@@ -44,7 +45,7 @@ fun LevelButton(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = level.level.toString(),
+            text = level.displayName.toString(),
             color = Color.White,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -55,7 +56,7 @@ fun LevelButton(
 @Composable
 fun LevelFilterBar(
     isExpanded: Boolean,
-    onLevelSelected: (BookLevel) -> Unit = {}
+    onLevelSelected: (FilterLevel) -> Unit = {}
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -70,10 +71,10 @@ fun LevelFilterBar(
                 modifier = Modifier.padding(start = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                LevelButton(level = BookLevel.LEVEL_1, onLevelSelected = onLevelSelected)
-                LevelButton(level = BookLevel.LEVEL_2, onLevelSelected = onLevelSelected)
-                LevelButton(level = BookLevel.LEVEL_3, onLevelSelected = onLevelSelected)
-                LevelButton(level = BookLevel.LEVEL_4, onLevelSelected = onLevelSelected)
+                LevelButton(level = FilterLevel.ONE, onLevelSelected = onLevelSelected)
+                LevelButton(level = FilterLevel.TWO, onLevelSelected = onLevelSelected)
+                LevelButton(level = FilterLevel.THREE, onLevelSelected = onLevelSelected)
+                LevelButton(level = FilterLevel.FOUR, onLevelSelected = onLevelSelected)
             }
         }
     }
@@ -85,7 +86,7 @@ fun LevelFilterBar(
 fun LevelButtonPreview() {
     KidsStoryTheme {
         LevelButton(
-            level = BookLevel.LEVEL_1,
+            level = FilterLevel.ONE,
             onLevelSelected = {}
         )
     }

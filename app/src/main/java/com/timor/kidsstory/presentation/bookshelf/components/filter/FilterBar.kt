@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
@@ -38,6 +40,8 @@ fun FilterBar(
     onAllClick: () -> Unit = {},
     onStageClick: () -> Unit = {},
     onCategoryClick: () -> Unit = {},
+    onLevelClick: (FilterLevel) -> Unit = {},
+    onBookCategoryClick: (FilterBookCategory) -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -60,7 +64,9 @@ fun FilterBar(
             onStageClick()
         }
 
-        LevelFilterBar(isExpanded = filterBarState.isStageFilterExpanded)
+        LevelFilterBar(isExpanded = filterBarState.isStageFilterExpanded) { level ->
+            onLevelClick(level)
+        }
 
         Icon(
             painter = painterResource(R.drawable.separation_bar),
@@ -70,6 +76,10 @@ fun FilterBar(
 
         FilterBarButton(text = "Category", isSelected = filterBarState.selectedFilter == FilterBarCategory.CATEGORY) {
             onCategoryClick()
+        }
+
+        CategoryFilterBar(isExpanded = filterBarState.isCategoryFilterExpanded) { bookCategory ->
+            onBookCategoryClick(bookCategory)
         }
     }
 }
