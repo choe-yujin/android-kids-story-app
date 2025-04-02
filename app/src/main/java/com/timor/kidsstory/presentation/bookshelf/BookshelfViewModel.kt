@@ -49,9 +49,6 @@ class BookshelfViewModel @Inject constructor(
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
 
-//    // 실제 Book 객체 저장 (UI 상태와 별도 관리)
-//    private var bookList = listOf<Book>()
-
     /**
      * 초기화 - 앱 시작 시 필요한 데이터 로드
      */
@@ -156,22 +153,13 @@ class BookshelfViewModel @Inject constructor(
                 result.fold(
                     onSuccess = { books ->
                         // 책 목록 저장
-                        _state.update { it.copy(books = books) }
+                        _state.update {
+                            it.copy(
+                                books = books,
+                                filteredBooks = books,
+                            )
+                        }
                         Log.d("BookshelfViewModel", "Books loaded: ${books.size}")
-//
-//                        // UI 상태 업데이트
-//                        _state.update {
-//                            it.copy(
-//                                books = books.map { book ->
-//                                    BookCoverUiState(
-//                                        imageUrl = book.coverImage, // 이미 정확한 경로 포함
-//                                        title = book.title,
-//                                        storyId = book.storyId
-//                                    )
-//                                },
-//                                isLoading = false
-//                            )
-//                        }
                     },
                     onFailure = { error ->
                         Log.e("BookshelfViewModel", "Error loading books: ${error.message}", error)
@@ -213,24 +201,71 @@ class BookshelfViewModel @Inject constructor(
     }
 
     /*
-    * 책 리스트 필터링
+    * 책 리스트 필터링 UI 반영용
     * */
     private fun onFilterOptionSelected(
         filter: FilterBarCategory? = null,
         stage: FilterLevel? = null,
         category: FilterBookCategory? = null
     ) {
+//        _state.update {
+//            it.copy(
+//                filterBarState = FilterBarState(
+//                    selectedFilter = filter ?: it.filterBarState.selectedFilter,
+//                    selectedStage = stage ?: it.filterBarState.selectedStage,
+//                    selectedCategory = category ?: it.filterBarState.selectedCategory,
+//                    isStageFilterExpanded = filter == FilterBarCategory.STAGE && stage == null,
+//                    isCategoryFilterExpanded = filter == FilterBarCategory.CATEGORY && category == null
+//                )
+//            )
+//        }
+
         _state.update {
+            val isNewFilterSelected = filter != null && filter != it.filterBarState.selectedFilter      // 대분류중 하나를 선택했는지와 기존에 선택된 필터와 다른 필터인지 확인
+            val isStageSelected = filter == FilterBarCategory.STAGE
+            val isCategorySelected = filter == FilterBarCategory.CATEGORY
+
             it.copy(
-                filterBarState = FilterBarState(
+                filterBarState = it.filterBarState.copy(
                     selectedFilter = filter ?: it.filterBarState.selectedFilter,
                     selectedStage = stage ?: it.filterBarState.selectedStage,
                     selectedCategory = category ?: it.filterBarState.selectedCategory,
-                    isStageFilterExpanded = filter == FilterBarCategory.STAGE && stage == null,
-                    isCategoryFilterExpanded = filter == FilterBarCategory.CATEGORY && category == null
+                    isStageFilterExpanded = when {
+                        isNewFilterSelected -> isStageSelected  // 새로운 대분류 선택시 필터 닫기
+                        stage != null -> true // 하위 필터일 경우 유지
+                        else -> it.filterBarState.isStageFilterExpanded
+                    },
+                    isCategoryFilterExpanded = when {
+                        isNewFilterSelected -> isCategorySelected // 위와 동일
+                        category != null -> true // 위와 동일
+                        else -> it.filterBarState.isCategoryFilterExpanded
+                    }
                 )
             )
         }
+
+
+
+        applyFilters()
+    }
+
+    /*
+    * 책 리스트 필터링 실제 리스트 반영
+    * */
+    private fun applyFilters() {
+        val selectedFilter = _state.value.filterBarState.selectedFilter
+        val selectedStage = _state.value.filterBarState.selectedStage
+        val selectedCategory = _state.value.filterBarState.selectedCategory
+
+        val filteredList = _state.value.books.filter { book ->
+            when (selectedFilter) {
+                FilterBarCategory.STAGE -> selectedStage?.let { book.level == (it.ordinal + 1) } ?: true
+                FilterBarCategory.CATEGORY -> selectedCategory?.let { book.category == it.name } ?: true
+                else -> true // ALL일 경우 필터 적용 없음
+            }
+        }
+
+        _state.update { it.copy(filteredBooks = filteredList) }
     }
 
 
