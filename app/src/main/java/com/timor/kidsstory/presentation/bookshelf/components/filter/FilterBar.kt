@@ -2,6 +2,7 @@ package com.timor.kidsstory.presentation.bookshelf.components.filter
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
@@ -30,16 +33,22 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 * @since 2025.04.02
 * */
 @Composable
-fun FilterBar() {
+fun FilterBar(
+    filterBarState: FilterBarState = FilterBarState(),
+    onAllClick: () -> Unit = {},
+    onStageClick: () -> Unit = {},
+    onCategoryClick: () -> Unit = {},
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp)
-        ,
+            .padding(horizontal = 48.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FilterBarButton(text = "All", isSelected = false)
+        FilterBarButton(text = "All", isSelected = filterBarState.selectedFilter == FilterBarCategory.All) {
+            onAllClick()
+        }
 
         Icon(
             painter = painterResource(R.drawable.separation_bar),
@@ -47,7 +56,11 @@ fun FilterBar() {
             contentDescription = null
         )
 
-        FilterBarButton(text = "Stage", isSelected = false)
+        FilterBarButton(text = "Stage", isSelected = filterBarState.selectedFilter == FilterBarCategory.STAGE) {
+            onStageClick()
+        }
+
+        LevelFilterBar(isExpanded = filterBarState.isStageFilterExpanded)
 
         Icon(
             painter = painterResource(R.drawable.separation_bar),
@@ -55,21 +68,25 @@ fun FilterBar() {
             contentDescription = null
         )
 
-        FilterBarButton(text = "Category", isSelected = false)
+        FilterBarButton(text = "Category", isSelected = filterBarState.selectedFilter == FilterBarCategory.CATEGORY) {
+            onCategoryClick()
+        }
     }
 }
 
 @Composable
 fun FilterBarButton(
     text: String,
-    isSelected: Boolean
+    isSelected: Boolean,
+    onClick: () -> Unit = {},
 ) {
     // 선택 여부에 따라 다르게
     if (!isSelected) {
         Box(
             modifier = Modifier
-                .background(AppColors.neutralWhite)
+                .background(AppColors.neutralWhite, shape = RoundedCornerShape(50.dp))
                 .border(width = 2.dp, color = AppColors.unknown200, shape = RoundedCornerShape(50.dp))
+                .clickable { onClick() }
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
@@ -80,6 +97,7 @@ fun FilterBarButton(
         Box(
             modifier = Modifier
                 .background(AppColors.unknown300, shape = RoundedCornerShape(size = 50.dp))
+                .clickable { onClick() }
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),

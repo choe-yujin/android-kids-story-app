@@ -15,25 +15,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.timor.kidsstory.presentation.bookshelf.model.BookCategory
-import com.timor.kidsstory.presentation.bookshelf.model.FilterOption
 
 @Composable
 fun CategoryFilterBar(
-    filterState: FilterState,
     isExpanded: Boolean,
-    onCategoryFilterClick: () -> Unit,
     onCategorySelected: (BookCategory) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Category 버튼 (선택된 카테고리가 있으면 표시)
-        CategoryButton(
-            selectedCategory = filterState.selectedCategory,
-            isSelected = filterState.selectedFilter == FilterOption.CATEGORY,
-            onClick = onCategoryFilterClick
-        )
 
         // 확장된 카테고리 옵션들
         AnimatedVisibility(

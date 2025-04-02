@@ -39,12 +39,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.timor.kidsstory.presentation.bookshelf.model.BookCategory
-import com.timor.kidsstory.presentation.bookshelf.model.BookLevel
-import com.timor.kidsstory.presentation.bookshelf.model.FilterOption
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 
+
+
+enum class FilterOption {
+    ALL,
+    LEVEL,
+    CATEGORY
+}
+
+// 책 레벨 (1, 2, 3, 4)
+enum class BookLevel(val level: Int) {
+    LEVEL_1(1),
+    LEVEL_2(2),
+    LEVEL_3(3),
+    LEVEL_4(4)
+}
+
+// 책 카테고리 (LEGEND, FOLKTALE, CULTURE, LIFE)
+enum class BookCategory {
+    LEGEND,
+    FOLKTALE,
+    CULTURE,
+    LIFE
+}
 
 
 // 필터 상태를 저장하는 데이터 클래스
