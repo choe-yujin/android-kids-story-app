@@ -23,7 +23,7 @@ data class BookshelfUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val currentLanguage: Language = LanguageConstants.DEFAULT_LANGUAGE,
-    val filterBarState: FilterButtonState = FilterButtonState(FilterBarCategory.All),
+    val filterBarState: FilterBarState = FilterBarState(),
     val showLanguageDialog: Boolean = false,
     val isMusicOn: Boolean = false,
 )

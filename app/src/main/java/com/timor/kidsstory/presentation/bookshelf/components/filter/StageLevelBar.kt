@@ -21,8 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.timor.kidsstory.presentation.bookshelf.model.BookLevel
-import com.timor.kidsstory.presentation.bookshelf.model.FilterOption
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 @Composable
@@ -57,7 +55,7 @@ fun LevelButton(
 @Composable
 fun LevelFilterBar(
     isExpanded: Boolean,
-    onLevelSelected: (BookLevel) -> Unit
+    onLevelSelected: (BookLevel) -> Unit = {}
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically

@@ -13,6 +13,10 @@ import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.MusicManager
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -208,6 +212,28 @@ class BookshelfViewModel @Inject constructor(
         return selectedBook
     }
 
+    /*
+    * 책 리스트 필터링
+    * */
+    private fun onFilterOptionSelected(
+        filter: FilterBarCategory? = null,
+        stage: FilterLevel? = null,
+        category: FilterBookCategory? = null
+    ) {
+        _state.update {
+            it.copy(
+                filterBarState = FilterBarState(
+                    selectedFilter = filter ?: it.filterBarState.selectedFilter,
+                    selectedStage = stage ?: it.filterBarState.selectedStage,
+                    selectedCategory = category ?: it.filterBarState.selectedCategory,
+                    isStageFilterExpanded = filter == FilterBarCategory.STAGE && stage == null,
+                    isCategoryFilterExpanded = filter == FilterBarCategory.CATEGORY && category == null
+                )
+            )
+        }
+    }
+
+
     /**
      * 언어 선택 다이얼로그 표시 제어
      *
@@ -268,6 +294,11 @@ class BookshelfViewModel @Inject constructor(
             is BookShelfAction.StopMusic -> stopMusic()
             is BookShelfAction.ChangeLanguage -> changeLanguage(action.language)
             is BookShelfAction.ShowLanguageDialog -> handleLanguageSelector(action.isShow)
+            is BookShelfAction.SelectFilter -> onFilterOptionSelected(
+                filter = action.filter,
+                stage = action.stage,
+                category = action.category,
+            )
         }
     }
 }
