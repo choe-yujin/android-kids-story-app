@@ -3,6 +3,7 @@ package com.timor.kidsstory.presentation.bookshelf
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.orhanobut.logger.Logger
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
@@ -11,7 +12,6 @@ import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
 import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.MusicManager
-import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,8 +45,8 @@ class BookshelfViewModel @Inject constructor(
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
 
-    // 실제 Book 객체 저장 (UI 상태와 별도 관리)
-    private var bookList = listOf<Book>()
+//    // 실제 Book 객체 저장 (UI 상태와 별도 관리)
+//    private var bookList = listOf<Book>()
 
     /**
      * 초기화 - 앱 시작 시 필요한 데이터 로드
@@ -147,25 +147,27 @@ class BookshelfViewModel @Inject constructor(
                 Log.d("BookshelfViewModel", "Loading books with language: $languageCode")
                 val result = getBooksUseCase(languageCode)
 
+                Logger.e("북 리스트 확인: $result")
+
                 result.fold(
                     onSuccess = { books ->
                         // 책 목록 저장
-                        bookList = books
+                        _state.update { it.copy(books = books) }
                         Log.d("BookshelfViewModel", "Books loaded: ${books.size}")
-
-                        // UI 상태 업데이트
-                        _state.update {
-                            it.copy(
-                                books = books.map { book ->
-                                    BookCoverUiState(
-                                        imageUrl = book.coverImage, // 이미 정확한 경로 포함
-                                        title = book.title,
-                                        storyId = book.storyId
-                                    )
-                                },
-                                isLoading = false
-                            )
-                        }
+//
+//                        // UI 상태 업데이트
+//                        _state.update {
+//                            it.copy(
+//                                books = books.map { book ->
+//                                    BookCoverUiState(
+//                                        imageUrl = book.coverImage, // 이미 정확한 경로 포함
+//                                        title = book.title,
+//                                        storyId = book.storyId
+//                                    )
+//                                },
+//                                isLoading = false
+//                            )
+//                        }
                     },
                     onFailure = { error ->
                         Log.e("BookshelfViewModel", "Error loading books: ${error.message}", error)
@@ -196,12 +198,12 @@ class BookshelfViewModel @Inject constructor(
      * @return 선택된 책 객체 또는 null
      */
     fun onBookSelected(index: Int): Book? {
-        if (index < 0 || index >= bookList.size) {
+        if (index < 0 || index >= _state.value.books.size) {
             Log.e("BookshelfViewModel", "Invalid book index: $index")
             return null
         }
 
-        val selectedBook = bookList[index]
+        val selectedBook = _state.value.books[index]
         Log.d("BookshelfViewModel", "Book selected: ${selectedBook.storyId}")
         return selectedBook
     }

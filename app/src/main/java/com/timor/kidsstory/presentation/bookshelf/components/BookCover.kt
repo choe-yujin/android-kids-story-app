@@ -14,11 +14,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
+import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 
 @Composable
 fun BookCover(
-    state: BookCoverUiState,
+    state: Book,
     onClick: () -> Unit
 ) {
     Card(
@@ -27,10 +29,10 @@ fun BookCover(
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        if (state.imageUrl.isNotEmpty()) {
+        if (state.coverImage.isNotEmpty()) {
             // 실제 이미지 로드
             AsyncImage(
-                model = state.imageUrl,
+                model = state.coverImage,
                 contentDescription = state.title,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
