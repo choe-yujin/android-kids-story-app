@@ -1,5 +1,4 @@
 import java.util.Properties
-import org.gradle.process.ExecSpec
 
 plugins {
     alias(libs.plugins.android.application)
