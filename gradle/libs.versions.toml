@@ -18,7 +18,8 @@ navigationCompose = "2.8.9"
 ui = "1.7.8"
 appcompat = "1.7.0"
 materialVersion = "1.12.0"
-jetbrainsKotlinJvm = "2.0.21" # Kotlin JVM 버전도 다운그레이드
+jetbrainsKotlinJvm = "2.0.21"
+workRuntimeKtx = "2.10.0" # Kotlin JVM 버전도 다운그레이드
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "googleAccompanistPagerIndicators" }
@@ -47,6 +48,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
