@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     // id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
-    alias(libs.plugins.kotlin.serialization)
-    id("com.google.devtools.ksp") // 버전 명시 제거
+    kotlin("plugin.serialization") version "2.1.10"
+    id("com.google.devtools.ksp")
 }
 
 val localProperties = Properties().apply {
@@ -40,16 +40,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
         buildConfig = true
     }
+
+
 }
 
 dependencies {
@@ -71,7 +73,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -91,14 +92,6 @@ dependencies {
 
     // Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.0")
-
-    // WorkManager
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
-    implementation("androidx.work:work-runtime:2.9.1")
-
-    // Hilt와 WorkManager 통합
-    implementation("androidx.hilt:hilt-work:1.2.0")
 
     // hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
@@ -106,8 +99,7 @@ dependencies {
     ksp("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    // Kotlin 메타데이터
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0")
+
     // Logger
     implementation("com.orhanobut:logger:2.2.0")
 
@@ -122,7 +114,10 @@ dependencies {
     testImplementation("androidx.room:room-testing:$room_version")
     implementation("androidx.room:room-paging:$room_version")
 
-    // EPUB 추출기 모듈 추가
+    // roomdb 사용시 Kotlin 컴파일러가 생성하는 메타데이터를 읽어들일수있도록 metadata-jvm 강제 업데이트
+    //implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:2.1.0")
+
+    // EPUB 추출기 모듈 추가(TODO: devimplementation으로 리팩토링)
     implementation(project(":epub-extractor"))
 }
 
@@ -142,9 +137,14 @@ tasks.register("extractEpubResources") {
             ?.firstOrNull { it.name.contains("fat") && it.name.endsWith(".jar") }
             ?.absolutePath ?: throw GradleException("epub-extractor Fat JAR not found")
 
-        // 최신 방식의 exec 사용
-        project.exec {
-            commandLine("java", "-jar", epubExtractorJar, epubSourceDir, outputAssetsDir, metadataFile)
+        exec {
+            executable = "java"
+            args = listOf(
+                "-jar", epubExtractorJar,
+                epubSourceDir,
+                outputAssetsDir,
+                metadataFile
+            )
         }
     }
 }
