@@ -9,8 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DownloadedBooksDao {
-    @Query("SELECT * FROM downloaded_books WHERE language = :language ORDER BY downloadDate DESC")
-    fun getDownloadedBooksByLanguage(language: String): Flow<List<DownloadedBookEntity>>
+    /**
+     * 특정 언어로 다운로드된 모든 책 조회
+     */
+    @Query("SELECT * FROM downloaded_books WHERE language = :language")
+    suspend fun getDownloadedBooksByLanguage(language: String): List<DownloadedBookEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDownloadedBook(book: DownloadedBookEntity)
@@ -20,4 +23,7 @@ interface DownloadedBooksDao {
 
     @Query("SELECT * FROM downloaded_books WHERE id = :bookId AND language = :language")
     suspend fun getDownloadedBook(bookId: Int, language: String): DownloadedBookEntity?
+
+    @Query("SELECT * FROM downloaded_books WHERE storyId LIKE :storyIdPrefix || '%'")
+    suspend fun getDownloadedBooksByStoryId(storyIdPrefix: String): List<DownloadedBookEntity>
 }
