@@ -20,6 +20,7 @@ import com.timor.kidsstory.data.remote.model.RemoteBook
 import com.timor.kidsstory.data.remote.network.BookNetworkService
 import com.timor.kidsstory.data.remote.worker.DownloadWorker
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
+import com.orhanobut.logger.Logger
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.model.DownloadStatus
 import com.timor.kidsstory.domain.model.Language
@@ -31,8 +32,11 @@ import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
 import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.MusicManager
-import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -79,6 +83,7 @@ class BookshelfViewModel @Inject constructor(
     // UI 상태 관리
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
+
 
     // 원격 책 목록 저장
     private var remoteBooks: List<RemoteBook> = emptyList()
@@ -187,6 +192,7 @@ class BookshelfViewModel @Inject constructor(
                 // 1. 로컬 asset 책 로드
                 val result = getBooksUseCase(languageCode)
 
+
                 // 2. 추가로 다운로드된 책도 함께 로드
                 val downloadedBooks = loadDownloadedBooks(languageCode)
 
@@ -284,6 +290,20 @@ class BookshelfViewModel @Inject constructor(
 
                         // 백그라운드에서 원격 책 확인 (다운로드 가능한 새 책 확인)
                         checkAndLoadRemoteBooks(languageCode)
+
+                Logger.e("북 리스트 확인: $result")
+
+                result.fold(
+                    onSuccess = { books ->
+                        // 책 목록 저장
+                        _state.update {
+                            it.copy(
+                                books = books,
+                                filteredBooks = books,
+                            )
+                        }
+                        Log.d("BookshelfViewModel", "Books loaded: ${books.size}")
+
                     },
                     onFailure = { error ->
                         Log.e("BookshelfViewModel", "Error loading books", error)
@@ -615,15 +635,84 @@ class BookshelfViewModel @Inject constructor(
      * @return 선택된 책 객체 또는 null
      */
     fun onBookSelected(index: Int): Book? {
-        if (index < 0 || index >= bookList.size) {
+        if (index < 0 || index >= _state.value.books.size) {
             Log.e("BookshelfViewModel", "Invalid book index: $index")
             return null
         }
 
-        val selectedBook = bookList[index]
+        val selectedBook = _state.value.books[index]
         Log.d("BookshelfViewModel", "Book selected: ${selectedBook.storyId}")
         return selectedBook
     }
+
+    /*
+    * 책 리스트 필터링 UI 반영용
+    * */
+    private fun onFilterOptionSelected(
+        filter: FilterBarCategory? = null,
+        stage: FilterLevel? = null,
+        category: FilterBookCategory? = null
+    ) {
+//        _state.update {
+//            it.copy(
+//                filterBarState = FilterBarState(
+//                    selectedFilter = filter ?: it.filterBarState.selectedFilter,
+//                    selectedStage = stage ?: it.filterBarState.selectedStage,
+//                    selectedCategory = category ?: it.filterBarState.selectedCategory,
+//                    isStageFilterExpanded = filter == FilterBarCategory.STAGE && stage == null,
+//                    isCategoryFilterExpanded = filter == FilterBarCategory.CATEGORY && category == null
+//                )
+//            )
+//        }
+
+        _state.update {
+            val isNewFilterSelected = filter != null && filter != it.filterBarState.selectedFilter      // 대분류중 하나를 선택했는지와 기존에 선택된 필터와 다른 필터인지 확인
+            val isStageSelected = filter == FilterBarCategory.STAGE
+            val isCategorySelected = filter == FilterBarCategory.CATEGORY
+
+            it.copy(
+                filterBarState = it.filterBarState.copy(
+                    selectedFilter = filter ?: it.filterBarState.selectedFilter,
+                    selectedStage = stage ?: it.filterBarState.selectedStage,
+                    selectedCategory = category ?: it.filterBarState.selectedCategory,
+                    isStageFilterExpanded = when {
+                        isNewFilterSelected -> isStageSelected  // 새로운 대분류 선택시 필터 닫기
+                        stage != null -> true // 하위 필터일 경우 유지
+                        else -> it.filterBarState.isStageFilterExpanded
+                    },
+                    isCategoryFilterExpanded = when {
+                        isNewFilterSelected -> isCategorySelected // 위와 동일
+                        category != null -> true // 위와 동일
+                        else -> it.filterBarState.isCategoryFilterExpanded
+                    }
+                )
+            )
+        }
+
+
+
+        applyFilters()
+    }
+
+    /*
+    * 책 리스트 필터링 실제 리스트 반영
+    * */
+    private fun applyFilters() {
+        val selectedFilter = _state.value.filterBarState.selectedFilter
+        val selectedStage = _state.value.filterBarState.selectedStage
+        val selectedCategory = _state.value.filterBarState.selectedCategory
+
+        val filteredList = _state.value.books.filter { book ->
+            when (selectedFilter) {
+                FilterBarCategory.STAGE -> selectedStage?.let { book.level == (it.ordinal + 1) } ?: true
+                FilterBarCategory.CATEGORY -> selectedCategory?.let { book.category == it.name } ?: true
+                else -> true // ALL일 경우 필터 적용 없음
+            }
+        }
+
+        _state.update { it.copy(filteredBooks = filteredList) }
+    }
+
 
     /**
      * 언어 선택 다이얼로그 표시 제어
@@ -898,7 +987,15 @@ class BookshelfViewModel @Inject constructor(
             is BookShelfAction.StopMusic -> stopMusic()
             is BookShelfAction.ChangeLanguage -> changeLanguage(action.language)
             is BookShelfAction.ShowLanguageDialog -> handleLanguageSelector(action.isShow)
+
             is BookShelfAction.DownloadBook -> downloadBook(action.index)
+
+            is BookShelfAction.SelectFilter -> onFilterOptionSelected(
+                filter = action.filter,
+                stage = action.stage,
+                category = action.category,
+            )
+
         }
     }
 }

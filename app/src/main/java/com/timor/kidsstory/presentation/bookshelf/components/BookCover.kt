@@ -13,14 +13,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+
 import com.timor.kidsstory.domain.model.DownloadStatus
+
+import com.timor.kidsstory.domain.model.Book
+
 import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
+import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 
 @Composable
 fun BookCover(
     state: BookCoverUiState,
     onClick: () -> Unit,
     onDownloadClick: (() -> Unit)? = null
+    state: Book,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -28,6 +35,7 @@ fun BookCover(
             .clickable(enabled = state.downloadStatus == DownloadStatus.DOWNLOADED, onClick = onClick),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
+
         Box(modifier = Modifier.fillMaxSize()) {
             // 책 표지 이미지
             if (state.imageUrl.isNotEmpty()) {
@@ -88,6 +96,24 @@ fun BookCover(
                     else -> { /* 다른 상태는 처리하지 않음 */ }
                 }
             }
+
+        if (state.coverImage.isNotEmpty()) {
+            // 실제 이미지 로드
+            AsyncImage(
+                model = state.coverImage,
+                contentDescription = state.title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+        } else {
+            // 프리뷰용 회색 박스 (이미지 없을 때)
+            Box(
+                modifier = Modifier
+                    .width(180.dp)
+                    .height(140.dp)
+                    .background(Color.Gray)
+            )
+
         }
     }
 }

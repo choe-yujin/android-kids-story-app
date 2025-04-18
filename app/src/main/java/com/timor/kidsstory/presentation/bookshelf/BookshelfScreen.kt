@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -15,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -27,7 +28,10 @@ import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
 import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
+import com.timor.kidsstory.presentation.bookshelf.components.filter.FilterBar
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
@@ -94,6 +98,29 @@ fun BookshelfScreen(
                 },
             )
 
+            Spacer(modifier = Modifier.height(17.dp))
+
+            FilterBar(
+                filterBarState = state.filterBarState,
+                onAllClick = {
+                    onAction(BookShelfAction.SelectFilter(FilterBarCategory.All))
+                },
+                onStageClick = {
+                    onAction(BookShelfAction.SelectFilter(FilterBarCategory.STAGE))
+                },
+                onCategoryClick = {
+                    onAction(BookShelfAction.SelectFilter(FilterBarCategory.CATEGORY))
+                },
+                onLevelClick = { level ->
+                    onAction(BookShelfAction.SelectFilter(stage = level))
+                },
+                onBookCategoryClick = { bookCategory ->
+                    onAction(BookShelfAction.SelectFilter(category = bookCategory))
+                }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             // 책 그리드 표시
             LazyVerticalGrid(
                 columns = GridCells.Fixed(5),  // 5열 그리드
@@ -104,7 +131,7 @@ fun BookshelfScreen(
                     .fillMaxSize()
                     .padding(horizontal = 48.dp)
             ) {
-                items(state.books) { bookState ->
+                items(state.filteredBooks) { bookState ->
                     BookCover(
                         state = bookState,
                         onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(bookState))) },
