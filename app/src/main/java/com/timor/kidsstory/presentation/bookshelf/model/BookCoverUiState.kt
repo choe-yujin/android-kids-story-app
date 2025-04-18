@@ -16,6 +16,6 @@ data class BookCoverUiState(
     val imageUrl: String,
     val title: String,
     val storyId: String,
-    val downloadStatus: DownloadStatus = DownloadStatus.DOWNLOADED,
-    val remoteId: Int = 0
+    val downloadStatus: DownloadStatus = DownloadStatus.AVAILABLE,
+    val remoteId: Int? = null
 )
