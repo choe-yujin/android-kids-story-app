@@ -5,10 +5,12 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsChannel
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.jvm.javaio.copyTo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import java.io.File
 import javax.inject.Inject
 
@@ -34,12 +36,17 @@ class BookNetworkService @Inject constructor(
      * @return 메타데이터 객체
      */
     suspend fun getMetadata(): GithubMetadata {
-        return httpClient.get("https://raw.githubusercontent.com/choe-yujin/storybook-assets/master/metadata.json").body()
+        val response = httpClient.get("https://raw.githubusercontent.com/choe-yujin/storybook-assets/master/metadata.json")
+
+        // text/plain으로 받은 응답을 직접 문자열로 변환하고
+        val jsonString = response.bodyAsText()
+
+        // 그 다음 문자열을 JSON으로 파싱
+        return Json.decodeFromString<GithubMetadata>(jsonString)
     }
 
     /**
      * 원격 URL에서 파일 다운로드
-     * - 새로운 책이나 이미지 다운로드에 사용
      *
      * @param url 다운로드할 파일의 URL
      * @param outputFile 저장할 로컬 파일
@@ -51,6 +58,7 @@ class BookNetworkService @Inject constructor(
             if (response.status.isSuccess()) {
                 // IO 작업은 Dispatchers.IO 컨텍스트에서 수행
                 withContext(Dispatchers.IO) {
+                    outputFile.parentFile?.mkdirs()
                     outputFile.outputStream().use { fileOut ->
                         response.bodyAsChannel().copyTo(fileOut)
                     }
