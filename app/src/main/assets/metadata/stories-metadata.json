@@ -550,5 +550,74 @@
     "category": "FOLKTALE",
     "region": "Asia",
     "estimatedReadTime": 28
+  },
+  {
+    "storyId": "821_en-ph",
+    "ageRange": "5-9",
+    "imageCount": 14,
+    "pageCount": 9,
+    "level": 1,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "Estrela Manu Ki’ik",
+      "ko": "병아리 별",
+      "en": "The Chick Stars"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 2754152,
+    "coverImage": "cover_821_en.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 18
+  },
+  {
+    "storyId": "821_ko-kr",
+    "ageRange": "5-9",
+    "imageCount": 14,
+    "pageCount": 9,
+    "level": 1,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "Estrela Manu Ki’ik",
+      "ko": "병아리 별",
+      "en": "The Chick Stars"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 2802808,
+    "coverImage": "cover_821_kr.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 18
+  },
+  {
+    "storyId": "821_tetum",
+    "ageRange": "5-9",
+    "imageCount": 14,
+    "pageCount": 9,
+    "level": 1,
+    "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+    "titles": {
+      "tet": "Estrela Manu Ki’ik",
+      "ko": "병아리 별",
+      "en": "The Chick Stars"
+    },
+    "version": "1.0.0",
+    "tags": [
+      "story",
+      "folktale"
+    ],
+    "size": 2802808,
+    "coverImage": "cover_821_tet.jpg",
+    "category": "FOLKTALE",
+    "region": "Asia",
+    "estimatedReadTime": 18
   }
 ]}

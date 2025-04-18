@@ -29,9 +29,7 @@ fun BookShelfScreenRoot(
                 is BookShelfAction.BookSelect ->  {
                     // 책 선택 처리 및 네비게이션
                     val selectedBook = viewModel.onBookSelected(action.index)
-                    if (selectedBook != null) {
-                        onBookSelect(selectedBook.storyId)
-                    }
+                    onBookSelect(selectedBook?.storyId ?: "")
                 }
                 is BookShelfAction.ChatbotClick -> onChatbotClick()  // 챗봇 화면으로 이동
                 is BookShelfAction.SettingClick -> onSettingClick()  // 설정 화면으로 이동

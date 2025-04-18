@@ -55,14 +55,6 @@ sealed interface BookShelfAction {
      */
     data class ShowLanguageDialog(val isShow: Boolean) : BookShelfAction
 
-
-    /**
-     * 책 다운로드 액션
-     * - 사용자가 다운로드 버튼을 클릭했을 때 발생
-     *
-     * @property index 다운로드할 책의 인덱스
-     */
-    data class DownloadBook(val index: Int) : BookShelfAction
     /*
     * 책 리스트 필터링
     * */

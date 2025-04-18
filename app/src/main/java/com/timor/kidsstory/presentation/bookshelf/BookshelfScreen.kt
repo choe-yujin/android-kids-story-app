@@ -23,7 +23,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.timor.kidsstory.domain.model.DownloadStatus
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
@@ -134,10 +133,7 @@ fun BookshelfScreen(
                 items(state.filteredBooks) { bookState ->
                     BookCover(
                         state = bookState,
-                        onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(bookState))) },
-                        onDownloadClick = if (bookState.downloadStatus != DownloadStatus.DOWNLOADED) {
-                            { onAction(BookShelfAction.DownloadBook(state.books.indexOf(bookState))) }
-                        } else null
+                        onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(bookState))) }
                     )
                 }
             }
@@ -171,3 +167,4 @@ private fun BookShelfScreenPreview() {
 
     }
 }
+
