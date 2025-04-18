@@ -168,7 +168,7 @@ TetumDreams needs your help to gift digital storybooks to children in Timor-Lest
 Access the [translation](https://docs.google.com/spreadsheets/d/15ATv7NLafQUndAMp1R-HBEpaMbJypPLAOKNLtq5IrRM/edit?gid=1679690950#gid=1679690950) project spreadsheet to join.
 
 ### Current Contributors
-- Kim Ji-Young - Korean/Tetum translation
+- Son Ji-Young - Korean/Tetum translation
 - Francisco Mendosa - English/Tetum translation
 
 ## Contact Us
