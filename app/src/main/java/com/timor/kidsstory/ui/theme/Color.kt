@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * 앱 전체에서 사용할 색상 정의 객체
- * 
+ *
  * 앱의 일관된 디자인을 위해 모든 색상 값을 중앙에서 관리합니다.
  * 색상은 기능과 강도에 따라 그룹화되어 있으며 숫자가 커질수록 더 어두운 색조를 나타냅니다.
  */
@@ -89,4 +89,13 @@ object AppColors {
      * 프리미엄 기능, 특별 항목 등에 사용됩니다.
      */
     val purple700 = Color(0xFF67387A) // 진한 보라색
+
+
+    /*
+    * 피그마에 없어서 즉석으로 추가한것들
+    * */
+    val unknown200 = Color(0xFFA1A1A1)
+    val unknown300 = Color(0xFF272727)
+    val unknown400 = Color(0xFFD9D9D9)
+
 }

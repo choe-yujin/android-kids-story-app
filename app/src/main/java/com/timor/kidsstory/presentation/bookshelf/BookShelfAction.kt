@@ -1,6 +1,9 @@
 package com.timor.kidsstory.presentation.bookshelf
 
 import com.timor.kidsstory.domain.model.Language
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 
 /**
  * 책장 화면에서 발생하는 사용자 액션 정의
@@ -52,6 +55,7 @@ sealed interface BookShelfAction {
      */
     data class ShowLanguageDialog(val isShow: Boolean) : BookShelfAction
 
+
     /**
      * 책 다운로드 액션
      * - 사용자가 다운로드 버튼을 클릭했을 때 발생
@@ -59,4 +63,12 @@ sealed interface BookShelfAction {
      * @property index 다운로드할 책의 인덱스
      */
     data class DownloadBook(val index: Int) : BookShelfAction
+    /*
+    * 책 리스트 필터링
+    * */
+    data class SelectFilter(
+        val filter: FilterBarCategory? = null,
+        val stage: FilterLevel? = null,
+        val category: FilterBookCategory? = null
+    ) : BookShelfAction
 }
