@@ -7,14 +7,18 @@ import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
 import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.usecase.book.GetBookDetailUseCase
+import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
+import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import com.timor.kidsstory.presentation.book.model.BookUiState
 import com.timor.kidsstory.presentation.book.model.PageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -30,6 +34,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BookViewModel @Inject constructor(
     private val getBookDetailUseCase: GetBookDetailUseCase,
+    private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
     private val textToSpeechHelper: TextToSpeechHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -60,14 +65,7 @@ class BookViewModel @Inject constructor(
             _state.update { it.copy(error = "책 ID가 제공되지 않았습니다") }
         }
 
-        textToSpeechHelper.reInitialize()
-
-        // TTS 초기화 상태 관찰
-        viewModelScope.launch {
-            textToSpeechHelper.isTTSInitialized.collect { isInitialized ->
-                _isTTSInitialized.value = isInitialized
-            }
-        }
+        settingTTSLanguage()
     }
 
     /**
@@ -164,6 +162,36 @@ class BookViewModel @Inject constructor(
         if (_isTTSInitialized.value) {
             content.forEach { text ->
                 textToSpeechHelper.speak(text)
+            }
+        }
+    }
+
+    /*
+    * 초기 진입시 현재 언어 셋팅으로 tts 셋팅
+    * */
+    private fun settingTTSLanguage() {
+        viewModelScope.launch {
+            val userInfo = getUserPreferenceUseCase().first()
+            val languageCode = if (userInfo.languageCode.isBlank()) {
+                LanguageConstants.DEFAULT_LANGUAGE.code
+            } else {
+                userInfo.languageCode
+            }
+
+            // 영어: en-ph, 테툼어: tet, 한국어: ko-kr, 국가 code에 따른 Locale 셋팅
+            val locale: Locale = when (languageCode) {
+                "ko-kr" -> Locale("ko", "KR")
+                else -> Locale.ENGLISH
+            }
+
+            // 3. TTS 초기화 및 언어 설정을 함께 수행
+            textToSpeechHelper.initializeWithLanguage(locale).collect { success ->
+                _isTTSInitialized.value = success
+                if (success) {
+                    Logger.e("TTS 초기화 및 언어 설정 완료: $locale")
+                } else {
+                    Logger.e("TTS 초기화 또는 언어 설정 실패")
+                }
             }
         }
     }
