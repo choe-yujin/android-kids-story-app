@@ -4,6 +4,8 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
@@ -30,36 +32,61 @@ class TextToSpeechHelper @Inject constructor(
     val isTTSInitialized = _isTTSInitialized.asStateFlow()
 
     /**
-     * 초기화 - TTS 엔진 생성
-     */
-    init {
-        Logger.e("TTS 초기화 타니?")
-        tts = TextToSpeech(context, this)
-    }
-
-    /**
      * TTS 초기화 완료 콜백
      * - 초기화 성공 시 언어 설정 및 상태 업데이트
      *
      * @param status TTS 초기화 상태 코드
      */
     override fun onInit(status: Int) {
-        Logger.e("TTS OnInit 초기화")
+
         if (status == TextToSpeech.SUCCESS) {
-            // 영어 설정 - 기본 언어로 사용
-            tts?.language = Locale.ENGLISH
 
             // 초기화 완료 상태로 업데이트
             _isTTSInitialized.value = true
         }
     }
 
+    /*
+    * tts 초기화
+    * */
+    // Factory 메서드로 초기화 및 언어 설정을 함께 처리
+    fun initializeWithLanguage(locale: Locale): Flow<Boolean> {
+        val resultFlow = MutableSharedFlow<Boolean>(replay = 1)         // 단일 이벤트 콜백
+
+        // 기존 TTS 인스턴스가 있으면 종료
+        shutDown()
+
+        // TTS 엔진 초기화와 언어 설정을 결합
+        tts = TextToSpeech(context) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val langResult = tts?.isLanguageAvailable(locale) ?: TextToSpeech.LANG_NOT_SUPPORTED        // 언어 지원 여부 판단
+
+                if (langResult >= TextToSpeech.LANG_AVAILABLE) {
+                    tts?.language = locale
+                    Logger.e("TTS 초기화 및 언어 설정 완료: $locale")
+                    _isTTSInitialized.value = true
+                    resultFlow.tryEmit(true)
+                } else {
+                    Logger.e("TTS 언어 미지원: $locale, 기본 영어로 설정")
+                    tts?.language = Locale.ENGLISH
+                    _isTTSInitialized.value = true
+                    resultFlow.tryEmit(true)
+                }
+            } else {
+                Logger.e("TTS 초기화 실패: $status")
+                _isTTSInitialized.value = false
+                resultFlow.tryEmit(false)
+            }
+        }
+
+        return resultFlow
+    }
 
     /*
     * 재초기화 로직
     * */
     fun reInitialize() {
-        if(tts == null) {
+        if (tts == null) {
             tts = TextToSpeech(context, this)
             _isTTSInitialized.value = true
         }
