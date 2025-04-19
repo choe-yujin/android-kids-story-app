@@ -9,39 +9,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-
-import com.timor.kidsstory.domain.model.DownloadStatus
-
 import com.timor.kidsstory.domain.model.Book
 
-import com.timor.kidsstory.presentation.bookshelf.model.BookCoverUiState
-import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
-
+/**
+ * 책 표지 컴포넌트
+ *
+ * @param book 책 객체
+ * @param onClick 책 클릭 이벤트 처리 함수
+ * @param onDownloadClick 다운로드 버튼 클릭 이벤트 처리 함수 (null이면 다운로드 버튼 미표시)
+ */
 @Composable
 fun BookCover(
-    state: BookCoverUiState,
+    book: Book,
     onClick: () -> Unit,
     onDownloadClick: (() -> Unit)? = null
-    state: Book,
-    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .width(180.dp)
-            .clickable(enabled = state.downloadStatus == DownloadStatus.DOWNLOADED, onClick = onClick),
+            .clickable(enabled = book.isDownloaded, onClick = onClick),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-
         Box(modifier = Modifier.fillMaxSize()) {
             // 책 표지 이미지
-            if (state.imageUrl.isNotEmpty()) {
+            if (book.coverImage.isNotEmpty()) {
                 AsyncImage(
-                    model = state.imageUrl,
-                    contentDescription = state.title,
+                    model = book.coverImage,
+                    contentDescription = book.title,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Fit
                 )
@@ -56,64 +52,16 @@ fun BookCover(
             }
 
             // 다운로드 상태 표시 (다운로드 가능한 경우에만)
-            if (state.downloadStatus != DownloadStatus.DOWNLOADED && onDownloadClick != null) {
-                when (state.downloadStatus) {
-                    DownloadStatus.AVAILABLE -> {
-                        Button(
-                            onClick = onDownloadClick,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(8.dp)
-                        ) {
-                            Text("다운로드")
-                        }
-                    }
-                    DownloadStatus.DOWNLOADING -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.6f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = Color.White
-                            )
-                        }
-                    }
-                    DownloadStatus.FAILED -> {
-                        Button(
-                            onClick = onDownloadClick,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text("다시 시도")
-                        }
-                    }
-                    else -> { /* 다른 상태는 처리하지 않음 */ }
+            if (!book.isDownloaded && onDownloadClick != null) {
+                Button(
+                    onClick = onDownloadClick,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(8.dp)
+                ) {
+                    Text("다운로드")
                 }
             }
-
-        if (state.coverImage.isNotEmpty()) {
-            // 실제 이미지 로드
-            AsyncImage(
-                model = state.coverImage,
-                contentDescription = state.title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit
-            )
-        } else {
-            // 프리뷰용 회색 박스 (이미지 없을 때)
-            Box(
-                modifier = Modifier
-                    .width(180.dp)
-                    .height(140.dp)
-                    .background(Color.Gray)
-            )
-
         }
     }
 }
