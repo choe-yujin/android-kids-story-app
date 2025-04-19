@@ -23,7 +23,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.timor.kidsstory.domain.model.DownloadStatus
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
@@ -31,7 +30,6 @@ import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
 import com.timor.kidsstory.presentation.bookshelf.components.filter.FilterBar
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
-import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
@@ -131,12 +129,12 @@ fun BookshelfScreen(
                     .fillMaxSize()
                     .padding(horizontal = 48.dp)
             ) {
-                items(state.filteredBooks) { bookState ->
+                items(state.filteredBooks) { book ->
                     BookCover(
-                        state = bookState,
-                        onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(bookState))) },
-                        onDownloadClick = if (bookState.downloadStatus != DownloadStatus.DOWNLOADED) {
-                            { onAction(BookShelfAction.DownloadBook(state.books.indexOf(bookState))) }
+                        book = book,
+                        onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(book))) },
+                        onDownloadClick = if (!book.isDownloaded) {
+                            { onAction(BookShelfAction.DownloadBook(state.books.indexOf(book))) }
                         } else null
                     )
                 }
