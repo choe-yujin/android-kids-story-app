@@ -72,15 +72,15 @@ fun BookshelfHeader(
                 .padding(end = 48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 챗봇 아이콘
-            Icon(
-                painter = painterResource(id = R.drawable.ic_chatbot_round),
-                contentDescription = "Chatbot",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clickable(onClick = onChatbotClick),
-                tint = Color.Unspecified
-            )
+//            // 챗봇 아이콘
+//            Icon(
+//                painter = painterResource(id = R.drawable.ic_chatbot_round),
+//                contentDescription = "Chatbot",
+//                modifier = Modifier
+//                    .size(40.dp)
+//                    .clickable(onClick = onChatbotClick),
+//                tint = Color.Unspecified
+//            )
 
             // 간격
             Spacer(modifier = Modifier.width(20.dp))
