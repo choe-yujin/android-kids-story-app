@@ -2,6 +2,7 @@ package com.timor.kidsstory.domain.util
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +33,7 @@ class TextToSpeechHelper @Inject constructor(
      * 초기화 - TTS 엔진 생성
      */
     init {
+        Logger.e("TTS 초기화 타니?")
         tts = TextToSpeech(context, this)
     }
 
@@ -42,11 +44,23 @@ class TextToSpeechHelper @Inject constructor(
      * @param status TTS 초기화 상태 코드
      */
     override fun onInit(status: Int) {
+        Logger.e("TTS OnInit 초기화")
         if (status == TextToSpeech.SUCCESS) {
             // 영어 설정 - 기본 언어로 사용
             tts?.language = Locale.ENGLISH
 
             // 초기화 완료 상태로 업데이트
+            _isTTSInitialized.value = true
+        }
+    }
+
+
+    /*
+    * 재초기화 로직
+    * */
+    fun reInitialize() {
+        if(tts == null) {
+            tts = TextToSpeech(context, this)
             _isTTSInitialized.value = true
         }
     }
