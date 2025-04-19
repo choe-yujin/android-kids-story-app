@@ -11,11 +11,15 @@ import com.timor.kidsstory.domain.model.DownloadStatus
  * @property storyId 책 고유 ID (예: 801_en-ph)
  * @property downloadStatus 다운로드 상태
  * @property remoteId 원격 저장소의 책 ID
+ * @property level 책 난이도 레벨
+ * @property category 책 카테고리
  */
 data class BookCoverUiState(
     val imageUrl: String,
     val title: String,
     val storyId: String,
     val downloadStatus: DownloadStatus = DownloadStatus.AVAILABLE,
-    val remoteId: Int? = null
+    val remoteId: Int? = null,
+    val level: Int = 1,
+    val category: String = ""
 )
