@@ -96,7 +96,9 @@ fun FilterBarButton(
             modifier = Modifier
                 .background(AppColors.neutralWhite, shape = RoundedCornerShape(50.dp))
                 .border(width = 2.dp, color = AppColors.unknown200, shape = RoundedCornerShape(50.dp))
-                .clickable { onClick() }
+                .noRippleClickable {
+                    onClick()
+                }
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
@@ -107,7 +109,9 @@ fun FilterBarButton(
         Box(
             modifier = Modifier
                 .background(AppColors.unknown300, shape = RoundedCornerShape(size = 50.dp))
-                .clickable { onClick() }
+                .noRippleClickable {
+                    onClick()
+                }
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),

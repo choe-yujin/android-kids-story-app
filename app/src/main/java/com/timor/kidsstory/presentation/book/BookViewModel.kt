@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.orhanobut.logger.Logger
 import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.usecase.book.GetBookDetailUseCase
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
@@ -36,10 +37,6 @@ class BookViewModel @Inject constructor(
     private val _state = MutableStateFlow(BookUiState())
     val state = _state.asStateFlow()
 
-    // 현재 페이지 관리
-    private val _currentPage = MutableStateFlow(0)
-    val currentPage = _currentPage.asStateFlow()
-
     // TTS 초기화 상태 관리
     private val _isTTSInitialized = MutableStateFlow(false)
     val isTTSInitialized = _isTTSInitialized.asStateFlow()
@@ -63,6 +60,8 @@ class BookViewModel @Inject constructor(
             _state.update { it.copy(error = "책 ID가 제공되지 않았습니다") }
         }
 
+        textToSpeechHelper.reInitialize()
+
         // TTS 초기화 상태 관찰
         viewModelScope.launch {
             textToSpeechHelper.isTTSInitialized.collect { isInitialized ->
@@ -76,7 +75,7 @@ class BookViewModel @Inject constructor(
      */
     override fun onCleared() {
         super.onCleared()
-        textToSpeechHelper.stop()  // TTS 리소스 해제
+        textToSpeechHelper.shutDown()
     }
 
     /**
@@ -169,6 +168,7 @@ class BookViewModel @Inject constructor(
         }
     }
 
+
     /**
      * UI 액션 처리
      *
@@ -178,7 +178,12 @@ class BookViewModel @Inject constructor(
         when (action) {
             is BookAction.TextToSpeak -> ttsSpeak(action.textList)
             BookAction.BackBookShelf -> {}  // 네비게이션 처리는 컴포저블에서 함
-            is BookAction.PageChange -> onPageChanged(action.page)
+            is BookAction.PageChange -> {
+                onPageChanged(action.page)
+                // 음성 인식 중지
+                textToSpeechHelper.stop()
+            }
+
         }
     }
 }
