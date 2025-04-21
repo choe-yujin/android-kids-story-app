@@ -82,7 +82,10 @@ fun FilterBar(
             onCategoryClick()
         }
 
-        CategoryFilterBar(isExpanded = filterBarState.isCategoryFilterExpanded) { bookCategory ->
+        CategoryFilterBar(
+            isExpanded = filterBarState.isCategoryFilterExpanded,
+            selectedCategory = filterBarState.selectedCategory,
+        ) { bookCategory ->
             onBookCategoryClick(bookCategory)
         }
     }
