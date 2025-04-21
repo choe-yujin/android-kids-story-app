@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.orhanobut.logger.Logger
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 @Composable
@@ -33,11 +34,18 @@ fun LevelButton(
     isSelected: Boolean = false,
     onLevelSelected: (FilterLevel) -> Unit
 ) {
-    val levelColor = when (level) {
-        FilterLevel.ONE -> Color(0xFF4CAF50) // 녹색
-        FilterLevel.TWO -> Color(0xFFFFEB3B) // 노란색
-        FilterLevel.THREE -> Color(0xFFFF9800) // 주황색
-        FilterLevel.FOUR -> Color(0xFFF44336) // 빨간색
+    val levelBackgroundColor = when (level) {
+        FilterLevel.ONE -> Color(0xFF47A714) // 녹색
+        FilterLevel.TWO -> Color(0xFFC9A93B) // 노란색
+        FilterLevel.THREE -> Color(0xFFE38400) // 주황색
+        FilterLevel.FOUR -> Color(0xFFC52820) // 빨간색
+    }
+
+    val levelBorderColor = when (level) {
+        FilterLevel.ONE -> AppColors.level1
+        FilterLevel.TWO -> AppColors.level2
+        FilterLevel.THREE -> AppColors.level3
+        FilterLevel.FOUR -> AppColors.level4
     }
 
 
@@ -47,15 +55,15 @@ fun LevelButton(
             modifier = Modifier
                 .size(34.dp)
                 .clip(CircleShape)
-                .background(levelColor)
-                .border(width = 2.dp, color = AppColors.neutralBlack, shape = CircleShape)
+                .background(levelBackgroundColor)
+                .border(width = 2.dp, color = levelBorderColor, shape = CircleShape)
                 .clickable { onLevelSelected(level) },
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = level.displayName.toString(),
                 color = Color.White,
-                fontWeight = FontWeight.Bold,
+                style = AppTextStyles.gummyMediumSemibold,
                 textAlign = TextAlign.Center
             )
         }
@@ -65,20 +73,18 @@ fun LevelButton(
             modifier = Modifier
                 .size(32.dp)
                 .clip(CircleShape)
-                .background(levelColor)
+                .background(levelBackgroundColor)
                 .clickable { onLevelSelected(level) },
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = level.displayName.toString(),
                 color = Color.White,
-                fontWeight = FontWeight.Bold,
+                style = AppTextStyles.gummyMediumSemibold,
                 textAlign = TextAlign.Center
             )
         }
     }
-
-
 }
 
 @Composable
