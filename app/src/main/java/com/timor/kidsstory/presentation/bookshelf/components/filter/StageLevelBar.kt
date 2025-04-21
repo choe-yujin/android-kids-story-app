@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,41 +22,69 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.orhanobut.logger.Logger
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
+import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 @Composable
 fun LevelButton(
     level: FilterLevel,
+    isSelected: Boolean = false,
     onLevelSelected: (FilterLevel) -> Unit
 ) {
     val levelColor = when (level) {
-        FilterLevel.ONE   -> Color(0xFF4CAF50) // 녹색
+        FilterLevel.ONE -> Color(0xFF4CAF50) // 녹색
         FilterLevel.TWO -> Color(0xFFFFEB3B) // 노란색
         FilterLevel.THREE -> Color(0xFFFF9800) // 주황색
         FilterLevel.FOUR -> Color(0xFFF44336) // 빨간색
     }
 
-    Box(
-        modifier = Modifier
-            .size(32.dp)
-            .clip(CircleShape)
-            .background(levelColor)
-            .clickable { onLevelSelected(level) },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = level.displayName.toString(),
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+
+    // 선택여부에 따라 디자인 다르게 적용
+    if (isSelected) {
+        Box(
+            modifier = Modifier
+                .size(34.dp)
+                .clip(CircleShape)
+                .background(levelColor)
+                .border(width = 2.dp, color = AppColors.neutralBlack, shape = CircleShape)
+                .clickable { onLevelSelected(level) },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = level.displayName.toString(),
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        }
+    } else {
+        Logger.e("선택 X")
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(levelColor)
+                .clickable { onLevelSelected(level) },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = level.displayName.toString(),
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        }
     }
+
+
 }
 
 @Composable
 fun LevelFilterBar(
     isExpanded: Boolean,
+    selectedLevel: FilterLevel? = null,
     onLevelSelected: (FilterLevel) -> Unit = {}
 ) {
     Row(
@@ -71,10 +100,26 @@ fun LevelFilterBar(
                 modifier = Modifier.padding(start = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                LevelButton(level = FilterLevel.ONE, onLevelSelected = onLevelSelected)
-                LevelButton(level = FilterLevel.TWO, onLevelSelected = onLevelSelected)
-                LevelButton(level = FilterLevel.THREE, onLevelSelected = onLevelSelected)
-                LevelButton(level = FilterLevel.FOUR, onLevelSelected = onLevelSelected)
+                LevelButton(
+                    level = FilterLevel.ONE,
+                    isSelected = selectedLevel == FilterLevel.ONE,
+                    onLevelSelected = onLevelSelected
+                )
+                LevelButton(
+                    level = FilterLevel.TWO,
+                    isSelected = selectedLevel == FilterLevel.TWO,
+                    onLevelSelected = onLevelSelected
+                )
+                LevelButton(
+                    level = FilterLevel.THREE,
+                    isSelected = selectedLevel == FilterLevel.THREE,
+                    onLevelSelected = onLevelSelected
+                )
+                LevelButton(
+                    level = FilterLevel.FOUR,
+                    isSelected = selectedLevel == FilterLevel.FOUR,
+                    onLevelSelected = onLevelSelected
+                )
             }
         }
     }
