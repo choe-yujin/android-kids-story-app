@@ -653,11 +653,26 @@ class BookshelfViewModel @Inject constructor(
             val isStageSelected = filter == FilterBarCategory.STAGE
             val isCategorySelected = filter == FilterBarCategory.CATEGORY
 
+            // Stage 필터 클릭시 기본사항
+            val updatedStage = when {
+                // Stage 카테고리를 처음 전환시 기본값 One
+                isStageSelected && isNewFilterSelected -> FilterLevel.ONE
+                stage != null -> stage
+                else -> it.filterBarState.selectedStage
+            }
+
+            // Category 필터 기본 사항 적용
+            val updatedCategory = when {
+                isCategorySelected && isNewFilterSelected -> FilterBookCategory.LEGEND
+                category != null -> category
+                else -> it.filterBarState.selectedCategory
+            }
+
             it.copy(
                 filterBarState = it.filterBarState.copy(
                     selectedFilter = filter ?: it.filterBarState.selectedFilter,
-                    selectedStage = stage ?: it.filterBarState.selectedStage,
-                    selectedCategory = category ?: it.filterBarState.selectedCategory,
+                    selectedStage = updatedStage,
+                    selectedCategory = updatedCategory,
                     isStageFilterExpanded = when {
                         isNewFilterSelected -> isStageSelected  // 새로운 대분류 선택시 필터 닫기
                         stage != null -> true // 하위 필터일 경우 유지
@@ -671,9 +686,6 @@ class BookshelfViewModel @Inject constructor(
                 )
             )
         }
-
-
-
         applyFilters()
     }
 
