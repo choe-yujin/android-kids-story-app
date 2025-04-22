@@ -98,4 +98,14 @@ object AppColors {
     val unknown300 = Color(0xFF272727)
     val unknown400 = Color(0xFFD9D9D9)
 
+    /*
+    * Level 관련 색상
+    * */
+    val level1 = Color(0xFF285E0B)
+    val level2 = Color(0xFF715B11)
+    val level3 = Color(0xFF7C4A05)
+    val level4 = Color(0xFF791813)
+    val level5 = Color(0xFF1F002C)
+
+
 }

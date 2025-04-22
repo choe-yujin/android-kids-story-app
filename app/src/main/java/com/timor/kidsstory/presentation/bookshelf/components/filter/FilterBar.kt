@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.orhanobut.logger.Logger
 import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
@@ -64,7 +65,10 @@ fun FilterBar(
             onStageClick()
         }
 
-        LevelFilterBar(isExpanded = filterBarState.isStageFilterExpanded) { level ->
+        LevelFilterBar(
+            isExpanded = filterBarState.isStageFilterExpanded,
+            selectedLevel = filterBarState.selectedStage,
+        ) { level ->
             onLevelClick(level)
         }
 
@@ -78,7 +82,10 @@ fun FilterBar(
             onCategoryClick()
         }
 
-        CategoryFilterBar(isExpanded = filterBarState.isCategoryFilterExpanded) { bookCategory ->
+        CategoryFilterBar(
+            isExpanded = filterBarState.isCategoryFilterExpanded,
+            selectedCategory = filterBarState.selectedCategory,
+        ) { bookCategory ->
             onBookCategoryClick(bookCategory)
         }
     }
