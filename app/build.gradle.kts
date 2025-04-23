@@ -114,6 +114,10 @@ dependencies {
     // Gemini - ai
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
+    // pageCurl Animation
+    implementation("io.github.oleksandrbalan:pagecurl:1.5.1")
+
+
     // room db
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
