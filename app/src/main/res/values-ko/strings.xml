@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TailTale</string>
+
+    <!-- Bookshelf Filter Bar -->
+    <string name="filter_all">전체</string>
+    <string name="filter_stage">단계</string>
+    <string name="filter_category">카테고리</string>
+
+    <!-- Info Screen -->
+    <string name="info_setting">설정</string>
+    <string name="info_music">배경음악</string>
+    <string name="info_off">끄기</string>
+    <string name="info_on">켜기</string>
+    <string name="info_created_by">제작</string>
+    <string name="info_dev_yujin">개발/최유진</string>
+    <string name="info_dev_jaeyeon">개발/김재연</string>
+    <string name="info_des_jinsung">디자인/곽진성</string>
+    <string name="info_about">앱 소개</string>
+    <string name="info_version">버전</string>
+    <string name="info_license">라이센스</string>
+</resources>

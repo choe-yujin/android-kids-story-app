@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TailTale</string>
+
+    <!-- Bookshelf Filter Bar -->
+    <string name="filter_all">Hotu</string>
+    <string name="filter_stage">Faze</string>
+    <string name="filter_category">Kategoria</string>
+
+    <!-- Info Screen -->
+    <string name="info_setting">Konfigurasaun</string>
+    <string name="info_music">Múzika</string>
+    <string name="info_off">Mate</string>
+    <string name="info_on">Loke</string>
+    <string name="info_created_by">Halo husi</string>
+    <string name="info_dev_yujin">Dev/Yujin Choe</string>
+    <string name="info_dev_jaeyeon">Dev/JaeYeon Kim</string>
+    <string name="info_des_jinsung">Des/Jinsung Kuak</string>
+    <string name="info_about">Kona-ba</string>
+    <string name="info_version">Versaun</string>
+    <string name="info_license">Lisensa</string>
+</resources>
