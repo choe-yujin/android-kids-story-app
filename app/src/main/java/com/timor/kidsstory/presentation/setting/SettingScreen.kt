@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -117,7 +118,7 @@ fun SettingScreen(
                     ) {
                         // 카드 제목
                         Text(
-                            text = "Setting",
+                            text = stringResource(R.string.info_setting),
                             style = AppTextStyles.gummyMediumSemibold,
                             color = AppColors.neutral800,
                             modifier = Modifier.padding(bottom = 16.dp)
@@ -131,7 +132,7 @@ fun SettingScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "music",
+                                text = stringResource(R.string.info_music),
                                 style = AppTextStyles.gummySmallSemibold,
                                 color = AppColors.neutral700
                             )
@@ -167,7 +168,7 @@ fun SettingScreen(
                     ) {
                         // 카드 제목
                         Text(
-                            text = "Created by",
+                            text = stringResource(R.string.info_created_by),
                             style = AppTextStyles.gummyMediumSemibold,
                             color = AppColors.neutral800,
                             modifier = Modifier.padding(bottom = 16.dp)
@@ -203,7 +204,7 @@ fun SettingScreen(
                     ) {
                         // 카드 제목
                         Text(
-                            text = "About",
+                            text = stringResource(R.string.info_about),
                             style = AppTextStyles.gummyMediumSemibold,
                             color = AppColors.neutral800,
                             modifier = Modifier.padding(bottom = 16.dp)
@@ -255,7 +256,7 @@ fun SettingScreen(
 
                         // 라이센스 정보
                         Text(
-                            text = "License",
+                            text = stringResource(R.string.info_license),
                             style = AppTextStyles.gummyMediumSemibold,
                             color = AppColors.neutral800,
                             modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
@@ -309,7 +310,7 @@ private fun CustomToggle(
         ) {
             if (isChecked) {
                 Text(
-                    text = "on",
+                    text = stringResource(R.string.info_on),
                     style = AppTextStyles.gummySmallSemibold,
                     color = AppColors.primary800,
                     modifier = Modifier.padding(horizontal = 12.dp)
@@ -328,7 +329,7 @@ private fun CustomToggle(
             if (!isChecked) {
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "off",
+                    text = stringResource(R.string.info_off),
                     style = AppTextStyles.gummySmallSemibold,
                     color = AppColors.neutral400,
                     modifier = Modifier.padding(horizontal = 8.dp)

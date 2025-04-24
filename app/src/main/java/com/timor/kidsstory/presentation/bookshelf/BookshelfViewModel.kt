@@ -14,6 +14,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.orhanobut.logger.Logger
 import com.timor.kidsstory.data.dto.StoriesResponse
 import com.timor.kidsstory.data.remote.BookDownloader
 import com.timor.kidsstory.data.remote.model.RemoteBook
@@ -30,6 +31,7 @@ import com.timor.kidsstory.domain.usecase.book.GetRemoteBooksUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
 import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
+import com.timor.kidsstory.domain.util.LanguageManager
 import com.timor.kidsstory.domain.util.MusicManager
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
@@ -743,6 +745,9 @@ class BookshelfViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     saveUserPreferenceUseCase.updateLanguage(language.code)
+
+                    // 이 후
+                    Logger.e("현재 언어 코드: ${LanguageManager.getCurrentLanguageCode()}")
 
                     // 언어 변경 후 바로 스토리를 다시 로드
                     _state.update { it.copy(currentLanguage = language) }

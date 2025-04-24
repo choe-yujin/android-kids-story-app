@@ -56,7 +56,7 @@ fun BookScreen(
     val scope = rememberCoroutineScope()        // 테스트를 위한 코루틴 스코프
 
     // 페이지 변경 감지 및 처리
-    LaunchedEffect(pagerState.currentPage) { )
+    LaunchedEffect(pagerState.currentPage) {
         onAction(BookAction.PageChange(pagerState.currentPage))
     }
 
