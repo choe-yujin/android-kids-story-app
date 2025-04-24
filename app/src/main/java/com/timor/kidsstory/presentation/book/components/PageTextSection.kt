@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,6 +43,7 @@ fun PageTextSection(
     state: PageUiState,
     modifier: Modifier = Modifier,
     onTextToSpeech: (List<String>) -> Unit,
+    nextPage: () -> Unit = {},
 ) {
     Box(
         modifier = modifier
@@ -98,6 +97,14 @@ fun PageTextSection(
                 )
             }
         }
+
+
+        Button(
+            onClick = nextPage,
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            Text(text = "Next Page")
+        }
     }
 }
 
@@ -121,7 +128,8 @@ fun PageTextSectionPreviewEnglish() {
                 pageNumber = 1,
                 totalPages = 14
             ),
-            onTextToSpeech = {}
+            onTextToSpeech = {},
+            nextPage = {}
         )
     }
 }
@@ -146,7 +154,8 @@ fun PageTextSectionPreviewKorean() {
                 pageNumber = 1,
                 totalPages = 14
             ),
-            onTextToSpeech = {}
+            onTextToSpeech = {},
+            nextPage = {}
         )
     }
 }

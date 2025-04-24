@@ -40,4 +40,16 @@ object LanguageConstants {
      * 기본 언어 (첫 실행시 적용)
      */
     val DEFAULT_LANGUAGE = ENGLISH
+
+    /* 언어 코드를 다국어 리소스용 코드로 변환
+    * 앱 내부에서는 지역 정보 포함 코드를 사용하지만, 리소스 로드에는 표준 코드 사용
+    */
+    fun getResourceLangCode(code: String): String {
+        return when {
+            code.startsWith("en") -> "en"
+            code.startsWith("ko") -> "ko"
+            code.startsWith("tet") -> "tet"
+            else -> "en" // 기본값
+        }
+    }
 }

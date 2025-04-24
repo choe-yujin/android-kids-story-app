@@ -1,5 +1,6 @@
 package com.timor.kidsstory
 
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,9 +13,16 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.lifecycleScope
+import com.orhanobut.logger.Logger
+import com.timor.kidsstory.domain.util.LanguageConstants
+import com.timor.kidsstory.domain.util.LanguageManager
+import com.timor.kidsstory.domain.util.LocaleHelper
 import com.timor.kidsstory.presentation.navigation.NavGraph
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 /**
  * 앱의 진입점 - 앱의 기본 설정을 담당

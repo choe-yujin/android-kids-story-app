@@ -204,7 +204,10 @@ class BookViewModel @Inject constructor(
      */
     fun onAction(action: BookAction) {
         when (action) {
-            is BookAction.TextToSpeak -> ttsSpeak(action.textList)
+            is BookAction.TextToSpeak -> {
+                Logger.e("들어오는 컨텐츠 : ${action.textList}")
+                ttsSpeak(action.textList)
+            }
             BookAction.BackBookShelf -> {}  // 네비게이션 처리는 컴포저블에서 함
             is BookAction.PageChange -> {
                 onPageChanged(action.page)

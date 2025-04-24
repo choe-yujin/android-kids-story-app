@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,7 +52,7 @@ fun FilterBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FilterBarButton(text = "All", isSelected = filterBarState.selectedFilter == FilterBarCategory.All) {
+        FilterBarButton(text = stringResource(R.string.filter_all), isSelected = filterBarState.selectedFilter == FilterBarCategory.All) {
             onAllClick()
         }
 
@@ -61,7 +62,7 @@ fun FilterBar(
             contentDescription = null
         )
 
-        FilterBarButton(text = "Stage", isSelected = filterBarState.selectedFilter == FilterBarCategory.STAGE) {
+        FilterBarButton(text = stringResource(R.string.filter_stage), isSelected = filterBarState.selectedFilter == FilterBarCategory.STAGE) {
             onStageClick()
         }
 
@@ -78,7 +79,7 @@ fun FilterBar(
             contentDescription = null
         )
 
-        FilterBarButton(text = "Category", isSelected = filterBarState.selectedFilter == FilterBarCategory.CATEGORY) {
+        FilterBarButton(text = stringResource(R.string.filter_category), isSelected = filterBarState.selectedFilter == FilterBarCategory.CATEGORY) {
             onCategoryClick()
         }
 

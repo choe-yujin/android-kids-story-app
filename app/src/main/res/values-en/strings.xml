@@ -1,7 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TailTale</string>
-
-
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">All</string>
     <string name="filter_stage">Stage</string>
