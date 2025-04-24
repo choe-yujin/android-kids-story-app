@@ -7,7 +7,13 @@ import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
+import com.timor.kidsstory.di.UseCaseEntryPoint
+import com.timor.kidsstory.domain.util.LocaleHelper.updateLanguage
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -23,6 +29,7 @@ class KidsStoryApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+
     // Configuration.Provider 인터페이스 구현
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
@@ -33,7 +40,18 @@ class KidsStoryApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         initLogger()
+
+
+        val entryPoint = EntryPointAccessors.fromApplication(this, UseCaseEntryPoint::class.java)
+        val loadLanguageUseCase = entryPoint.getUserPreferenceUseCase()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            loadLanguageUseCase().collect { userPref ->
+                updateLanguage(userPref.languageCode)
+            }
+        }
     }
+
 
     // Logger 초기화
     private fun initLogger() {
