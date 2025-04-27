@@ -7,11 +7,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.Book
+import com.timor.kidsstory.ui.components.LocalizedText
+import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.ui.theme.AppTextStyles
 
 /**
  * 책 표지 컴포넌트
@@ -35,14 +40,22 @@ fun BookCover(
         Box(modifier = Modifier.fillMaxSize()) {
             // 책 표지 이미지
             if (book.coverImage.isNotEmpty()) {
+                // 다운로드 상태에 따라 블러 효과 적용
+                val imageModifier = if (!book.isDownloaded && onDownloadClick != null) {
+                    Modifier
+                        .fillMaxSize()
+                        .blur(2.dp)  // 블러 효과 정도
+                } else {
+                    Modifier.fillMaxSize()
+                }
+
                 AsyncImage(
                     model = book.coverImage,
                     contentDescription = book.title,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = imageModifier,
                     contentScale = ContentScale.Fit
                 )
             } else {
-                // 프리뷰용 회색 박스 (이미지 없을 때)
                 Box(
                     modifier = Modifier
                         .width(180.dp)
@@ -55,11 +68,18 @@ fun BookCover(
             if (!book.isDownloaded && onDownloadClick != null) {
                 Button(
                     onClick = onDownloadClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AppColors.unknown500
+                    ),
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(8.dp)
                 ) {
-                    Text("다운로드")
+                    LocalizedText(
+                        resId = R.string.bookcover_download,
+                        style = AppTextStyles.gummyVSmallMediumItalic,
+                        color = AppColors.unknown300,
+                    )
                 }
             }
         }
