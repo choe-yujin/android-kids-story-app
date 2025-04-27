@@ -40,7 +40,7 @@ fun BookshelfHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(50.dp)
             .background(Color(0xFFFDD25A))
     ) {
         // 좌측 설정 아이콘
