@@ -97,6 +97,7 @@ object AppColors {
     val unknown200 = Color(0xFFA1A1A1)
     val unknown300 = Color(0xFF272727)
     val unknown400 = Color(0xFFD9D9D9)
+    val unknown500 = Color(0xFFFECA00)
 
     /*
     * Level 관련 색상
