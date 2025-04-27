@@ -9,7 +9,7 @@ import com.timor.kidsstory.R
 
 /**
  * 앱 전체에서 사용하는 텍스트 스타일 정의 객체
- * 
+ *
  * 앱의 일관된 텍스트 스타일을 위해 모든 텍스트 스타일을 중앙에서 관리합니다.
  * 앱에서는 주로 Pretendard와 Sour Gummy 두 가지 폰트 패밀리를 사용합니다.
  * - Pretendard: 본문, 정보성 텍스트에 적합한 고가독성 폰트
@@ -18,23 +18,40 @@ import com.timor.kidsstory.R
 object AppTextStyles {
     /**
      * 각 폰트 패밀리 정의
-     * Variable Font를 사용하여 다양한 웨이트를 하나의 폰트 파일로 처리합니다.
+     * 언어별로 다른 폰트를 적용하기 위한 설정
      */
     private val pretendardFamily = FontFamily(
-    Font(R.font.pretendard_variable) // Variable Font 사용
+        Font(R.font.pretendard_variable) // 기본 폰트
     )
+
+    // 한국어용 폰트 추가
+    private val koreanFontFamily = FontFamily(
+        Font(R.font.cookierun_regular) // 한국어용 폰트
+    )
+
     private val sourGummyFamily = FontFamily(
-        Font(R.font.gummy_variable) // Variable Font 사용
+        Font(R.font.gummy_variable) // 기본 폰트
     )
+
+    // 한국어용 Gummy 폰트
+    private val koreanGummyFamily = FontFamily(
+        Font(R.font.cookierun_bold) // 한국어용 폰트
+    )
+
     private val sourGummyItalicFamily = FontFamily(
-        Font(R.font.gummy_italic_variable) // Variable Font 사용
+        Font(R.font.gummy_italic_variable) // 기본 폰트
+    )
+
+    // 한국어용 이탤릭 폰트
+    private val koreanGummyItalicFamily = FontFamily(
+        Font(R.font.cookierun_black) // 한국어용 이탤릭 폰트
     )
 
     /**
      * Pretendard 폰트 스타일 정의
      * 주로 본문, 정보 텍스트, 상세 설명 등에 사용됩니다.
      */
-    
+
     /**
      * 매우 작은 정보성 텍스트용 스타일
      * 저작권 정보, 부가 설명 등에 적합합니다.
@@ -45,7 +62,7 @@ object AppTextStyles {
         fontWeight = FontWeight.W400,
         fontFamily = pretendardFamily
     )
-    
+
     /**
      * 작은 텍스트, 중간 강조용 스타일
      * 페이지 번호, 부가 정보 등에 적합합니다.
