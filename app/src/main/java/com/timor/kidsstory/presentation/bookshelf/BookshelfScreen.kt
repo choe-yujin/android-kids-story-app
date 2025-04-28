@@ -99,7 +99,7 @@ fun BookshelfScreen(
                 },
             )
 
-            Spacer(modifier = Modifier.height(17.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             FilterBar(
                 filterBarState = state.filterBarState,
@@ -120,14 +120,14 @@ fun BookshelfScreen(
                 }
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // 책 그리드 표시
             LazyVerticalGrid(
                 columns = GridCells.Fixed(5),  // 5열 그리드
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp),
-                contentPadding = PaddingValues(vertical = 16.dp),
+                contentPadding = PaddingValues(vertical = 4.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 48.dp)

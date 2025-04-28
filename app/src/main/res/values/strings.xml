@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">TailTale</string>
 
+    <!-- Bookcover -->
+    <string name="bookcover_download">Download</string>
 
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">All</string>

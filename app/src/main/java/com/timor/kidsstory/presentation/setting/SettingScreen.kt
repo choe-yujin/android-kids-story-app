@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
+import com.timor.kidsstory.ui.components.LocalizedText
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
@@ -117,8 +118,8 @@ fun SettingScreen(
                         verticalArrangement = Arrangement.Top
                     ) {
                         // 카드 제목
-                        Text(
-                            text = stringResource(R.string.info_setting),
+                        LocalizedText(
+                            resId = R.string.info_setting,
                             style = AppTextStyles.gummyMediumSemibold,
                             color = AppColors.neutral800,
                             modifier = Modifier.padding(bottom = 16.dp)
@@ -131,8 +132,8 @@ fun SettingScreen(
                                 .padding(horizontal = 0.dp), // 패딩 보류
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = stringResource(R.string.info_music),
+                            LocalizedText(
+                                resId = R.string.info_music,
                                 style = AppTextStyles.gummySmallSemibold,
                                 color = AppColors.neutral700
                             )
@@ -167,8 +168,8 @@ fun SettingScreen(
                         verticalArrangement = Arrangement.Top
                     ) {
                         // 카드 제목
-                        Text(
-                            text = stringResource(R.string.info_created_by),
+                        LocalizedText(
+                            resId = R.string.info_created_by,
                             style = AppTextStyles.gummyMediumSemibold,
                             color = AppColors.neutral800,
                             modifier = Modifier.padding(bottom = 16.dp)
@@ -179,9 +180,18 @@ fun SettingScreen(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            DeveloperRow("Dev/", "Yujin Choe", R.drawable.flag_ko)
-                            DeveloperRow("Dev/", "JaeYeon Kim", R.drawable.flag_ko)
-                            DeveloperRow("Des/", "Jinsung Kuak", R.drawable.flag_ko)
+                            DeveloperRow(
+                                roleResId = R.string.info_dev_yujin,
+                                flagResId = R.drawable.flag_ko
+                            )
+                            DeveloperRow(
+                                roleResId = R.string.info_dev_jaeyeon,
+                                flagResId = R.drawable.flag_ko
+                            )
+                            DeveloperRow(
+                                roleResId = R.string.info_des_jinsung,
+                                flagResId = R.drawable.flag_ko
+                            )
                         }
                     }
                 }
@@ -203,8 +213,8 @@ fun SettingScreen(
                         verticalArrangement = Arrangement.Top
                     ) {
                         // 카드 제목
-                        Text(
-                            text = stringResource(R.string.info_about),
+                        LocalizedText(
+                            resId = R.string.info_about,
                             style = AppTextStyles.gummyMediumSemibold,
                             color = AppColors.neutral800,
                             modifier = Modifier.padding(bottom = 16.dp)
@@ -215,9 +225,8 @@ fun SettingScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(8.dp))
-                                //.height(48.dp)
                                 .background(AppColors.blue50)
-                                .padding(16.dp),
+                                .padding(8.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             // 앱이름 왼쪽, 버전 정보 오른쪽
@@ -226,8 +235,8 @@ fun SettingScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 // 왼쪽 섹션 - TaleTail 앱 이름
-                                Text(
-                                    text = "TaleTail",
+                                LocalizedText(
+                                    resId = R.string.app_name,
                                     style = AppTextStyles.gummyVSmallMediumItalic,
                                     color = AppColors.blue700,
                                     modifier = Modifier.weight(1f)
@@ -237,15 +246,25 @@ fun SettingScreen(
                                 Column(
                                     horizontalAlignment = Alignment.End
                                 ) {
-                                    Text(
-                                        text = "version: 1.0.0",
-                                        style = AppTextStyles.gummyVvSmallRegularItalic,
-                                        color = AppColors.neutral800,
-                                        fontSize = 12.sp
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        LocalizedText(
+                                            resId = R.string.info_version,
+                                            style = AppTextStyles.gummyVvSmallRegularItalic,
+                                            color = AppColors.neutral800,
+                                            fontSize = 12.sp
+                                        )
+                                        Text(
+                                            text = ": 1.0.1",
+                                            style = AppTextStyles.gummyVvSmallRegularItalic,
+                                            color = AppColors.neutral800,
+                                            fontSize = 12.sp
+                                        )
+                                    }
 
                                     Text(
-                                        text = "2025-03-04",
+                                        text = "2025-04-28",
                                         style = AppTextStyles.gummyVvSmallRegularItalic,
                                         color = AppColors.neutral600,
                                         fontSize = 12.sp
@@ -255,8 +274,8 @@ fun SettingScreen(
                         }
 
                         // 라이센스 정보
-                        Text(
-                            text = stringResource(R.string.info_license),
+                        LocalizedText(
+                            resId = R.string.info_license,
                             style = AppTextStyles.gummyMediumSemibold,
                             color = AppColors.neutral800,
                             modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
@@ -286,10 +305,6 @@ fun SettingScreen(
 
 /**
  * 커스텀 토글 스위치 컴포넌트
- * - 음악 켜기/끄기 기능 제공
- *
- * @param isChecked 현재 토글 상태
- * @param onToggle 토글 상태 변경 콜백
  */
 @Composable
 private fun CustomToggle(
@@ -301,24 +316,21 @@ private fun CustomToggle(
             .clip(RoundedCornerShape(100.dp))
             .background(if (isChecked) AppColors.primary300 else Color.LightGray)
             .clickable { onToggle(!isChecked) }
-            .padding(4.dp),
+            .padding(horizontal = 6.dp, vertical = 4.dp), // 바깥쪽 패딩
         contentAlignment = Alignment.Center
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(64.dp) // 토글 고정 너비
+            verticalAlignment = Alignment.CenterVertically
         ) {
             if (isChecked) {
-                Text(
-                    text = stringResource(R.string.info_on),
+                LocalizedText(
+                    resId = R.string.info_on,
                     style = AppTextStyles.gummySmallSemibold,
                     color = AppColors.primary800,
-                    modifier = Modifier.padding(horizontal = 12.dp)
+                    modifier = Modifier.padding(horizontal = 4.dp) // 켜기 양쪽 패딩
                 )
-                Spacer(modifier = Modifier.weight(1f))
             }
 
-            // 흰색 동그라미 핸들
             Box(
                 modifier = Modifier
                     .size(26.dp)
@@ -327,12 +339,11 @@ private fun CustomToggle(
             )
 
             if (!isChecked) {
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = stringResource(R.string.info_off),
+                LocalizedText(
+                    resId = R.string.info_off,
                     style = AppTextStyles.gummySmallSemibold,
                     color = AppColors.neutral400,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(horizontal = 4.dp) // 끄기 양쪽 패딩
                 )
             }
         }
@@ -341,15 +352,9 @@ private fun CustomToggle(
 
 /**
  * 개발자 정보를 표시하는 행 컴포넌트
- * - 역할, 이름, 국가 플래그를 함께 표시
- *
- * @param role 역할 정보 (예: "Dev/", "Des/")
- * @param name 개발자 이름
- * @param flagResId 국가 플래그 리소스 ID
  */
 @Composable
-private fun DeveloperRow(role: String, name: String, flagResId: Int) {
-    // 회색 배경 박스
+private fun DeveloperRow(roleResId: Int, flagResId: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -361,23 +366,14 @@ private fun DeveloperRow(role: String, name: String, flagResId: Int) {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 역할 텍스트
-            Text(
-                text = role,
-                style = AppTextStyles.gummyVvSmallRegularItalic,
-                color = AppColors.neutral600
-            )
-
-            // 이름 텍스트
-            Text(
-                text = name,
+            LocalizedText(
+                resId = roleResId,
                 style = AppTextStyles.gummyVSmallMediumItalic,
                 color = AppColors.neutral800,
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // 국가 플래그 아이콘
             Icon(
                 painter = painterResource(id = flagResId),
                 contentDescription = null,
