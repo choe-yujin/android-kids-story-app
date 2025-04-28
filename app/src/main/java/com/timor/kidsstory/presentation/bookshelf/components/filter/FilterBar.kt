@@ -26,6 +26,7 @@ import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
+import com.timor.kidsstory.ui.components.LocalizedText
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
@@ -52,7 +53,7 @@ fun FilterBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FilterBarButton(text = stringResource(R.string.filter_all), isSelected = filterBarState.selectedFilter == FilterBarCategory.All) {
+        FilterBarButton(textResId = R.string.filter_all, isSelected = filterBarState.selectedFilter == FilterBarCategory.All) {
             onAllClick()
         }
 
@@ -62,7 +63,7 @@ fun FilterBar(
             contentDescription = null
         )
 
-        FilterBarButton(text = stringResource(R.string.filter_stage), isSelected = filterBarState.selectedFilter == FilterBarCategory.STAGE) {
+        FilterBarButton(textResId = R.string.filter_stage, isSelected = filterBarState.selectedFilter == FilterBarCategory.STAGE) {
             onStageClick()
         }
 
@@ -79,7 +80,7 @@ fun FilterBar(
             contentDescription = null
         )
 
-        FilterBarButton(text = stringResource(R.string.filter_category), isSelected = filterBarState.selectedFilter == FilterBarCategory.CATEGORY) {
+        FilterBarButton(textResId = R.string.filter_category, isSelected = filterBarState.selectedFilter == FilterBarCategory.CATEGORY) {
             onCategoryClick()
         }
 
@@ -92,9 +93,10 @@ fun FilterBar(
     }
 }
 
+
 @Composable
 fun FilterBarButton(
-    text: String,
+    textResId: Int,
     isSelected: Boolean,
     onClick: () -> Unit = {},
 ) {
@@ -108,9 +110,12 @@ fun FilterBarButton(
                     onClick()
                 }
         ) {
-            Text(
+            LocalizedText(
+                resId = textResId,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                text = text, style = AppTextStyles.gummyMedium.copy(fontSize = 21.sp, color = AppColors.unknown200)
+                style = AppTextStyles.gummyMedium,
+                fontSize = 21.sp,
+                color = AppColors.unknown200
             )
         }
     } else {
@@ -121,9 +126,12 @@ fun FilterBarButton(
                     onClick()
                 }
         ) {
-            Text(
+            LocalizedText(
+                resId = textResId,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                text = text, style = AppTextStyles.gummyMedium.copy(fontSize = 21.sp, color = AppColors.secondary200)
+                style = AppTextStyles.gummyMedium,
+                fontSize = 21.sp,
+                color = AppColors.secondary200
             )
         }
     }
@@ -144,8 +152,8 @@ fun FilterBarButtonPreview() {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            FilterBarButton(text = "Category", isSelected = false)
-            FilterBarButton(text = "Stage", isSelected = true)
+            FilterBarButton(textResId = R.string.filter_all, isSelected = false)
+            FilterBarButton(textResId = R.string.filter_all, isSelected = true)
 
         }
 

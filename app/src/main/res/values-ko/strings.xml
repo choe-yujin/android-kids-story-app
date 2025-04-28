@@ -2,6 +2,9 @@
 <resources>
     <string name="app_name">TailTale</string>
 
+    <!-- Bookcover -->
+    <string name="bookcover_download">다운로드</string>
+
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">전체</string>
     <string name="filter_stage">단계</string>
