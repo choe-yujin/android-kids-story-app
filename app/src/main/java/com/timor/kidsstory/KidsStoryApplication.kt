@@ -41,15 +41,16 @@ class KidsStoryApplication : Application(), Configuration.Provider {
         super.onCreate()
         initLogger()
 
-
-        val entryPoint = EntryPointAccessors.fromApplication(this, UseCaseEntryPoint::class.java)
-        val loadLanguageUseCase = entryPoint.getUserPreferenceUseCase()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            loadLanguageUseCase().collect { userPref ->
-                updateLanguage(userPref.languageCode)
-            }
-        }
+//
+//        val entryPoint = EntryPointAccessors.fromApplication(this, UseCaseEntryPoint::class.java)
+//        val loadLanguageUseCase = entryPoint.getUserPreferenceUseCase()
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            loadLanguageUseCase().collect { userPref ->
+//                Logger.e("저장된 언어 확인: $userPref")
+//                updateLanguage(userPref.languageCode)
+//            }
+//        }
     }
 
 
