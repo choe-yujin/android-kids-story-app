@@ -32,6 +32,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:configChanges="locale|colorMode|layoutDirection"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.KidsStory"
             tools:ignore="DiscouragedApi">
