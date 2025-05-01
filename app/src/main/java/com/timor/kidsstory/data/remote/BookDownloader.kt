@@ -57,7 +57,7 @@ class BookDownloader @Inject constructor(
                             title = existingBook.title,
                             coverImage = existingBook.coverImagePath,
                             level = 1,
-                            category = "",
+                            category = existingBook.category, // 카테고리 정보 사용
                             pageCount = 0,
                             isDownloaded = true,
                             isBookmarked = false
@@ -77,6 +77,8 @@ class BookDownloader @Inject constructor(
             val downloadUrl = remoteBook.download[langKey] ?: throw IllegalArgumentException("No download URL for language: $langKey")
             val coverUrl = remoteBook.cover[langKey] ?: throw IllegalArgumentException("No cover URL for language: $langKey")
             val title = remoteBook.title[langKey] ?: remoteBook.title["en"] ?: "Book ${remoteBook.id}"
+            // 카테고리 정보 추출
+            val category = remoteBook.category
 
             // 책 저장 디렉토리 생성
             val bookDir = File(booksDir, "${remoteBook.id}").apply { mkdirs() }
@@ -134,7 +136,8 @@ class BookDownloader @Inject constructor(
                 coverImagePath = coverFile.absolutePath,
                 contentJsonPath = jsonFile.absolutePath,
                 hasImages = imagesDownloaded || imagesExist,
-                downloadDate = System.currentTimeMillis()
+                downloadDate = System.currentTimeMillis(),
+                category = category // 카테고리 정보 추가
             )
 
             downloadedBooksDao.insertDownloadedBook(bookEntity)
@@ -146,7 +149,7 @@ class BookDownloader @Inject constructor(
                 title = bookEntity.title,
                 coverImage = bookEntity.coverImagePath,
                 level = 1,  // 임의 값
-                category = "", // 임의 값
+                category = category, // 카테고리 정보 사용
                 pageCount = 0, // 초기값
                 isDownloaded = true,
                 isBookmarked = false
