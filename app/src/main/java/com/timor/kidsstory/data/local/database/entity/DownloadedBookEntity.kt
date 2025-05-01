@@ -17,5 +17,6 @@ data class DownloadedBookEntity(
     val coverImagePath: String,
     val contentJsonPath: String,
     val hasImages: Boolean,
-    val downloadDate: Long = System.currentTimeMillis()
+    val downloadDate: Long = System.currentTimeMillis(),
+    val category: String = ""
 )
