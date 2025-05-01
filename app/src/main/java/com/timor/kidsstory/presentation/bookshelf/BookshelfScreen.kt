@@ -157,9 +157,9 @@ fun BookshelfScreen(
                     // 언어 변경
                     context.updateLanguage(it.code)
 
-                    // 화면 재시작으로 동기화
                     val activity = context as? Activity
                     activity?.recreate()
+
                 },
                 onDismiss = {
                     onAction(BookShelfAction.ShowLanguageDialog(false))
