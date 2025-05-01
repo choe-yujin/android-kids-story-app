@@ -27,5 +27,6 @@ data class RemoteBook(
     val cover: Map<String, String>,
     val download: Map<String, String>,
     val images: String,
-    val languages: List<String>
+    val languages: List<String>,
+    val category: String = ""
 )

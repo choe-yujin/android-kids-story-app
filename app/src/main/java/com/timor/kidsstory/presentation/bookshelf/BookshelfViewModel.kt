@@ -204,13 +204,24 @@ class BookshelfViewModel @Inject constructor(
                         // 전체 책 목록 (로컬 + 다운로드)
                         val combinedBooks = localBooksWithDownloadStatus + newDownloadedBooks
 
+                        // 현재 필터 상태 확인
+                        val currentFilter = _state.value.filterBarState.selectedFilter
+                        val shouldApplyFilters = currentFilter != FilterBarCategory.All
+
                         // UI 상태 업데이트
                         _state.update {
-                            it.copy(
-                                books = combinedBooks,
-                                filteredBooks = combinedBooks,
-                                isLoading = false
-                            )
+                            if (shouldApplyFilters) {
+                                // 현재 필터 상태가 있으면 books만 업데이트
+                                it.copy(books = combinedBooks, isLoading = false)
+                            } else {
+                                // 필터 상태가 ALL이면 filteredBooks도 함께 업데이트
+                                it.copy(books = combinedBooks, filteredBooks = combinedBooks, isLoading = false)
+                            }
+                        }
+
+                        // 필터링이 필요한 경우 applyFilters 호출
+                        if (shouldApplyFilters) {
+                            applyFilters()
                         }
 
                         Log.d(
@@ -258,7 +269,7 @@ class BookshelfViewModel @Inject constructor(
                     title = entity.title,
                     coverImage = entity.coverImagePath,
                     level = 1,
-                    category = "",
+                    category = entity.category,
                     pageCount = 0,
                     isDownloaded = true,
                     isBookmarked = false
@@ -488,6 +499,7 @@ class BookshelfViewModel @Inject constructor(
 
                     val coverUrl = remoteBook.cover[langKey] ?: ""
                     val title = remoteBook.title[langKey] ?: "Book ${remoteBook.id}"
+                    val category = remoteBook.category
 
                     Log.d("BookshelfViewModel", "Processing book ${remoteBook.id}: $title, cover URL: $coverUrl")
 
@@ -504,7 +516,7 @@ class BookshelfViewModel @Inject constructor(
                                     title = title,
                                     coverImage = localCoverPath,
                                     level = 1,
-                                    category = "",
+                                    category = category,
                                     pageCount = 0,
                                     isDownloaded = false,  // 원격 책은 다운로드 필요
                                     isBookmarked = false
@@ -704,8 +716,12 @@ class BookshelfViewModel @Inject constructor(
                 FilterBarCategory.STAGE -> selectedStage?.let { book.level == (it.ordinal + 1) }
                     ?: true
 
-                FilterBarCategory.CATEGORY -> selectedCategory?.let { book.category == it.name }
-                    ?: true
+                FilterBarCategory.CATEGORY -> selectedCategory?.let {
+                    // 대소문자 무시하고 비교 또는 displayName도 함께 확인
+                    book.category.equals(it.name, ignoreCase = true) ||
+                            book.category.equals(it.displayName, ignoreCase = true)
+                } ?: true
+
                 else -> true // ALL일 경우 필터 적용 없음
             }
         }
@@ -966,7 +982,7 @@ class BookshelfViewModel @Inject constructor(
                             title = downloadedBookEntity.title,
                             coverImage = downloadedBookEntity.coverImagePath,
                             level = 1,
-                            category = "",
+                            category = downloadedBookEntity.category,
                             pageCount = 0,
                             isDownloaded = true,
                             isBookmarked = false

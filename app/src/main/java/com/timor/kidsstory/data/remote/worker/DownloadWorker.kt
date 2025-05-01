@@ -44,8 +44,11 @@ class DownloadWorker @AssistedInject constructor(
 
             Log.d(TAG, "Starting download for book ID: $bookId, language: $language")
 
+            // 카테고리 정보가 포함된 RemoteBook 객체 디코딩
             val remoteBook = json.decodeFromString<RemoteBook>(metadataJson)
 
+            // bookDownloader.downloadBook 메서드에 remoteBook을 그대로 전달
+            // (BookDownloader 클래스는 RemoteBook에서 category 필드를 처리하도록 수정 필요)
             val result = bookDownloader.downloadBook(remoteBook, language)
 
             return if (result.isSuccess) {
