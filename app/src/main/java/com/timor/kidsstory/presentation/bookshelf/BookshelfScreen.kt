@@ -1,6 +1,5 @@
 package com.timor.kidsstory.presentation.bookshelf
 
-import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -26,7 +24,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.timor.kidsstory.domain.util.LanguageConstants
-import com.timor.kidsstory.domain.util.LocaleHelper.updateLanguage
 import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
 import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
@@ -146,20 +143,12 @@ fun BookshelfScreen(
 
         // 언어 선택 다이얼로그 표시
         if (state.showLanguageDialog) {
-            val context = LocalContext.current
-
             LanguageDialog(
                 languages = LanguageConstants.SUPPORTED_LANGUAGES,
                 selectedLanguage = state.currentLanguage,
                 onLanguageSelected = {
                     onAction(BookShelfAction.ChangeLanguage(it))
-
-                    // 언어 변경
-                    context.updateLanguage(it.code)
-
-                    val activity = context as? Activity
-                    activity?.recreate()
-
+                    // 엁티비티 재시작 제거 - LocalizedText가 동적으로 처리함
                 },
                 onDismiss = {
                     onAction(BookShelfAction.ShowLanguageDialog(false))

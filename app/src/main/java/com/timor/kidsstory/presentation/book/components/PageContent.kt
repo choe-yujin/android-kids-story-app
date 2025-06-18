@@ -28,7 +28,6 @@ fun PageContent(
     onBackToBookshelf: () -> Unit,
     modifier: Modifier = Modifier,
     onTextToSpeech: (List<String>) -> Unit,
-    nextPage: () -> Unit,
 ) {
     Row(modifier = modifier.fillMaxSize()) {
         PageImageSection(
@@ -42,7 +41,6 @@ fun PageContent(
                 .weight(1f)
                 .background(Color.White),
             onTextToSpeech = onTextToSpeech,
-            nextPage = nextPage
         )
     }
 }
@@ -70,7 +68,6 @@ fun PageContentPreviewKorean() {
             ),
             onBackToBookshelf = {},
             onTextToSpeech = {},
-            nextPage = {}
         )
     }
 }
@@ -98,7 +95,6 @@ fun PageContentPreviewTetum() {
             ),
             onBackToBookshelf = {},
             onTextToSpeech = {},
-            nextPage = {}
         )
     }
 }
