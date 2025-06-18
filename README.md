@@ -1,8 +1,8 @@
-# 📚 TetumDreams: 동티모르 어린이를 위한 다국어 동화책 앱
+# 📚 TaleTail: 동티모르 어린이를 위한 다국어 동화책 앱
 ![app_mockup](/app/src/main/ic_launcher-playstore.png)
 
 ## 프로젝트 소개
-TetumDreams는 동티모르 어린이들에게 테툼어로 된 디지털 동화책을 제공하는 무료 앱입니다. 
+TaleTail은 동티모르 어린이들에게 테툼어로 된 디지털 동화책을 제공하는 무료 앱입니다. 
 동티모르는 어린이 도서가 부족하고, 인터넷 환경도 제한적이기 때문에, 오프라인에서도 접근할 수 있도록 최적화된 앱을 기획했습니다. 
 저작권이 공개되거나 만료된 동화책을 디지털화하여 제공하며, 리소스를 최소화하여 데이터 사용을 줄이고, 언제 어디서나 모국어로 동화를 읽을 수 있도록 돕습니다. 
 이 앱은 현지 어린이들에게 교육적인 기회를 제공하고, 지속 가능한 도서 공급 체계를 구축하는 것을 목표로 합니다.
@@ -153,8 +153,8 @@ com.timor.kidsstory/
 - 글로벌 서비스 확장
 
 ## Contributing to the Project
-TetumDreams는 오픈소스 프로젝트로, 여러분의 기여를 환영합니다!
-TetumDreams is an open-source project, and we welcome your contributions!
+TaleTail은 오픈소스 프로젝트로, 여러분의 기여를 환영합니다!
+TaleTail is an open-source project, and we welcome your contributions!
 
 ### How to Contribute
 1. Fork the project
@@ -164,7 +164,7 @@ TetumDreams is an open-source project, and we welcome your contributions!
 5. Create a Pull Request
 
 ## Participate in Translation
-TetumDreams needs your help to gift digital storybooks to children in Timor-Leste!
+TaleTail needs your help to gift digital storybooks to children in Timor-Leste!
 Access the [translation](https://docs.google.com/spreadsheets/d/15ATv7NLafQUndAMp1R-HBEpaMbJypPLAOKNLtq5IrRM/edit?gid=1679690950#gid=1679690950) project spreadsheet to join.
 
 ### Current Contributors
