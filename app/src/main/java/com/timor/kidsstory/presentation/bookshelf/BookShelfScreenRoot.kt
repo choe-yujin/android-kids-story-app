@@ -27,14 +27,22 @@ fun BookShelfScreenRoot(
         onAction = { action ->
             when (action) {
                 is BookShelfAction.BookSelect ->  {
+                    // 뷰모델에 먼저 액션을 전달하여 효과음 재생
+                    viewModel.onAction(action)
                     // 책 선택 처리 및 네비게이션
                     val selectedBook = viewModel.onBookSelected(action.index)
                     if (selectedBook != null) {
                         onBookSelect(selectedBook.storyId)
                     }
                 }
-                is BookShelfAction.ChatbotClick -> onChatbotClick()  // 챗봇 화면으로 이동
-                is BookShelfAction.SettingClick -> onSettingClick()  // 설정 화면으로 이동
+                is BookShelfAction.ChatbotClick -> {
+                    viewModel.onAction(action)  // 효과음 재생
+                    onChatbotClick()  // 챗봇 화면으로 이동
+                }
+                is BookShelfAction.SettingClick -> {
+                    viewModel.onAction(action)  // 효과음 재생
+                    onSettingClick()  // 설정 화면으로 이동
+                }
                 else -> {
                     // 기타 액션은 뷰모델에서 처리
                     viewModel.onAction(action)

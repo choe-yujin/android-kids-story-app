@@ -23,6 +23,7 @@ import com.timor.kidsstory.data.remote.worker.DownloadWorker
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.model.DownloadStatus
+import com.timor.kidsstory.domain.model.DownloadProgress
 import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
 import com.timor.kidsstory.domain.usecase.book.DownloadBookUseCase
@@ -33,6 +34,7 @@ import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.LanguageManager
 import com.timor.kidsstory.domain.util.MusicManager
+import com.timor.kidsstory.domain.util.SoundEffectManager
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
@@ -40,10 +42,13 @@ import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -54,18 +59,6 @@ import javax.inject.Inject
  * - 언어 설정 관리
  * - 배경 음악 제어
  * - 책 다운로드 관리
- *
- * @property getBooksUseCase 책 목록 가져오기 유스케이스
- * @property getUserPreferenceUseCase 사용자 설정 가져오기 유스케이스
- * @property saveUserPreferenceUseCase 사용자 설정 저장 유스케이스
- * @property musicSettingUseCase 음악 설정 유스케이스
- * @property musicManager 배경 음악 관리자
- * @property networkService 네트워크 서비스
- * @property getRemoteBooksUseCase 원격 책 가져오기 유스케이스
- * @property downloadBookUseCase 책 다운로드 유스케이스
- * @property bookDownloader 책 다운로더
- * @property downloadedBooksDao 다운로드된 책 DAO
- * @property context 애플리케이션 컨텍스트
  */
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
@@ -74,6 +67,7 @@ class BookshelfViewModel @Inject constructor(
     private val saveUserPreferenceUseCase: SaveUserPreferenceUseCase,
     private val musicSettingUseCase: MusicSettingUseCase,
     private val musicManager: MusicManager,
+    private val soundEffectManager: SoundEffectManager,
     private val networkService: BookNetworkService,
     private val getRemoteBooksUseCase: GetRemoteBooksUseCase,
     private val downloadBookUseCase: DownloadBookUseCase,
@@ -81,9 +75,13 @@ class BookshelfViewModel @Inject constructor(
     private val downloadedBooksDao: DownloadedBooksDao,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
+
     // UI 상태 관리
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
+
+    // 다운로드 진행률 작업 관리용 맵
+    private val downloadProgressJobs = mutableMapOf<Int, Job>()
 
     /**
      * 초기화 - 앱 시작 시 필요한 데이터 로드
@@ -93,9 +91,82 @@ class BookshelfViewModel @Inject constructor(
         loadInitialData()
         // 이후 사용자 설정 변경 관찰
         observeUserPreference()
-
         // 스위치 상태를 불러오고 배경음 재생 여부 판단
         loadMusicSetting()
+    }
+
+    /**
+     * 언어 전환 전용 책 목록 로드 (로딩 상태 없이 자연스럽게 전환)
+     */
+    private suspend fun loadStoriesForLanguageSwitch(languageCode: String) {
+        viewModelScope.launch {
+            try {
+                // 로딩 상태를 표시하지 않고 백그라운드에서 로드
+
+                // 1. 로컬 asset 책 로드
+                val result = getBooksUseCase(languageCode)
+
+                // 2. 추가로 다운로드된 책도 함께 로드
+                val downloadedBooks = loadDownloadedBooks(languageCode)
+
+                result.fold(
+                    onSuccess = { localBooks ->
+                        // 로컬 책(assets에 있는 책)은 항상 다운로드된 상태로 설정
+                        val localBooksWithDownloadStatus = localBooks.map { localBook ->
+                            localBook.copy(
+                                isDownloaded = true,
+                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                            )
+                        }
+
+                        // 로컬 책과 다운로드된 책을 합친 목록 생성 (중복 제거)
+                        val localStoryIds =
+                            localBooksWithDownloadStatus.map { it.storyId.split("_").first() }
+                                .toSet()
+                        val newDownloadedBooks = downloadedBooks.filter {
+                            !localStoryIds.contains(it.storyId.split("_").first())
+                        }
+
+                        // 전체 책 목록 (로컬 + 다운로드)
+                        val combinedBooks = localBooksWithDownloadStatus + newDownloadedBooks
+
+                        // 현재 필터 상태 확인
+                        val currentFilter = _state.value.filterBarState.selectedFilter
+                        val shouldApplyFilters = currentFilter != FilterBarCategory.All
+
+                        // UI 상태 업데이트 (로딩 상태 없이)
+                        _state.update {
+                            if (shouldApplyFilters) {
+                                // 현재 필터 상태가 있으면 books만 업데이트
+                                it.copy(books = combinedBooks)
+                            } else {
+                                // 필터 상태가 ALL이면 filteredBooks도 함께 업데이트
+                                it.copy(books = combinedBooks, filteredBooks = combinedBooks)
+                            }
+                        }
+
+                        // 필터링이 필요한 경우 applyFilters 호출
+                        if (shouldApplyFilters) {
+                            applyFilters()
+                        }
+
+                        Log.d(
+                            "BookshelfViewModel",
+                            "Language switch: Loaded total ${combinedBooks.size} books (${localBooksWithDownloadStatus.size} local + ${newDownloadedBooks.size} downloaded)"
+                        )
+
+                        // 백그라운드에서 원격 책 확인 (다운로드 가능한 새 책 확인)
+                        checkAndLoadRemoteBooks(languageCode)
+                    },
+                    onFailure = { error ->
+                        Log.e("BookshelfViewModel", "Error loading books for language switch", error)
+                        // 에러 발생 시에도 로딩 상태를 표시하지 않음
+                    }
+                )
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Exception in loadStoriesForLanguageSwitch", e)
+            }
+        }
     }
 
     /**
@@ -104,6 +175,10 @@ class BookshelfViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         musicManager.release()
+        soundEffectManager.release()
+        // 모든 진행률 작업 취소
+        downloadProgressJobs.values.forEach { it.cancel() }
+        downloadProgressJobs.clear()
     }
 
     /**
@@ -138,6 +213,9 @@ class BookshelfViewModel @Inject constructor(
                 it.code == languageCode
             } ?: LanguageConstants.DEFAULT_LANGUAGE
 
+            // LanguageManager에도 초기 언어 설정
+            LanguageManager.setCurrentLanguageCode(language.code)
+
             _state.update { it.copy(currentLanguage = language) }
             loadStories(language.code)  // 해당 언어로 책 로드
         }
@@ -164,10 +242,12 @@ class BookshelfViewModel @Inject constructor(
                 // 언어가 변경되었을 때만 상태 업데이트 및 책 로딩
                 if (language.code != _state.value.currentLanguage.code) {
                     Log.d("BookshelfViewModel", "Language changed from ${_state.value.currentLanguage.code} to ${language.code}")
+
+                    // LanguageManager에도 언어 설정
+                    LanguageManager.setCurrentLanguageCode(language.code)
+
                     _state.update {
-                        it.copy(
-                            currentLanguage = language,
-                        )
+                        it.copy(currentLanguage = language)
                     }
                     loadStories(language.code)
                 }
@@ -190,7 +270,10 @@ class BookshelfViewModel @Inject constructor(
                     onSuccess = { localBooks ->
                         // 로컬 책(assets에 있는 책)은 항상 다운로드된 상태로 설정
                         val localBooksWithDownloadStatus = localBooks.map { localBook ->
-                            localBook.copy(isDownloaded = true)
+                            localBook.copy(
+                                isDownloaded = true,
+                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                            )
                         }
 
                         // 로컬 책과 다운로드된 책을 합친 목록 생성 (중복 제거)
@@ -268,11 +351,12 @@ class BookshelfViewModel @Inject constructor(
                     storyId = "${entity.id}_$languageCode",
                     title = entity.title,
                     coverImage = entity.coverImagePath,
-                    level = 1,
+                    level = entity.level,  // DB에서 level 정보 가져오기
                     category = entity.category,
                     pageCount = 0,
                     isDownloaded = true,
-                    isBookmarked = false
+                    isBookmarked = false,
+                    downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
                 )
             }
         } catch (e: Exception) {
@@ -354,7 +438,10 @@ class BookshelfViewModel @Inject constructor(
                                 "BookshelfViewModel",
                                 "Setting local book ${book.storyId} as downloaded"
                             )
-                            currentBooks[i] = book.copy(isDownloaded = true)
+                            currentBooks[i] = book.copy(
+                                isDownloaded = true,
+                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                            )
                             hasChanges = true
                         }
                         continue // 로컬 책은 더 이상 처리할 필요 없음
@@ -380,7 +467,15 @@ class BookshelfViewModel @Inject constructor(
                             "BookshelfViewModel",
                             "Updating book ${book.storyId} status from ${if (book.isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"} to ${if (isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"}"
                         )
-                        currentBooks[i] = book.copy(isDownloaded = isDownloaded)
+                        val downloadProgress = if (isDownloaded) {
+                            DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                        } else {
+                            DownloadProgress(DownloadStatus.AVAILABLE, 0f)
+                        }
+                        currentBooks[i] = book.copy(
+                            isDownloaded = isDownloaded,
+                            downloadProgress = downloadProgress
+                        )
                         hasChanges = true
                     }
                 }
@@ -515,11 +610,12 @@ class BookshelfViewModel @Inject constructor(
                                     storyId = "${remoteBook.id}_$languageCode",
                                     title = title,
                                     coverImage = localCoverPath,
-                                    level = 1,
+                                    level = remoteBook.level,  // 원격 데이터에서 level 정보 가져오기
                                     category = category,
                                     pageCount = 0,
                                     isDownloaded = false,  // 원격 책은 다운로드 필요
-                                    isBookmarked = false
+                                    isBookmarked = false,
+                                    downloadProgress = DownloadProgress(DownloadStatus.AVAILABLE, 0f)
                                 )
 
                                 currentBooks.add(newBook)
@@ -654,9 +750,9 @@ class BookshelfViewModel @Inject constructor(
         return _state.value.books[index]
     }
 
-    /*
-    * 책 리스트 필터링 UI 반영용
-    * */
+    /**
+     * 책 리스트 필터링 UI 반영용
+     */
     private fun onFilterOptionSelected(
         filter: FilterBarCategory? = null,
         stage: FilterLevel? = null,
@@ -703,9 +799,9 @@ class BookshelfViewModel @Inject constructor(
         applyFilters()
     }
 
-    /*
-    * 책 리스트 필터링 실제 리스트 반영
-    * */
+    /**
+     * 책 리스트 필터링 실제 리스트 반영
+     */
     private fun applyFilters() {
         val selectedFilter = _state.value.filterBarState.selectedFilter
         val selectedStage = _state.value.filterBarState.selectedStage
@@ -729,7 +825,6 @@ class BookshelfViewModel @Inject constructor(
         _state.update { it.copy(filteredBooks = filteredList) }
     }
 
-
     /**
      * 언어 선택 다이얼로그 표시 제어
      *
@@ -748,26 +843,25 @@ class BookshelfViewModel @Inject constructor(
         Log.d("BookshelfViewModel", "Changing language to: ${language.code}")
 
         if (language.code != _state.value.currentLanguage.code) {
-            // 다이얼로그 닫기
-            _state.update {
-                it.copy(
-                    showLanguageDialog = false,
-                    isLoading = true,
-                    books = emptyList() // 이전 책 목록 완전히 초기화
-                )
-            }
-
             // 선택한 언어를 저장
             viewModelScope.launch {
                 try {
+                    // 다이얼로그만 닫고 기존 책 목록은 유지 (블랙아웃 방지)
+                    _state.update {
+                        it.copy(
+                            showLanguageDialog = false,
+                            currentLanguage = language
+                        )
+                    }
+
                     saveUserPreferenceUseCase.updateLanguage(language.code)
 
-                    // 이 후
+                    // LanguageManager에 언어 코드 설정
+                    LanguageManager.setCurrentLanguageCode(language.code)
+
                     Logger.e("현재 언어 코드: ${LanguageManager.getCurrentLanguageCode()}")
 
-                    // 언어 변경 후 바로 스토리를 다시 로드
-                    _state.update { it.copy(currentLanguage = language) }
-
+                    // 백그라운드에서 새 언어의 책 로드 (기존 UI는 유지)
                     // 잠시 지연 후 새로 로드 (DB 업데이트 되도록)
                     kotlinx.coroutines.delay(100)
 
@@ -776,13 +870,13 @@ class BookshelfViewModel @Inject constructor(
                         downloadedBooksDao.getDownloadedBooksByLanguage(language.code)
                     Log.d(
                         "BookshelfViewModel", "====== 언어 변경 후 ${language.code}로 다운로드된 책 ID: " +
-                            "${
-                                downloadedIds.map { it.id }.toSet()
-                            }, 수: ${downloadedIds.size} ======"
+                                "${
+                                    downloadedIds.map { it.id }.toSet()
+                                }, 수: ${downloadedIds.size} ======"
                     )
 
-                    // 완전히 새로 로드하여 다운로드 상태를 정확하게 반영
-                    loadStories(language.code)
+                    // 새 언어로 책 목록 로드 (로딩 상태 없이)
+                    loadStoriesForLanguageSwitch(language.code)
                 } catch (e: Exception) {
                     Log.e("BookshelfViewModel", "언어 변경 중 오류 발생", e)
                     _state.update { it.copy(isLoading = false) }
@@ -808,9 +902,10 @@ class BookshelfViewModel @Inject constructor(
     }
 
     /**
-     * 책 다운로드 처리
+     * 책 다운로드 처리 - 90% 멈춤 문제 해결
      * - 선택한 책 다운로드 작업 시작
      * - WorkManager를 통한 백그라운드 다운로드
+     * - 진행률 시뮬레이션과 실제 다운로드 완료 동기화
      *
      * @param index 다운로드할 책 인덱스
      */
@@ -820,7 +915,7 @@ class BookshelfViewModel @Inject constructor(
         val languageCode = _state.value.currentLanguage.code
 
         // 이미 다운로드 중이거나 다운로드된 책은 처리하지 않음
-        if (book.isDownloaded) {
+        if (book.isDownloaded || book.downloadProgress?.status == DownloadStatus.DOWNLOADING) {
             return
         }
 
@@ -834,20 +929,65 @@ class BookshelfViewModel @Inject constructor(
                         "BookshelfViewModel",
                         "Book $bookId is already downloaded for language $languageCode"
                     )
-                    updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED)
+                    updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED, 1f)
                     return@launch
                 }
             } catch (e: Exception) {
                 Log.e("BookshelfViewModel", "Error checking download status", e)
             }
 
-            // 여기서부터는 정상적인 다운로드 진행
-
             // 해당 책 찾기
-            val remoteBook = _state.value.remoteBooks.find { it.id == bookId } ?: return@launch
+            val remoteBook = _state.value.remoteBooks.find { it.id == bookId } ?: run {
+                Log.e("BookshelfViewModel", "Remote book not found for ID: $bookId")
+                updateBookDownloadStatus(index, DownloadStatus.FAILED, 0f)
+                return@launch
+            }
 
             // UI 상태 업데이트 - 다운로드 중으로 변경
-            updateBookDownloadStatus(index, DownloadStatus.DOWNLOADING)
+            updateBookDownloadStatus(index, DownloadStatus.DOWNLOADING, 0f)
+
+            // 기존 진행률 작업이 있다면 취소
+            downloadProgressJobs[index]?.cancel()
+
+            // 새로운 진행률 시뮬레이션 작업 시작
+            val progressJob = viewModelScope.launch {
+                try {
+                    // 0%에서 85%까지 점진적으로 업데이트 (90%에서 멈추는 문제 방지)
+                    for (progress in 5..85 step 5) {
+                        delay(300) // 0.3초마다 업데이트
+
+                        // 작업이 취소되었는지 확인
+                        if (!isActive) break
+
+                        // 실제 다운로드가 완료되었는지 확인
+                        val checkDownloaded = downloadedBooksDao.getDownloadedBook(bookId, languageCode)
+                        if (checkDownloaded != null) {
+                            // 실제 다운로드 완료되면 즉시 100%로 설정
+                            updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED, 1f)
+                            break
+                        }
+
+                        updateBookDownloadStatus(index, DownloadStatus.DOWNLOADING, progress / 100f)
+                    }
+
+                    // 85% 이후에는 실제 다운로드 완료를 기다림
+                    while (isActive) {
+                        delay(500)
+                        val checkDownloaded = downloadedBooksDao.getDownloadedBook(bookId, languageCode)
+                        if (checkDownloaded != null) {
+                            updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED, 1f)
+                            break
+                        }
+                    }
+                } catch (e: Exception) {
+                    if (e.message?.contains("CancellationException") != true) {
+                        Log.e("BookshelfViewModel", "Error in progress simulation", e)
+                    }
+                }
+            }
+
+            // 진행률 작업을 맵에 저장
+            downloadProgressJobs[index] = progressJob
 
             // WorkManager를 사용하여 백그라운드에서 다운로드
             // Input 데이터 설정
@@ -887,12 +1027,15 @@ class BookshelfViewModel @Inject constructor(
                                     "Download completed successfully for book $bookId with language $languageCode"
                                 )
 
+                                // 진행률 작업 취소 (실제 완료되었으므로)
+                                downloadProgressJobs[index]?.cancel()
+                                downloadProgressJobs.remove(index)
+
                                 // 다운로드 상태 업데이트
-                                updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED)
+                                updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED, 1f)
 
                                 // 다운로드 완료 후 다운로드 상태 재확인을 통해 UI 새로고침
                                 viewModelScope.launch {
-                                    // UI 업데이트를 위해 현재 언어에 대한 다운로드 상태 확인
                                     try {
                                         val allDownloadedBookIds = downloadedBooksDao
                                             .getDownloadedBooksByLanguage(languageCode)
@@ -913,14 +1056,22 @@ class BookshelfViewModel @Inject constructor(
                                     "BookshelfViewModel",
                                     "Download failed for book $bookId with language $languageCode"
                                 )
-                                updateBookDownloadStatus(index, DownloadStatus.FAILED)
+                                // 진행률 작업 취소
+                                downloadProgressJobs[index]?.cancel()
+                                downloadProgressJobs.remove(index)
+
+                                updateBookDownloadStatus(index, DownloadStatus.FAILED, 0f)
                             }
                             WorkInfo.State.CANCELLED -> {
                                 Log.d(
                                     "BookshelfViewModel",
                                     "Download cancelled for book $bookId with language $languageCode"
                                 )
-                                updateBookDownloadStatus(index, DownloadStatus.AVAILABLE)
+                                // 진행률 작업 취소
+                                downloadProgressJobs[index]?.cancel()
+                                downloadProgressJobs.remove(index)
+
+                                updateBookDownloadStatus(index, DownloadStatus.AVAILABLE, 0f)
                             }
                             else -> {
                                 // 처리 중 상태는 무시
@@ -938,8 +1089,9 @@ class BookshelfViewModel @Inject constructor(
      *
      * @param index 책 목록 인덱스
      * @param status 다운로드 상태
+     * @param progress 다운로드 진행률 (0.0 ~ 1.0)
      */
-    private fun updateBookDownloadStatus(index: Int, status: DownloadStatus) {
+    private fun updateBookDownloadStatus(index: Int, status: DownloadStatus, progress: Float = 0f) {
         if (index < 0 || index >= _state.value.books.size) return
 
         _state.update { currentState ->
@@ -948,7 +1100,8 @@ class BookshelfViewModel @Inject constructor(
 
             // Book 객체를 수정하여 다운로드 상태 업데이트
             val updatedBook = bookToUpdate.copy(
-                isDownloaded = status == DownloadStatus.DOWNLOADED
+                isDownloaded = status == DownloadStatus.DOWNLOADED,
+                downloadProgress = DownloadProgress(status, progress)
             )
             updatedBooks[index] = updatedBook
 
@@ -957,6 +1110,7 @@ class BookshelfViewModel @Inject constructor(
                 "BookshelfViewModel", "Book status updated: storyId=${bookToUpdate.storyId}, " +
                         "from=${if (bookToUpdate.isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"}, " +
                         "to=${if (updatedBook.isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"}, " +
+                        "progress=${progress * 100}%, " +
                         "language=${_state.value.currentLanguage.code}"
             )
 
@@ -981,11 +1135,12 @@ class BookshelfViewModel @Inject constructor(
                             storyId = "${downloadedBookEntity.id}_$currentLanguage",
                             title = downloadedBookEntity.title,
                             coverImage = downloadedBookEntity.coverImagePath,
-                            level = 1,
+                            level = downloadedBookEntity.level,
                             category = downloadedBookEntity.category,
                             pageCount = 0,
                             isDownloaded = true,
-                            isBookmarked = false
+                            isBookmarked = false,
+                            downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
                         )
 
                         // 중복 방지
@@ -994,9 +1149,9 @@ class BookshelfViewModel @Inject constructor(
                         val newBookList = _state.value.books.toMutableList()
 
                         if (existingIndex >= 0) {
-                            newBookList[existingIndex] = newBook  // 기존 항목 업데이트
+                            newBookList[existingIndex] = newBook
                         } else {
-                            newBookList.add(newBook)  // 새 항목 추가
+                            newBookList.add(newBook)
                         }
 
                         // books와 필요한 경우 filteredBooks 업데이트
@@ -1040,19 +1195,38 @@ class BookshelfViewModel @Inject constructor(
      */
     fun onAction(action: BookShelfAction) {
         when (action) {
-            is BookShelfAction.BookSelect -> onBookSelected(action.index)
-            is BookShelfAction.ChatbotClick -> {}
-            is BookShelfAction.SettingClick -> {}
-            is BookShelfAction.ShowLanguageDialog -> handleLanguageSelector(action.isShow)
-            is BookShelfAction.ChangeLanguage -> changeLanguage(action.language)
+            is BookShelfAction.BookSelect -> {
+                soundEffectManager.playButtonClick()
+                onBookSelected(action.index)
+            }
+            is BookShelfAction.ChatbotClick -> {
+                soundEffectManager.playButtonClick()
+            }
+            is BookShelfAction.SettingClick -> {
+                soundEffectManager.playButtonClick()
+            }
+            is BookShelfAction.ShowLanguageDialog -> {
+                soundEffectManager.playButtonClick()
+                handleLanguageSelector(action.isShow)
+            }
+            is BookShelfAction.ChangeLanguage -> {
+                soundEffectManager.playButtonClick()
+                changeLanguage(action.language)
+            }
             is BookShelfAction.StartMusic -> startMusic()
             is BookShelfAction.StopMusic -> stopMusic()
-            is BookShelfAction.DownloadBook -> downloadBook(action.index)
-            is BookShelfAction.SelectFilter -> onFilterOptionSelected(
-                filter = action.filter,
-                stage = action.stage,
-                category = action.category,
-            )
+            is BookShelfAction.DownloadBook -> {
+                soundEffectManager.playButtonClick()
+                downloadBook(action.index)
+            }
+            is BookShelfAction.SelectFilter -> {
+                soundEffectManager.playButtonClick()
+                onFilterOptionSelected(
+                    filter = action.filter,
+                    stage = action.stage,
+                    category = action.category,
+                )
+            }
         }
     }
 }

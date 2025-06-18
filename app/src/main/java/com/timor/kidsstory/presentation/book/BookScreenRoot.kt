@@ -21,10 +21,13 @@ fun BookScreenRoot(
     BookScreen(
         // 뷰모델의 상태를 UI에 연결
         state = viewModel.state.collectAsStateWithLifecycle().value,
-        // 액션 처리 - 뒤로가기는 상위 컴포넌트에, 나머지는 뷰모델에 위임
+        // 액션 처리 - 모든 액션을 뷰모델에 전달하여 효과음 처리
         onAction = { action ->
             when (action) {
-                is BookAction.BackBookShelf -> onBack()  // 뒤로가기 처리
+                is BookAction.BackBookShelf -> {
+                    viewModel.onAction(action)  // 효과음 재생
+                    onBack()  // 뒤로가기 처리
+                }
                 else -> viewModel.onAction(action)  // 기타 액션은 뷰모델에서 처리
             }
         }

@@ -10,6 +10,7 @@ import com.timor.kidsstory.domain.usecase.book.GetBookDetailUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
+import com.timor.kidsstory.domain.util.SoundEffectManager
 import com.timor.kidsstory.presentation.book.model.BookUiState
 import com.timor.kidsstory.presentation.book.model.PageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +30,7 @@ import javax.inject.Inject
  *
  * @property getBookDetailUseCase 책 상세 정보 가져오기 유스케이스
  * @property textToSpeechHelper 텍스트 음성 변환 도우미
+ * @property soundEffectManager 효과음 관리자
  * @property savedStateHandle 네비게이션 인자 저장소
  */
 @HiltViewModel
@@ -36,6 +38,7 @@ class BookViewModel @Inject constructor(
     private val getBookDetailUseCase: GetBookDetailUseCase,
     private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
     private val textToSpeechHelper: TextToSpeechHelper,
+    private val soundEffectManager: SoundEffectManager,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     // UI 상태 관리
@@ -74,6 +77,7 @@ class BookViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         textToSpeechHelper.shutDown()
+        soundEffectManager.release()
     }
 
     /**
@@ -205,16 +209,19 @@ class BookViewModel @Inject constructor(
     fun onAction(action: BookAction) {
         when (action) {
             is BookAction.TextToSpeak -> {
+                soundEffectManager.playButtonClick()
                 Logger.e("들어오는 컨텐츠 : ${action.textList}")
                 ttsSpeak(action.textList)
             }
-            BookAction.BackBookShelf -> {}  // 네비게이션 처리는 컴포저블에서 함
+            BookAction.BackBookShelf -> {
+                soundEffectManager.playButtonClick()
+            }  // 네비게이션 처리는 컴포저블에서 함
             is BookAction.PageChange -> {
+                soundEffectManager.playPageFlip()
                 onPageChanged(action.page)
                 // 음성 인식 중지
                 textToSpeechHelper.stop()
             }
-
         }
     }
 }

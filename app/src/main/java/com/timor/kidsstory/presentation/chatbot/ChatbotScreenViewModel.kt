@@ -6,6 +6,7 @@ import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.google.ai.client.generativeai.type.content
 import com.timor.kidsstory.domain.util.SpeechRecognizerHelper
+import com.timor.kidsstory.domain.util.SoundEffectManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatbotScreenViewModel @Inject constructor(
     private val chatModel: GenerativeModel,
-    private val speechRecognizerHelper: SpeechRecognizerHelper?
+    private val speechRecognizerHelper: SpeechRecognizerHelper?,
+    private val soundEffectManager: SoundEffectManager
 ) : ViewModel() {
     // UI 상태 관리
     private val _state = MutableStateFlow(ChatbotUiState())
@@ -40,6 +42,7 @@ class ChatbotScreenViewModel @Inject constructor(
         super.onCleared()
         _state.update { it.copy(isRecording = false) }
         speechRecognizerHelper?.destroyListening()
+        soundEffectManager.release()
     }
 
     /**
@@ -201,15 +204,18 @@ class ChatbotScreenViewModel @Inject constructor(
     fun onAction(action: ChatbotAction) {
         when (action) {
             is ChatbotAction.ShowDialog -> {
+                soundEffectManager.playButtonClick()
                 if (!action.isShow) cancelVoiceSearch()
                 showVoiceDialog(action.isShow)
             }
 
             is ChatbotAction.SendMessage -> {
+                soundEffectManager.playButtonClick()
                 sendMessage(action.message)
             }
 
             is ChatbotAction.VoiceSearch -> {
+                soundEffectManager.playButtonClick()
                 startVoiceSearch()
             }
 
@@ -217,7 +223,9 @@ class ChatbotScreenViewModel @Inject constructor(
                 onInputChange(action.message)
             }
 
-            is ChatbotAction.BackScreen -> {}  // 상위 컴포넌트에서 처리
+            is ChatbotAction.BackScreen -> {
+                soundEffectManager.playButtonClick()
+            }  // 상위 컴포넌트에서 처리
         }
     }
 
