@@ -8,6 +8,7 @@ import com.google.ai.client.generativeai.GenerativeModel
 import com.timor.kidsstory.BuildConfig
 import com.timor.kidsstory.data.local.assets.AssetDataSource
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
+import com.timor.kidsstory.domain.util.SoundEffectManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -57,5 +58,11 @@ object AppModule {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         }
+    }
+
+    @Provides
+    @Singleton
+    fun provideSoundEffectManager(@ApplicationContext context: Context): SoundEffectManager {
+        return SoundEffectManager(context)
     }
 }
