@@ -38,6 +38,7 @@ import com.timor.kidsstory.ui.components.LocalizedText
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
+import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 
 /**
  * 설정 화면 UI 컴포넌트
@@ -52,6 +53,10 @@ fun SettingScreen(
     state: SettingUiState,
     onAction: (SettingAction) -> Unit,
 ) {
+    // 반응형 크기 계산
+    val responsivePadding = ResponsiveTextUtils.getResponsivePadding().dp
+    val responsiveIconSize = ResponsiveTextUtils.getResponsiveLargeIconSize().dp
+    
     // 메인 컨테이너
     Box(
         modifier = Modifier
@@ -64,9 +69,9 @@ fun SettingScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height((56 * ResponsiveTextUtils.getScreenScaleFactor()).dp)
                     .background(AppColors.primary300)
-                    .padding(horizontal = 48.dp)
+                    .padding(horizontal = responsivePadding)
             ) {
                 // 뒤로가기 (닫기) 버튼
                 IconButton(
@@ -79,7 +84,7 @@ fun SettingScreen(
                         painter = painterResource(R.drawable.ic_close),
                         contentDescription = "Close",
                         tint = Color.Black,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(responsiveIconSize)
                     )
                 }
 
@@ -89,7 +94,7 @@ fun SettingScreen(
                     contentDescription = "Info",
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .size(60.dp),
+                        .size((60 * ResponsiveTextUtils.getScreenScaleFactor()).dp),
                     tint = Color.Unspecified
                 )
             }
@@ -98,31 +103,31 @@ fun SettingScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 48.dp, vertical = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp) // 카드 사이 간격
+                    .padding(horizontal = responsivePadding, vertical = (24 * ResponsiveTextUtils.getScreenScaleFactor()).dp),
+                horizontalArrangement = Arrangement.spacedBy((16 * ResponsiveTextUtils.getScreenScaleFactor()).dp) // 카드 사이 간격
             ) {
                 // 설정 카드 - 음악 스위치 포함
                 Card(
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(0.9f), // 고정된 가로세로 비율
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape((16 * ResponsiveTextUtils.getScreenScaleFactor()).dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding((16 * ResponsiveTextUtils.getScreenScaleFactor()).dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
                         // 카드 제목
                         LocalizedText(
                             resId = R.string.info_setting,
-                            style = AppTextStyles.gummyMediumSemibold,
+                            style = ResponsiveTextUtils.getSettingCardTitleStyle(),
                             color = AppColors.neutral800,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                            modifier = Modifier.padding(bottom = (16 * ResponsiveTextUtils.getScreenScaleFactor()).dp)
                         )
 
                         // 음악 설정 토글
@@ -134,7 +139,7 @@ fun SettingScreen(
                         ) {
                             LocalizedText(
                                 resId = R.string.info_music,
-                                style = AppTextStyles.gummySmallSemibold,
+                                style = ResponsiveTextUtils.getSettingTextStyle(),
                                 color = AppColors.neutral700
                             )
 
@@ -156,29 +161,29 @@ fun SettingScreen(
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(0.9f), // 고정된 가로세로 비율
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape((16 * ResponsiveTextUtils.getScreenScaleFactor()).dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding((16 * ResponsiveTextUtils.getScreenScaleFactor()).dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
                         // 카드 제목
                         LocalizedText(
                             resId = R.string.info_created_by,
-                            style = AppTextStyles.gummyMediumSemibold,
+                            style = ResponsiveTextUtils.getSettingCardTitleStyle(),
                             color = AppColors.neutral800,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                            modifier = Modifier.padding(bottom = (16 * ResponsiveTextUtils.getScreenScaleFactor()).dp)
                         )
 
                         // 개발자 목록
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.spacedBy((8 * ResponsiveTextUtils.getScreenScaleFactor()).dp)
                         ) {
                             DeveloperRow(
                                 roleResId = R.string.info_dev_yujin,
@@ -201,32 +206,32 @@ fun SettingScreen(
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(0.9f), // 고정된 가로세로 비율
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape((16 * ResponsiveTextUtils.getScreenScaleFactor()).dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding((16 * ResponsiveTextUtils.getScreenScaleFactor()).dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
                         // 카드 제목
                         LocalizedText(
                             resId = R.string.info_about,
-                            style = AppTextStyles.gummyMediumSemibold,
+                            style = ResponsiveTextUtils.getSettingCardTitleStyle(),
                             color = AppColors.neutral800,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                            modifier = Modifier.padding(bottom = (16 * ResponsiveTextUtils.getScreenScaleFactor()).dp)
                         )
 
                         // 앱 정보 박스
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape((8 * ResponsiveTextUtils.getScreenScaleFactor()).dp))
                                 .background(AppColors.blue50)
-                                .padding(8.dp),
+                                .padding((8 * ResponsiveTextUtils.getScreenScaleFactor()).dp),
                             contentAlignment = Alignment.Center
                         ) {
                             // 앱이름 왼쪽, 버전 정보 오른쪽
@@ -237,7 +242,7 @@ fun SettingScreen(
                                 // 왼쪽 섹션 - TaleTail 앱 이름
                                 LocalizedText(
                                     resId = R.string.app_name,
-                                    style = AppTextStyles.gummyVSmallMediumItalic,
+                                    style = ResponsiveTextUtils.getSettingSmallTextStyle(),
                                     color = AppColors.blue700,
                                     modifier = Modifier.weight(1f)
                                 )
@@ -251,23 +256,20 @@ fun SettingScreen(
                                     ) {
                                         LocalizedText(
                                             resId = R.string.info_version,
-                                            style = AppTextStyles.gummyVvSmallRegularItalic,
-                                            color = AppColors.neutral800,
-                                            fontSize = 12.sp
+                                            style = ResponsiveTextUtils.getSettingVerySmallTextStyle(),
+                                            color = AppColors.neutral800
                                         )
                                         Text(
                                             text = ": 1.0.1",
-                                            style = AppTextStyles.gummyVvSmallRegularItalic,
-                                            color = AppColors.neutral800,
-                                            fontSize = 12.sp
+                                            style = ResponsiveTextUtils.getSettingVerySmallTextStyle(),
+                                            color = AppColors.neutral800
                                         )
                                     }
 
                                     Text(
-                                        text = "2025-04-28",
-                                        style = AppTextStyles.gummyVvSmallRegularItalic,
-                                        color = AppColors.neutral600,
-                                        fontSize = 12.sp
+                                        text = "2025-06-17",
+                                        style = ResponsiveTextUtils.getSettingVerySmallTextStyle(),
+                                        color = AppColors.neutral600
                                     )
                                 }
                             }
@@ -276,20 +278,20 @@ fun SettingScreen(
                         // 라이센스 정보
                         LocalizedText(
                             resId = R.string.info_license,
-                            style = AppTextStyles.gummyMediumSemibold,
+                            style = ResponsiveTextUtils.getSettingCardTitleStyle(),
                             color = AppColors.neutral800,
-                            modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                            modifier = Modifier.padding(top = (12 * ResponsiveTextUtils.getScreenScaleFactor()).dp, bottom = (4 * ResponsiveTextUtils.getScreenScaleFactor()).dp)
                         )
                         Text(
                             text = "These books are licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
-                            style = AppTextStyles.pretendardVSmall,
+                            style = ResponsiveTextUtils.getSettingVerySmallTextStyle(),
                             color = AppColors.neutral600,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
                         Text(
                             text = "ⓒ 2019 by Enuma, Inc. & The Foundation SeeArt for Book Culture",
-                            style = AppTextStyles.pretendardVSmall,
+                            style = ResponsiveTextUtils.getSettingVerySmallTextStyle(),
                             color = AppColors.neutral700,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
@@ -311,12 +313,16 @@ private fun CustomToggle(
     isChecked: Boolean,
     onToggle: (Boolean) -> Unit,
 ) {
+    val responsivePadding = (6 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+    val responsiveInnerPadding = (4 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+    val toggleSize = (26 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+    
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(100.dp))
             .background(if (isChecked) AppColors.primary300 else Color.LightGray)
             .clickable { onToggle(!isChecked) }
-            .padding(horizontal = 6.dp, vertical = 4.dp), // 바깥쪽 패딩
+            .padding(horizontal = responsivePadding, vertical = responsiveInnerPadding), // 바깥쪽 패딩
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -325,15 +331,15 @@ private fun CustomToggle(
             if (isChecked) {
                 LocalizedText(
                     resId = R.string.info_on,
-                    style = AppTextStyles.gummySmallSemibold,
+                    style = ResponsiveTextUtils.getSettingToggleTextStyle(),
                     color = AppColors.primary800,
-                    modifier = Modifier.padding(horizontal = 4.dp) // 켜기 양쪽 패딩
+                    modifier = Modifier.padding(horizontal = responsiveInnerPadding) // 켜기 양쪽 패딩
                 )
             }
 
             Box(
                 modifier = Modifier
-                    .size(26.dp)
+                    .size(toggleSize)
                     .clip(CircleShape)
                     .background(Color.White)
             )
@@ -341,9 +347,9 @@ private fun CustomToggle(
             if (!isChecked) {
                 LocalizedText(
                     resId = R.string.info_off,
-                    style = AppTextStyles.gummySmallSemibold,
+                    style = ResponsiveTextUtils.getSettingToggleTextStyle(),
                     color = AppColors.neutral400,
-                    modifier = Modifier.padding(horizontal = 4.dp) // 끄기 양쪽 패딩
+                    modifier = Modifier.padding(horizontal = responsiveInnerPadding) // 끄기 양쪽 패딩
                 )
             }
         }
@@ -355,12 +361,16 @@ private fun CustomToggle(
  */
 @Composable
 private fun DeveloperRow(roleResId: Int, flagResId: Int) {
+    val responsivePadding = (12 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+    val responsiveVerticalPadding = (6 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+    val iconSize = ResponsiveTextUtils.getResponsiveIconSize().dp
+    
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape((8 * ResponsiveTextUtils.getScreenScaleFactor()).dp))
             .background(AppColors.neutral100)
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = responsivePadding, vertical = responsiveVerticalPadding)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -368,7 +378,7 @@ private fun DeveloperRow(roleResId: Int, flagResId: Int) {
         ) {
             LocalizedText(
                 resId = roleResId,
-                style = AppTextStyles.gummyVSmallMediumItalic,
+                style = ResponsiveTextUtils.getSettingSmallTextStyle(),
                 color = AppColors.neutral800,
             )
 
@@ -377,7 +387,7 @@ private fun DeveloperRow(roleResId: Int, flagResId: Int) {
             Icon(
                 painter = painterResource(id = flagResId),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(iconSize),
                 tint = Color.Unspecified
             )
         }

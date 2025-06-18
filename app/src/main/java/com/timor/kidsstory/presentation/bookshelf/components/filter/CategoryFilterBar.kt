@@ -33,7 +33,6 @@ fun CategoryFilterBar(
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         // 확장된 카테고리 옵션들
         AnimatedVisibility(
             visible = isExpanded,
@@ -42,7 +41,8 @@ fun CategoryFilterBar(
         ) {
             Row(
                 modifier = Modifier.padding(start = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically // 아이콘들을 카테고리 버튼과 완벽하게 같은 높이에 정렬
             ) {
                 CategoryIcon(
                     category = FilterBookCategory.LEGEND,
@@ -100,42 +100,44 @@ fun CategoryIcon(
         FilterBookCategory.LIFE -> Color(0xFF31C292)
     }
 
-    // 선택 되었는지 판단 처리
-    if (isSelected) {
-        Box(
-            modifier = Modifier
-                .size(34.dp)
-                .clip(CircleShape)
-                .background(categoryBackgroundColor)
-                .border(width = 2.dp, color = categoryBorderColor, shape = CircleShape)
-                .clickable { onCategorySelected(category) },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = contentDescription,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-    } else {
-        Box(
-            modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-                .background(categoryBackgroundColor)
-                .clickable { onCategorySelected(category) },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = contentDescription,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(20.dp)
-            )
+    // 아이콘만 표시
+    Box(
+        modifier = Modifier.size(34.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(categoryBackgroundColor)
+                    .border(width = 2.dp, color = categoryBorderColor, shape = CircleShape)
+                    .clickable { onCategorySelected(category) },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = contentDescription,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(categoryBackgroundColor)
+                    .clickable { onCategorySelected(category) },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = contentDescription,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
-
 }
-
-
