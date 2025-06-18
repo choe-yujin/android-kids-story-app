@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TailTale</string>
+    <string name="app_name">TaleTail</string>
 
     <!-- Bookcover -->
     <string name="bookcover_download">Download</string>
+    <string name="bookcover_downloading">Downloading…</string>
+    <string name="bookcover_retry">Retry</string>
 
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">All</string>
     <string name="filter_stage">Stage</string>
     <string name="filter_category">Category</string>
+
+    <!-- Category Names -->
+    <string name="category_legend">legend</string>
+    <string name="category_folktale">folktale</string>
+    <string name="category_culture">culture</string>
+    <string name="category_life">life</string>
 
     <!-- Info Screen -->
     <string name="info_setting">Setting</string>
