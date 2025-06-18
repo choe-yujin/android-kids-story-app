@@ -2,6 +2,23 @@
 <resources>
 
     <style name="Theme.KidsStory" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- 애니메이션 비활성화 -->
         <item name="android:windowAnimationStyle">@null</item>
+        
+        <!-- 전체화면 설정 -->
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        
+        <!-- 시스템 UI 숨김 -->
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        
+        <!-- Edge-to-edge 지원 -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 </resources>

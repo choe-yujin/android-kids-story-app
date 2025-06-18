@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TailTale</string>
+    <string name="app_name">TaleTail</string>
 
     <!-- Bookcover -->
     <string name="bookcover_download">Download</string>
+    <string name="bookcover_downloading">Download daudaun…</string>
+    <string name="bookcover_retry">Koko fali</string>
 
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">Hotu</string>
     <string name="filter_stage">Faze</string>
     <string name="filter_category">Kategoria</string>
+
+    <!-- Category Names -->
+    <string name="category_legend">lenda</string>
+    <string name="category_folktale">istória popular</string>
+    <string name="category_culture">kultura</string>
+    <string name="category_life">moris loroloron</string>
 
     <!-- Info Screen -->
     <string name="info_setting">Konfigurasaun</string>

@@ -11,6 +11,7 @@ package com.timor.kidsstory.domain.model
  * @property pageCount 총 페이지 수
  * @property isDownloaded 다운로드 여부
  * @property isBookmarked 즐겨찾기 여부
+ * @property downloadProgress 다운로드 진행 상태
  */
 data class Book(
     val storyId: String,
@@ -20,5 +21,6 @@ data class Book(
     val category: String,
     val pageCount: Int,
     val isDownloaded: Boolean = true,
-    val isBookmarked: Boolean = false
+    val isBookmarked: Boolean = false,
+    val downloadProgress: DownloadProgress = DownloadProgress()
 )

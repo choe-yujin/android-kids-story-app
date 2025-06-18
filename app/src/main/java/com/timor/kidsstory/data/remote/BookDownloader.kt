@@ -56,7 +56,7 @@ class BookDownloader @Inject constructor(
                             storyId = existingBook.storyId,
                             title = existingBook.title,
                             coverImage = existingBook.coverImagePath,
-                            level = 1,
+                            level = existingBook.level, // DB에서 level 정보 가져오기
                             category = existingBook.category, // 카테고리 정보 사용
                             pageCount = 0,
                             isDownloaded = true,
@@ -137,7 +137,8 @@ class BookDownloader @Inject constructor(
                 contentJsonPath = jsonFile.absolutePath,
                 hasImages = imagesDownloaded || imagesExist,
                 downloadDate = System.currentTimeMillis(),
-                category = category // 카테고리 정보 추가
+                category = category, // 카테고리 정보 추가
+                level = remoteBook.level // level 정보 추가
             )
 
             downloadedBooksDao.insertDownloadedBook(bookEntity)
@@ -148,7 +149,7 @@ class BookDownloader @Inject constructor(
                 storyId = bookEntity.storyId,
                 title = bookEntity.title,
                 coverImage = bookEntity.coverImagePath,
-                level = 1,  // 임의 값
+                level = remoteBook.level,  // 원격 데이터에서 level 정보 가져오기
                 category = category, // 카테고리 정보 사용
                 pageCount = 0, // 초기값
                 isDownloaded = true,

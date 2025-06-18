@@ -35,6 +35,8 @@
             android:configChanges="locale|colorMode|layoutDirection"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.KidsStory"
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTop"
             tools:ignore="DiscouragedApi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
