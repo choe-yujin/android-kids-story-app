@@ -20,7 +20,7 @@ import com.timor.kidsstory.presentation.setting.SettingScreenRoot
  * - 설정 화면(Setting)
  */
 sealed class Screen(val route: String) {
-     // 책장 화면 - 앱의 시작 화면
+     // 책장 화면 - 메인 화면
     data object Bookshelf : Screen("bookshelf")
 
     // 책 읽기 화면 - 특정 책의 상세 페이지 표시
@@ -46,7 +46,7 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Bookshelf.route  // 책장 화면이 앱의 시작점
+        startDestination = Screen.Bookshelf.route  // 바로 책장으로 시작
     ) {
         // 책장 화면
         composable(Screen.Bookshelf.route) {
