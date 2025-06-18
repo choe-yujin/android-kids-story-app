@@ -1,6 +1,5 @@
 package com.timor.kidsstory
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
@@ -25,7 +23,6 @@ import kotlinx.coroutines.launch
 
 /**
  * 앱의 진입점 - 앱의 기본 설정을 담당
- * - 가로 모드 고정 설정
  * - 전체화면 및 Edge-to-edge 화면 설정
  * - 상태바 숨김 처리
  * - 앱의 메인 네비게이션 그래프 설정
@@ -35,18 +32,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 가로 모드 고정 - 어린이용 동화책 앱에 최적화된 레이아웃을 위함
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
         // Edge-to-edge와 전체 화면 설정 - 가능한 많은 화면 공간 확보
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
 
-        // Status bar 숨기기
-        WindowInsetsControllerCompat(window, window.decorView).apply {
-            hide(WindowInsetsCompat.Type.statusBars())
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
+        // 시스템 UI (상태바, 네비게이션바) 완전히 숨기기
+        hideSystemUI()
 
         // 언어 설정이 완료된 후에 UI 구성
         applyLanguageSetting {
@@ -60,6 +50,28 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 다시 포그라운드로 돌아올 때 시스템 UI 숨김
+        hideSystemUI()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            // 포커스를 다시 얻었을 때 시스템 UI 숨김
+            hideSystemUI()
+        }
+    }
+
+    private fun hideSystemUI() {
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            hide(WindowInsetsCompat.Type.statusBars())
+            hide(WindowInsetsCompat.Type.navigationBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 

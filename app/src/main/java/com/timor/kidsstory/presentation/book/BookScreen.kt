@@ -7,19 +7,13 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.orhanobut.logger.Logger
 import com.timor.kidsstory.presentation.book.components.PageContent
 import com.timor.kidsstory.presentation.book.components.pagetest.FlipPager
 import com.timor.kidsstory.presentation.book.model.BookUiState
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
-import eu.wewox.pagecurl.ExperimentalPageCurlApi
-import eu.wewox.pagecurl.page.PageCurl
-import eu.wewox.pagecurl.page.rememberPageCurlState
-import kotlinx.coroutines.launch
 
 /**
  * 책 읽기 화면 UI 컴포넌트
@@ -29,7 +23,6 @@ import kotlinx.coroutines.launch
  * @param state 책 읽기 화면 UI 상태
  * @param onAction 사용자 액션 처리 콜백
  */
-@OptIn(ExperimentalPageCurlApi::class)
 @Composable
 fun BookScreen(
     state: BookUiState,
@@ -52,38 +45,11 @@ fun BookScreen(
         pageCount = { state.pages.size }
     )
 
-    val pageCurlState = rememberPageCurlState(initialCurrent = state.currentPageIndex)
-    val scope = rememberCoroutineScope()        // 테스트를 위한 코루틴 스코프
-
     // 페이지 변경 감지 및 처리
     LaunchedEffect(pagerState.currentPage) {
         onAction(BookAction.PageChange(pagerState.currentPage))
     }
 
-    // 새로운 페이지 애니메이션 적용
-//    PageCurl(
-//        state = pageCurlState,
-//        count = state.pages.size,
-//        key = { state.pages[it].hashCode() },
-//        modifier = Modifier.fillMaxWidth()
-//    ) { pageIndex ->
-//        PageContent(
-//            state = state.pages[pageIndex],
-//            onBackToBookshelf = {
-//                onAction(BookAction.BackBookShelf)
-//            },
-//            modifier = Modifier.fillMaxSize(),
-//            onTextToSpeech = { content ->
-//                onAction(BookAction.TextToSpeak(content))
-//            },
-//            nextPage = {
-//                scope.launch {
-//                    pageCurlState.next()
-//                }
-//            }
-//        )
-//    }
-//
     // Flip 효과를 넣은 Horizontal Pager로 페이지 표시
     FlipPager(
         state = pagerState,
@@ -99,7 +65,6 @@ fun BookScreen(
             onTextToSpeech = { content ->
                 onAction(BookAction.TextToSpeak(content))
             },
-            nextPage = {}
         )
     }
 }

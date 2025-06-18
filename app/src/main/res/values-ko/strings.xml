@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TailTale</string>
+    <string name="app_name">TaleTail</string>
 
     <!-- Bookcover -->
     <string name="bookcover_download">다운로드</string>
+    <string name="bookcover_downloading">다운로드 중…</string>
+    <string name="bookcover_retry">재시도</string>
 
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">전체</string>
     <string name="filter_stage">단계</string>
     <string name="filter_category">카테고리</string>
+
+    <!-- Category Names -->
+    <string name="category_legend">전설</string>
+    <string name="category_folktale">민화</string>
+    <string name="category_culture">문화</string>
+    <string name="category_life">일상</string>
 
     <!-- Info Screen -->
     <string name="info_setting">설정</string>

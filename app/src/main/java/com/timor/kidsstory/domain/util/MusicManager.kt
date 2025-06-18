@@ -29,7 +29,7 @@ class MusicManager @Inject constructor(
         // mediaplayer 설정 - 배경음, 반복 및 볼륨 설정
         mediaPlayer = MediaPlayer.create(context, R.raw.bgm_bookshelf).apply {
             isLooping = true  // 반복 재생 활성화
-            setVolume(1.0f, 1.0f)  // 볼륨 설정 (좌/우)
+            setVolume(0.05f, 0.05f)  // 볼륨 설정 (좌/우)
         }
     }
 

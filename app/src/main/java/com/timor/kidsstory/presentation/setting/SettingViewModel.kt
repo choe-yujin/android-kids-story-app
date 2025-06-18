@@ -3,6 +3,7 @@ package com.timor.kidsstory.presentation.setting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
+import com.timor.kidsstory.domain.util.SoundEffectManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,10 +17,12 @@ import javax.inject.Inject
  * - UI 상태 업데이트
  *
  * @property musicSettingUseCase 음악 설정 관련 유스케이스
+ * @property soundEffectManager 효과음 관리자
  */
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val musicSettingUseCase: MusicSettingUseCase,
+    private val soundEffectManager: SoundEffectManager,
 ) : ViewModel() {
     // UI 상태 관리
     private val _state = MutableStateFlow(SettingUiState())
@@ -35,6 +38,14 @@ class SettingViewModel @Inject constructor(
                 _state.update { it.copy(isMusicOn = isMusicOn) }
             }
         }
+    }
+
+    /**
+     * 뷰모델 종료 시 리소스 해제
+     */
+    override fun onCleared() {
+        super.onCleared()
+        soundEffectManager.release()
     }
 
     /**
@@ -57,8 +68,13 @@ class SettingViewModel @Inject constructor(
      */
     fun onAction(action: SettingAction) {
         when (action) {
-            is SettingAction.SwitchClick -> toggleMusicSetting(action.isMusicOn)
-            is SettingAction.BackButtonClick -> {}  // 상위 컴포넌트에서 처리
+            is SettingAction.SwitchClick -> {
+                soundEffectManager.playButtonClick()
+                toggleMusicSetting(action.isMusicOn)
+            }
+            is SettingAction.BackButtonClick -> {
+                soundEffectManager.playButtonClick()
+            }  // 상위 컴포넌트에서 처리
         }
     }
 }
