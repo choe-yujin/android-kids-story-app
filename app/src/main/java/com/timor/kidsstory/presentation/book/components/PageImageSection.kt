@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.timor.kidsstory.presentation.book.model.PageUiState
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
+import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 
 /**
  * 동화책 페이지의 이미지 영역 컴포저블
@@ -48,10 +49,14 @@ fun PageImageSection(
             modifier = Modifier.fillMaxSize()
         )
 
-        // 뒤로가기 버튼 - 반투명 원형 배경
+        // 뒤로가기 버튼 - 반투명 원형 배경 (반응형 크기, 2/3로 축소)
+        val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp // 48 * 2/3 = 32
+        val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp // 32 * 2/3 ≈ 21
+        val padding = (16 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+        
         Box(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(padding)
                 .align(Alignment.TopStart)
                 .background(
                     color = Color.Black.copy(alpha = 0.4f),
@@ -60,13 +65,13 @@ fun PageImageSection(
         ) {
             IconButton(
                 onClick = onBackToBookshelf,
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier.size(buttonSize)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back to bookshelf",
                     tint = Color.White,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(iconSize)
                 )
             }
         }

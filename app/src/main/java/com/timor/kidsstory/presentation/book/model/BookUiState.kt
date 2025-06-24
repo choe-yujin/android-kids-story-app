@@ -8,10 +8,12 @@ package com.timor.kidsstory.presentation.book.model
  * @property pages 책의 모든 페이지 정보
  * @property isLoading 로딩 중 상태
  * @property error 오류 메시지 (있을 경우)
+ * @property showCompletionScreen 완독 축하 화면 표시 여부
  */
 data class BookUiState(
     val currentPageIndex: Int = 0,
     val pages: List<PageUiState> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val showCompletionScreen: Boolean = false
 )

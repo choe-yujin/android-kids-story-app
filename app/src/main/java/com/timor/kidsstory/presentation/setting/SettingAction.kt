@@ -11,7 +11,49 @@ sealed interface SettingAction {
      *
      * @property isMusicOn 변경할 음악 상태 (true: 켜기, false: 끄기)
      */
-    data class SwitchClick(val isMusicOn: Boolean): SettingAction
+    data class MusicSwitchClick(val isMusicOn: Boolean): SettingAction
+
+    /**
+     * 효과음 스위치 클릭 액션
+     * - 효과음 켜기/끄기 토글 처리
+     *
+     * @property isSoundEffectOn 변경할 효과음 상태 (true: 켜기, false: 끄기)
+     */
+    data class SoundEffectSwitchClick(val isSoundEffectOn: Boolean): SettingAction
+
+    /**
+     * 이메일 아이콘 클릭 액션
+     * - 이메일 다이얼로그 표시
+     */
+    data object EmailIconClick : SettingAction
+
+    /**
+     * 웹사이트 링크 클릭 액션
+     * - 브라우저에서 웹사이트 열기
+     */
+    data object WebsiteLinkClick : SettingAction
+
+    /**
+     * 이메일 다이얼로그 닫기 액션
+     * - 이메일 다이얼로그 숨김
+     */
+    data object DismissEmailDialog : SettingAction
+
+    /**
+     * 배경음악 음량 조절 액션
+     * - 배경음악 음량 설정 변경
+     *
+     * @property volume 변경할 음량 (0.0 ~ 1.0)
+     */
+    data class MusicVolumeChange(val volume: Float): SettingAction
+
+    /**
+     * 효과음 음량 조절 액션
+     * - 효과음 음량 설정 변경
+     *
+     * @property volume 변경할 음량 (0.0 ~ 1.0)
+     */
+    data class SoundEffectVolumeChange(val volume: Float): SettingAction
 
     /**
      * 뒤로가기 버튼 클릭 액션

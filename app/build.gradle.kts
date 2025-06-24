@@ -4,14 +4,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    // id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.kotlin.serialization)
-    id("com.google.devtools.ksp") // 버전 명시 제거
+    id("com.google.devtools.ksp")
 }
 
-val localProperties = Properties().apply {
-    load(rootProject.file("local.properties").inputStream())
+// local.properties에서 민감한 정보 읽기
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
 }
 
 android {
@@ -22,30 +24,65 @@ android {
         applicationId = "com.timor.kidsstory"
         minSdk = 21
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 2        // 1.0.0에서 1.0.1로 증가
+        versionName = "1.0.1"  // 버전 업데이트
+
+        ndk { // ABI 최적화(APK 용량 줄이기)
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("armeabi-v7a")
+            abiFilters.add("x86_64")
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties["GEMINI_API_KEY"]}\"")
+        // API 키 설정 (있는 경우에만)
+        if (localProperties.containsKey("GEMINI_API_KEY")) {
+            buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties["GEMINI_API_KEY"]}\"")
+        } else {
+            buildConfigField("String", "GEMINI_API_KEY", "\"\"")
+        }
+    }
+
+    // 서명 설정
+    signingConfigs {
+        create("release") {
+            storeFile = file(localProperties.getProperty("KEYSTORE_PATH") ?: "../keystore/upload-keystore.jks")
+            storePassword = localProperties.getProperty("KEYSTORE_PASSWORD")
+            keyAlias = localProperties.getProperty("KEY_ALIAS") ?: "upload"
+            keyPassword = localProperties.getProperty("KEY_PASSWORD")
+        }
     }
 
     buildTypes {
-        release {
+        debug {
             isMinifyEnabled = false
+            isShrinkResources = false
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+        }
+        
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    
     kotlinOptions {
         jvmTarget = "17"
     }
+    
     buildFeatures {
         compose = true
         buildConfig = true
@@ -72,6 +109,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.work.runtime.ktx)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -80,7 +118,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //Ktor
+    // Ktor
     implementation("io.ktor:ktor-client-android:2.3.12")
     implementation("io.ktor:ktor-client-cio:2.3.12")
     implementation("io.ktor:ktor-client-core:2.3.12")
@@ -100,7 +138,7 @@ dependencies {
     // Hilt와 WorkManager 통합
     implementation("androidx.hilt:hilt-work:1.2.0")
 
-    // hilt
+    // Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
     ksp("com.google.dagger:hilt-android-compiler:2.51.1")
     ksp("androidx.hilt:hilt-compiler:1.2.0")
@@ -108,17 +146,17 @@ dependencies {
 
     // Kotlin 메타데이터
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0")
+    
     // Logger
     implementation("com.orhanobut:logger:2.2.0")
 
-    // Gemini - ai
+    // Gemini AI
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
-    // pageCurl Animation
+    // Page Curl Animation
     implementation("io.github.oleksandrbalan:pagecurl:1.5.1")
 
-
-    // room db
+    // Room DB
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
@@ -126,29 +164,19 @@ dependencies {
     testImplementation("androidx.room:room-testing:$room_version")
     implementation("androidx.room:room-paging:$room_version")
 
-    // EPUB 추출기 모듈 추가
-    implementation(project(":epub-extractor"))
+    // DotLottie
+    //implementation("com.github.LottieFiles:dotlottie-android:0.5.0")
+
+    // LottieJson
+    implementation("com.airbnb.android:lottie-compose:6.3.0")
+
+    // EPUB 추출기 모듈 제거 (출시용)
+    // implementation(project(":epub-extractor"))
 }
 
-// EPUB 리소스 추출 태스크
-// 태스크 의존성으로 설정
+// EPUB 리소스 추출 태스크 제거 (출시용)
+/*
 tasks.register("extractEpubResources") {
-    dependsOn(":epub-extractor:fatJar")
-
-    doLast {
-        val epubSourceDir = rootProject.file("epub-source").absolutePath
-        val outputAssetsDir = file("src/main/assets").absolutePath
-        val metadataFile = file("src/main/assets/metadata/stories-metadata.json").absolutePath
-
-        // Fat JAR 경로
-        val epubExtractorJar = project(":epub-extractor").layout.buildDirectory
-            .dir("libs").get().asFile.listFiles()
-            ?.firstOrNull { it.name.contains("fat") && it.name.endsWith(".jar") }
-            ?.absolutePath ?: throw GradleException("epub-extractor Fat JAR not found")
-
-        // 최신 방식의 exec 사용
-        project.exec {
-            commandLine("java", "-jar", epubExtractorJar, epubSourceDir, outputAssetsDir, metadataFile)
-        }
-    }
+    // 출시용에서는 불필요
 }
+*/

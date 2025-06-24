@@ -1,5 +1,6 @@
 package com.timor.kidsstory.presentation.navigation
 
+import SplashScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -34,6 +35,9 @@ sealed class Screen(val route: String) {
 
     // 설정 화면 - 앱 설정 관리
     data object Setting : Screen("setting")
+
+    // 스플래쉬
+    data object Splash : Screen("splash")
 }
 
 /**
@@ -46,24 +50,32 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Bookshelf.route  // 바로 책장으로 시작
+        startDestination = Screen.Splash.route // ✅ splash가 시작화면
     ) {
+        // Splash Screen
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                onFinish = {
+                    navController.navigate(Screen.Bookshelf.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true } // splash 스택 제거
+                    }
+                }
+            )
+        }
+
         // 책장 화면
         composable(Screen.Bookshelf.route) {
             BookShelfScreenRoot(
-                // 책 선택 시 해당 책의 상세화면으로 이동
                 onBookSelect = { index ->
                     navController.navigate(Screen.Reader.createRoute(index)) {
-                        launchSingleTop = true  // 중복 화면 생성 방지
+                        launchSingleTop = true
                     }
                 },
-                // 설정 버튼 클릭 시 설정 화면으로 이동
                 onSettingClick = {
                     navController.navigate(Screen.Setting.route) {
                         launchSingleTop = true
                     }
                 },
-                // 챗봇 버튼 클릭 시 챗봇 화면으로 이동
                 onChatbotClick = { navController.navigate(Screen.ChatBot.route) },
             )
         }
@@ -72,33 +84,20 @@ fun NavGraph(
         composable(
             route = Screen.Reader.route,
             arguments = listOf(navArgument("storyId") { type = NavType.StringType })
-        ) { backStackEntry ->
+        ) {
             BookScreenRoot(
-                onBack = { navController.popBackStack() }  // 뒤로가기 시 이전 화면으로 복귀
+                onBack = { navController.popBackStack() }
             )
         }
 
         // 챗봇 화면
-        composable(
-            route = Screen.ChatBot.route,
-        ) { backStackEntry ->
-            ChatbotScreenRoot(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
+        composable(Screen.ChatBot.route) {
+            ChatbotScreenRoot(onBack = { navController.popBackStack() })
         }
 
-
         // 설정 화면
-        composable(
-            route = Screen.Setting.route
-        ) { backStackEntry ->
-            SettingScreenRoot(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
+        composable(Screen.Setting.route) {
+            SettingScreenRoot(onBack = { navController.popBackStack() })
         }
     }
 }

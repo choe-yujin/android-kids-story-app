@@ -80,7 +80,7 @@ class BookshelfViewModel @Inject constructor(
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
 
-    // 다운로드 진행률 작업 관리용 맵
+    // 다운로드 진행률 작업 관리용 맵 (사용하지 않지만 호환성을 위해 유지)
     private val downloadProgressJobs = mutableMapOf<Int, Job>()
 
     /**
@@ -115,7 +115,7 @@ class BookshelfViewModel @Inject constructor(
                         val localBooksWithDownloadStatus = localBooks.map { localBook ->
                             localBook.copy(
                                 isDownloaded = true,
-                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
                             )
                         }
 
@@ -176,9 +176,9 @@ class BookshelfViewModel @Inject constructor(
         super.onCleared()
         musicManager.release()
         soundEffectManager.release()
-        // 모든 진행률 작업 취소
-        downloadProgressJobs.values.forEach { it.cancel() }
-        downloadProgressJobs.clear()
+        // 진행률 작업은 더 이상 사용하지 않음
+        // downloadProgressJobs.values.forEach { it.cancel() }
+        // downloadProgressJobs.clear()
     }
 
     /**
@@ -187,7 +187,34 @@ class BookshelfViewModel @Inject constructor(
     private fun loadMusicSetting() {
         viewModelScope.launch {
             musicSettingUseCase.isMusicOn.collect { isMusicOn ->
+                val previousState = _state.value.isMusicOn
                 _state.update { it.copy(isMusicOn = isMusicOn) }
+                
+                // 상태가 변경되었거나 처음 로드시 음악 상태 동기화
+                if (previousState != isMusicOn || previousState == false) {
+                    android.util.Log.d("BookshelfViewModel", "Music setting changed: $isMusicOn (was: $previousState)")
+                    if (isMusicOn) {
+                        musicManager.startMusic()
+                    } else {
+                        musicManager.stopMusic()
+                    }
+                }
+            }
+        }
+        
+        // 음악 음량 설정 로드 및 관찰
+        viewModelScope.launch {
+            musicSettingUseCase.musicVolume.collect { volume ->
+                val wasMusicPlaying = _state.value.isMusicOn
+                musicManager.setVolume(volume)
+                
+                // 음악이 켜져 있는 상태라면 음량 조절 후에도 재생 상태 유지
+                if (wasMusicPlaying) {
+                    // 짧은 대기 후 음악 재생 보장
+                    kotlinx.coroutines.delay(100)
+                    musicManager.startMusic()
+                    android.util.Log.d("BookshelfViewModel", "Music restarted after volume change: $volume")
+                }
             }
         }
     }
@@ -272,7 +299,7 @@ class BookshelfViewModel @Inject constructor(
                         val localBooksWithDownloadStatus = localBooks.map { localBook ->
                             localBook.copy(
                                 isDownloaded = true,
-                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
                             )
                         }
 
@@ -356,7 +383,7 @@ class BookshelfViewModel @Inject constructor(
                     pageCount = 0,
                     isDownloaded = true,
                     isBookmarked = false,
-                    downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                    downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
                 )
             }
         } catch (e: Exception) {
@@ -440,7 +467,7 @@ class BookshelfViewModel @Inject constructor(
                             )
                             currentBooks[i] = book.copy(
                                 isDownloaded = true,
-                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
                             )
                             hasChanges = true
                         }
@@ -468,9 +495,9 @@ class BookshelfViewModel @Inject constructor(
                             "Updating book ${book.storyId} status from ${if (book.isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"} to ${if (isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"}"
                         )
                         val downloadProgress = if (isDownloaded) {
-                            DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                            DownloadProgress(DownloadStatus.DOWNLOADED)
                         } else {
-                            DownloadProgress(DownloadStatus.AVAILABLE, 0f)
+                            DownloadProgress(DownloadStatus.AVAILABLE)
                         }
                         currentBooks[i] = book.copy(
                             isDownloaded = isDownloaded,
@@ -615,7 +642,7 @@ class BookshelfViewModel @Inject constructor(
                                     pageCount = 0,
                                     isDownloaded = false,  // 원격 책은 다운로드 필요
                                     isBookmarked = false,
-                                    downloadProgress = DownloadProgress(DownloadStatus.AVAILABLE, 0f)
+                                    downloadProgress = DownloadProgress(DownloadStatus.AVAILABLE)
                                 )
 
                                 currentBooks.add(newBook)
@@ -720,7 +747,9 @@ class BookshelfViewModel @Inject constructor(
 
             capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         } else {
+            @Suppress("DEPRECATION")
             val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            @Suppress("DEPRECATION")
             activeNetworkInfo != null && activeNetworkInfo.isConnected
         }
     }
@@ -902,10 +931,9 @@ class BookshelfViewModel @Inject constructor(
     }
 
     /**
-     * 책 다운로드 처리 - 90% 멈춤 문제 해결
+     * 책 다운로드 처리 - 진행률 없이 단순한 다운로드
      * - 선택한 책 다운로드 작업 시작
      * - WorkManager를 통한 백그라운드 다운로드
-     * - 진행률 시뮬레이션과 실제 다운로드 완료 동기화
      *
      * @param index 다운로드할 책 인덱스
      */
@@ -915,7 +943,7 @@ class BookshelfViewModel @Inject constructor(
         val languageCode = _state.value.currentLanguage.code
 
         // 이미 다운로드 중이거나 다운로드된 책은 처리하지 않음
-        if (book.isDownloaded || book.downloadProgress?.status == DownloadStatus.DOWNLOADING) {
+        if (book.isDownloaded || book.downloadProgress.status == DownloadStatus.DOWNLOADING) {
             return
         }
 
@@ -929,7 +957,7 @@ class BookshelfViewModel @Inject constructor(
                         "BookshelfViewModel",
                         "Book $bookId is already downloaded for language $languageCode"
                     )
-                    updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED, 1f)
+                    updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED)
                     return@launch
                 }
             } catch (e: Exception) {
@@ -939,55 +967,12 @@ class BookshelfViewModel @Inject constructor(
             // 해당 책 찾기
             val remoteBook = _state.value.remoteBooks.find { it.id == bookId } ?: run {
                 Log.e("BookshelfViewModel", "Remote book not found for ID: $bookId")
-                updateBookDownloadStatus(index, DownloadStatus.FAILED, 0f)
+                updateBookDownloadStatus(index, DownloadStatus.FAILED)
                 return@launch
             }
 
             // UI 상태 업데이트 - 다운로드 중으로 변경
-            updateBookDownloadStatus(index, DownloadStatus.DOWNLOADING, 0f)
-
-            // 기존 진행률 작업이 있다면 취소
-            downloadProgressJobs[index]?.cancel()
-
-            // 새로운 진행률 시뮬레이션 작업 시작
-            val progressJob = viewModelScope.launch {
-                try {
-                    // 0%에서 85%까지 점진적으로 업데이트 (90%에서 멈추는 문제 방지)
-                    for (progress in 5..85 step 5) {
-                        delay(300) // 0.3초마다 업데이트
-
-                        // 작업이 취소되었는지 확인
-                        if (!isActive) break
-
-                        // 실제 다운로드가 완료되었는지 확인
-                        val checkDownloaded = downloadedBooksDao.getDownloadedBook(bookId, languageCode)
-                        if (checkDownloaded != null) {
-                            // 실제 다운로드 완료되면 즉시 100%로 설정
-                            updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED, 1f)
-                            break
-                        }
-
-                        updateBookDownloadStatus(index, DownloadStatus.DOWNLOADING, progress / 100f)
-                    }
-
-                    // 85% 이후에는 실제 다운로드 완료를 기다림
-                    while (isActive) {
-                        delay(500)
-                        val checkDownloaded = downloadedBooksDao.getDownloadedBook(bookId, languageCode)
-                        if (checkDownloaded != null) {
-                            updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED, 1f)
-                            break
-                        }
-                    }
-                } catch (e: Exception) {
-                    if (e.message?.contains("CancellationException") != true) {
-                        Log.e("BookshelfViewModel", "Error in progress simulation", e)
-                    }
-                }
-            }
-
-            // 진행률 작업을 맵에 저장
-            downloadProgressJobs[index] = progressJob
+            updateBookDownloadStatus(index, DownloadStatus.DOWNLOADING)
 
             // WorkManager를 사용하여 백그라운드에서 다운로드
             // Input 데이터 설정
@@ -1027,12 +1012,8 @@ class BookshelfViewModel @Inject constructor(
                                     "Download completed successfully for book $bookId with language $languageCode"
                                 )
 
-                                // 진행률 작업 취소 (실제 완료되었으므로)
-                                downloadProgressJobs[index]?.cancel()
-                                downloadProgressJobs.remove(index)
-
                                 // 다운로드 상태 업데이트
-                                updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED, 1f)
+                                updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED)
 
                                 // 다운로드 완료 후 다운로드 상태 재확인을 통해 UI 새로고침
                                 viewModelScope.launch {
@@ -1056,22 +1037,16 @@ class BookshelfViewModel @Inject constructor(
                                     "BookshelfViewModel",
                                     "Download failed for book $bookId with language $languageCode"
                                 )
-                                // 진행률 작업 취소
-                                downloadProgressJobs[index]?.cancel()
-                                downloadProgressJobs.remove(index)
 
-                                updateBookDownloadStatus(index, DownloadStatus.FAILED, 0f)
+                                updateBookDownloadStatus(index, DownloadStatus.FAILED)
                             }
                             WorkInfo.State.CANCELLED -> {
                                 Log.d(
                                     "BookshelfViewModel",
                                     "Download cancelled for book $bookId with language $languageCode"
                                 )
-                                // 진행률 작업 취소
-                                downloadProgressJobs[index]?.cancel()
-                                downloadProgressJobs.remove(index)
 
-                                updateBookDownloadStatus(index, DownloadStatus.AVAILABLE, 0f)
+                                updateBookDownloadStatus(index, DownloadStatus.AVAILABLE)
                             }
                             else -> {
                                 // 처리 중 상태는 무시
@@ -1089,9 +1064,8 @@ class BookshelfViewModel @Inject constructor(
      *
      * @param index 책 목록 인덱스
      * @param status 다운로드 상태
-     * @param progress 다운로드 진행률 (0.0 ~ 1.0)
      */
-    private fun updateBookDownloadStatus(index: Int, status: DownloadStatus, progress: Float = 0f) {
+    private fun updateBookDownloadStatus(index: Int, status: DownloadStatus) {
         if (index < 0 || index >= _state.value.books.size) return
 
         _state.update { currentState ->
@@ -1101,7 +1075,7 @@ class BookshelfViewModel @Inject constructor(
             // Book 객체를 수정하여 다운로드 상태 업데이트
             val updatedBook = bookToUpdate.copy(
                 isDownloaded = status == DownloadStatus.DOWNLOADED,
-                downloadProgress = DownloadProgress(status, progress)
+                downloadProgress = DownloadProgress(status)
             )
             updatedBooks[index] = updatedBook
 
@@ -1110,7 +1084,6 @@ class BookshelfViewModel @Inject constructor(
                 "BookshelfViewModel", "Book status updated: storyId=${bookToUpdate.storyId}, " +
                         "from=${if (bookToUpdate.isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"}, " +
                         "to=${if (updatedBook.isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"}, " +
-                        "progress=${progress * 100}%, " +
                         "language=${_state.value.currentLanguage.code}"
             )
 
@@ -1140,7 +1113,7 @@ class BookshelfViewModel @Inject constructor(
                             pageCount = 0,
                             isDownloaded = true,
                             isBookmarked = false,
-                            downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED, 1f)
+                            downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
                         )
 
                         // 중복 방지

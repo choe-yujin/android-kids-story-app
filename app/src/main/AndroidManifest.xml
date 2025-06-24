@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
-        android:name=".KidsStoryApplication"
+        android:name=".TaleTailApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.KidsStory"
+        android:theme="@style/Theme.TaleTail"
         tools:targetApi="31">
 
         <!-- WorkManager 초기화 비활성화 -->
@@ -34,7 +34,7 @@
             android:exported="true"
             android:configChanges="locale|colorMode|layoutDirection"
             android:screenOrientation="landscape"
-            android:theme="@style/Theme.KidsStory"
+            android:theme="@style/Theme.TaleTail"
             android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTop"
             tools:ignore="DiscouragedApi">

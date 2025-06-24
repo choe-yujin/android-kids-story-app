@@ -25,6 +25,15 @@ class MusicSettingUseCase @Inject constructor(
     }
 
     /**
+     * 배경 음악 음량 Flow
+     * - 사용자 설정의 musicVolume 값을 관찰
+     * - 설정 변경 시 자동으로 업데이트된 값 제공
+     */
+    val musicVolume: Flow<Float> = userPreferenceRepository.getUserPreferences().map {
+        it.musicVolume
+    }
+
+    /**
      * 배경 음악 상태 토글
      * - 현재 상태를 반전시켜 저장
      *
@@ -32,6 +41,16 @@ class MusicSettingUseCase @Inject constructor(
      */
     suspend fun toggleMusicSetting(currentState: Boolean) {
         userPreferenceRepository.updateMusicSetting(currentState)
+    }
+
+    /**
+     * 배경 음악 음량 설정
+     * - 배경 음악 음량을 지정한 값으로 변경
+     *
+     * @param volume 설정할 음량 (0.0 ~ 1.0)
+     */
+    suspend fun setMusicVolume(volume: Float) {
+        userPreferenceRepository.updateMusicVolume(volume)
     }
 
 }

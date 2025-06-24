@@ -41,4 +41,28 @@ interface UserPreferenceRepository {
      * @param isMusicOn 배경음 켜기/끄기 상태
      */
     suspend fun updateMusicSetting(isMusicOn: Boolean)
+
+    /**
+     * 배경음악 음량 업데이트
+     * - 다른 설정은 유지하면서 배경음악 음량만 변경
+     *
+     * @param volume 배경음악 음량 (0.0 ~ 1.0)
+     */
+    suspend fun updateMusicVolume(volume: Float)
+
+    /**
+     * 효과음 설정 업데이트
+     * - 다른 설정은 유지하면서 효과음 설정만 변경
+     *
+     * @param isSoundEffectOn 효과음 켜기/끄기 상태
+     */
+    suspend fun updateSoundEffectSetting(isSoundEffectOn: Boolean)
+
+    /**
+     * 효과음 음량 업데이트
+     * - 다른 설정은 유지하면서 효과음 음량만 변경
+     *
+     * @param volume 효과음 음량 (0.0 ~ 1.0)
+     */
+    suspend fun updateSoundEffectVolume(volume: Float)
 }

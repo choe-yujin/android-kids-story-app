@@ -20,6 +20,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "KidsStory"
+rootProject.name = "TaleTail"
 include(":app")
-include(":epub-extractor")
+// include(":epub-extractor")  // 출시용에서 제거

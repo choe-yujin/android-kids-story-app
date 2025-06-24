@@ -21,13 +21,20 @@
     <!-- Info Screen -->
     <string name="info_setting">설정</string>
     <string name="info_music">배경음악</string>
+    <string name="info_sound_effect">효과음</string>
+    <string name="info_music_volume">음악 음량</string>
+    <string name="info_sound_volume">효과음 음량</string>
     <string name="info_off">끄기</string>
     <string name="info_on">켜기</string>
     <string name="info_created_by">제작</string>
     <string name="info_dev_yujin">개발/최유진</string>
     <string name="info_dev_jaeyeon">개발/김재연</string>
     <string name="info_des_jinsung">디자인/곽진성</string>
+    <string name="info_des_yuni">교육/이시윤</string>
     <string name="info_about">앱 소개</string>
     <string name="info_version">버전</string>
     <string name="info_license">라이센스</string>
+
+    <!-- Reading Screen -->
+    <string name="reading_scroll_hint">스크롤하세요</string>
 </resources>

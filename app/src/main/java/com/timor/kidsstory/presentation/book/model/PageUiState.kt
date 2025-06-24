@@ -8,12 +8,14 @@ package com.timor.kidsstory.presentation.book.model
  * @property texts 페이지에 표시될 텍스트 목록
  * @property pageNumber 페이지 번호 (1부터 시작 - 사용자에게 표시용)
  * @property totalPages 전체 페이지 수
+ * @property textSectionState 텍스트 섹션의 스크롤 상태
  */
 data class PageUiState(
     val imageUrl: String,
     val texts: List<String>,
     val pageNumber: Int,   // 1부터 시작하는 페이지 번호 (화면에 표시)
-    val totalPages: Int    // 전체 페이지 수
+    val totalPages: Int,    // 전체 페이지 수
+    val textSectionState: PageTextSectionUiState = PageTextSectionUiState()
 ) {
     /**
      * 페이지 표시 문자열 (예: 1/14)

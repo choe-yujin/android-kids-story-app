@@ -21,13 +21,20 @@
     <!-- Info Screen -->
     <string name="info_setting">Konfigurasaun</string>
     <string name="info_music">Múzika</string>
+    <string name="info_sound_effect">Lian efeitu</string>
+    <string name="info_music_volume">Múzika vol.</string>
+    <string name="info_sound_volume">Lian vol.</string>
     <string name="info_off">Mate</string>
     <string name="info_on">Loke</string>
     <string name="info_created_by">Halo husi</string>
     <string name="info_dev_yujin">Dev/Yujin Choe</string>
     <string name="info_dev_jaeyeon">Dev/JaeYeon Kim</string>
     <string name="info_des_jinsung">Des/Jinsung Kuak</string>
+    <string name="info_des_yuni">Edu/Siyun Lee</string>
     <string name="info_about">Kona-ba</string>
     <string name="info_version">Versaun</string>
     <string name="info_license">Lisensa</string>
+
+    <!-- Reading Screen -->
+    <string name="reading_scroll_hint">Scroll ba lee tan</string>
 </resources>

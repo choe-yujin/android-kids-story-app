@@ -1,29 +1,42 @@
+# ❗ Android 기본
 *.iml
 .gradle
 */.gradle/
-/local.properties
 .idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+*.log
+*.swp
+*.tmp
+
+# ❗ IDE 관련
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# ❗ 환경 설정 파일
 local.properties
+/local.properties
+
+# ❗ APK / AAB / 서명 키
 *.apk
 *.ap_
+*.aab
 *.keystore
-*.log
-*.swp
-*.tmp
+*.pem
 
-# 릴리스 파일
+# 🔐 Keystore 폴더 전체 제외
+keystore/
+
+# 📦 릴리즈 폴더
 /app/release/
 
-# EPUB 추출기 빌드 파일
+# 📚 EPUB 관련
 /epub-extractor/build/
+/epub-source/
