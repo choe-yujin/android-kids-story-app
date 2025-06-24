@@ -22,6 +22,7 @@ import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
+import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 
 /**
  * 책장 화면 상단의 헤더 컴포넌트
@@ -37,10 +38,17 @@ fun BookshelfHeader(
     onLanguageClick: () -> Unit,
     onChatbotClick: () -> Unit,
 ) {
+    // 반응형 크기 계산
+    val headerHeight = ResponsiveTextUtils.getHeaderHeight().dp
+    val headerPadding = 48.dp  // 책 그리드 패딩과 일치시킴
+    val iconSize = ResponsiveTextUtils.getHeaderIconSize().dp  // 설정 아이콘과 언어 선택 아이콘 크기 통일
+    val logoSize = ResponsiveTextUtils.getHeaderLogoSize().dp
+    val spacerWidth = (20 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+    
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(headerHeight)
             .background(Color(0xFFFDD25A))
     ) {
         // 좌측 설정 아이콘
@@ -49,8 +57,8 @@ fun BookshelfHeader(
             contentDescription = "setting",
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(start = 48.dp)
-                .size(32.dp)
+                .padding(start = headerPadding)
+                .size(iconSize)
                 .clickable(onClick = onSettingClick),
             tint = Color.Unspecified
         )
@@ -61,7 +69,7 @@ fun BookshelfHeader(
             contentDescription = "App title",
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(112.dp),
+                .size(logoSize),
             tint = Color.Unspecified
         )
 
@@ -69,7 +77,7 @@ fun BookshelfHeader(
         Row(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 48.dp),
+                .padding(end = headerPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
 //            // 챗봇 아이콘
@@ -83,11 +91,12 @@ fun BookshelfHeader(
 //            )
 
             // 간격
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(spacerWidth))
 
             // 언어 선택 버튼
             LanguageSelector(
                 currentLanguage = currentLanguage,
+                iconSize = iconSize,  // 설정 아이콘과 동일한 크기 전달
                 onClick = onLanguageClick
             )
         }
@@ -95,15 +104,16 @@ fun BookshelfHeader(
 }
 
 @Preview(
-    name = "BookshelfHeader - English",
+    name = "BookshelfHeader - Pixel 5",
     group = "BookshelfHeader",
     showBackground = true,
     backgroundColor = 0xFFFDD25A,
-    widthDp = 800,
-    device = "spec:width=800dp,height=360dp,orientation=landscape"
+    widthDp = 393,
+    heightDp = 20,
+    device = "spec:width=393dp,height=20dp"
 )
 @Composable
-fun BookshelfHeaderPreviewEnglish() {
+fun BookshelfHeaderPreviewPixel5() {
     KidsStoryTheme {
         BookshelfHeader(
             currentLanguage = LanguageConstants.ENGLISH,
@@ -115,18 +125,40 @@ fun BookshelfHeaderPreviewEnglish() {
 }
 
 @Preview(
-    name = "BookshelfHeader - Korean",
+    name = "BookshelfHeader - Phone",
     group = "BookshelfHeader",
     showBackground = true,
     backgroundColor = 0xFFFDD25A,
-    widthDp = 800,
-    device = "spec:width=800dp,height=360dp,orientation=landscape"
+    widthDp = 400,
+    heightDp = 20,
+    device = "spec:width=400dp,height=20dp"
 )
 @Composable
-fun BookshelfHeaderPreviewKorean() {
+fun BookshelfHeaderPreviewPhone() {
     KidsStoryTheme {
         BookshelfHeader(
             currentLanguage = LanguageConstants.KOREAN,
+            onSettingClick = {},
+            onLanguageClick = {},
+            onChatbotClick = {}
+        )
+    }
+}
+
+@Preview(
+    name = "BookshelfHeader - Small Phone",
+    group = "BookshelfHeader",
+    showBackground = true,
+    backgroundColor = 0xFFFDD25A,
+    widthDp = 360,
+    heightDp = 16,
+    device = "spec:width=360dp,height=16dp"
+)
+@Composable
+fun BookshelfHeaderPreviewSmallPhone() {
+    KidsStoryTheme {
+        BookshelfHeader(
+            currentLanguage = LanguageConstants.TETUM,
             onSettingClick = {},
             onLanguageClick = {},
             onChatbotClick = {},
@@ -135,15 +167,37 @@ fun BookshelfHeaderPreviewKorean() {
 }
 
 @Preview(
-    name = "BookshelfHeader - Tetum",
+    name = "BookshelfHeader - Tablet",
     group = "BookshelfHeader",
     showBackground = true,
     backgroundColor = 0xFFFDD25A,
     widthDp = 800,
-    device = "spec:width=800dp,height=360dp,orientation=landscape"
+    heightDp = 75,
+    device = "spec:width=800dp,height=75dp"
 )
 @Composable
-fun BookshelfHeaderPreviewTetum() {
+fun BookshelfHeaderPreviewTablet() {
+    KidsStoryTheme {
+        BookshelfHeader(
+            currentLanguage = LanguageConstants.TETUM,
+            onSettingClick = {},
+            onLanguageClick = {},
+            onChatbotClick = {}
+        )
+    }
+}
+
+@Preview(
+    name = "BookshelfHeader - Large Tablet",
+    group = "BookshelfHeader",
+    showBackground = true,
+    backgroundColor = 0xFFFDD25A,
+    widthDp = 1024,
+    heightDp = 100,
+    device = "spec:width=1024dp,height=100dp"
+)
+@Composable
+fun BookshelfHeaderPreviewLargeTablet() {
     KidsStoryTheme {
         BookshelfHeader(
             currentLanguage = LanguageConstants.TETUM,

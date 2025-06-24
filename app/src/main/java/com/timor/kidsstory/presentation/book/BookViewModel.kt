@@ -12,6 +12,9 @@ import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import com.timor.kidsstory.domain.util.SoundEffectManager
 import com.timor.kidsstory.presentation.book.model.BookUiState
+import com.timor.kidsstory.presentation.book.model.PageTextSectionUiState
+import com.timor.kidsstory.presentation.book.model.PageTextSectionUiState.Companion.updateLayout
+import com.timor.kidsstory.presentation.book.model.PageTextSectionUiState.Companion.updateScroll
 import com.timor.kidsstory.presentation.book.model.PageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,9 +26,10 @@ import java.util.Locale
 import javax.inject.Inject
 
 /**
- * 책 읽기 화면의 상태 관리 및 비즈니스 로직 처리 뷰모델
+ * 책 읽기 화면의 상태 관리 및 비즈니스 로직 처리 뷰모델 (Clean Architecture 적용)
  * - 책 페이지 로드 및 관리
  * - 페이지 네비게이션 처리
+ * - 텍스트 섹션 스크롤 상태 관리
  * - 텍스트 음성 변환(TTS) 기능 제공
  *
  * @property getBookDetailUseCase 책 상세 정보 가져오기 유스케이스
@@ -116,7 +120,8 @@ class BookViewModel @Inject constructor(
                                         imageUrl = page.imageUrl,
                                         texts = page.texts,
                                         pageNumber = page.pageNumber + 1,
-                                        totalPages = page.totalPages
+                                        totalPages = page.totalPages,
+                                        textSectionState = PageTextSectionUiState()
                                     )
                                 },
                                 isLoading = false,
@@ -200,6 +205,88 @@ class BookViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 완독 축하 화면 확인 처리
+     * - 축하 화면을 닫고 책장으로 돌아가기 준비
+     */
+    private fun onCompletionConfirmed() {
+        _state.update {
+            it.copy(showCompletionScreen = false)
+        }
+        // 여기서 책장으로 돌아가는 로직은 상위 컴포너트에서 처리됨
+    }
+
+    /**
+     * 텍스트 섹션 레이아웃 업데이트
+     *
+     * @param pageIndex 페이지 인덱스
+     * @param contentHeight 콘텐츠 높이
+     * @param containerHeight 컸테이너 높이
+     */
+    private fun updateTextSectionLayout(pageIndex: Int, contentHeight: Int, containerHeight: Int) {
+        Log.d("BookViewModel", "updateTextSectionLayout: pageIndex=$pageIndex, contentHeight=$contentHeight, containerHeight=$containerHeight")
+        
+        _state.update { currentState ->
+            val updatedPages = currentState.pages.mapIndexed { index, page ->
+                if (index == pageIndex) {
+                    page.copy(
+                        textSectionState = page.textSectionState.updateLayout(
+                            contentHeight = contentHeight,
+                            containerHeight = containerHeight
+                        )
+                    )
+                } else {
+                    page
+                }
+            }
+            
+            // 디버그 로그 추가
+            if (pageIndex < updatedPages.size) {
+                val updatedState = updatedPages[pageIndex].textSectionState
+                Log.d("BookViewModel", "Layout updated for page $pageIndex: " +
+                    "content=${updatedState.contentHeight}, container=${updatedState.containerHeight}, " +
+                    "canScrollUp=${updatedState.canScrollUp}, canScrollDown=${updatedState.canScrollDown}")
+            }
+            
+            currentState.copy(pages = updatedPages)
+        }
+    }
+
+    /**
+     * 텍스트 섹션 스크롤 업데이트
+     *
+     * @param pageIndex 페이지 인덱스
+     * @param scrollOffset 스크롤 오프셋
+     * @param maxScrollOffset 최대 스크롤 오프셋
+     */
+    private fun updateTextSectionScroll(pageIndex: Int, scrollOffset: Int, maxScrollOffset: Int) {
+        Log.d("BookViewModel", "updateTextSectionScroll: pageIndex=$pageIndex, scrollOffset=$scrollOffset, maxScrollOffset=$maxScrollOffset")
+        
+        _state.update { currentState ->
+            val updatedPages = currentState.pages.mapIndexed { index, page ->
+                if (index == pageIndex) {
+                    page.copy(
+                        textSectionState = page.textSectionState.updateScroll(
+                            scrollOffset = scrollOffset,
+                            maxScrollOffset = maxScrollOffset
+                        )
+                    )
+                } else {
+                    page
+                }
+            }
+            
+            // 디버그 로그 추가
+            if (pageIndex < updatedPages.size) {
+                val updatedState = updatedPages[pageIndex].textSectionState
+                Log.d("BookViewModel", "Scroll updated for page $pageIndex: " +
+                    "offset=${updatedState.scrollOffset}, max=${updatedState.maxScrollOffset}, " +
+                    "canScrollUp=${updatedState.canScrollUp}, canScrollDown=${updatedState.canScrollDown}")
+            }
+            
+            currentState.copy(pages = updatedPages)
+        }
+    }
 
     /**
      * UI 액션 처리
@@ -221,6 +308,23 @@ class BookViewModel @Inject constructor(
                 onPageChanged(action.page)
                 // 음성 인식 중지
                 textToSpeechHelper.stop()
+            }
+            BookAction.CompletionConfirmed -> {
+                onCompletionConfirmed()
+            }
+            is BookAction.UpdateTextSectionLayout -> {
+                updateTextSectionLayout(
+                    action.pageIndex,
+                    action.contentHeight,
+                    action.containerHeight
+                )
+            }
+            is BookAction.UpdateTextSectionScroll -> {
+                updateTextSectionScroll(
+                    action.pageIndex,
+                    action.scrollOffset,
+                    action.maxScrollOffset
+                )
             }
         }
     }

@@ -124,7 +124,7 @@ fun BookshelfScreen(
                 columns = GridCells.Fixed(5),  // 5열 그리드
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp),
-                contentPadding = PaddingValues(vertical = 4.dp),
+                contentPadding = PaddingValues(top = 4.dp, bottom = 24.dp), // 상단 4dp, 하단 24dp 패딩
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 48.dp)

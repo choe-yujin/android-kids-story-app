@@ -13,9 +13,7 @@ enum class DownloadStatus {
 /**
  * 다운로드 진행 상태
  * @property status 다운로드 상태
- * @property progress 진행률 (0.0 ~ 1.0)
  */
 data class DownloadProgress(
-    val status: DownloadStatus = DownloadStatus.AVAILABLE,
-    val progress: Float = 0f
+    val status: DownloadStatus = DownloadStatus.AVAILABLE
 )

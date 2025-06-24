@@ -25,4 +25,38 @@ sealed interface BookAction {
      * @property page 이동할 페이지 인덱스
      */
     data class PageChange(val page: Int) : BookAction
+
+    /**
+     * 텍스트 섹션 레이아웃 업데이트
+     * - 텍스트 영역의 크기 정보 업데이트
+     *
+     * @property pageIndex 페이지 인덱스
+     * @property contentHeight 콘텐츠 높이
+     * @property containerHeight 컸테이너 높이
+     */
+    data class UpdateTextSectionLayout(
+        val pageIndex: Int,
+        val contentHeight: Int,
+        val containerHeight: Int
+    ) : BookAction
+
+    /**
+     * 텍스트 섹션 스크롤 업데이트
+     * - 스크롤 위치 변경 시 호출
+     *
+     * @property pageIndex 페이지 인덱스
+     * @property scrollOffset 스크롤 오프셋
+     * @property maxScrollOffset 최대 스크롤 오프셋
+     */
+    data class UpdateTextSectionScroll(
+        val pageIndex: Int,
+        val scrollOffset: Int,
+        val maxScrollOffset: Int
+    ) : BookAction
+
+    /**
+     * 완독 축하 화면 확인
+     * - 축하 화면에서 확인 버튼 클릭 시 호출
+     */
+    data object CompletionConfirmed : BookAction
 }

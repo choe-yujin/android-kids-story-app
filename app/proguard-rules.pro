@@ -1,21 +1,64 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# TaleTail ProGuard Rules for Release
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep Compose specific classes
+-keep class androidx.compose.** { *; }
+-dontwarn androidx.compose.**
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep Kotlin metadata
+-keep class kotlin.Metadata { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep data classes for JSON parsing
+-keep class com.timor.kidsstory.domain.model.** { *; }
+-keep class com.timor.kidsstory.presentation.**.model.** { *; }
+
+# Keep Parcelable classes
+-keep class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+
+# Keep serialization classes
+-keepclassmembers class * {
+    @kotlinx.serialization.SerialName <fields>;
+}
+
+# Keep ViewModels
+-keep class * extends androidx.lifecycle.ViewModel {
+    <init>(...);
+}
+
+# Keep Navigation destinations
+-keep class com.timor.kidsstory.presentation.navigation.** { *; }
+
+# Hilt specific rules
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class * extends dagger.hilt.android.lifecycle.HiltViewModel { *; }
+
+# Ktor specific rules
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**
+
+# Gson specific rules (if using Gson)
+-keepattributes Signature
+-keepattributes *Annotation*
+-dontwarn sun.misc.**
+-keep class com.google.gson.** { *; }
+
+# Room specific rules
+-keep class androidx.room.** { *; }
+-dontwarn androidx.room.**
+
+# OkHttp and Retrofit (if using)
+-dontwarn okhttp3.**
+-dontwarn retrofit2.**
+
+# Keep TaleTail application class
+-keep class com.timor.kidsstory.TaleTailApplication { *; }
+
+# Generative AI (Gemini)
+-keep class com.google.ai.client.generativeai.** { *; }
+-dontwarn com.google.ai.client.generativeai.**
+
+# Preserve line numbers for debugging
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

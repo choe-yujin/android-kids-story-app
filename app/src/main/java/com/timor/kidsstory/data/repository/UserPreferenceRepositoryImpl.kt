@@ -1,7 +1,6 @@
 package com.timor.kidsstory.data.repository
 
 import android.content.Context
-import android.provider.Contacts.SettingsColumns.KEY
 import androidx.core.content.edit
 import com.timor.kidsstory.domain.model.UserPreference
 import com.timor.kidsstory.domain.repository.UserPreferenceRepository
@@ -54,6 +53,9 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         prefs.edit {
             putString(KEY_LANGUAGE, userPreference.languageCode)
             putBoolean(KEY_MUSIC_ON, userPreference.isMusicOn)
+            putBoolean(KEY_SOUND_EFFECT_ON, userPreference.isSoundEffectOn)
+            putFloat(KEY_MUSIC_VOLUME, userPreference.musicVolume)
+            putFloat(KEY_SOUND_EFFECT_VOLUME, userPreference.soundEffectVolume)
         }
 
         // 메모리 캐시 업데이트
@@ -85,6 +87,42 @@ class UserPreferenceRepositoryImpl @Inject constructor(
     }
 
     /**
+     * 배경음악 음량만 업데이트
+     * - 다른 설정은 유지하면서 배경음악 음량만 변경
+     *
+     * @param volume 배경음악 음량 (0.0 ~ 1.0)
+     */
+    override suspend fun updateMusicVolume(volume: Float) {
+        val currentPrefs = _userPreferencesFlow.value
+        val newPrefs = currentPrefs.copy(musicVolume = volume)
+        saveUserPreferences(newPrefs)
+    }
+
+    /**
+     * 효과음 설정만 업데이트
+     * - 다른 설정은 유지하면서 효과음 설정만 변경
+     *
+     * @param isSoundEffectOn 효과음 켜기/끄기 상태
+     */
+    override suspend fun updateSoundEffectSetting(isSoundEffectOn: Boolean) {
+        val currentPrefs = _userPreferencesFlow.value
+        val newPrefs = currentPrefs.copy(isSoundEffectOn = isSoundEffectOn)
+        saveUserPreferences(newPrefs)
+    }
+
+    /**
+     * 효과음 음량만 업데이트
+     * - 다른 설정은 유지하면서 효과음 음량만 변경
+     *
+     * @param volume 효과음 음량 (0.0 ~ 1.0)
+     */
+    override suspend fun updateSoundEffectVolume(volume: Float) {
+        val currentPrefs = _userPreferencesFlow.value
+        val newPrefs = currentPrefs.copy(soundEffectVolume = volume)
+        saveUserPreferences(newPrefs)
+    }
+
+    /**
      * SharedPreferences에서 설정 로드
      * - 저장된 설정이 없는 경우 기본값 사용
      *
@@ -93,7 +131,10 @@ class UserPreferenceRepositoryImpl @Inject constructor(
     private fun loadFromPreferences(): UserPreference {
         return UserPreference(
             languageCode = prefs.getString(KEY_LANGUAGE, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE,
-            isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, false)
+            isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, false),
+            isSoundEffectOn = prefs.getBoolean(KEY_SOUND_EFFECT_ON, true),
+            musicVolume = prefs.getFloat(KEY_MUSIC_VOLUME, 0.5f),
+            soundEffectVolume = prefs.getFloat(KEY_SOUND_EFFECT_VOLUME, 0.5f)
         )
     }
 
@@ -103,5 +144,8 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         private const val KEY_LANGUAGE = "language_code"
         private const val DEFAULT_LANGUAGE = "en-ph"
         private const val KEY_MUSIC_ON = "music_on"
+        private const val KEY_SOUND_EFFECT_ON = "sound_effect_on"
+        private const val KEY_MUSIC_VOLUME = "music_volume"
+        private const val KEY_SOUND_EFFECT_VOLUME = "sound_effect_volume"
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.KidsStory" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.TaleTail" parent="android:Theme.Material.Light.NoActionBar">
         <!-- 애니메이션 비활성화 -->
         <item name="android:windowAnimationStyle">@null</item>
         

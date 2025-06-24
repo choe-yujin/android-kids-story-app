@@ -1,10 +1,15 @@
 package com.timor.kidsstory.presentation.setting
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.timor.kidsstory.domain.repository.UserPreferenceRepository
 import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
 import com.timor.kidsstory.domain.util.SoundEffectManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -18,11 +23,14 @@ import javax.inject.Inject
  *
  * @property musicSettingUseCase 음악 설정 관련 유스케이스
  * @property soundEffectManager 효과음 관리자
+ * @property context 애플리케이션 컨텍스트
  */
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val musicSettingUseCase: MusicSettingUseCase,
     private val soundEffectManager: SoundEffectManager,
+    private val userPreferenceRepository: UserPreferenceRepository,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
     // UI 상태 관리
     private val _state = MutableStateFlow(SettingUiState())
@@ -38,6 +46,30 @@ class SettingViewModel @Inject constructor(
                 _state.update { it.copy(isMusicOn = isMusicOn) }
             }
         }
+        
+        // 배경 음악 음량 설정 로드 및 관찰 (음량만 관리, 재생은 BookshelfViewModel에서)
+        viewModelScope.launch {
+            musicSettingUseCase.musicVolume.collect { musicVolume ->
+                _state.update { it.copy(musicVolume = musicVolume) }
+                // 음량은 MusicManager에 직접 설정하지 않고, UseCase를 통해서만 관리
+            }
+        }
+        
+        // 사용자 설정에서 효과음 설정 로드
+        viewModelScope.launch {
+            userPreferenceRepository.getUserPreferences().collect { preference ->
+                _state.update { 
+                    it.copy(
+                        isSoundEffectOn = preference.isSoundEffectOn,
+                        soundEffectVolume = preference.soundEffectVolume
+                    ) 
+                }
+                
+                // SoundEffectManager에 설정 적용
+                soundEffectManager.setEnabled(preference.isSoundEffectOn)
+                soundEffectManager.setVolume(preference.soundEffectVolume)
+            }
+        }
     }
 
     /**
@@ -46,6 +78,7 @@ class SettingViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         soundEffectManager.release()
+        // MusicManager는 BookshelfViewModel에서만 관리
     }
 
     /**
@@ -61,6 +94,71 @@ class SettingViewModel @Inject constructor(
     }
 
     /**
+     * 효과음 설정 토글
+     * - 효과음 켜기/끄기 상태 변경
+     *
+     * @param isSoundEffectOn 변경할 효과음 상태
+     */
+    private fun toggleSoundEffectSetting(isSoundEffectOn: Boolean) {
+        viewModelScope.launch {
+            userPreferenceRepository.updateSoundEffectSetting(isSoundEffectOn)
+        }
+    }
+
+    /**
+     * 배경음악 음량 조절
+     * - 배경음악 음량 설정 변경 및 저장
+     *
+     * @param volume 변경할 음량 (0.0 ~ 1.0)
+     */
+    private fun setMusicVolume(volume: Float) {
+        viewModelScope.launch {
+            musicSettingUseCase.setMusicVolume(volume)
+            // 음량 조절만 하고, 음악 재생/정지는 BookshelfViewModel에서 처리
+        }
+    }
+
+    /**
+     * 효과음 음량 조절
+     * - 효과음 음량 설정 변경 및 저장
+     *
+     * @param volume 변경할 음량 (0.0 ~ 1.0)
+     */
+    private fun setSoundEffectVolume(volume: Float) {
+        viewModelScope.launch {
+            userPreferenceRepository.updateSoundEffectVolume(volume)
+        }
+    }
+
+    /**
+     * 이메일 다이얼로그 표시
+     */
+    private fun showEmailDialog() {
+        _state.update { it.copy(showEmailDialog = true) }
+    }
+
+    /**
+     * 이메일 다이얼로그 숨김
+     */
+    private fun dismissEmailDialog() {
+        _state.update { it.copy(showEmailDialog = false) }
+    }
+
+    /**
+     * 웹사이트 브라우저에서 열기
+     */
+    private fun openWebsite() {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://taletail.shop"))
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            // 브라우저가 없거나 다른 문제가 발생한 경우 처리
+            // 일반적으로는 로그만 남기고 처리
+        }
+    }
+
+    /**
      * UI 액션 처리
      * - 사용자 인터랙션에 따른 상태 변경 및 비즈니스 로직 실행
      *
@@ -68,13 +166,43 @@ class SettingViewModel @Inject constructor(
      */
     fun onAction(action: SettingAction) {
         when (action) {
-            is SettingAction.SwitchClick -> {
+            is SettingAction.MusicSwitchClick -> {
                 soundEffectManager.playButtonClick()
                 toggleMusicSetting(action.isMusicOn)
+            }
+            is SettingAction.SoundEffectSwitchClick -> {
+                // 효과음이 켜져있을 때만 클릭 사운드 재생
+                if (_state.value.isSoundEffectOn) {
+                    soundEffectManager.playButtonClick()
+                }
+                toggleSoundEffectSetting(action.isSoundEffectOn)
+            }
+            is SettingAction.EmailIconClick -> {
+                soundEffectManager.playButtonClick()
+                showEmailDialog()
+            }
+            is SettingAction.WebsiteLinkClick -> {
+                soundEffectManager.playButtonClick()
+                openWebsite()
+                dismissEmailDialog()  // 웹사이트 연 후 다이얼로그 닫기
+            }
+            is SettingAction.DismissEmailDialog -> {
+                dismissEmailDialog()
             }
             is SettingAction.BackButtonClick -> {
                 soundEffectManager.playButtonClick()
             }  // 상위 컴포넌트에서 처리
+            is SettingAction.MusicVolumeChange -> {
+                soundEffectManager.playButtonClick()
+                setMusicVolume(action.volume)
+            }
+            is SettingAction.SoundEffectVolumeChange -> {
+                // 효과음이 켜져있을 때만 클릭 사운드 재생
+                if (_state.value.isSoundEffectOn) {
+                    soundEffectManager.playButtonClick()
+                }
+                setSoundEffectVolume(action.volume)
+            }
         }
     }
 }
