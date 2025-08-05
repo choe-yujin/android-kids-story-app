@@ -2,7 +2,7 @@
 agp = "8.9.1"
 coilCompose = "2.5.0"
 googleAccompanistPagerIndicators = "0.32.0"
-kotlin = "2.0.21" # Kotlin 버전을 KSP 2.0.21-1.0.27과 호환되는 버전으로 다운그레이드
+kotlin = "2.0.21"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -10,7 +10,7 @@ espressoCore = "3.6.1"
 kotlinxCoroutinesAndroid = "1.10.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2025.03.01"
+composeBom = "2025.07.00"
 lifecycleViewmodelCompose = "2.8.7"
 material = "1.7.8"
 media3Exoplayer = "1.6.0"
@@ -19,7 +19,7 @@ ui = "1.7.8"
 appcompat = "1.7.0"
 materialVersion = "1.12.0"
 jetbrainsKotlinJvm = "2.0.21"
-workRuntimeKtx = "2.10.0" # Kotlin JVM 버전도 다운그레이드
+workRuntimeKtx = "2.10.0"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "googleAccompanistPagerIndicators" }
