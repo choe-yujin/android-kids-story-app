@@ -1,11 +1,13 @@
 package com.timor.kidsstory.presentation.splash
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.*
 import kotlinx.coroutines.delay
@@ -32,14 +34,18 @@ fun SplashScreen(
         }
     }
 
+    // 완전한 전체화면 박스 (상태바, 네비바 영역까지 포함)
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets(0)) // 모든 시스템 인셋 무시
+            .background(Color(0xFFFDDF59)), // 노란색 배경 (FDDF59)
         contentAlignment = Alignment.Center
     ) {
         LottieAnimation(
             composition = composition,
             progress = { progress },
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier.fillMaxSize() // 화면 전체를 채우도록 수정
         )
     }
 }
