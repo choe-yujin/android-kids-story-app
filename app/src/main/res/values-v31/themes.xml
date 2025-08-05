@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- Android 12+ (API 31+)용 추가 설정 -->
     <style name="Theme.TaleTail" parent="android:Theme.Material.Light.NoActionBar">
         <!-- 애니메이션 비활성화 -->
         <item name="android:windowAnimationStyle">@null</item>
@@ -23,5 +23,10 @@
         
         <!-- 로고 배경색 설정 -->
         <item name="android:windowBackground">#FDDF59</item>
+        
+        <!-- Android 12+ 스플래시 화면 설정 -->
+        <item name="android:windowSplashScreenBackground">#FDDF59</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#FDDF59</item>
+        <item name="android:windowSplashScreenAnimationDuration">1</item>
     </style>
 </resources>
