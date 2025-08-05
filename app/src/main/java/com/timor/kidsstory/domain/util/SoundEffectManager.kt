@@ -12,6 +12,7 @@ import javax.inject.Singleton
  * 효과음 관리 클래스
  * - 버튼 클릭, 페이지 넘김 등의 효과음 재생
  * - 싱글톤으로 앱 전체에서 하나의 인스턴스 공유
+ * - 앱 시작 시 SharedPreferences에서 설정을 즉시 로드하여 동기화 보장
  *
  * @property context 애플리케이션 컨텍스트
  */
@@ -28,16 +29,28 @@ class SoundEffectManager @Inject constructor(
     // MediaPlayer 인스턴스들을 저장하는 맵
     private val soundPlayers = mutableMapOf<SoundType, MediaPlayer>()
     
-    // 효과음 활성화 상태
-    private var isEnabled = true
-    
-    // 효과음 전체 볼륨 (0.0 ~ 1.0)
-    private var masterVolume = 0.5f
-
-    // 효과음 볼륨 설정 추가 1.5배 증가
-    companion object {
+    // SharedPreferences 상수들
+    private companion object {
+        private const val PREFERENCES_NAME = "tetum_dreams_preferences"
+        private const val KEY_SOUND_EFFECT_ON = "sound_effect_on"
+        private const val KEY_SOUND_EFFECT_VOLUME = "sound_effect_volume"
+        
+        // 효과음 볼륨 설정 추가 1.5배 증가
         private const val BUTTON_CLICK_BASE_VOLUME = 0.135f   // 13.5% (0.0675f * 2 = 0.135f)
         private const val PAGE_FLIP_BASE_VOLUME = 0.03375f    // 3.375% (0.0225f * 1.5 = 0.03375f)
+    }
+    
+    // 효과음 활성화 상태 및 볼륨 - 생성 시점에 SharedPreferences에서 로드
+    private var isEnabled: Boolean
+    private var masterVolume: Float
+    
+    init {
+        // 🔧 생성 시점에 즉시 SharedPreferences에서 설정 로드
+        val prefs = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+        isEnabled = prefs.getBoolean(KEY_SOUND_EFFECT_ON, true)  // 기본값: true
+        masterVolume = prefs.getFloat(KEY_SOUND_EFFECT_VOLUME, 0.7f)  // 기본값: 0.7f
+        
+        Log.d("SoundEffectManager", "🚀 INITIALIZED from SharedPreferences: enabled=$isEnabled, volume=$masterVolume")
     }
 
     /**
@@ -46,8 +59,9 @@ class SoundEffectManager @Inject constructor(
      * @param enabled true: 효과음 켜기, false: 효과음 끄기
      */
     fun setEnabled(enabled: Boolean) {
+        val wasChanged = isEnabled != enabled
         isEnabled = enabled
-        Log.d("SoundEffectManager", "Sound effects ${if (enabled) "enabled" else "disabled"}")
+        Log.d("SoundEffectManager", "🔊 Sound effects ${if (enabled) "enabled" else "disabled"} ${if (wasChanged) "(CHANGED)" else "(NO_CHANGE)"}")
     }
     
     /**
@@ -56,8 +70,10 @@ class SoundEffectManager @Inject constructor(
      * @param volume 설정할 볼륨 (0.0 ~ 1.0)
      */
     fun setVolume(volume: Float) {
+        val oldVolume = masterVolume
         masterVolume = volume.coerceIn(0f, 1f)
-        Log.d("SoundEffectManager", "Master volume set to: $masterVolume")
+        val wasChanged = oldVolume != masterVolume
+        Log.d("SoundEffectManager", "🔊 Master volume set to: $masterVolume ${if (wasChanged) "(CHANGED from $oldVolume)" else "(NO_CHANGE)"}")
     }
     
     /**
@@ -82,7 +98,7 @@ class SoundEffectManager @Inject constructor(
     fun playSound(soundType: SoundType) {
         // 효과음이 비활성화되어 있으면 재생하지 않음
         if (!isEnabled) {
-            Log.d("SoundEffectManager", "Sound effects disabled, skipping ${soundType.name}")
+            Log.d("SoundEffectManager", "🔇 Sound effects disabled, skipping ${soundType.name}")
             return
         }
         try {
@@ -110,13 +126,13 @@ class SoundEffectManager @Inject constructor(
                     SoundType.BUTTON_CLICK -> {
                         val volume = BUTTON_CLICK_BASE_VOLUME * masterVolume
                         player.setVolume(volume, volume)
-                        Log.d("SoundEffectManager", "Playing button click at volume: $volume (base: $BUTTON_CLICK_BASE_VOLUME, master: $masterVolume)")
+                        Log.d("SoundEffectManager", "🔊 Playing button click at volume: $volume (base: $BUTTON_CLICK_BASE_VOLUME, master: $masterVolume)")
                         volume
                     }
                     SoundType.PAGE_FLIP -> {
                         val volume = PAGE_FLIP_BASE_VOLUME * masterVolume
                         player.setVolume(volume, volume)
-                        Log.d("SoundEffectManager", "Playing page flip at volume: $volume (base: $PAGE_FLIP_BASE_VOLUME, master: $masterVolume)")
+                        Log.d("SoundEffectManager", "🔊 Playing page flip at volume: $volume (base: $PAGE_FLIP_BASE_VOLUME, master: $masterVolume)")
                         volume
                     }
                 }
@@ -124,7 +140,7 @@ class SoundEffectManager @Inject constructor(
                 player.start()
             }
         } catch (e: Exception) {
-            Log.e("SoundEffectManager", "Error playing sound: ${soundType.name}", e)
+            Log.e("SoundEffectManager", "❌ Error playing sound: ${soundType.name}", e)
         }
     }
 

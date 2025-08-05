@@ -125,17 +125,50 @@ class UserPreferenceRepositoryImpl @Inject constructor(
     /**
      * SharedPreferences에서 설정 로드
      * - 저장된 설정이 없는 경우 기본값 사용
+     * - 앱 최초 실행 시 기본값들을 SharedPreferences에 저장하여 동기화 보장
      *
      * @return 로드된 사용자 설정 객체
      */
     private fun loadFromPreferences(): UserPreference {
-        return UserPreference(
-            languageCode = prefs.getString(KEY_LANGUAGE, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE,
-            isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, false),
-            isSoundEffectOn = prefs.getBoolean(KEY_SOUND_EFFECT_ON, true),
-            musicVolume = prefs.getFloat(KEY_MUSIC_VOLUME, 0.5f),
-            soundEffectVolume = prefs.getFloat(KEY_SOUND_EFFECT_VOLUME, 0.5f)
+        // 기본값으로 UserPreference 객체 생성 (UserPreference.kt의 기본값과 완전 일치)
+        val defaultPreference = UserPreference(
+            languageCode = DEFAULT_LANGUAGE,
+            isMusicOn = true,  // 음악 기본값: 켜짐 (UserPreference.kt 기본값과 일치)
+            isSoundEffectOn = true,  // 효과음 기본값: 켜짐 (UserPreference.kt와 일치)
+            musicVolume = 0.7f,  // UserPreference.kt 기본값과 일치
+            soundEffectVolume = 0.7f  // UserPreference.kt 기본값과 일치
         )
+        
+        // 앱 최초 실행 시 기본값들을 SharedPreferences에 저장
+        val isFirstRun = !prefs.contains(KEY_SOUND_EFFECT_ON) || 
+                        !prefs.contains(KEY_MUSIC_ON) ||
+                        !prefs.contains(KEY_MUSIC_VOLUME) ||
+                        !prefs.contains(KEY_SOUND_EFFECT_VOLUME)
+        
+        if (isFirstRun) {
+            // 기본값들을 SharedPreferences에 저장하여 동기화 보장
+            prefs.edit {
+                putString(KEY_LANGUAGE, defaultPreference.languageCode)
+                putBoolean(KEY_MUSIC_ON, defaultPreference.isMusicOn)
+                putBoolean(KEY_SOUND_EFFECT_ON, defaultPreference.isSoundEffectOn)
+                putFloat(KEY_MUSIC_VOLUME, defaultPreference.musicVolume)
+                putFloat(KEY_SOUND_EFFECT_VOLUME, defaultPreference.soundEffectVolume)
+            }
+            android.util.Log.d("UserPreferenceRepository", "🎆 First run: saved defaults to SharedPreferences - soundEffect=${defaultPreference.isSoundEffectOn}")
+            return defaultPreference
+        }
+        
+        // 기존 설정이 있는 경우 로드
+        val loadedPreference = UserPreference(
+            languageCode = prefs.getString(KEY_LANGUAGE, defaultPreference.languageCode) ?: defaultPreference.languageCode,
+            isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, defaultPreference.isMusicOn),
+            isSoundEffectOn = prefs.getBoolean(KEY_SOUND_EFFECT_ON, defaultPreference.isSoundEffectOn),
+            musicVolume = prefs.getFloat(KEY_MUSIC_VOLUME, defaultPreference.musicVolume),
+            soundEffectVolume = prefs.getFloat(KEY_SOUND_EFFECT_VOLUME, defaultPreference.soundEffectVolume)
+        )
+        
+        android.util.Log.d("UserPreferenceRepository", "📁 Loaded existing preferences - soundEffect=${loadedPreference.isSoundEffectOn}")
+        return loadedPreference
     }
 
     companion object {

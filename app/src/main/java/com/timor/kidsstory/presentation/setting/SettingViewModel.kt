@@ -37,7 +37,7 @@ class SettingViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     /**
-     * 초기화 - 사용자 설정 로드
+     * 초기화 - 사용자 설정 로드 및 동기화
      */
     init {
         // 배경 음악 설정 로드 및 관찰
@@ -55,9 +55,10 @@ class SettingViewModel @Inject constructor(
             }
         }
         
-        // 사용자 설정에서 효과음 설정 로드
+        // 🔧 사용자 설정에서 효과음 설정 로드 및 즉시 SoundEffectManager와 동기화
         viewModelScope.launch {
             userPreferenceRepository.getUserPreferences().collect { preference ->
+                // UI 상태 업데이트
                 _state.update { 
                     it.copy(
                         isSoundEffectOn = preference.isSoundEffectOn,
@@ -65,9 +66,19 @@ class SettingViewModel @Inject constructor(
                     ) 
                 }
                 
-                // SoundEffectManager에 설정 적용
-                soundEffectManager.setEnabled(preference.isSoundEffectOn)
-                soundEffectManager.setVolume(preference.soundEffectVolume)
+                // ⚡ 만약 설정이 변경되었다면 SoundEffectManager에 적용
+                if (soundEffectManager.isEnabled() != preference.isSoundEffectOn) {
+                    soundEffectManager.setEnabled(preference.isSoundEffectOn)
+                }
+                if (soundEffectManager.getVolume() != preference.soundEffectVolume) {
+                    soundEffectManager.setVolume(preference.soundEffectVolume)
+                }
+                
+                // 디버깅을 위한 로그
+                android.util.Log.d(
+                    "SettingViewModel", 
+                    "🔄 Preference loaded: enabled=${preference.isSoundEffectOn}, volume=${preference.soundEffectVolume}"
+                )
             }
         }
     }
