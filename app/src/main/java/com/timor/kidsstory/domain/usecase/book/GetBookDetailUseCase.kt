@@ -1,7 +1,7 @@
 package com.timor.kidsstory.domain.usecase.book
 
 import android.util.Log
-import com.timor.kidsstory.domain.model.Page
+import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.repository.BookRepository
 import com.timor.kidsstory.domain.repository.UserPreferenceRepository
 import kotlinx.coroutines.flow.first
@@ -24,7 +24,7 @@ class GetBookDetailUseCase @Inject constructor(
      * @param storyId 책 ID
      * @return 페이지 목록 또는 오류
      */
-    suspend operator fun invoke(storyId: String): Result<List<Page>> {
+    suspend operator fun invoke(storyId: String): Result<Book> {
         try {
             // 사용자 설정에서 언어 가져오기
             val userPreference = userPreferenceRepository.getUserPreferences().first()
@@ -33,7 +33,9 @@ class GetBookDetailUseCase @Inject constructor(
             Log.d("GetBookDetailUseCase", "Loading book: $storyId with language: $language")
 
             // 책 페이지 가져오기
-            return bookRepository.getBookPages(storyId, language)
+            return bookRepository.getBookById(storyId, language).mapCatching { book ->
+                book ?: throw NoSuchElementException("Book not found for storyId: $storyId")
+            }
 
         } catch (e: Exception) {
             Log.e("GetBookDetailUseCase", "Error in GetBookDetailUseCase", e)

@@ -18,6 +18,7 @@ class GetRemoteBooksUseCase @Inject constructor(
             val prefix = when {
                 languageCode.startsWith("ko") -> "ko"
                 languageCode.startsWith("tet") -> "tet"
+                languageCode.startsWith("mn") -> "mn" // Added for Mongolian
                 else -> "en" // 기본값
             }
 
