@@ -95,10 +95,10 @@ class BookViewModel @Inject constructor(
 
             try {
                 getBookDetailUseCase(storyId).fold(
-                    onSuccess = { loadedPages ->
-                        Log.d("ReaderViewModel", "Story loaded with ${loadedPages.size} pages")
+                    onSuccess = { book -> // Changed from loadedPages to book
+                        Log.d("ReaderViewModel", "Story loaded: ${book.title} with ${book.pages.size} pages")
 
-                        if (loadedPages.isEmpty()) {
+                        if (book.pages.isEmpty()) { // Changed from loadedPages.isEmpty()
                             Log.e("ReaderViewModel", "Story has no pages")
                             _state.update {
                                 it.copy(
@@ -110,18 +110,24 @@ class BookViewModel @Inject constructor(
                         }
 
                         // 페이지 정보 저장
-                        pages = loadedPages
+                        pages = book.pages // Changed from loadedPages
 
                         // UI 상태 업데이트
                         _state.update {
                             it.copy(
-                                pages = loadedPages.map { page ->
+                                pages = book.pages.map { page -> // Changed from loadedPages.map
                                     PageUiState(
                                         imageUrl = page.imageUrl,
                                         texts = page.texts,
                                         pageNumber = page.pageNumber + 1,
                                         totalPages = page.totalPages,
-                                        textSectionState = PageTextSectionUiState()
+                                        textSectionState = PageTextSectionUiState(),
+                                        // Pass new metadata to the first page
+                                        contributors = if (page.pageNumber == 0) book.contributors else emptyList(),
+                                        sponsors = if (page.pageNumber == 0) book.sponsors else null,
+                                        copyright = if (page.pageNumber == 0) book.copyright else "",
+                                        originalCopyright = if (page.pageNumber == 0) book.originalCopyright else null,
+                                        title = if (page.pageNumber == 0) book.title else ""
                                     )
                                 },
                                 isLoading = false,
@@ -181,15 +187,14 @@ class BookViewModel @Inject constructor(
     private fun settingTTSLanguage() {
         viewModelScope.launch {
             val userInfo = getUserPreferenceUseCase().first()
-            val languageCode = if (userInfo.languageCode.isBlank()) {
+            val languageCode = userInfo.languageCode.ifBlank {
                 LanguageConstants.DEFAULT_LANGUAGE.code
-            } else {
-                userInfo.languageCode
             }
 
             // 영어: en-ph, 테툼어: tet, 한국어: ko-kr, 국가 code에 따른 Locale 셋팅
             val locale: Locale = when (languageCode) {
                 "ko-kr" -> Locale("ko", "KR")
+                "mn-MN" -> Locale("mn", "MN") // Added for Mongolian
                 else -> Locale.ENGLISH
             }
 

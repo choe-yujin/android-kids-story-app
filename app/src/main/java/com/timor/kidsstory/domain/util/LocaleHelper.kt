@@ -31,6 +31,7 @@ object LocaleHelper {
                 languageCode.contains("en") -> "en"
                 languageCode.contains("ko") -> "ko"
                 languageCode.contains("tet") -> "tet"
+                languageCode.contains("mn") -> "mn" // Added for Mongolian
                 else -> "en"
             }
 
