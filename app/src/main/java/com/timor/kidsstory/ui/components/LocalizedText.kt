@@ -1,5 +1,6 @@
 package com.timor.kidsstory.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -45,17 +46,16 @@ fun LocalizedText(
             "ko" -> Locale("ko", "KR")
             "en" -> Locale("en", "PH")
             "tet" -> Locale("tet")
+            "mn" -> Locale("mn", "MN") // Added for Mongolian
             else -> Locale("en", "PH")
         }
         
-        val config = context.resources.configuration
-        val originalLocale = config.locale
-        config.setLocale(locale)
-        val localizedContext = context.createConfigurationContext(config)
-        val localizedText = localizedContext.getString(resId)
+        // Create a new Configuration for the localized context
+        val localizedConfig = Configuration() // Create an empty Configuration
+        localizedConfig.setLocale(locale)
         
-        // 원래 설정 복원
-        config.setLocale(originalLocale)
+        val localizedContext = context.createConfigurationContext(localizedConfig)
+        val localizedText = localizedContext.getString(resId)
         
         localizedText
     }

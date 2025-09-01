@@ -11,6 +11,15 @@ import com.timor.kidsstory.presentation.book.model.PageTextSectionUiState
 import com.timor.kidsstory.presentation.book.model.PageUiState
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
 /**
  * 동화책 페이지 컨텐츠를 표시하는 컴포저블 (Clean Architecture 적용)
  *
@@ -38,84 +47,83 @@ fun PageContent(
     onScrollChanged: (pageIndex: Int, scrollOffset: Int, maxScrollOffset: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier.fillMaxSize()) {
-        PageImageSection(
-            state = pageState,
-            onBackToBookshelf = onBackToBookshelf,
-            modifier = Modifier.weight(1f)
-        )
-        PageTextSection(
-            pageState = pageState,
-            textSectionState = textSectionState,
-            pageIndex = pageIndex,
-            onTextToSpeech = onTextToSpeech,
-            onLayoutChanged = onLayoutChanged,
-            onScrollChanged = onScrollChanged,
-            modifier = Modifier
-                .weight(1f)
-                .background(Color.White)
-        )
-    }
-}
+    Box(modifier = modifier.fillMaxSize()) { // Wrap Row in a Box for overlay
+        Row(modifier = Modifier.fillMaxSize()) { // Original Row
+            PageImageSection(
+                state = pageState,
+                onBackToBookshelf = onBackToBookshelf,
+                modifier = Modifier.weight(1f)
+            )
+            PageTextSection(
+                pageState = pageState,
+                textSectionState = textSectionState,
+                pageIndex = pageIndex,
+                onTextToSpeech = onTextToSpeech,
+                onLayoutChanged = onLayoutChanged,
+                onScrollChanged = onScrollChanged,
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.White)
+            )
+        }
 
-@Preview(
-    name = "PageContent - Korean",
-    group = "PageContent",
-    showBackground = true,
-    widthDp = 800,
-    heightDp = 400,
-    device = "spec:width=800dp,height=360dp,orientation=landscape"
-)
-@Composable
-fun PageContentPreviewKorean() {
-    KidsStoryTheme {
-        PageContent(
-            pageState = PageUiState(
-                imageUrl = "file:///android_asset/images/801/book_801_page_1.jpg",
-                texts = listOf(
-                    "옛날 옛날에 락비엣 지역에 락롱꽌이라는 영웅이 살았습니다.",
-                    "락롱꽌의 외할아버지는 용의 왕이어서 그 피를 이어받은 락롱꽌은 용맹했고 물위를 마치 땅 위처럼 걸어 다닐 수 있었습니다."
-                ),
-                pageNumber = 1,
-                totalPages = 14
-            ),
-            textSectionState = PageTextSectionUiState(),
-            pageIndex = 0,
-            onBackToBookshelf = {},
-            onTextToSpeech = {},
-            onLayoutChanged = { _, _, _ -> },
-            onScrollChanged = { _, _, _ -> }
-        )
-    }
-}
+        // Display contributors, sponsors, copyrights only on the first page (pageNumber == 1)
+        if (pageState.pageNumber == 1) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp, start = 16.dp, end = 16.dp), // Padding from bottom and sides
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Contributors
+                if (pageState.contributors.isNotEmpty()) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        pageState.contributors.forEach { contributor ->
+                            Text(
+                                text = "${contributor.role}: ${contributor.name}",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), // Small text
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
 
-@Preview(
-    name = "PageContent - Tetum",
-    group = "PageContent",
-    showBackground = true,
-    widthDp = 800,
-    heightDp = 400,
-    device = "spec:width=800dp,height=360dp,orientation=landscape"
-)
-@Composable
-fun PageContentPreviewTetum() {
-    KidsStoryTheme {
-        PageContent(
-            pageState = PageUiState(
-                imageUrl = "file:///android_asset/images/801/book_801_page_1.jpg",
-                texts = listOf(
-                    "Iha tempu uluk, iha heroi ida ho naran Lac Long Quan iha rai Lac Viet.",
-                    "Hanesan ninia avó, ne'ebé mak rei dragaun, Lac Long Quan mak bravu no bele la'o iha bee hanesan iha rai."
-                ),
-                pageNumber = 1,
-                totalPages = 14
-            ),
-            textSectionState = PageTextSectionUiState(),
-            pageIndex = 0,
-            onBackToBookshelf = {},
-            onTextToSpeech = {},
-            onLayoutChanged = { _, _, _ -> },
-            onScrollChanged = { _, _, _ -> }
-        )
+                // Sponsors
+                pageState.sponsors?.let { sponsors ->
+                    if (sponsors.isNotEmpty()) {
+                        Text(
+                            text = "후원: ${sponsors.joinToString()}",
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), // Small text
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
+
+                // Copyright
+                Text(
+                    text = "${pageState.title} ${pageState.copyright}",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp), // Even smaller text
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center // Center align copyright
+                )
+
+                // Original Copyright
+                pageState.originalCopyright?.let { originalCopyright ->
+                    Text(
+                        text = originalCopyright,
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp), // Even smaller text
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center // Center align copyright
+                    )
+                }
+            }
+        }
     }
 }
