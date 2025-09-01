@@ -1,14 +1,12 @@
 package com.timor.kidsstory.di
 
 import android.content.Context
+import com.timor.kidsstory.data.local.assets.AssetDataSource
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.data.remote.BookDownloader
 import com.timor.kidsstory.data.remote.network.BookNetworkService
 import com.timor.kidsstory.data.repository.BookRepositoryImpl
-import com.timor.kidsstory.data.repository.UserPreferenceRepositoryImpl
 import com.timor.kidsstory.domain.repository.BookRepository
-import com.timor.kidsstory.domain.repository.UserPreferenceRepository
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,28 +16,25 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface RepositoryModule {
-    @Binds
-    @Singleton
-    fun bindBookRepository(
-        bookRepositoryImpl: BookRepositoryImpl
-    ): BookRepository
+object RepositoryModule { // Changed to object
 
-    @Binds
+    @Provides
     @Singleton
-    fun bindUserPreferenceRepository(
-        userPreferenceRepositoryImpl: UserPreferenceRepositoryImpl
-    ): UserPreferenceRepository
+    fun provideBookRepository(
+        assetDataSource: AssetDataSource,
+        downloadedBooksDao: DownloadedBooksDao
+    ): BookRepository {
+        return BookRepositoryImpl(assetDataSource, downloadedBooksDao)
+    }
 
-    companion object {
-        @Provides
-        @Singleton
-        fun provideBookDownloader(
-            @ApplicationContext context: Context,
-            networkService: BookNetworkService,
-            downloadedBooksDao: DownloadedBooksDao
-        ): BookDownloader {
-            return BookDownloader(context, networkService, downloadedBooksDao)
-        }
+    @Provides
+    @Singleton
+    fun provideBookDownloader(
+        @ApplicationContext context: Context,
+        networkService: BookNetworkService,
+        downloadedBooksDao: DownloadedBooksDao,
+        assetDataSource: AssetDataSource // Added assetDataSource
+    ): BookDownloader {
+        return BookDownloader(context, networkService, downloadedBooksDao, assetDataSource) // Pass assetDataSource
     }
 }
