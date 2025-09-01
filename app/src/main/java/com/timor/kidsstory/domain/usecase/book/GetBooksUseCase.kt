@@ -27,6 +27,7 @@ class GetBooksUseCase @Inject constructor(
         val normalizedLanguage = when {
             language.startsWith("ko") -> "ko-kr"
             language.startsWith("tet") -> "tetum"
+            language.startsWith("mn") -> "mn-MN" // Added for Mongolian
             else -> "en-ph"
         }
 

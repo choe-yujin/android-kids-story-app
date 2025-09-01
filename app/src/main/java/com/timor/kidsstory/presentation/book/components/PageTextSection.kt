@@ -215,28 +215,30 @@ fun PageTextSection(
         )
 
         // TTS 버튼
-        val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
-        val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
-        
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .background(
-                    color = Color.Black.copy(alpha = 0.4f),
-                    shape = CircleShape
-                )
-                .zIndex(2f)
-        ) {
-            IconButton(
-                onClick = { onTextToSpeech(pageState.texts) },
-                modifier = Modifier.size(buttonSize)
+        if (pageState.currentLanguageCode != "tet") { // Conditional rendering for Tetum
+            val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+            val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+            
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .background(
+                        color = Color.Black.copy(alpha = 0.4f),
+                        shape = CircleShape
+                    )
+                    .zIndex(2f)
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_play),
-                    contentDescription = "Text to speech",
-                    tint = Color.White,
-                    modifier = Modifier.size(iconSize)
-                )
+                IconButton(
+                    onClick = { onTextToSpeech(pageState.texts) },
+                    modifier = Modifier.size(buttonSize)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_play),
+                        contentDescription = "Text to speech",
+                        tint = Color.White,
+                        modifier = Modifier.size(iconSize)
+                    )
+                }
             }
         }
     }

@@ -70,6 +70,7 @@ class AssetDataSource @Inject constructor(
                 val languageFolder = when {
                     language.startsWith("ko") -> "ko"
                     language.startsWith("tet") -> "tet"
+                    language.startsWith("mn") -> "mn" // Added for Mongolian
                     else -> "en"
                 }
 
@@ -77,6 +78,7 @@ class AssetDataSource @Inject constructor(
                 val fileName = when {
                     language.startsWith("ko") -> "${baseId}_ko-kr.json"
                     language.startsWith("tet") -> "${baseId}_tetum.json"
+                    language.startsWith("mn") -> "${baseId}_mn-MN.json" // Added for Mongolian
                     else -> "${baseId}_en-ph.json"
                 }
 
