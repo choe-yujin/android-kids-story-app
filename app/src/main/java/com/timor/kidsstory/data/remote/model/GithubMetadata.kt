@@ -1,6 +1,8 @@
 package com.timor.kidsstory.data.remote.model
 
 import kotlinx.serialization.Serializable
+import com.timor.kidsstory.data.dto.ContributorDto
+
 /**
  * GitHub에서 앱 메타데이터를 가져오기 위한 모델 클래스
  * - 앱 버전 확인 및 새 책 목록 다운로드에 사용
@@ -29,5 +31,9 @@ data class RemoteBook(
     val images: String,
     val languages: List<String>,
     val category: String = "",
-    val level: Int = 1
+    val level: Int = 1,
+    val contributors: List<ContributorDto> = emptyList(),
+    val sponsors: List<String>? = null,
+    val copyright: String = "",
+    val originalCopyright: String? = null,
 )

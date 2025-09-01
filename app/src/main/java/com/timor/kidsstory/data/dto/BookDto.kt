@@ -52,7 +52,11 @@ data class BookDto(
     val coverImage: String,
     val category: String,
     val region: String,
-    val estimatedReadTime: Int
+    val estimatedReadTime: Int,
+    val contributors: List<ContributorDto>,
+    val sponsors: List<String>? = null,
+    val copyright: String,
+    val originalCopyright: String? = null,
 )
 
 /**
@@ -67,5 +71,6 @@ data class BookDto(
 data class TitlesDto(
     val tet: String,
     val ko: String,
-    val en: String
+    val en: String,
+    val mn: String // Added for Mongolian
 )
