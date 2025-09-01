@@ -16,6 +16,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.orhanobut.logger.Logger
 import com.timor.kidsstory.data.dto.StoriesResponse
+import com.timor.kidsstory.data.local.assets.AssetDataSource
 import com.timor.kidsstory.data.remote.BookDownloader
 import com.timor.kidsstory.data.remote.model.RemoteBook
 import com.timor.kidsstory.data.remote.network.BookNetworkService
@@ -52,6 +53,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
+import com.timor.kidsstory.data.mapper.toBook // Added import
+import com.timor.kidsstory.data.mapper.toDomain
+import java.io.File
 
 /**
  * 책장 화면의 상태 관리 및 비즈니스 로직 처리 뷰모델
@@ -73,6 +77,7 @@ class BookshelfViewModel @Inject constructor(
     private val downloadBookUseCase: DownloadBookUseCase,
     private val bookDownloader: BookDownloader,
     private val downloadedBooksDao: DownloadedBooksDao,
+    private val assetDataSource: AssetDataSource, // Added injection
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -373,18 +378,16 @@ class BookshelfViewModel @Inject constructor(
             val downloadedEntities = downloadedBooksDao.getDownloadedBooksByLanguage(languageCode)
 
             // Convert entities to Book objects
-            downloadedEntities.map { entity ->
-                Book(
-                    storyId = "${entity.id}_$languageCode",
-                    title = entity.title,
-                    coverImage = entity.coverImagePath,
-                    level = entity.level,  // DB에서 level 정보 가져오기
-                    category = entity.category,
-                    pageCount = 0,
-                    isDownloaded = true,
-                    isBookmarked = false,
-                    downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
-                )
+            downloadedEntities.mapNotNull { entity ->
+                // 다운로드된 책의 contentJsonPath를 사용하여 PageContentResponse를 로드
+                val bookContentResult = assetDataSource.loadExternalBookContent(entity.contentJsonPath)
+                bookContentResult.getOrNull()?.let { response ->
+                    // 다운로드된 책의 이미지 폴더 경로 구성
+                    val contentJsonFile = File(entity.contentJsonPath)
+                    val bookRootDir = contentJsonFile.parentFile?.parentFile
+                    val imageFolderPath = File(bookRootDir, "images").absolutePath
+                    response.toBook(languageCode, imageFolderPath)
+                }
             }
         } catch (e: Exception) {
             Log.e("BookshelfViewModel", "Error loading downloaded books", e)
@@ -616,6 +619,7 @@ class BookshelfViewModel @Inject constructor(
                     val langKey = when {
                         languageCode.startsWith("ko") -> "ko"
                         languageCode.startsWith("tet") -> "tet"
+                        languageCode.startsWith("mn") -> "mn" // Added for Mongolian
                         else -> "en"
                     }
 
@@ -642,7 +646,12 @@ class BookshelfViewModel @Inject constructor(
                                     pageCount = 0,
                                     isDownloaded = false,  // 원격 책은 다운로드 필요
                                     isBookmarked = false,
-                                    downloadProgress = DownloadProgress(DownloadStatus.AVAILABLE)
+                                    downloadProgress = DownloadProgress(DownloadStatus.AVAILABLE),
+                                    contributors = remoteBook.contributors.map { it.toDomain() },
+                                    sponsors = remoteBook.sponsors,
+                                    copyright = remoteBook.copyright,
+                                    originalCopyright = remoteBook.originalCopyright,
+                                    pages = emptyList() // Pages are not available in RemoteBook
                                 )
 
                                 currentBooks.add(newBook)
@@ -771,7 +780,12 @@ class BookshelfViewModel @Inject constructor(
                 category = "",
                 pageCount = 0,
                 isDownloaded = false,
-                isBookmarked = false
+                isBookmarked = false,
+                contributors = emptyList(),
+                sponsors = null,
+                copyright = "",
+                originalCopyright = null,
+                pages = emptyList()
             )
         }
 
@@ -1104,43 +1118,36 @@ class BookshelfViewModel @Inject constructor(
                     }
 
                     if (downloadedBookEntity != null) {
-                        val newBook = Book(
-                            storyId = "${downloadedBookEntity.id}_$currentLanguage",
-                            title = downloadedBookEntity.title,
-                            coverImage = downloadedBookEntity.coverImagePath,
-                            level = downloadedBookEntity.level,
-                            category = downloadedBookEntity.category,
-                            pageCount = 0,
-                            isDownloaded = true,
-                            isBookmarked = false,
-                            downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
-                        )
+                        val bookContentResult = assetDataSource.loadExternalBookContent(downloadedBookEntity.contentJsonPath)
+                        bookContentResult.getOrNull()?.let { response ->
+                            val newBook = response.toBook(currentLanguage, downloadedBookEntity.coverImagePath)
 
-                        // 중복 방지
-                        val existingIndex =
-                            _state.value.books.indexOfFirst { it.storyId == newBook.storyId }
-                        val newBookList = _state.value.books.toMutableList()
+                            // 중복 방지
+                            val existingIndex =
+                                _state.value.books.indexOfFirst { it.storyId == newBook.storyId }
+                            val newBookList = _state.value.books.toMutableList()
 
-                        if (existingIndex >= 0) {
-                            newBookList[existingIndex] = newBook
-                        } else {
-                            newBookList.add(newBook)
-                        }
-
-                        // books와 필요한 경우 filteredBooks 업데이트
-                        if (shouldApplyFilters) {
-                            _state.update { it.copy(books = newBookList) }
-                            applyFilters()
-                        } else {
-                            _state.update {
-                                it.copy(
-                                    books = newBookList,
-                                    filteredBooks = newBookList
-                                )
+                            if (existingIndex >= 0) {
+                                newBookList[existingIndex] = newBook
+                            } else {
+                                newBookList.add(newBook)
                             }
-                        }
 
-                        Log.d("BookshelfViewModel", "Book added to UI: ${newBook.storyId}")
+                            // books와 필요한 경우 filteredBooks 업데이트
+                            if (shouldApplyFilters) {
+                                _state.update { it.copy(books = newBookList) }
+                                applyFilters()
+                            } else {
+                                _state.update {
+                                    it.copy(
+                                        books = newBookList,
+                                        filteredBooks = newBookList
+                                    )
+                                }
+                            }
+
+                            Log.d("BookshelfViewModel", "Book added to UI: ${newBook.storyId}")
+                        }
                     }
                 }
             }
