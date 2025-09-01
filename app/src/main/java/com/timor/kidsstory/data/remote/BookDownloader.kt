@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.data.local.database.entity.DownloadedBookEntity
+import com.timor.kidsstory.data.local.assets.AssetDataSource // Added import
+import com.timor.kidsstory.data.mapper.toBook // Added import
 import com.timor.kidsstory.data.remote.model.RemoteBook
 import com.timor.kidsstory.data.remote.network.BookNetworkService
 import com.timor.kidsstory.domain.model.Book
@@ -24,7 +26,8 @@ private const val TAG = "BookDownloader"
 class BookDownloader @Inject constructor(
     private val context: Context,
     private val networkService: BookNetworkService,
-    private val downloadedBooksDao: DownloadedBooksDao
+    private val downloadedBooksDao: DownloadedBooksDao,
+    private val assetDataSource: AssetDataSource // Added injection
 ) {
     /**
      * 외부 저장소 기본 경로
@@ -51,18 +54,14 @@ class BookDownloader @Inject constructor(
                 // 기존 다운로드된 책 정보 반환
                 val existingBook = downloadedBooksDao.getDownloadedBook(remoteBook.id, languageCode)
                 if (existingBook != null) {
-                    return Result.success(
-                        Book(
-                            storyId = existingBook.storyId,
-                            title = existingBook.title,
-                            coverImage = existingBook.coverImagePath,
-                            level = existingBook.level, // DB에서 level 정보 가져오기
-                            category = existingBook.category, // 카테고리 정보 사용
-                            pageCount = 0,
-                            isDownloaded = true,
-                            isBookmarked = false
-                        )
-                    )
+                    val bookContentResult = assetDataSource.loadExternalBookContent(existingBook.contentJsonPath)
+                    return bookContentResult.map { response ->
+                        // 다운로드된 책의 이미지 폴더 경로 구성
+                        val contentJsonFile = File(existingBook.contentJsonPath)
+                        val bookRootDir = contentJsonFile.parentFile?.parentFile
+                        val imageFolderPath = File(bookRootDir, "images").absolutePath
+                        response.toBook(languageCode, imageFolderPath)
+                    }
                 }
             }
 
@@ -70,6 +69,7 @@ class BookDownloader @Inject constructor(
             val langKey = when {
                 languageCode.startsWith("ko") -> "ko"
                 languageCode.startsWith("tet") -> "tet"
+                languageCode.startsWith("mn") -> "mn" // Added for Mongolian
                 else -> "en"  // 기본값은 영어
             }
 
@@ -145,18 +145,14 @@ class BookDownloader @Inject constructor(
             Log.d(TAG, "Book download completed and saved to database: ${bookEntity.storyId}")
 
             // 5. Book 객체로 변환하여 반환
-            val downloadedBook = Book(
-                storyId = bookEntity.storyId,
-                title = bookEntity.title,
-                coverImage = bookEntity.coverImagePath,
-                level = remoteBook.level,  // 원격 데이터에서 level 정보 가져오기
-                category = category, // 카테고리 정보 사용
-                pageCount = 0, // 초기값
-                isDownloaded = true,
-                isBookmarked = false
-            )
+            val bookContentResult = assetDataSource.loadExternalBookContent(jsonFile.absolutePath)
+            return bookContentResult.map { response ->
+                // 다운로드된 책의 이미지 폴더 경로 구성
+                val bookRootDir = jsonFile.parentFile?.parentFile
+                val imageFolderPath = File(bookRootDir, "images").absolutePath
+                response.toBook(languageCode, imageFolderPath)
+            }
 
-            Result.success(downloadedBook)
         } catch (e: Exception) {
             Log.e(TAG, "Error downloading book", e)
             Result.failure(e)
