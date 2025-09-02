@@ -18,22 +18,16 @@ import kotlinx.serialization.Serializable
  * @property sponsors 후원사 정보
  * @property copyright 저작권 정보
  * @property originalCopyright 원 저작권 정보
- * @property level 책 난이도 레벨
- * @property category 책 카테고리
- * @property coverImage 커버 이미지 파일명
  */
 @Serializable
 data class PageContentResponse(
     val storyId: String,
     val title: String,
     val pages: List<PageDto>,
-    val contributors: List<ContributorDto>,
+    val contributors: List<ContributorDto> = emptyList(),
     val sponsors: List<String>? = null,
-    val copyright: String,
+    val copyright: String = "",
     val originalCopyright: String? = null,
-    val level: Int, // Added
-    val category: String, // Added
-    val coverImage: String, // Added
 )
 
 /**
