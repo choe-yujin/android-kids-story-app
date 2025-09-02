@@ -69,9 +69,7 @@ class BookRepositoryImpl @Inject constructor(
      * @return 책 정보 또는 오류
      */
     override suspend fun getBookById(storyId: String, language: String): Result<Book?> {
-        // storyId에서 기본 ID 추출 (예: "801_en-ph" -> "801")
         val baseId = storyId.split("_").firstOrNull() ?: storyId
-
         Log.d(TAG, "Getting book by ID: $baseId, full storyId: $storyId")
 
         return try {
@@ -82,11 +80,16 @@ class BookRepositoryImpl @Inject constructor(
                     Log.d(TAG, "Found downloaded book entity: ${downloadedBookEntity.storyId}")
                     val bookContentResult = assetDataSource.loadExternalBookContent(downloadedBookEntity.contentJsonPath)
                     return bookContentResult.map { response ->
-                        // 다운로드된 책의 이미지 폴더 경로 구성
                         val contentJsonFile = File(downloadedBookEntity.contentJsonPath)
                         val bookRootDir = contentJsonFile.parentFile?.parentFile
                         val imageFolderPath = File(bookRootDir, "images").absolutePath
-                        response.toBook(language, imageFolderPath)
+                        response.toBook(
+                            language,
+                            downloadedBookEntity.level,
+                            downloadedBookEntity.category,
+                            downloadedBookEntity.coverImagePath, // Pass the full path
+                            imageFolderPath // This is for page images, not cover
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -95,10 +98,42 @@ class BookRepositoryImpl @Inject constructor(
             }
 
             // 2. 다운로드된 책이 아니면 앱 내장 책 (assets)에서 로드
+            // 먼저 assetDataSource에서 메타데이터를 로드하여 selectedBookDto를 찾습니다.
+            val selectedBookDtoResult = assetDataSource.loadBooks().mapCatching { allBookDtos ->
+                val langPrefix = when {
+                    language.startsWith("ko") -> "ko"
+                    language.startsWith("tet") -> "tet"
+                    language.startsWith("mn") -> "mn"
+                    else -> "en"
+                }
+                allBookDtos.find { bookDto ->
+                    bookDto.storyId.split("_").first() == baseId &&
+                    (bookDto.storyId.contains(langPrefix, ignoreCase = true) ||
+                     (langPrefix == "en" && !bookDto.storyId.contains("ko", ignoreCase = true) && !bookDto.storyId.contains("tet", ignoreCase = true) && !bookDto.storyId.contains("mn", ignoreCase = true)))
+                } ?: allBookDtos.find { bookDto ->
+                    bookDto.storyId.split("_").first() == baseId && bookDto.storyId.contains("en", ignoreCase = true)
+                }
+            }
+
+            val selectedBookDto = selectedBookDtoResult.getOrThrow() // Throw if metadata not found
+
+            if (selectedBookDto == null) {
+                Log.e(TAG, "BookDto metadata not found for storyId: $storyId")
+                return Result.success(null) // Book metadata not found
+            }
+
+            // 언어에 맞는 coverUrl 가져오기 (from selectedBookDto)
+            val coverUrl = "file:///android_asset/images/${baseId}/${selectedBookDto.coverImage}"
+
             Log.d(TAG, "Loading built-in book from assets for storyId: $storyId")
             val bookContentResult = assetDataSource.loadBookPages(storyId, language)
             return bookContentResult.map { response ->
-                response.toBook(language)
+                response.toBook(
+                    language,
+                    selectedBookDto.level, // Pass level from selectedBookDto
+                    selectedBookDto.category, // Pass category from selectedBookDto
+                    coverUrl // Pass coverUrl
+                )
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting book by ID", e)

@@ -1,5 +1,6 @@
 package com.timor.kidsstory.data.mapper
 
+import android.util.Log
 import com.timor.kidsstory.data.dto.BookDto
 import com.timor.kidsstory.data.dto.ContributorDto
 import com.timor.kidsstory.data.dto.PageContentResponse
@@ -60,12 +61,19 @@ fun ContributorDto.toDomain(): Contributor = Contributor(
     name = name
 )
 
-fun PageContentResponse.toBook(language: String, imageFolderPath: String? = null): Book {
+fun PageContentResponse.toBook(
+    language: String,
+    level: Int, // Added as parameter
+    category: String, // Added as parameter
+    coverImage: String, // Added as parameter
+    imageFolderPath: String? = null
+): Book {
+    Log.d("BookMapper", "toBook - imageFolderPath: $imageFolderPath, coverImage: $coverImage")
     val baseId = storyId.split("_").firstOrNull() ?: storyId
 
-    val mappedPages = pages.map { pageDto ->
+    val mappedPages = pages.map {
         PageMapper.mapToDomain(
-            pageDto = pageDto,
+            pageDto = it,
             storyBaseId = baseId,
             isDownloaded = imageFolderPath != null,
             imageFolderPath = imageFolderPath
@@ -78,15 +86,15 @@ fun PageContentResponse.toBook(language: String, imageFolderPath: String? = null
     return Book(
         storyId = storyId,
         title = title,
-        coverImage = if (imageFolderPath != null) {
-            // Downloaded book: coverImage is a filename, combine with imageFolderPath
-            "file://${imageFolderPath}/${this.coverImage}"
+                coverImage = if (imageFolderPath != null) {
+            // Downloaded book: coverImage is already the full path
+            coverImage
         } else {
             // Asset book: coverImage is a filename, combine with asset path
-            "file:///android_asset/images/${baseId}/${this.coverImage}"
+            "file:///android_asset/images/${baseId}/${coverImage}"
         },
-        level = this.level, // Use level from PageContentResponse
-        category = this.category, // Use category from PageContentResponse
+        level = level, // Use parameter level
+        category = category, // Use parameter category
         pageCount = totalPages,
         contributors = contributors.map { it.toDomain() },
         sponsors = sponsors,

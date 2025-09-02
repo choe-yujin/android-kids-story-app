@@ -31,17 +31,19 @@ object LanguageConstants {
     )
 
     // 몽골어
+    /*
     val MONGOLIAN = Language(
         code = "mn-MN",
-        displayName = "Монгол",
+        displayName = "Мон골",
         flagResId = R.drawable.flag_mn // Assuming this drawable exists
     )
+    */
 
     /**
      * 앱에서 지원하는 모든 언어 목록
      * - 언어 선택 UI에서 활용
      */
-    val SUPPORTED_LANGUAGES = listOf(ENGLISH, KOREAN, TETUM, MONGOLIAN)
+    val SUPPORTED_LANGUAGES = listOf(ENGLISH, KOREAN, TETUM/*, MONGOLIAN*/)
 
     /**
      * 기본 언어 (첫 실행시 적용)
@@ -56,7 +58,7 @@ object LanguageConstants {
             code.startsWith("en") -> "en"
             code.startsWith("ko") -> "ko"
             code.startsWith("tet") -> "tet"
-            code.startsWith("mn") -> "mn" // Added for Mongolian
+            // code.startsWith("mn") -> "mn" // Added for Mongolian
             else -> "en" // 기본값
         }
     }

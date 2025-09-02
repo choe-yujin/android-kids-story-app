@@ -60,7 +60,7 @@ class BookDownloader @Inject constructor(
                         val contentJsonFile = File(existingBook.contentJsonPath)
                         val bookRootDir = contentJsonFile.parentFile?.parentFile
                         val imageFolderPath = File(bookRootDir, "images").absolutePath
-                        response.toBook(languageCode, imageFolderPath)
+                        response.toBook(languageCode, existingBook.level, existingBook.category, existingBook.coverImagePath, imageFolderPath)
                     }
                 }
             }
@@ -150,7 +150,7 @@ class BookDownloader @Inject constructor(
                 // 다운로드된 책의 이미지 폴더 경로 구성
                 val bookRootDir = jsonFile.parentFile?.parentFile
                 val imageFolderPath = File(bookRootDir, "images").absolutePath
-                response.toBook(languageCode, imageFolderPath)
+                response.toBook(languageCode, remoteBook.level, remoteBook.category, coverUrl, imageFolderPath)
             }
 
         } catch (e: Exception) {
