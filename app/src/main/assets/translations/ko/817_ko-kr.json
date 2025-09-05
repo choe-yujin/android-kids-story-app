@@ -121,5 +121,25 @@
       ]
     }
   ],
-  "title": "817 Ko-kr"
+  "bookVersion": 1,
+  "contributors": {
+    "ko": {
+      "글": ["김주영"],
+      "삽화": ["밀 땀파논"]
+    },
+    "en": {
+      "Writer": ["Kim Jooyoung"],
+      "Illustrator": ["Meel Tamphanon"]
+    },
+    "tetum": {
+      "Writer": ["Kim Jooyoung"],
+      "Illustrator": ["Meel Tamphanon"],
+      "Translator": ["Rosarina"],
+      "Proofreader": ["Jisu An"]
+    }
+  },
+  "sponsors": {},
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+  "originalCopyright": "",
+  "title": "금빛 물고기 이야기"
 }

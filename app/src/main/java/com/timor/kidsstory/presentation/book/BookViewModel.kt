@@ -127,7 +127,8 @@ class BookViewModel @Inject constructor(
                                         sponsors = if (page.pageNumber == 0) book.sponsors else null,
                                         copyright = if (page.pageNumber == 0) book.copyright else "",
                                         originalCopyright = if (page.pageNumber == 0) book.originalCopyright else null,
-                                        title = if (page.pageNumber == 0) book.title else ""
+                                        title = if (page.pageNumber == 0) book.title else "",
+                                        currentLanguageCode = book.languageCode // Added this line
                                     )
                                 },
                                 isLoading = false,

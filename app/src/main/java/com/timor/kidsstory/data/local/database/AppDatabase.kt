@@ -14,7 +14,7 @@ import com.timor.kidsstory.data.local.database.entity.DownloadedBookEntity
 
 @Database(
     entities = [DownloadedBookEntity::class, AvailableBookEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

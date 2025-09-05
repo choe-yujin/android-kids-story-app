@@ -53,10 +53,11 @@ data class BookDto(
     val category: String,
     val region: String,
     val estimatedReadTime: Int,
-    val contributors: List<ContributorDto> = emptyList(),
-    val sponsors: List<String>? = null,
+    val contributors: Map<String, Map<String, List<String>>>? = null,
+    val sponsors: Map<String, List<String>>? = null,
     val copyright: String = "",
     val originalCopyright: String? = null,
+    val bookVersion: Int = 1
 )
 
 /**

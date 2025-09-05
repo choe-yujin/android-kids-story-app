@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -49,19 +50,25 @@ fun FilterBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp),
+            .padding(horizontal = 48.dp)
+            .height(58.dp), // Set fixed height
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
     ) {
         FilterBarButton(textResId = R.string.filter_all, isSelected = filterBarState.selectedFilter == FilterBarCategory.All) {
             onAllClick()
         }
 
-        Icon(
-            painter = painterResource(R.drawable.separation_bar),
-            tint = AppColors.unknown400,
-            contentDescription = null
-        )
+        Box(
+            modifier = Modifier.height(42.dp), // Approx height of FilterBarButton
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.separation_bar),
+                tint = AppColors.unknown400,
+                contentDescription = null
+            )
+        }
 
         FilterBarButton(textResId = R.string.filter_stage, isSelected = filterBarState.selectedFilter == FilterBarCategory.STAGE) {
             onStageClick()
@@ -74,11 +81,16 @@ fun FilterBar(
             onLevelClick(level)
         }
 
-        Icon(
-            painter = painterResource(R.drawable.separation_bar),
-            tint = AppColors.unknown400,
-            contentDescription = null
-        )
+        Box(
+            modifier = Modifier.height(42.dp), // Approx height of FilterBarButton
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.separation_bar),
+                tint = AppColors.unknown400,
+                contentDescription = null
+            )
+        }
 
         FilterBarButton(textResId = R.string.filter_category, isSelected = filterBarState.selectedFilter == FilterBarCategory.CATEGORY) {
             onCategoryClick()

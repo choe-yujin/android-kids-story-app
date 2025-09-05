@@ -66,6 +66,7 @@ fun BookScreen(
                 pageState = state.pages[pageIndex],
                 textSectionState = state.pages[pageIndex].textSectionState,
                 pageIndex = pageIndex,
+                currentLanguage = state.pages[pageIndex].currentLanguageCode, // Added
                 onBackToBookshelf = {
                     onAction(BookAction.BackBookShelf)
                 },

@@ -125,5 +125,25 @@
       ]
     }
   ],
-  "title": "817 En-ph"
+  "bookVersion": 1,
+  "contributors": {
+    "ko": {
+      "글": ["김주영"],
+      "삽화": ["밀 땀파논"]
+    },
+    "en": {
+      "Writer": ["Kim Jooyoung"],
+      "Illustrator": ["Meel Tamphanon"]
+    },
+    "tetum": {
+      "Writer": ["Kim Jooyoung"],
+      "Illustrator": ["Meel Tamphanon"],
+      "Translator": ["Rosarina"],
+      "Proofreader": ["Jisu An"]
+    }
+  },
+  "sponsors": {},
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+  "originalCopyright": "",
+  "title": "The Story of the Golden Goby Fish"
 }

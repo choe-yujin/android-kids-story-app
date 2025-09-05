@@ -6,6 +6,7 @@
     <string name="bookcover_download">Download</string>
     <string name="bookcover_downloading">Download daudaun…</string>
     <string name="bookcover_retry">Koko fali</string>
+    <string name="bookcover_update">Update</string>
 
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">Hotu</string>

@@ -7,6 +7,7 @@ enum class DownloadStatus {
     AVAILABLE,     // 다운로드 가능
     DOWNLOADING,   // 다운로드 중
     DOWNLOADED,    // 이미 다운로드됨
+    UPDATE_AVAILABLE, // 업데이트 가능
     FAILED         // 다운로드 실패
 }
 

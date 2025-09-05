@@ -24,8 +24,8 @@ data class PageContentResponse(
     val storyId: String,
     val title: String,
     val pages: List<PageDto>,
-    val contributors: List<ContributorDto> = emptyList(),
-    val sponsors: List<String>? = null,
+    val contributors: Map<String, Map<String, List<String>>>? = null,
+    val sponsors: Map<String, List<String>>? = null,
     val copyright: String = "",
     val originalCopyright: String? = null,
 )

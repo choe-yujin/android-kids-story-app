@@ -54,7 +54,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import com.timor.kidsstory.data.mapper.toBook // Added import
-import com.timor.kidsstory.data.mapper.toDomain
+
+import com.timor.kidsstory.domain.model.Contributor
 import java.io.File
 
 /**
@@ -515,6 +516,23 @@ class BookshelfViewModel @Inject constructor(
 
                     val isDownloaded = downloadedBook != null
 
+                    // Check for updates if the book is downloaded
+                    if (isDownloaded) {
+                        val remoteBook = _state.value.remoteBooks.find { it.id == bookId }
+                        if (remoteBook != null && remoteBook.bookVersion > downloadedBook!!.bookVersion) {
+                            Log.d(
+                                "BookshelfViewModel",
+                                "Book ${book.storyId} has an update available (local: ${downloadedBook.bookVersion}, remote: ${remoteBook.bookVersion})"
+                            )
+                            currentBooks[i] = book.copy(
+                                isDownloaded = true, // Still downloaded
+                                downloadProgress = DownloadProgress(DownloadStatus.UPDATE_AVAILABLE) // New status
+                            )
+                            hasChanges = true
+                            continue // Skip further status checks for this book
+                        }
+                    }
+
                     // 현재 상태와 다르면 업데이트
                     if (book.isDownloaded != isDownloaded) {
                         Log.d(
@@ -677,8 +695,12 @@ class BookshelfViewModel @Inject constructor(
                                     isDownloaded = false,  // 원격 책은 다운로드 필요
                                     isBookmarked = false,
                                     downloadProgress = DownloadProgress(DownloadStatus.AVAILABLE),
-                                    contributors = remoteBook.contributors.map { it.toDomain() },
-                                    sponsors = remoteBook.sponsors,
+                                    contributors = remoteBook.contributors?.flatMap { (lang, rolesMap) ->
+                                        rolesMap.flatMap { (role, names) ->
+                                            names.map { name -> Contributor(role = role, name = name, lang = lang) }
+                                        }
+                                    } ?: emptyList(),
+                                    sponsors = remoteBook.sponsors?.flatMap { (_, namesList) -> namesList } ?: emptyList(),
                                     copyright = remoteBook.copyright,
                                     originalCopyright = remoteBook.originalCopyright,
                                     pages = emptyList() // Pages are not available in RemoteBook
@@ -855,7 +877,7 @@ class BookshelfViewModel @Inject constructor(
 
             // Category 필터 기본 사항 적용
             val updatedCategory = when {
-                isCategorySelected && isNewFilterSelected -> FilterBookCategory.LEGEND
+                isCategorySelected && isNewFilterSelected -> FilterBookCategory.ENVIRONMENT
                 category != null -> category
                 else -> it.filterBarState.selectedCategory
             }
@@ -995,8 +1017,8 @@ class BookshelfViewModel @Inject constructor(
         val bookId = book.storyId.split("_").firstOrNull()?.toIntOrNull() ?: return
         val languageCode = _state.value.currentLanguage.code
 
-        // 이미 다운로드 중이거나 다운로드된 책은 처리하지 않음
-        if (book.isDownloaded || book.downloadProgress.status == DownloadStatus.DOWNLOADING) {
+        // 이미 다운로드 중이거나 다운로드된 책은 처리하지 않음 (단, 업데이트가 필요한 경우는 제외)
+        if (book.downloadProgress.status == DownloadStatus.DOWNLOADING ||(book.isDownloaded && book.downloadProgress.status !=DownloadStatus.UPDATE_AVAILABLE)) {
             return
         }
 
@@ -1087,7 +1109,8 @@ class BookshelfViewModel @Inject constructor(
                                                     downloadedBookEntity.level,
                                                     downloadedBookEntity.category,
                                                     downloadedBookEntity.coverImagePath,
-                                                    imageFolderPath
+                                                    imageFolderPath,
+                                                    downloadedBookEntity.bookVersion // Pass bookVersion
                                                 )
 
                                                 _state.update { currentState ->

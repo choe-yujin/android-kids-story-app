@@ -124,5 +124,27 @@
       ]
     }
   ],
-  "title": "802 Ko-kr"
+  "bookVersion": 1,
+  "contributors": {
+    "ko": {
+      "글": ["황티장"],
+      "삽화": ["응우이엔 홍 안"]
+    },
+    "en": {
+      "Writer": ["Hoang Thi Trang"],
+      "Illustrator": ["Nguyen Hong Anh"],
+      "Translator": ["Haryeon Pyeon"],
+      "Proofreader": ["Laura Marie Kingdon"]
+    },
+    "tetum": {
+      "Writer": ["Hoang Thi Trang"],
+      "Illustrator": ["Nguyen Hong Anh"],
+      "Translator": ["Rosarina"],
+      "Proofreader": ["Jisu An"]
+    }
+  },
+  "sponsors": {},
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+  "originalCopyright": "",
+  "title": "황냔의 하루"
 }

@@ -39,6 +39,7 @@ fun LevelButton(
         FilterLevel.TWO -> Color(0xFFC9A93B) // 노란색
         FilterLevel.THREE -> Color(0xFFE38400) // 주황색
         FilterLevel.FOUR -> Color(0xFFC52820) // 빨간색
+        FilterLevel.FIVE -> Color(0xFF9C27B0) // 보라색
     }
 
     val levelBorderColor = when (level) {
@@ -46,6 +47,7 @@ fun LevelButton(
         FilterLevel.TWO -> AppColors.level2
         FilterLevel.THREE -> AppColors.level3
         FilterLevel.FOUR -> AppColors.level4
+        FilterLevel.FIVE -> Color(0xFF7B1FA2) // 진한 보라색
     }
 
 
@@ -103,7 +105,7 @@ fun LevelFilterBar(
             exit = shrinkHorizontally()
         ) {
             Row(
-                modifier = Modifier.padding(start = 8.dp),
+                modifier = Modifier.padding(start = 8.dp).padding(top = 2.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 LevelButton(
@@ -124,6 +126,11 @@ fun LevelFilterBar(
                 LevelButton(
                     level = FilterLevel.FOUR,
                     isSelected = selectedLevel == FilterLevel.FOUR,
+                    onLevelSelected = onLevelSelected
+                )
+                LevelButton(
+                    level = FilterLevel.FIVE,
+                    isSelected = selectedLevel == FilterLevel.FIVE,
                     onLevelSelected = onLevelSelected
                 )
             }

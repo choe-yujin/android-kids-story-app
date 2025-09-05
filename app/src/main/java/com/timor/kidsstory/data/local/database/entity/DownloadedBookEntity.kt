@@ -19,5 +19,6 @@ data class DownloadedBookEntity(
     val hasImages: Boolean,
     val downloadDate: Long = System.currentTimeMillis(),
     val category: String = "",
-    val level: Int = 1
+    val level: Int = 1,
+    val bookVersion: Int = 1
 )

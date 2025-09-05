@@ -108,5 +108,26 @@
       ]
     }
   ],
-  "title": "810 Ko-kr"
+  "bookVersion": 1,
+  "contributors": {
+    "ko": {
+      "글": ["이흠"],
+      "삽화": ["동동"]
+    },
+    "en": {
+      "Writer": ["李鑫"],
+      "Illustrator": ["Dong Dong"],
+      "Translator": ["Jennifer An"]
+    },
+    "tetum": {
+      "Writer": ["李鑫"],
+      "Illustrator": ["Dong Dong"],
+      "Translator": ["Rosarina"],
+      "Proofreader": ["Jisu An"]
+    }
+  },
+  "sponsors": {},
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+  "originalCopyright": "",
+  "title": "후예와 항아"
 }
