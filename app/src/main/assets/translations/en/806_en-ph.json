@@ -88,5 +88,26 @@
       ]
     }
   ],
-  "title": "806 En-ph"
+  "bookVersion": 1,
+  "contributors": {
+    "ko": {
+      "글": ["이흠"],
+      "삽화": ["오드리 유앵"]
+    },
+    "en": {
+      "Writer": ["李鑫"],
+      "Illustrator": ["Audrey Yuang"],
+      "Translator": ["Jennifer An"]
+    },
+    "tetum": {
+      "Writer": ["李鑫"],
+      "Illustrator": ["Audrey Yuang"],
+      "Translator": ["Rosarina"],
+      "Proofreader": ["Jisu An"]
+    }
+  },
+  "sponsors": {},
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+  "originalCopyright": "",
+  "title": "Chinese Dumpling Story"
 }

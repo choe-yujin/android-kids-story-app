@@ -5,6 +5,7 @@
     <string name="bookcover_download">Download</string>
     <string name="bookcover_downloading">Downloading…</string>
     <string name="bookcover_retry">Retry</string>
+    <string name="bookcover_update">Update</string>
 
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">All</string>
@@ -12,10 +13,42 @@
     <string name="filter_category">Category</string>
 
     <!-- Category Names -->
-    <string name="category_legend">legend</string>
-    <string name="category_folktale">folktale</string>
-    <string name="category_culture">culture</string>
-    <string name="category_life">life</string>
+    <string name="category_legend">Legend</string>
+    <string name="category_folktale">Folktale</string>
+    <string name="category_culture">Culture</string>
+    <string name="category_life">Life</string>
+    <string name="category_environment">Environment</string>
+    <string name="category_science">Science</string>
+    <string name="category_adventure">Adventure</string>
+    
+    <!-- New Category Groups -->
+    <string name="category_folktales_history">Folktales &amp; History</string>
+    <string name="category_culture_world">Culture &amp; World</string>
+    <string name="category_daily_life">Daily Life</string>
+    <string name="category_science_nature">Science &amp; Nature</string>
+    <string name="category_social_emotional">Social Emotional</string>
+    <string name="category_adventure_fantasy">Adventure &amp; Fantasy</string>
+
+    <!-- Reading Levels -->
+    <string name="level_1">First Steps</string>
+    <string name="level_2">Early Reader</string>
+    <string name="level_3">Growing Reader</string>
+    <string name="level_4">Confident Reader</string>
+    <string name="level_5">Advanced Reader</string>
+    
+    <!-- Age Ranges -->
+    <string name="age_3_5">3-5 years</string>
+    <string name="age_5_7">5-7 years</string>
+    <string name="age_7_9">7-9 years</string>
+    <string name="age_9_11">9-11 years</string>
+    <string name="age_11_plus">11+ years</string>
+
+    <!-- Empty State Messages -->
+    <string name="empty_bookshelf_title">No books available</string>
+    <string name="empty_bookshelf_message">Check your internet connection to download new books</string>
+    <string name="empty_filter_title">No books found</string>
+    <string name="empty_filter_message">Try adjusting your filter settings</string>
+    <string name="empty_downloading">Looking for new books…</string>
 
     <!-- Info Screen -->
     <string name="info_setting">Setting</string>

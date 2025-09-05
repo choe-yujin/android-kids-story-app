@@ -1,5 +1,6 @@
 package com.timor.kidsstory.presentation.book.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +42,7 @@ fun PageContent(
     pageState: PageUiState,
     textSectionState: PageTextSectionUiState,
     pageIndex: Int,
+    currentLanguage: String, // Added
     onBackToBookshelf: () -> Unit,
     onTextToSpeech: (List<String>) -> Unit,
     onLayoutChanged: (pageIndex: Int, contentHeight: Int, containerHeight: Int) -> Unit,
@@ -58,6 +60,7 @@ fun PageContent(
                 pageState = pageState,
                 textSectionState = textSectionState,
                 pageIndex = pageIndex,
+                currentLanguage = currentLanguage, // Added
                 onTextToSpeech = onTextToSpeech,
                 onLayoutChanged = onLayoutChanged,
                 onScrollChanged = onScrollChanged,
@@ -65,65 +68,6 @@ fun PageContent(
                     .weight(1f)
                     .background(Color.White)
             )
-        }
-
-        // Display contributors, sponsors, copyrights only on the first page (pageNumber == 1)
-        if (pageState.pageNumber == 1) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp, start = 16.dp, end = 16.dp), // Padding from bottom and sides
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Contributors
-                if (pageState.contributors.isNotEmpty()) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        pageState.contributors.forEach { contributor ->
-                            Text(
-                                text = "${contributor.role}: ${contributor.name}",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), // Small text
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-
-                // Sponsors
-                pageState.sponsors?.let { sponsors ->
-                    if (sponsors.isNotEmpty()) {
-                        Text(
-                            text = "후원: ${sponsors.joinToString()}",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), // Small text
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
-                }
-
-                // Copyright
-                Text(
-                    text = "${pageState.title} ${pageState.copyright}",
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp), // Even smaller text
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center // Center align copyright
-                )
-
-                // Original Copyright
-                pageState.originalCopyright?.let { originalCopyright ->
-                    Text(
-                        text = originalCopyright,
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp), // Even smaller text
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center // Center align copyright
-                    )
-                }
-            }
         }
     }
 }

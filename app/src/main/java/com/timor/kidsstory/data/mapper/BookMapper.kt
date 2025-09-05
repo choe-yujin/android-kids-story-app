@@ -45,28 +45,31 @@ object BookMapper {
             level = dto.level,
             category = dto.category,
             pageCount = dto.pageCount,
-            contributors = dto.contributors.map { it.toDomain() },
-            sponsors = dto.sponsors,
+            contributors = dto.contributors?.flatMap { (lang, rolesMap) ->
+                rolesMap.flatMap { (role, names) ->
+                    names.map { name -> Contributor(role = role, name = name, lang = lang) }
+                }
+            } ?: emptyList(),
+            sponsors = dto.sponsors?.flatMap { (_, namesList) -> namesList } ?: emptyList(),
             copyright = dto.copyright,
             originalCopyright = dto.originalCopyright,
             pages = emptyList(), // 이 BookDto는 페이지 정보를 포함하지 않으므로 빈 리스트로 초기화
             isDownloaded = true,  // 기본적으로 앱 내에 포함된 책은 다운로드된 상태
-            isBookmarked = false  // 초기에는 북마크되지 않은 상태
+            isBookmarked = false,  // 초기에는 북마크되지 않은 상태
+            bookVersion = dto.bookVersion // Added bookVersion
         )
     }
 }
 
-fun ContributorDto.toDomain(): Contributor = Contributor(
-    role = role,
-    name = name
-)
+
 
 fun PageContentResponse.toBook(
     language: String,
-    level: Int, // Added as parameter
-    category: String, // Added as parameter
-    coverImage: String, // Added as parameter
-    imageFolderPath: String? = null
+    level: Int,
+    category: String,
+    coverImage: String,
+    imageFolderPath: String? = null,
+    bookVersion: Int = 1 // Added bookVersion as parameter with default
 ): Book {
     Log.d("BookMapper", "toBook - imageFolderPath: $imageFolderPath, coverImage: $coverImage")
     val baseId = storyId.split("_").firstOrNull() ?: storyId
@@ -86,22 +89,25 @@ fun PageContentResponse.toBook(
     return Book(
         storyId = storyId,
         title = title,
-                coverImage = if (imageFolderPath != null) {
-            // Downloaded book: coverImage is already the full path
+        coverImage = if (imageFolderPath != null) {
             coverImage
         } else {
-            // Asset book: coverImage is a filename, combine with asset path
             "file:///android_asset/images/${baseId}/${coverImage}"
         },
-        level = level, // Use parameter level
-        category = category, // Use parameter category
+        level = level,
+        category = category,
         pageCount = totalPages,
-        contributors = contributors.map { it.toDomain() },
-        sponsors = sponsors,
+        contributors = contributors?.flatMap { (lang, rolesMap) ->
+            rolesMap.flatMap { (role, names) ->
+                names.map { name -> Contributor(role = role, name = name, lang = lang) }
+            }
+        } ?: emptyList(),
+        sponsors = sponsors?.flatMap { (_, namesList) -> namesList } ?: emptyList(),
         copyright = copyright,
         originalCopyright = originalCopyright,
         pages = pagesWithTotalInfo,
-        isDownloaded = imageFolderPath != null, // If imageFolderPath is provided, it's downloaded
-        isBookmarked = false
+        isDownloaded = imageFolderPath != null,
+        isBookmarked = false,
+        bookVersion = bookVersion // Added bookVersion
     )
 }

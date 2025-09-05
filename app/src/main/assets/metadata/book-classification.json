@@ -1,0 +1,148 @@
+{
+  "categories": [
+    {
+      "id": "FOLKTALES_HISTORY",
+      "name": {
+        "en": "Folktales & History",
+        "ko": "민담과 역사",
+        "tet": "Istória no Tradisaun"
+      }
+    },
+    {
+      "id": "CULTURE_WORLD",
+      "name": {
+        "en": "Culture & World",
+        "ko": "문화와 세계",
+        "tet": "Kultura no Mundu"
+      }
+    },
+    {
+      "id": "DAILY_LIFE",
+      "name": {
+        "en": "Daily Life",
+        "ko": "일상생활",
+        "tet": "Moris Loron-loron"
+      }
+    },
+    {
+      "id": "ENVIRONMENT",
+      "name": {
+        "en": "Environment",
+        "ko": "환경",
+        "tet": "Ambiente"
+      }
+    },
+    {
+      "id": "SCIENCE_NATURE",
+      "name": {
+        "en": "Science & Nature",
+        "ko": "과학과 자연",
+        "tet": "Siénsia no Natureza"
+      }
+    },
+    {
+      "id": "SOCIAL_EMOTIONAL",
+      "name": {
+        "en": "Social Emotional",
+        "ko": "사회정서",
+        "tet": "Emosaun Sosiál"
+      }
+    },
+    {
+      "id": "ADVENTURE_FANTASY",
+      "name": {
+        "en": "Adventure & Fantasy",
+        "ko": "모험과 판타지",
+        "tet": "Aventura no Fantazia"
+      }
+    }
+  ],
+  "levels": [
+    {
+      "level": 1,
+      "name": {
+        "en": "First Steps",
+        "ko": "첫걸음",
+        "tet": "Pasu Primeiru"
+      },
+      "ageRange": {
+        "en": "3-5 years",
+        "ko": "3-5세",
+        "tet": "Tinan 3-5"
+      }
+    },
+    {
+      "level": 2,
+      "name": {
+        "en": "Early Reader",
+        "ko": "초급 읽기",
+        "tet": "Lee Inísiu"
+      },
+      "ageRange": {
+        "en": "5-7 years",
+        "ko": "5-7세",
+        "tet": "Tinan 5-7"
+      }
+    },
+    {
+      "level": 3,
+      "name": {
+        "en": "Growing Reader",
+        "ko": "중급 읽기",
+        "tet": "Lee Dezenvolvimentu"
+      },
+      "ageRange": {
+        "en": "7-9 years",
+        "ko": "7-9세",
+        "tet": "Tinan 7-9"
+      }
+    },
+    {
+      "level": 4,
+      "name": {
+        "en": "Confident Reader",
+        "ko": "숙련 읽기",
+        "tet": "Lee Konfiante"
+      },
+      "ageRange": {
+        "en": "9-11 years",
+        "ko": "9-11세",
+        "tet": "Tinan 9-11"
+      }
+    },
+    {
+      "level": 5,
+      "name": {
+        "en": "Advanced Reader",
+        "ko": "고급 읽기",
+        "tet": "Lee Avansadu"
+      },
+      "ageRange": {
+        "en": "11+ years",
+        "ko": "11세 이상",
+        "tet": "Tinan 11+"
+      }
+    }
+  ],
+  "bookCategoryMapping": {
+    "601": { "category": "ENVIRONMENT", "level": 1 },
+    "602": { "category": "SCIENCE_NATURE", "level": 1 },
+    "603": { "category": "ENVIRONMENT", "level": 1 },
+    "604": { "category": "SCIENCE_NATURE", "level": 1 },
+    "605": { "category": "ADVENTURE_FANTASY", "level": 1 },
+    "606": { "category": "DAILY_LIFE", "level": 1 },
+    "607": { "category": "ENVIRONMENT", "level": 1 },
+    "102": { "category": "DAILY_LIFE", "level": 1 },
+    "207": { "category": "DAILY_LIFE", "level": 2 },
+    "801": { "category": "FOLKTALES_HISTORY", "level": 2 },
+    "806": { "category": "CULTURE_WORLD", "level": 2 },
+    "810": { "category": "FOLKTALES_HISTORY", "level": 2 },
+    "813": { "category": "DAILY_LIFE", "level": 2 },
+    "816": { "category": "CULTURE_WORLD", "level": 2 },
+    "819": { "category": "CULTURE_WORLD", "level": 2 },
+    "821": { "category": "FOLKTALES_HISTORY", "level": 2 },
+    "802": { "category": "DAILY_LIFE", "level": 3 },
+    "807": { "category": "FOLKTALES_HISTORY", "level": 3 },
+    "817": { "category": "FOLKTALES_HISTORY", "level": 3 }
+  }
+}

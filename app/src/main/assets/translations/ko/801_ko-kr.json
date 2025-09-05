@@ -103,5 +103,27 @@
       "texts": ["지금까지도 베트남 사람들은 자신들이 용의 자녀, 선녀의 손자라고 하며, 용의 용감하고 용맹한 면과 선녀의 선하고 온화한 면을 물려받았다고 믿습니다."]
     }
   ],
-  "title": "801 Ko-kr"
+  "bookVersion": 1,
+  "contributors": {
+    "ko": {
+      "글": ["황티장"],
+      "삽화": ["우이엔 응우이엔"]
+    },
+    "en": {
+      "Writer": ["Hoang Thi Trang"],
+      "Illustrator": ["Uyen Nguyen"],
+      "Translator": ["Haryeon Pyeon"],
+      "Proofreader": ["Laura Marie Kingdon"]
+    },
+    "tetum": {
+      "Writer": ["Hoang Thi Trang"],
+      "Illustrator": ["Uyen Nguyen"],
+      "Translator": ["Rosarina"],
+      "Proofreader": ["Jisu An"]
+    }
+  },
+  "sponsors": {},
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+  "originalCopyright": "",
+  "title": "락롱꽌과 아우꺼"
 }

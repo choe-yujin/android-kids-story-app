@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
+import com.timor.kidsstory.presentation.bookshelf.components.EmptyBookshelf
 import com.timor.kidsstory.presentation.bookshelf.components.LanguageDialog
 import com.timor.kidsstory.presentation.bookshelf.components.filter.FilterBar
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
@@ -119,24 +120,33 @@ fun BookshelfScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 책 그리드 표시
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(5),  // 5열 그리드
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-                contentPadding = PaddingValues(top = 4.dp, bottom = 24.dp), // 상단 4dp, 하단 24dp 패딩
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 48.dp)
-            ) {
-                items(state.filteredBooks) { book ->
-                    BookCover(
-                        book = book,
-                        onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(book))) },
-                        onDownloadClick = if (!book.isDownloaded) {
-                            { onAction(BookShelfAction.DownloadBook(state.books.indexOf(book))) }
-                        } else null
-                    )
+            // 책 그리드 또는 빈 상태 표시
+            if (state.filteredBooks.isEmpty()) {
+                // 책이 없을 때 빈 상태 표시
+                EmptyBookshelf(
+                    isFiltered = state.filterBarState.selectedFilter != FilterBarCategory.All,
+                    isLoading = state.isLoading
+                )
+            } else {
+                // 책 그리드 표시
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(5),  // 5열 그리드
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    contentPadding = PaddingValues(top = 4.dp, bottom = 24.dp), // 상단 4dp, 하단 24dp 패딩
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 48.dp)
+                ) {
+                    items(state.filteredBooks) { book ->
+                        BookCover(
+                            book = book,
+                            onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(book))) },
+                            onDownloadClick = if (!book.isDownloaded) {
+                                { onAction(BookShelfAction.DownloadBook(state.books.indexOf(book))) }
+                            } else null
+                        )
+                    }
                 }
             }
         }

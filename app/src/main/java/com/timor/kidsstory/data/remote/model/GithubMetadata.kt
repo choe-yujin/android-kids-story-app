@@ -32,8 +32,9 @@ data class RemoteBook(
     val languages: List<String>,
     val category: String = "",
     val level: Int = 1,
-    val contributors: List<ContributorDto> = emptyList(),
-    val sponsors: List<String>? = null,
+    val contributors: Map<String, Map<String, List<String>>>? = null,
+    val sponsors: Map<String, List<String>>? = null,
     val copyright: String = "",
     val originalCopyright: String? = null,
+    val bookVersion: Int = 1
 )

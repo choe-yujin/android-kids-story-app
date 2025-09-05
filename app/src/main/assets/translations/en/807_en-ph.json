@@ -130,5 +130,26 @@
       ]
     }
   ],
-  "title": "807 En-ph"
+  "bookVersion": 1,
+  "contributors": {
+    "ko": {
+      "글": ["이흠"],
+      "삽화": ["스페이시 호"]
+    },
+    "en": {
+      "Writer": ["李鑫"],
+      "Illustrator": ["Spacey Ho"],
+      "Translator": ["Jennifer An"]
+    },
+    "tetum": {
+      "Writer": ["李鑫"],
+      "Illustrator": ["Spacey Ho"],
+      "Translator": ["Rosarina"],
+      "Proofreader": ["Jisu An"]
+    }
+  },
+  "sponsors": {},
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+  "originalCopyright": "",
+  "title": "The Legend of the White Snake"
 }

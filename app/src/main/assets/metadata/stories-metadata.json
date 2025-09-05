@@ -7,7 +7,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Lenda kona-ba Lac Long Quan no Au Co",
+      "tet": "Lac Long Quan and Au Co",
       "ko": "락롱꽌과 아우꺼",
       "en": "The Legend of Lac Long Quan and Au Co"
     },
@@ -18,9 +18,31 @@
     ],
     "size": 5477591,
     "coverImage": "cover_801_en.jpg",
-    "category": "LEGEND",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 28
+    "estimatedReadTime": 28,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["황티장"],
+        "삽화": ["우이엔 응우이엔"]
+      },
+      "en": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Haryeon Pyeon"],
+        "Proofreader": ["Laura Marie Kingdon"]
+      },
+      "tetum": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "801_ko-kr",
@@ -30,7 +52,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Lenda kona-ba Lac Long Quan no Au Co",
+      "tet": "Lac Long Quan and Au Co",
       "ko": "락롱꽌과 아우꺼",
       "en": "The Legend of Lac Long Quan and Au Co"
     },
@@ -41,9 +63,31 @@
     ],
     "size": 5085546,
     "coverImage": "cover_801_kr.jpg",
-    "category": "LEGEND",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 28
+    "estimatedReadTime": 28,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["황티장"],
+        "삽화": ["우이엔 응우이엔"]
+      },
+      "en": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Haryeon Pyeon"],
+        "Proofreader": ["Laura Marie Kingdon"]
+      },
+      "tetum": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "801_tetum",
@@ -53,7 +97,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Lenda kona-ba Lac Long Quan no Au Co",
+      "tet": "Lac Long Quan and Au Co",
       "ko": "락롱꽌과 아우꺼",
       "en": "The Legend of Lac Long Quan and Au Co"
     },
@@ -64,9 +108,31 @@
     ],
     "size": 5085546,
     "coverImage": "cover_801_tet.jpg",
-    "category": "LEGEND",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 28
+    "estimatedReadTime": 28,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["황티장"],
+        "삽화": ["우이엔 응우이엔"]
+      },
+      "en": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Haryeon Pyeon"],
+        "Proofreader": ["Laura Marie Kingdon"]
+      },
+      "tetum": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "802_en-ph",
@@ -76,7 +142,7 @@
     "level": 3,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Loron Hoang Nhan nian",
+      "tet": "Loron ida ho Huang Nian",
       "ko": "황냔의 하루",
       "en": "Hoang Nhan's Day"
     },
@@ -87,9 +153,31 @@
     ],
     "size": 5061122,
     "coverImage": "cover_802_en.jpg",
-    "category": "LIFE",
+    "category": "DAILY_LIFE",
     "region": "Asia",
-    "estimatedReadTime": 30
+    "estimatedReadTime": 30,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["황티장"],
+        "삽화": ["응우이엔 홍 안"]
+      },
+      "en": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Nguyen Hong Anh"],
+        "Translator": ["Haryeon Pyeon"],
+        "Proofreader": ["Laura Marie Kingdon"]
+      },
+      "tetum": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Nguyen Hong Anh"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "802_ko-kr",
@@ -99,7 +187,7 @@
     "level": 3,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Loron Hoang Nhan nian",
+      "tet": "Loron ida ho Huang Nian",
       "ko": "황냔의 하루",
       "en": "Hoang Nhan's Day"
     },
@@ -110,9 +198,31 @@
     ],
     "size": 4807529,
     "coverImage": "cover_802_kr.jpg",
-    "category": "LIFE",
+    "category": "DAILY_LIFE",
     "region": "Asia",
-    "estimatedReadTime": 30
+    "estimatedReadTime": 30,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["황티장"],
+        "삽화": ["응우이엔 홍 안"]
+      },
+      "en": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Nguyen Hong Anh"],
+        "Translator": ["Haryeon Pyeon"],
+        "Proofreader": ["Laura Marie Kingdon"]
+      },
+      "tetum": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Nguyen Hong Anh"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "802_tetum",
@@ -122,7 +232,7 @@
     "level": 3,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Loron Hoang Nhan nian",
+      "tet": "Loron ida ho Huang Nian",
       "ko": "황냔의 하루",
       "en": "Hoang Nhan's Day"
     },
@@ -133,9 +243,31 @@
     ],
     "size": 4807529,
     "coverImage": "cover_802_tet.jpg",
-    "category": "LIFE",
+    "category": "DAILY_LIFE",
     "region": "Asia",
-    "estimatedReadTime": 30
+    "estimatedReadTime": 30,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["황티장"],
+        "삽화": ["응우이엔 홍 안"]
+      },
+      "en": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Nguyen Hong Anh"],
+        "Translator": ["Haryeon Pyeon"],
+        "Proofreader": ["Laura Marie Kingdon"]
+      },
+      "tetum": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Nguyen Hong Anh"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "806_en-ph",
@@ -145,7 +277,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Istória kona-ba Dumpling Xina",
+      "tet": "Istória kona-ba bolu Xinés",
       "ko": "중국 만두 이야기",
       "en": "Chinese Dumpling Story"
     },
@@ -156,9 +288,30 @@
     ],
     "size": 3606499,
     "coverImage": "cover_806_en.jpg",
-    "category": "CULTURE",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 22
+    "estimatedReadTime": 22,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["이흠"],
+        "삽화": ["오드리 유앵"]
+      },
+      "en": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Audrey Yuang"],
+        "Translator": ["Jennifer An"]
+      },
+      "tetum": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Audrey Yuang"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "806_ko-kr",
@@ -168,7 +321,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Istória kona-ba Dumpling Xina",
+      "tet": "Istória kona-ba bolu Xinés",
       "ko": "중국 만두 이야기",
       "en": "Chinese Dumpling Story"
     },
@@ -179,9 +332,30 @@
     ],
     "size": 3570166,
     "coverImage": "cover_806_kr.jpg",
-    "category": "CULTURE",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 22
+    "estimatedReadTime": 22,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["이흠"],
+        "삽화": ["오드리 유앵"]
+      },
+      "en": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Audrey Yuang"],
+        "Translator": ["Jennifer An"]
+      },
+      "tetum": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Audrey Yuang"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "806_tetum",
@@ -191,7 +365,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Istória kona-ba Dumpling Xina",
+      "tet": "Istória kona-ba bolu Xinés",
       "ko": "중국 만두 이야기",
       "en": "Chinese Dumpling Story"
     },
@@ -202,9 +376,30 @@
     ],
     "size": 3570166,
     "coverImage": "cover_806_tet.jpg",
-    "category": "CULTURE",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 22
+    "estimatedReadTime": 22,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["이흠"],
+        "삽화": ["오드리 유앵"]
+      },
+      "en": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Audrey Yuang"],
+        "Translator": ["Jennifer An"]
+      },
+      "tetum": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Audrey Yuang"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "807_en-ph",
@@ -214,7 +409,7 @@
     "level": 3,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Lenda kona-ba Seda Mutin",
+      "tet": "Lenda Kona-ba Samea Mutin",
       "ko": "백사전: 중국의 하얀 뱀 전설",
       "en": "The Legend of the White Snake"
     },
@@ -225,9 +420,30 @@
     ],
     "size": 4676914,
     "coverImage": "cover_807_en.jpg",
-    "category": "LEGEND",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 32
+    "estimatedReadTime": 32,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["이흠"],
+        "삽화": ["스페이시 호"]
+      },
+      "en": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Spacey Ho"],
+        "Translator": ["Jennifer An"]
+      },
+      "tetum": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Spacey Ho"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "807_ko-kr",
@@ -237,7 +453,7 @@
     "level": 3,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Lenda kona-ba Seda Mutin",
+      "tet": "Lenda Kona-ba Samea Mutin",
       "ko": "백사전: 중국의 하얀 뱀 전설",
       "en": "The Legend of the White Snake"
     },
@@ -248,9 +464,30 @@
     ],
     "size": 4392985,
     "coverImage": "cover_807_kr.jpg",
-    "category": "LEGEND",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 32
+    "estimatedReadTime": 32,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["이흠"],
+        "삽화": ["스페이시 호"]
+      },
+      "en": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Spacey Ho"],
+        "Translator": ["Jennifer An"]
+      },
+      "tetum": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Spacey Ho"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "807_tetum",
@@ -260,7 +497,7 @@
     "level": 3,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Lenda kona-ba Seda Mutin",
+      "tet": "Lenda Kona-ba Samea Mutin",
       "ko": "백사전: 중국의 하얀 뱀 전설",
       "en": "The Legend of the White Snake"
     },
@@ -271,9 +508,30 @@
     ],
     "size": 4392985,
     "coverImage": "cover_807_tet.jpg",
-    "category": "LEGEND",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 32
+    "estimatedReadTime": 32,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["이흠"],
+        "삽화": ["스페이시 호"]
+      },
+      "en": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Spacey Ho"],
+        "Translator": ["Jennifer An"]
+      },
+      "tetum": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Spacey Ho"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "810_en-ph",
@@ -283,7 +541,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Houyi no Chang’e",
+      "tet": "Desendente sira no Pan sira",
       "ko": "후예와 항아",
       "en": "Houyi and Chang'e"
     },
@@ -294,9 +552,30 @@
     ],
     "size": 5429485,
     "coverImage": "cover_810_en.jpg",
-    "category": "LEGEND",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 26
+    "estimatedReadTime": 26,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["이흠"],
+        "삽화": ["동동"]
+      },
+      "en": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Dong Dong"],
+        "Translator": ["Jennifer An"]
+      },
+      "tetum": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Dong Dong"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "810_ko-kr",
@@ -306,7 +585,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Houyi no Chang’e",
+      "tet": "Desendente sira no Pan sira",
       "ko": "후예와 항아",
       "en": "Houyi and Chang'e"
     },
@@ -317,9 +596,30 @@
     ],
     "size": 5315833,
     "coverImage": "cover_810_kr.jpg",
-    "category": "LEGEND",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 26
+    "estimatedReadTime": 26,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["이흠"],
+        "삽화": ["동동"]
+      },
+      "en": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Dong Dong"],
+        "Translator": ["Jennifer An"]
+      },
+      "tetum": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Dong Dong"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "810_tetum",
@@ -329,7 +629,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Houyi no Chang’e",
+      "tet": "Desendente sira no Pan sira",
       "ko": "후예와 항아",
       "en": "Houyi and Chang'e"
     },
@@ -340,9 +640,30 @@
     ],
     "size": 5315833,
     "coverImage": "cover_810_tet.jpg",
-    "category": "LEGEND",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 26
+    "estimatedReadTime": 26,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["이흠"],
+        "삽화": ["동동"]
+      },
+      "en": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Dong Dong"],
+        "Translator": ["Jennifer An"]
+      },
+      "tetum": {
+        "Writer": ["李鑫"],
+        "Illustrator": ["Dong Dong"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "816_en-ph",
@@ -352,7 +673,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "De’it iha Filipinas: Ita hatene ka lae?",
+      "tet": "So iha Filipina de'it : Ita-boot hatene ka lae ?",
       "ko": "필리핀에 대한 아홉가지 사실",
       "en": "Only in the Philippines: Did you know?"
     },
@@ -363,9 +684,31 @@
     ],
     "size": 6253257,
     "coverImage": "cover_816_en.jpg",
-    "category": "CULTURE",
+    "category": "CULTURE_WORLD",
     "region": "Asia",
-    "estimatedReadTime": 26
+    "estimatedReadTime": 26,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["황티장"],
+        "삽화": ["우이엔 응우이엔"]
+      },
+      "en": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Haryeon Pyeon"],
+        "Proofreader": ["Laura Marie Kingdon"]
+      },
+      "tetum": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "816_ko-kr",
@@ -375,7 +718,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "De’it iha Filipinas: Ita hatene ka lae?",
+      "tet": "So iha Filipina de'it : Ita-boot hatene ka lae ?",
       "ko": "필리핀에 대한 아홉가지 사실",
       "en": "Only in the Philippines: Did you know?"
     },
@@ -386,9 +729,31 @@
     ],
     "size": 6020670,
     "coverImage": "cover_816_kr.jpg",
-    "category": "CULTURE",
+    "category": "CULTURE_WORLD",
     "region": "Asia",
-    "estimatedReadTime": 26
+    "estimatedReadTime": 26,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["황티장"],
+        "삽화": ["우이엔 응우이엔"]
+      },
+      "en": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Haryeon Pyeon"],
+        "Proofreader": ["Laura Marie Kingdon"]
+      },
+      "tetum": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+  "originalCopyright": ""
   },
   {
     "storyId": "816_tetum",
@@ -398,7 +763,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "De’it iha Filipinas: Ita hatene ka lae?",
+      "tet": "So iha Filipina de'it : Ita-boot hatene ka lae ?",
       "ko": "필리핀에 대한 아홉가지 사실",
       "en": "Only in the Philippines: Did you know?"
     },
@@ -409,9 +774,31 @@
     ],
     "size": 6020670,
     "coverImage": "cover_816_tet.jpg",
-    "category": "CULTURE",
+    "category": "CULTURE_WORLD",
     "region": "Asia",
-    "estimatedReadTime": 26
+    "estimatedReadTime": 26,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["황티장"],
+        "삽화": ["우이엔 응우이엔"]
+      },
+      "en": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Haryeon Pyeon"],
+        "Proofreader": ["Laura Marie Kingdon"]
+      },
+      "tetum": {
+        "Writer": ["Hoang Thi Trang"],
+        "Illustrator": ["Uyen Nguyen"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "817_en-ph",
@@ -421,7 +808,7 @@
     "level": 3,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Istória kona-ba ikan Goby Golden",
+      "tet": "Istória kona-ba ikan osan-mean",
       "ko": "금빛 물고기 이야기",
       "en": "The Story of the Golden Goby Fish"
     },
@@ -432,9 +819,29 @@
     ],
     "size": 4861870,
     "coverImage": "cover_817_en.jpg",
-    "category": "FOLKTALE",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 30
+    "estimatedReadTime": 30,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["김주영"],
+        "삽화": ["밀 땀파논"]
+      },
+      "en": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meel Tamphanon"]
+      },
+      "tetum": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meel Tamphanon"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "817_ko-kr",
@@ -444,7 +851,7 @@
     "level": 3,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Istória kona-ba ikan Goby Golden",
+      "tet": "Istória kona-ba ikan osan-mean",
       "ko": "금빛 물고기 이야기",
       "en": "The Story of the Golden Goby Fish"
     },
@@ -455,9 +862,29 @@
     ],
     "size": 4743562,
     "coverImage": "cover_817_kr.jpg",
-    "category": "FOLKTALE",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 30
+    "estimatedReadTime": 30,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["김주영"],
+        "삽화": ["밀 땀파논"]
+      },
+      "en": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meel Tamphanon"]
+      },
+      "tetum": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meel Tamphanon"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "817_tetum",
@@ -467,7 +894,7 @@
     "level": 3,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Istória kona-ba ikan Goby Golden",
+      "tet": "Istória kona-ba ikan osan-mean",
       "ko": "금빛 물고기 이야기",
       "en": "The Story of the Golden Goby Fish"
     },
@@ -478,9 +905,29 @@
     ],
     "size": 4743562,
     "coverImage": "cover_817_tet.jpg",
-    "category": "FOLKTALE",
+    "category": "FOLKTALES_HISTORY",
     "region": "Asia",
-    "estimatedReadTime": 30
+    "estimatedReadTime": 30,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["김주영"],
+        "삽화": ["밀 땀파논"]
+      },
+      "en": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meel Tamphanon"]
+      },
+      "tetum": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meel Tamphanon"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "819_en-ph",
@@ -490,7 +937,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Loi Krathong, Festival Naroman",
+      "tet": "Loi Krathong, Festivál Naroman",
       "ko": "빛의 축제 러이끄라통",
       "en": "Loi Krathong, the Festival of Lights"
     },
@@ -501,9 +948,29 @@
     ],
     "size": 5082017,
     "coverImage": "cover_819_en.jpg",
-    "category": "CULTURE",
+    "category": "CULTURE_WORLD",
     "region": "Asia",
-    "estimatedReadTime": 28
+    "estimatedReadTime": 28,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["김주영"],
+        "삽화": ["메이모 씨우펀"]
+      },
+      "en": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meimo Siwaporn"]
+      },
+      "tetum": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meimo Siwaporn"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "819_ko-kr",
@@ -513,7 +980,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Loi Krathong, Festival Naroman",
+      "tet": "Loi Krathong, Festivál Naroman",
       "ko": "빛의 축제 러이끄라통",
       "en": "Loi Krathong, the Festival of Lights"
     },
@@ -524,9 +991,29 @@
     ],
     "size": 4891603,
     "coverImage": "cover_819_kr.jpg",
-    "category": "CULTURE",
+    "category": "CULTURE_WORLD",
     "region": "Asia",
-    "estimatedReadTime": 28
+    "estimatedReadTime": 28,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["김주영"],
+        "삽화": ["메이모 씨우펀"]
+      },
+      "en": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meimo Siwaporn"]
+      },
+      "tetum": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meimo Siwaporn"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   },
   {
     "storyId": "819_tetum",
@@ -536,7 +1023,7 @@
     "level": 2,
     "maker": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
     "titles": {
-      "tet": "Loi Krathong, Festival Naroman",
+      "tet": "Loi Krathong, Festivál Naroman",
       "ko": "빛의 축제 러이끄라통",
       "en": "Loi Krathong, the Festival of Lights"
     },
@@ -547,8 +1034,28 @@
     ],
     "size": 4891603,
     "coverImage": "cover_819_tet.jpg",
-    "category": "CULTURE",
+    "category": "CULTURE_WORLD",
     "region": "Asia",
-    "estimatedReadTime": 28
+    "estimatedReadTime": 28,
+    "bookVersion": 1,
+    "contributors": {
+      "ko": {
+        "글": ["김주영"],
+        "삽화": ["메이모 씨우펀"]
+      },
+      "en": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meimo Siwaporn"]
+      },
+      "tetum": {
+        "Writer": ["Kim Jooyoung"],
+        "Illustrator": ["Meimo Siwaporn"],
+        "Translator": ["Rosarina"],
+        "Proofreader": ["Jisu An"]
+      }
+    },
+    "sponsors": {},
+    "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
+    "originalCopyright": ""
   }
 ]}

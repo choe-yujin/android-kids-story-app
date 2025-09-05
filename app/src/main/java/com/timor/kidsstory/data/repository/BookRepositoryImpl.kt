@@ -88,7 +88,8 @@ class BookRepositoryImpl @Inject constructor(
                             downloadedBookEntity.level,
                             downloadedBookEntity.category,
                             downloadedBookEntity.coverImagePath, // Pass the full path
-                            imageFolderPath // This is for page images, not cover
+                            imageFolderPath, // This is for page images, not cover
+                            downloadedBookEntity.bookVersion // Pass bookVersion
                         )
                     }
                 }
@@ -132,7 +133,9 @@ class BookRepositoryImpl @Inject constructor(
                     language,
                     selectedBookDto.level, // Pass level from selectedBookDto
                     selectedBookDto.category, // Pass category from selectedBookDto
-                    coverUrl // Pass coverUrl
+                    coverUrl, // Pass coverUrl
+                    null, // imageFolderPath is null for built-in books
+                    selectedBookDto.bookVersion // Pass bookVersion
                 )
             }
         } catch (e: Exception) {
