@@ -1,0 +1,19 @@
+{
+  "latestAppVersionCode": 5,
+  "latestAppVersionName": "1.1.1",
+  "updateMessage": {
+    "ko": "새로운 버전이 출시되었습니다!\n업데이트를 통해 더 나은 경험을 즐기세요.\n\n책이 보이지 않는다면 앱을 완전히 삭제 후 재설치해주세요.",
+    "en": "New version available!\nUpdate now for a better experience.\n\nIf books are not showing, please uninstall and reinstall the app.",
+    "tet": "Versaun foun disponivel ona!\nHalo update atu hetan esperiénsia di'ak liu.\n\nSe livru sira la hatudu, favor hasai aplikasaun tomak no instala fila fali.",
+    "mn": "Шинэ хувилбар гарлаа!\nСайжруулсан туршлага авахын тулд шинэчлээрэй.\n\nХэрэв номууд харагдахгүй байвал апп-ыг бүрэн устгаад дахин суулгана уу."
+  },
+  "updateUrl": "https://github.com/choe-yujin/android-kids-story-app/releases/latest",
+  "isUpdateRequired": false,
+  "minimumSupportedVersion": 3,
+  "releaseNotes": {
+    "ko": "• 버그 수정 및 성능 개선\n• 새로운 동화책 추가",
+    "en": "• Bug fixes and performance improvements\n• New storybooks added",
+    "tet": "• Hasai erro no hadia funsaun\n• Aumenta livru istória foun",
+    "mn": "• Алдаа засвар, гүйцэтгэл сайжруулалт\n• Шинэ үлгэрийн ном нэмэгдсэн"
+  }
+}
