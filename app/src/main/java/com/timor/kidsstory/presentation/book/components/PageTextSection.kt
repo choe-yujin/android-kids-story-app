@@ -112,7 +112,7 @@ fun PageTextSection(
                             filteredContributors.forEach { contributor ->
                                 Text(
                                     text = "${contributor.role}: ${contributor.name}",
-                                    style = MaterialTheme.typography.headlineSmall, // bodySmall.copy(fontSize = 16.sp),
+                                    style = MaterialTheme.typography.bodyMedium,//bodySmall.copy(fontSize = 16.sp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.padding(bottom = 2.dp) // Added bottom padding
