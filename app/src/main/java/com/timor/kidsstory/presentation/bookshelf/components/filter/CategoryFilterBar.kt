@@ -51,44 +51,27 @@ fun CategoryFilterBar(
             exit = shrinkHorizontally()
         ) {
             BoxWithConstraints {
-                val itemWidth = maxWidth / FilterBookCategory.values().size
+                // val itemWidth = maxWidth / FilterBookCategory.values().size // No longer needed
 
                 // Layer 1: Icons
                 Row(
                     modifier = Modifier.padding(start = 8.dp),
-                    verticalAlignment = Alignment.Top
+                    verticalAlignment = Alignment.Top,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp) // Use fixed spacing
                 ) {
                     FilterBookCategory.values().forEach { category ->
                         CategoryIcon(
-                            modifier = Modifier.width(itemWidth),
                             category = category,
                             isSelected = selectedCategory == category,
-                            onCategorySelected = onCategorySelected
+                            onCategorySelected = onCategorySelected,
+                            showTextLabel = selectedCategory == category, // Show text only for selected
+                            textLabel = getCategoryName(LocalContext.current, category) // Pass category name
                         )
                     }
                 }
 
-                // Layer 2: Text
-                if (selectedCategory != null) {
-                    val selectedIndex = selectedCategory.ordinal
-                    val textXOffset = (itemWidth * selectedIndex) + (itemWidth / 2) - (maxWidth / 2) + 8.dp
-
-                    Box(
-                        contentAlignment = Alignment.TopCenter,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .offset(x = textXOffset)
-                    ) {
-                        Text(
-                            text = getCategoryName(LocalContext.current, selectedCategory),
-                            fontSize = 12.sp,
-                            color = Color.Black,
-                            maxLines = 1,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 38.dp) // Position text below icon
-                        )
-                    }
-                }
+                // Layer 2: Text (Moved inside CategoryIcon)
+                // if (selectedCategory != null) { ... } // Removed from here
             }
         }
     }
@@ -100,7 +83,9 @@ fun CategoryIcon(
     modifier: Modifier = Modifier,
     category: FilterBookCategory,
     isSelected: Boolean = false,
-    onCategorySelected: (FilterBookCategory) -> Unit
+    onCategorySelected: (FilterBookCategory) -> Unit,
+    showTextLabel: Boolean = false, // New parameter
+    textLabel: String? = null // New parameter
 ) {
     val categoryBackgroundColor = when (category) {
         FilterBookCategory.FOLKTALES_HISTORY -> Color(0xFFE4E9D6)
@@ -108,7 +93,7 @@ fun CategoryIcon(
         FilterBookCategory.DAILY_LIFE -> Color(0xFFD9EEE7)
         FilterBookCategory.ENVIRONMENT -> Color(0xFFE8F5E9)
         FilterBookCategory.SCIENCE_NATURE -> Color(0xFFE1F5FE)
-        FilterBookCategory.ADVENTURE_FANTASY -> Color(0xFFFFF3E0)
+        FilterBookCategory.ADVENTURE_FANTASY -> Color(0xFFFF9800)
         FilterBookCategory.SOCIAL_EMOTIONAL -> Color(0xFFF3E5F5)
     }
 
@@ -155,6 +140,17 @@ fun CategoryIcon(
                 contentDescription = category.displayName,
                 tint = Color.Unspecified,
                 modifier = Modifier.size(20.dp)
+            )
+        }
+
+        if (showTextLabel && textLabel != null) {
+            Text(
+                text = textLabel,
+                fontSize = 12.sp,
+                color = Color.Black,
+                maxLines = 1,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 4.dp) // Position text below icon with a small padding
             )
         }
     }
