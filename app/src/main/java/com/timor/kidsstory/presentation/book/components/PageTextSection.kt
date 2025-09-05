@@ -206,7 +206,7 @@ fun PageTextSection(
         }
 
         // TTS 버튼
-        if (pageState.currentLanguageCode != "tet") {
+        if (pageState.currentLanguageCode != "tetum") {
             val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
             val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
 
