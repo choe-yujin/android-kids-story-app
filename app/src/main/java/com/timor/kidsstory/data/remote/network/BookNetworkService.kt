@@ -1,5 +1,6 @@
 package com.timor.kidsstory.data.remote.network
 
+import android.util.Log
 import com.timor.kidsstory.data.remote.model.GithubMetadata
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -36,13 +37,20 @@ class BookNetworkService @Inject constructor(
      * @return 메타데이터 객체
      */
     suspend fun getMetadata(): GithubMetadata {
-        val response = httpClient.get("https://raw.githubusercontent.com/choe-yujin/storybook-assets/master/metadata.json")
+        return try {
+            val response = httpClient.get("https://raw.githubusercontent.com/choe-yujin/storybook-assets/master/metadata.json")
+            if (!response.status.isSuccess()) {
+                Log.e("BookNetworkService", "메타데이터 가져오기 실패: ${response.status.value} ${response.status.description}")
+                throw Exception("메타데이터 가져오기 실패: ${response.status.value} ${response.status.description}")
+            }
 
-        // text/plain으로 받은 응답을 직접 문자열로 변환하고
-        val jsonString = response.bodyAsText()
-
-        // 그 다음 문자열을 JSON으로 파싱
-        return Json.decodeFromString<GithubMetadata>(jsonString)
+            val jsonString = response.bodyAsText()
+            Log.d("BookNetworkService", "메타데이터 JSON 수신: ${jsonString.take(200)}...") // Log first 200 chars
+            Json.decodeFromString<GithubMetadata>(jsonString)
+        } catch (e: Exception) {
+            Log.e("BookNetworkService", "GitHub에서 메타데이터 가져오는 중 오류 발생: ${e.message}", e)
+            throw e // Re-throw to be caught by use case
+        }
     }
 
     /**

@@ -111,8 +111,8 @@ fun PageTextSection(
                         Column(horizontalAlignment = Alignment.Start) {
                             filteredContributors.forEach { contributor ->
                                 Text(
-                                    text = "${contributor.role}: ${contributor.name}",
-                                    style = MaterialTheme.typography.bodyMedium,//bodySmall.copy(fontSize = 16.sp),
+                                    text = "${contributor.role} | ${contributor.name}",
+                                    style = MaterialTheme.typography.titleSmall,//bodySmall.copy(fontSize = 16.sp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.padding(bottom = 2.dp) // Added bottom padding
@@ -132,7 +132,7 @@ fun PageTextSection(
                         }
                         Text(
                             text = "$sponsorsLabel${sponsors.joinToString()}",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.align(Alignment.Start) // Changed to Alignment.Start
@@ -238,13 +238,12 @@ fun PageTextSection(
             if (pageState.pageNumber == 1) {
                 Column(
                     modifier = Modifier
-                        .weight(1f) // Take up available space
-                        .padding(start = responsivePadding), // Add start padding
+                        .weight(1f), // Take up available space
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
                         text = "${pageState.title} ${pageState.copyright}",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 6.sp),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Start,
@@ -253,7 +252,7 @@ fun PageTextSection(
                     pageState.originalCopyright?.let { original ->
                         Text(
                             text = original,
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 6.sp),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             textAlign = TextAlign.Start,

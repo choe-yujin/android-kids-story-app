@@ -94,10 +94,10 @@ class AppVersionRepositoryImpl @Inject constructor(
                 @Suppress("DEPRECATION")
                 context.packageManager.getPackageInfo(context.packageName, 0)
             }
-            packageInfo.versionName ?: "1.1.0"
+            packageInfo.versionName ?: "2.0.0"
         } catch (e: PackageManager.NameNotFoundException) {
             Log.e("AppVersionRepository", "Error getting current version name", e)
-            "1.1.0"
+            "2.0.0"
         }
     }
 

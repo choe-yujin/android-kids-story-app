@@ -1,5 +1,6 @@
 package com.timor.kidsstory.domain.usecase.book
 
+import android.util.Log
 import com.timor.kidsstory.data.remote.model.RemoteBook
 import com.timor.kidsstory.data.remote.network.BookNetworkService
 import javax.inject.Inject
@@ -29,6 +30,7 @@ class GetRemoteBooksUseCase @Inject constructor(
 
             Result.success(filteredBooks)
         } catch (e: Exception) {
+            Log.e("GetRemoteBooksUseCase", "GetRemoteBooksUseCase에서 오류 발생: ${e.message}", e)
             Result.failure(e)
         }
     }
