@@ -66,13 +66,13 @@ fun AboutCardContent(scaleFactor: Float) {
                             color = AppColors.neutral800
                         )
                         Text(
-                            text = " 1.1.0",
+                            text = " 2.0.0",
                             style = ResponsiveTextUtils.getSettingVerySmallTextStyle(),
                             color = AppColors.neutral800
                         )
                     }
                     Text(
-                        text = "25-08-05",
+                        text = "25-09-06",
                         style = ResponsiveTextUtils.getSettingVerySmallTextStyle(),
                         color = AppColors.neutral600
                     )
@@ -149,7 +149,7 @@ fun SmallAboutCardContent(scaleFactor: Float) {
                         color = AppColors.neutral800
                     )
                     Text(
-                        text = ": 1.1.0",
+                        text = ": 2.0.0",
                         style = ResponsiveTextUtils.getSettingVerySmallTextStyle().copy(
                             fontSize = ResponsiveTextUtils.getSettingVerySmallTextStyle().fontSize * 0.65f
                         ),
@@ -235,7 +235,7 @@ fun VerySmallAboutCardContent(scaleFactor: Float) {
                         color = AppColors.neutral800
                     )
                     Text(
-                        text = ": 1.1.0",
+                        text = ": 2.0.0",
                         style = ResponsiveTextUtils.getSettingVerySmallTextStyle().copy(
                             fontSize = ResponsiveTextUtils.getSettingVerySmallTextStyle().fontSize * 0.55f
                         ),

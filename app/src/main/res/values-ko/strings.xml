@@ -22,12 +22,12 @@
     <string name="category_adventure">모험</string>
     
     <!-- New Category Groups -->
-    <string name="category_folktales_history">민담과 역사</string>
-    <string name="category_culture_world">문화와 세계</string>
-    <string name="category_daily_life">일상생활</string>
-    <string name="category_science_nature">과학과 자연</string>
-    <string name="category_social_emotional">사회정서</string>
-    <string name="category_adventure_fantasy">모험과 판타지</string>
+    <string name="category_folktales_history">민담/역사</string>
+    <string name="category_culture_world">문화/세계</string>
+    <string name="category_daily_life">일상/생활</string>
+    <string name="category_science_nature">과학/자연</string>
+    <string name="category_social_emotional">사회/정서</string>
+    <string name="category_adventure_fantasy">모험/판타지</string>
 
     <!-- Reading Levels -->
     <string name="level_1">첫걸음</string>
@@ -62,7 +62,8 @@
     <string name="info_dev_yujin">개발/최유진</string>
     <string name="info_dev_jaeyeon">개발/김재연</string>
     <string name="info_des_jinsung">디자인/곽진성</string>
-    <string name="info_des_yuni">기획/이시윤</string>
+    <string name="info_des_yuni">교육/이시윤</string>
+    <string name="info_cm_jisu">사업운영/안지수</string>
     <string name="info_about">정보</string>
     <string name="info_version">버전</string>
     <string name="info_license">라이선스</string>

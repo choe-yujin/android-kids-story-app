@@ -24,8 +24,8 @@ android {
         applicationId = "com.timor.kidsstory"
         minSdk = 21
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.1.0"  // 버전 업데이트
+        versionCode = 5
+        versionName = "2.0.0"  // 버전 업데이트
 
         ndk { // ABI 최적화(APK 용량 줄이기)
             abiFilters.add("arm64-v8a")

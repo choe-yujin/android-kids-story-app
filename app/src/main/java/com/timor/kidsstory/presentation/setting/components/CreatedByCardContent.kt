@@ -79,6 +79,12 @@ fun CreatedByCardContent(
                 hasEmail = false,
                 onEmailClick = {}
             )
+            DeveloperRow(
+                roleResId = R.string.info_cm_jisu,
+                flagResId = R.drawable.flag_ko,
+                hasEmail = false,
+                onEmailClick = {}
+            )
         }
     }
 }
@@ -130,6 +136,12 @@ fun SmallCreatedByCardContent(
                 hasEmail = false,
                 onEmailClick = {}
             )
+            SmallDeveloperRow(
+                roleResId = R.string.info_cm_jisu,
+                flagResId = R.drawable.flag_ko,
+                hasEmail = false,
+                onEmailClick = {}
+            )
         }
     }
 }
@@ -177,6 +189,12 @@ fun VerySmallCreatedByCardContent(
             )
             VerySmallDeveloperRow(
                 roleResId = R.string.info_des_yuni,
+                flagResId = R.drawable.flag_ko,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_cm_jisu,
                 flagResId = R.drawable.flag_ko,
                 hasEmail = false,
                 onEmailClick = {}
