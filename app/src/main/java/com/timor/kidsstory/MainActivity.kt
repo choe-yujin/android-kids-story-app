@@ -13,6 +13,11 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.orhanobut.logger.Logger
 import com.timor.kidsstory.di.UseCaseEntryPoint
+import com.timor.kidsstory.domain.model.AppVersionInfo
+import com.timor.kidsstory.presentation.bookshelf.components.AppUpdateDialog
+import androidx.compose.runtime.*
+import android.util.Log
+import kotlinx.coroutines.delay
 import com.timor.kidsstory.domain.util.LocaleHelper.getSystemLanguageCode
 import com.timor.kidsstory.domain.util.LocaleHelper.updateLanguage
 import com.timor.kidsstory.presentation.navigation.NavGraph
@@ -26,6 +31,7 @@ import kotlinx.coroutines.launch
  * - 전체화면 및 Edge-to-edge 화면 설정
  * - 상태바 숨김 처리
  * - 앱의 메인 네비게이션 그래프 설정
+ * - 앱 업데이트 체크
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -42,11 +48,39 @@ class MainActivity : ComponentActivity() {
         applyLanguageSetting {
             setContent {
                 KidsStoryTheme {
+                    var updateVersionInfo by remember { mutableStateOf<AppVersionInfo?>(null) }
+                    var showUpdateDialog by remember { mutableStateOf(false) }
+                    
+                    // 앱 시작 시 업데이트 체크
+                    LaunchedEffect(Unit) {
+                        checkForAppUpdates { versionInfo ->
+                            updateVersionInfo = versionInfo
+                            showUpdateDialog = versionInfo != null
+                        }
+                    }
+                    
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
                         NavGraph() // 내비게이션 그래프 설정
+                        
+                        // 업데이트 다이얼로그 표시
+                        if (showUpdateDialog && updateVersionInfo != null) {
+                            AppUpdateDialog(
+                                versionInfo = updateVersionInfo!!,
+                                onDismiss = {
+                                    showUpdateDialog = false
+                                    updateVersionInfo = null
+                                },
+                                onPostpone = {
+                                    // "나중에" 버튼 클릭 시 3일간 연기
+                                    handlePostponeUpdate(updateVersionInfo!!.latestVersionCode)
+                                    showUpdateDialog = false
+                                    updateVersionInfo = null
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -75,6 +109,63 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * 앱 업데이트 체크
+     */
+    private fun checkForAppUpdates(onUpdateFound: (AppVersionInfo?) -> Unit) {
+        val entryPoint = EntryPointAccessors.fromApplication(
+            applicationContext, 
+            UseCaseEntryPoint::class.java
+        )
+        val checkAppVersionUseCase = entryPoint.getCheckAppVersionUseCase()
+
+        lifecycleScope.launch {
+            try {
+                // 앱 시작 후 잠시 대기 (UI 로딩 완료 후 체크)
+                delay(2000)
+                
+                checkAppVersionUseCase().fold(
+                    onSuccess = { versionInfo ->
+                        if (versionInfo != null) {
+                            Log.d("MainActivity", "Update available: ${versionInfo.latestVersionName}")
+                            onUpdateFound(versionInfo)
+                        } else {
+                            Log.d("MainActivity", "App is up to date or update check postponed")
+                            onUpdateFound(null)
+                        }
+                    },
+                    onFailure = { error ->
+                        Log.w("MainActivity", "Update check failed (ignored)", error)
+                        onUpdateFound(null) // 네트워크 오류 등은 무시
+                    }
+                )
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Update check exception (ignored)", e)
+                onUpdateFound(null)
+            }
+        }
+    }
+
+    /**
+     * "나중에" 버튼 클릭 시 처리
+     */
+    private fun handlePostponeUpdate(versionCode: Int) {
+        val entryPoint = EntryPointAccessors.fromApplication(
+            applicationContext, 
+            UseCaseEntryPoint::class.java
+        )
+        val postponeUpdateUseCase = entryPoint.getPostponeUpdateUseCase()
+        
+        lifecycleScope.launch {
+            try {
+                // 3일간 연기 (72시간)
+                postponeUpdateUseCase(versionCode, postponeHours = 72L)
+                Log.d("MainActivity", "Update postponed for 3 days for version $versionCode")
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Error postponing update", e)
+            }
+        }
+    }
 
     // 언어 설정 적용
     private fun applyLanguageSetting(onLanguageApplied: () -> Unit) {

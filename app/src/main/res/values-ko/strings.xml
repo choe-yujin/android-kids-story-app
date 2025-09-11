@@ -70,4 +70,13 @@
 
     <!-- Reading Screen -->
     <string name="reading_scroll_hint">스크롤하여 더 읽기</string>
+
+    <!-- Update Dialog -->
+    <string name="update_dialog_title_optional">업데이트 알림</string>
+    <string name="update_dialog_title_required">필수 업데이트</string>
+    <string name="update_dialog_new_version">새 버전: %s</string>
+    <string name="update_dialog_release_notes">변경사항:</string>
+    <string name="update_dialog_button_later">나중에</string>
+    <string name="update_dialog_button_update">업데이트</string>
+    <string name="update_dialog_button_update_now">지금 업데이트</string>
 </resources>

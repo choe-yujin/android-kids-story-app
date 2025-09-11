@@ -70,4 +70,13 @@
 
     <!-- Reading Screen -->
     <string name="reading_scroll_hint">Scroll to read more</string>
+
+    <!-- Update Dialog -->
+    <string name="update_dialog_title_optional">Update Available</string>
+    <string name="update_dialog_title_required">Required Update</string>
+    <string name="update_dialog_new_version">New version: %s</string>
+    <string name="update_dialog_release_notes">What\'s New:</string>
+    <string name="update_dialog_button_later">Later</string>
+    <string name="update_dialog_button_update">Update</string>
+    <string name="update_dialog_button_update_now">Update Now</string>
 </resources>

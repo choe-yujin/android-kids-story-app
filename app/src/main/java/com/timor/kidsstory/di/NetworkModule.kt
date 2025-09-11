@@ -1,6 +1,8 @@
 package com.timor.kidsstory.di
 
 import com.timor.kidsstory.data.remote.network.BookNetworkService
+import com.timor.kidsstory.data.remote.network.AppVersionNetworkService
+import com.timor.kidsstory.data.remote.network.AppVersionNetworkServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,5 +45,11 @@ object NetworkModule {
     @Singleton
     fun provideBookNetworkService(httpClient: HttpClient): BookNetworkService {
         return BookNetworkService(httpClient)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppVersionNetworkService(httpClient: HttpClient): AppVersionNetworkService {
+        return AppVersionNetworkServiceImpl(httpClient)
     }
 }

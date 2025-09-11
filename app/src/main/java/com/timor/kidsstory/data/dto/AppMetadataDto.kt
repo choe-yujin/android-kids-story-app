@@ -10,7 +10,7 @@ data class AppMetadataDto(
     val latestAppVersionCode: Int,
     val latestAppVersionName: String,
     val updateMessage: Map<String, String>,
-    val updateUrl: String,
+    val updateUrl: String = "market://details?id=com.timor.kidsstory", // 기본값 설정
     val isUpdateRequired: Boolean = false,
     val minimumSupportedVersion: Int? = null,
     val releaseNotes: Map<String, String>? = null
