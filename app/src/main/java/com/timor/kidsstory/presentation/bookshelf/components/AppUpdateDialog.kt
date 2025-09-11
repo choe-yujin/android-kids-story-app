@@ -2,14 +2,18 @@ package com.timor.kidsstory.presentation.bookshelf.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -18,16 +22,45 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
+import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.AppVersionInfo
+import com.timor.kidsstory.domain.util.LanguageManager
 import com.timor.kidsstory.ui.theme.*
 
 @Composable
 fun AppUpdateDialog(
     versionInfo: AppVersionInfo,
     onDismiss: () -> Unit,
+    onPostpone: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    
+    // 현재 언어 코드 로깅
+    val currentLanguage = LanguageManager.getCurrentLanguageCode()
+    Log.d("AppUpdateDialog", "Current language code: $currentLanguage")
+    Log.d("AppUpdateDialog", "Update message: ${versionInfo.updateMessage}")
+    Log.d("AppUpdateDialog", "Release notes: ${versionInfo.releaseNotes}")
+    
+    // 화면 크기에 따른 동적 크기 설정 - 가로 길게, 세로 짧게
+    val screenWidthDp = configuration.screenWidthDp
+    val screenHeightDp = configuration.screenHeightDp
+    
+    // 요청대로 가로 길게, 세로 짧게
+    val dialogWidthFraction = when {
+        screenWidthDp >= 1000 -> 0.9f   // 대형 태블릿 - 90%
+        screenWidthDp >= 800 -> 0.95f   // 중형 태블릿 - 95%
+        screenWidthDp >= 600 -> 0.98f   // 소형 태블릿 - 98%
+        else -> 0.99f                   // 휴대폰 - 99% (최대한 넓게)
+    }
+    
+    val dialogHeightFraction = when {
+        screenHeightDp >= 800 -> 0.5f   // 높은 화면 - 50%
+        screenHeightDp >= 600 -> 0.6f   // 중간 화면 - 60%
+        else -> 0.7f                    // 낮은 화면 - 70%
+    }
 
     Dialog(
         onDismissRequest = if (versionInfo.isUpdateRequired) { {} } else onDismiss,
@@ -38,110 +71,111 @@ fun AppUpdateDialog(
     ) {
         Box(
             modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(AppColors.neutralWhite)
+                .fillMaxWidth(dialogWidthFraction)
+                .fillMaxHeight(dialogHeightFraction)
+                .clip(RoundedCornerShape(16.dp))
+                .background(AppColors.neutralWhite),
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // 아이콘 또는 이미지 영역
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(AppColors.primary200),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "🎉",
-                        fontSize = 32.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 제목
+                // 상단: 제목만 (버전 정보 제거)
                 Text(
-                    text = if (versionInfo.isUpdateRequired) "필수 업데이트" else "업데이트 알림",
-                    style = Typography.headlineSmall.copy(
+                    text = if (versionInfo.isUpdateRequired) 
+                        stringResource(R.string.update_dialog_title_required)
+                        else stringResource(R.string.update_dialog_title_optional),
+                    style = Typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold,
-                        color = AppColors.neutral900
+                        color = AppColors.neutral900,
+                        fontSize = 22.sp
                     ),
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // 버전 정보
-                Text(
-                    text = "새 버전: ${versionInfo.latestVersionName}",
-                    style = Typography.bodyLarge.copy(
-                        color = AppColors.primary700,
-                        fontWeight = FontWeight.Medium
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 업데이트 메시지
+                // 중앙: 메시지 카드 - 더 긴 공간 할당
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f), // 남은 공간 최대 활용
                     shape = RoundedCornerShape(12.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFF5F5F5)
-                    )
+                        containerColor = Color(0xFFF8F9FA)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(20.dp)
+                            .verticalScroll(rememberScrollState()) // 내부 스크롤
                     ) {
+                        // 업데이트 메시지 - 더 큰 폰트, 더 많은 공간
                         Text(
                             text = versionInfo.updateMessage,
-                            style = Typography.bodyMedium.copy(
-                                color = AppColors.neutral500,
-                                lineHeight = 24.sp
+                            style = Typography.bodyLarge.copy(
+                                color = AppColors.neutral700,
+                                lineHeight = 24.sp,
+                                fontSize = 16.sp // 크기 증가
                             ),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Start
                         )
 
-                        // 릴리즈 노트가 있으면 표시
+                        // 릴리즈 노트 - 더 많은 공간
                         versionInfo.releaseNotes?.let { notes ->
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Divider(color = Color.LightGray, thickness = 0.5.dp)
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(18.dp))
+                            HorizontalDivider(
+                                color = Color(0xFFE5E7EB), 
+                                thickness = 1.dp
+                            )
+                            Spacer(modifier = Modifier.height(18.dp))
                             
+                            // "변경사항" 제목
                             Text(
-                                text = "변경사항:",
-                                style = Typography.bodyMedium.copy(
+                                text = stringResource(R.string.update_dialog_release_notes),
+                                style = Typography.bodyLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    color = AppColors.neutral900
+                                    color = AppColors.neutral900,
+                                    fontSize = 16.sp
                                 )
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
                             Text(
                                 text = notes,
-                                style = Typography.bodySmall.copy(
-                                    color = AppColors.neutral500,
-                                    lineHeight = 20.sp
+                                style = Typography.bodyMedium.copy(
+                                    color = AppColors.neutral600,
+                                    lineHeight = 22.sp,
+                                    fontSize = 15.sp // 크기 증가
                                 )
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // 버튼 섹션
+                // 하단: 버튼 영역 - 한 줄에 2개
                 if (versionInfo.isUpdateRequired) {
-                    // 필수 업데이트 - 업데이트 버튼만
+                    // 필수 업데이트 - 업데이트 버튼만 전체 너비
                     Button(
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(versionInfo.downloadUrl))
-                            context.startActivity(intent)
+                            Log.d("AppUpdateDialog", "Update button clicked")
+                            try {
+                                val playStoreIntent = Intent(Intent.ACTION_VIEW).apply {
+                                    data = Uri.parse("market://details?id=${context.packageName}")
+                                    setPackage("com.android.vending")
+                                }
+                                context.startActivity(playStoreIntent)
+                            } catch (e: Exception) {
+                                Log.w("AppUpdateDialog", "PlayStore app not found, opening in browser", e)
+                                val webIntent = Intent(Intent.ACTION_VIEW, 
+                                    Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+                                context.startActivity(webIntent)
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -152,39 +186,36 @@ fun AppUpdateDialog(
                         )
                     ) {
                         Text(
-                            text = "지금 업데이트",
-                            style = Typography.bodyLarge.copy(
+                            text = stringResource(R.string.update_dialog_button_update_now),
+                            style = Typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color.White,
+                                fontSize = 16.sp
                             )
                         )
                     }
                 } else {
-                    // 선택적 업데이트 - 나중에 + 업데이트 버튼
+                    // 선택적 업데이트 - 한 줄에 2개 버튼
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        OutlinedButton(
-                            onClick = onDismiss,
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(48.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = AppColors.neutral500
-                            )
-                        ) {
-                            Text(
-                                text = "나중에",
-                                style = Typography.bodyLarge
-                            )
-                        }
-
+                        // 업데이트 버튼 (주요 액션)
                         Button(
                             onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(versionInfo.downloadUrl))
-                                context.startActivity(intent)
+                                Log.d("AppUpdateDialog", "Update button clicked")
+                                try {
+                                    val playStoreIntent = Intent(Intent.ACTION_VIEW).apply {
+                                        data = Uri.parse("market://details?id=${context.packageName}")
+                                        setPackage("com.android.vending")
+                                    }
+                                    context.startActivity(playStoreIntent)
+                                } catch (e: Exception) {
+                                    Log.w("AppUpdateDialog", "PlayStore app not found, opening in browser", e)
+                                    val webIntent = Intent(Intent.ACTION_VIEW, 
+                                        Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+                                    context.startActivity(webIntent)
+                                }
                                 onDismiss()
                             },
                             modifier = Modifier
@@ -196,10 +227,38 @@ fun AppUpdateDialog(
                             )
                         ) {
                             Text(
-                                text = "업데이트",
-                                style = Typography.bodyLarge.copy(
+                                text = stringResource(R.string.update_dialog_button_update),
+                                style = Typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = Color.White,
+                                    fontSize = 16.sp
+                                )
+                            )
+                        }
+
+                        // 나중에 버튼 (보조 액션)
+                        OutlinedButton(
+                            onClick = {
+                                Log.d("AppUpdateDialog", "Later button clicked")
+                                onPostpone()
+                                onDismiss()
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = AppColors.neutral600
+                            ),
+                            border = ButtonDefaults.outlinedButtonBorder.copy(
+                                width = 1.5.dp
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.update_dialog_button_later),
+                                style = Typography.bodyMedium.copy(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
                                 )
                             )
                         }

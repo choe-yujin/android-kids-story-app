@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TaleTail</string>
+
+    <!-- Bookcover -->
+    <string name="bookcover_download">Татаж авах</string>
+    <string name="bookcover_downloading">Татаж байна…</string>
+    <string name="bookcover_retry">Дахин оролдох</string>
+    <string name="bookcover_update">Шинэчлэх</string>
+
+    <!-- Bookshelf Filter Bar -->
+    <string name="filter_all">Бүгд</string>
+    <string name="filter_stage">Түвшин</string>
+    <string name="filter_category">Ангилал</string>
+
+    <!-- Category Names -->
+    <string name="category_legend">Домог</string>
+    <string name="category_folktale">Ардын үлгэр</string>
+    <string name="category_culture">Соёл</string>
+    <string name="category_life">Амьдрал</string>
+    <string name="category_environment">Байгаль орчин</string>
+    <string name="category_science">Шинжлэх ухаан</string>
+    <string name="category_adventure">Адал явдал</string>
+    
+    <!-- New Category Groups -->
+    <string name="category_folktales_history">Ардын үлгэр/Түүх</string>
+    <string name="category_culture_world">Соёл/Дэлхий</string>
+    <string name="category_daily_life">Өдөр тутмын амьдрал</string>
+    <string name="category_science_nature">Шинжлэх ухаан/Байгаль</string>
+    <string name="category_social_emotional">Нийгэм/Сэтгэл хөдлөл</string>
+    <string name="category_adventure_fantasy">Адал явдал/Уран зөгнөл</string>
+
+    <!-- Reading Levels -->
+    <string name="level_1">Эхний алхам</string>
+    <string name="level_2">Анхан шат</string>
+    <string name="level_3">Дунд шат</string>
+    <string name="level_4">Итгэлтэй уншигч</string>
+    <string name="level_5">Ахисан шат</string>
+    
+    <!-- Age Ranges -->
+    <string name="age_3_5">3-5 нас</string>
+    <string name="age_5_7">5-7 нас</string>
+    <string name="age_7_9">7-9 нас</string>
+    <string name="age_9_11">9-11 нас</string>
+    <string name="age_11_plus">11+ нас</string>
+
+    <!-- Empty State Messages -->
+    <string name="empty_bookshelf_title">Ном байхгүй байна</string>
+    <string name="empty_bookshelf_message">Шинэ ном татахын тулд интернетэд холбогдоно уу</string>
+    <string name="empty_filter_title">Ном олдсонгүй</string>
+    <string name="empty_filter_message">Шүүлтүүрийн тохиргоог өөрчилж үзнэ үү</string>
+    <string name="empty_downloading">Шинэ ном хайж байна…</string>
+
+    <!-- Info Screen -->
+    <string name="info_setting">Тохиргоо</string>
+    <string name="info_music">Хөгжим</string>
+    <string name="info_sound_effect">Дуу чимээ</string>
+    <string name="info_music_volume">Хөгжмийн дуу</string>
+    <string name="info_sound_volume">Дуу чимээний түвшин</string>
+    <string name="info_off">Унтраах</string>
+    <string name="info_on">Асаах</string>
+    <string name="info_created_by">Бүтээгч</string>
+    <string name="info_dev_yujin">Хөгжүүлэгч/Южин Чой</string>
+    <string name="info_dev_jaeyeon">Хөгжүүлэгч/Жэёон Ким</string>
+    <string name="info_des_jinsung">Дизайн/Жинсүң Куак</string>
+    <string name="info_des_yuni">Боловсрол/Сиюн Ли</string>
+    <string name="info_cm_jisu">Менежмент/Жису Ан</string>
+    <string name="info_about">Тухай</string>
+    <string name="info_version">Хувилбар</string>
+    <string name="info_license">Лиценз</string>
+
+    <!-- Reading Screen -->
+    <string name="reading_scroll_hint">Цааш унших бол гүйлгэнэ үү</string>
+
+    <!-- Update Dialog -->
+    <string name="update_dialog_title_optional">Шинэчлэлт боломжтой</string>
+    <string name="update_dialog_title_required">Заавал шинэчлэх</string>
+    <string name="update_dialog_new_version">Шинэ хувилбар: %s</string>
+    <string name="update_dialog_release_notes">Шинээр нэмэгдсэн:</string>
+    <string name="update_dialog_button_later">Дараа</string>
+    <string name="update_dialog_button_update">Шинэчлэх</string>
+    <string name="update_dialog_button_update_now">Одоо шинэчлэх</string>
+</resources>
