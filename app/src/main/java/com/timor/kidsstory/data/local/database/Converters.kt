@@ -1,6 +1,8 @@
 package com.timor.kidsstory.data.local.database
 
 import androidx.room.TypeConverter
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 // Map과 List를 Room에서 사용하기 위한 TypeConverter
