@@ -8,6 +8,7 @@ import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 import com.timor.kidsstory.di.UseCaseEntryPoint
+import com.timor.kidsstory.domain.manager.UserManager
 import com.timor.kidsstory.domain.util.LocaleHelper.updateLanguage
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.HiltAndroidApp
@@ -21,6 +22,7 @@ import javax.inject.Inject
  * - Hilt를 사용한 의존성 주입 설정
  * - 앱 시작 시점에 필요한 초기화 작업 수행
  * - WorkManager 초기화
+ * - UserManager 초기화 (확장 가능한 사용자 시스템)
  */
 @HiltAndroidApp
 class TaleTailApplication : Application(), Configuration.Provider {
@@ -29,6 +31,9 @@ class TaleTailApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    // UserManager 주입
+    @Inject
+    lateinit var userManager: UserManager
 
     // Configuration.Provider 인터페이스 구현
     override val workManagerConfiguration: Configuration
@@ -40,8 +45,8 @@ class TaleTailApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         initLogger()
+        initializeUserSystem()
 
-//
 //        val entryPoint = EntryPointAccessors.fromApplication(this, UseCaseEntryPoint::class.java)
 //        val loadLanguageUseCase = entryPoint.getUserPreferenceUseCase()
 //
@@ -53,6 +58,21 @@ class TaleTailApplication : Application(), Configuration.Provider {
 //        }
     }
 
+    /**
+     * 사용자 시스템 초기화
+     * - 현재는 default_user 생성/로드
+     * - 향후 회원 시스템 도입 시 확장 가능
+     */
+    private fun initializeUserSystem() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                userManager.initializeUser()
+                Logger.d("사용자 시스템 초기화 완료")
+            } catch (e: Exception) {
+                Logger.e("사용자 시스템 초기화 실패: ${e.message}")
+            }
+        }
+    }
 
     // Logger 초기화
     private fun initLogger() {

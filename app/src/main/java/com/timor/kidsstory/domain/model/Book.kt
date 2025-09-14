@@ -17,9 +17,17 @@ import com.timor.kidsstory.domain.mapper.CategoryMapper
  * @property originalCopyright 원 저작권 정보
  * @property pages 책의 모든 페이지 정보
  * @property isDownloaded 다운로드 여부
- * @property isBookmarked 즐겨찾기 여부
  * @property downloadProgress 다운로드 진행 상태
  * @property bookVersion 책 버전
+ * 
+ * // 사용자 상호작용 관련 필드들 (Repository에서 UserBookInteraction과 조인하여 설정)
+ * @property isBookmarked 북마크 여부
+ * @property currentPage 현재 읽고 있는 페이지
+ * @property isCompleted 완독 여부
+ * @property readCount 읽은 횟수
+ * @property lastReadAt 마지막 읽은 날짜
+ * @property unlockStep 잠금 해제 단계 (메타데이터에서 가져옴)
+ * @property tags 태그 목록 (메타데이터에서 가져옴)
  */
 data class Book(
     val storyId: String,
@@ -34,9 +42,17 @@ data class Book(
     val originalCopyright: String? = null,
     val pages: List<Page>,
     val isDownloaded: Boolean = true,
-    val isBookmarked: Boolean = false,
     val downloadProgress: DownloadProgress = DownloadProgress(),
-    val bookVersion: Int = 1
+    val bookVersion: Int = 1,
+    
+    // 사용자 상호작용 관련 필드들 (기본값 제공)
+    val isBookmarked: Boolean = false,
+    val currentPage: Int = 0,
+    val isCompleted: Boolean = false,
+    val readCount: Int = 0,
+    val lastReadAt: Long? = null,
+    val unlockStep: Int = 1, // 메타데이터에서 가져옴
+    val tags: List<String> = emptyList() // 메타데이터에서 가져옴
 ) {
     // 새로운 Category enum으로 변환하는 속성
     val categoryEnum: Category
@@ -53,4 +69,29 @@ data class Book(
     // 언어 코드 추출
     val languageCode: String
         get() = storyId.split("_").getOrNull(1)?.split("-")?.firstOrNull() ?: "ko"
+    
+    // 읽기 상태 계산
+    val readingStatus: ReadingStatus
+        get() = when {
+            isCompleted -> ReadingStatus.COMPLETED
+            currentPage > 0 -> ReadingStatus.READING  
+            else -> ReadingStatus.UNREAD
+        }
+    
+    // 읽기 진행률 계산 (0.0 ~ 1.0)
+    val readingProgress: Float
+        get() = if (pageCount > 0) currentPage.toFloat() / pageCount.toFloat() else 0f
+    
+    // 잠금 여부 계산 (Repository에서 잠금 해제 로직과 함께 사용)
+    val isLocked: Boolean
+        get() = false // 기본값, Repository에서 실제 잠금 로직 적용
+}
+
+/**
+ * 책의 읽기 상태를 나타내는 enum
+ */
+enum class ReadingStatus {
+    UNREAD,     // 안 읽음
+    READING,    // 읽는 중
+    COMPLETED   // 다 읽음
 }
