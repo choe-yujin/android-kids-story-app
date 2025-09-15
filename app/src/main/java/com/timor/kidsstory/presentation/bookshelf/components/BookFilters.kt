@@ -66,17 +66,10 @@ fun CategoryFilter(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = category.description,
+                            text = category.displayName,
                             fontSize = 14.sp,
                             fontWeight = if (selectedCategory == category) FontWeight.Bold else FontWeight.Normal
                         )
-                        if (selectedCategory == category) {
-                            Text(
-                                text = category.displayName,
-                                fontSize = 10.sp,
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                            )
-                        }
                     }
                 },
                 colors = FilterChipDefaults.filterChipColors(

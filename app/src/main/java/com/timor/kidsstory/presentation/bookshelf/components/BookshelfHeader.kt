@@ -26,10 +26,14 @@ import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 
 /**
  * 책장 화면 상단의 헤더 컴포넌트
+ * - 로고, 설정, 언어 선택 버튼
+ * - 출석 및 읽기 진도 표시 (국기 옆에 위치)
  *
- * @param onSettingClick setting 버튼 클릭 이벤트
  * @param currentLanguage 현재 선택된 언어
+ * @param onSettingClick setting 버튼 클릭 이벤트
  * @param onLanguageClick 언어 선택 버튼 클릭 이벤트
+ * @param onChatbotClick 챗봇 버튼 클릭 이벤트
+ * @param progressAndAttendanceContent 출석 및 진도 컴포넌트 (선택적)
  */
 @Composable
 fun BookshelfHeader(
@@ -37,6 +41,7 @@ fun BookshelfHeader(
     onSettingClick: () -> Unit,
     onLanguageClick: () -> Unit,
     onChatbotClick: () -> Unit,
+    progressAndAttendanceContent: (@Composable () -> Unit)? = null
 ) {
     // 반응형 크기 계산
     val headerHeight = ResponsiveTextUtils.getHeaderHeight().dp
@@ -80,15 +85,8 @@ fun BookshelfHeader(
                 .padding(end = headerPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
-//            // 챗봇 아이콘
-//            Icon(
-//                painter = painterResource(id = R.drawable.ic_chatbot_round),
-//                contentDescription = "Chatbot",
-//                modifier = Modifier
-//                    .size(40.dp)
-//                    .clickable(onClick = onChatbotClick),
-//                tint = Color.Unspecified
-//            )
+            // 출석 및 진도 컴포넌트 (국기 옆에 배치)
+            progressAndAttendanceContent?.invoke()
 
             // 간격
             Spacer(modifier = Modifier.width(spacerWidth))
@@ -100,6 +98,35 @@ fun BookshelfHeader(
                 onClick = onLanguageClick
             )
         }
+    }
+}
+
+@Preview(
+    name = "BookshelfHeader - with Progress",
+    group = "BookshelfHeader",
+    showBackground = true,
+    backgroundColor = 0xFFFDD25A,
+    widthDp = 600,
+    heightDp = 80
+)
+@Composable
+fun BookshelfHeaderWithProgressPreview() {
+    KidsStoryTheme {
+        BookshelfHeader(
+            currentLanguage = LanguageConstants.KOREAN,
+            onSettingClick = {},
+            onLanguageClick = {},
+            onChatbotClick = {},
+            progressAndAttendanceContent = {
+                ProgressAndAttendanceSection(
+                    streakCount = 7,
+                    readingProgress = 0.6f,
+                    completedBooks = 12,
+                    totalBooks = 20,
+                    onMyPageClick = {}
+                )
+            }
+        )
     }
 }
 

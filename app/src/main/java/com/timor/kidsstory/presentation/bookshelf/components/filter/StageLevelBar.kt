@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,7 +49,6 @@ fun LevelButton(
         FilterLevel.FIVE -> Color(0xFF7B1FA2) // 진한 보라색
     }
 
-
     // 선택여부에 따라 디자인 다르게 적용
     if (isSelected) {
         Box(
@@ -63,14 +61,13 @@ fun LevelButton(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = level.displayName.toString(),
+                text = level.displayName,
                 color = Color.White,
                 style = AppTextStyles.gummyMediumSemibold,
                 textAlign = TextAlign.Center
             )
         }
     } else {
-        Logger.e("선택 X")
         Box(
             modifier = Modifier
                 .size(32.dp)
@@ -80,7 +77,7 @@ fun LevelButton(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = level.displayName.toString(),
+                text = level.displayName,
                 color = Color.White,
                 style = AppTextStyles.gummyMediumSemibold,
                 textAlign = TextAlign.Center
@@ -93,6 +90,7 @@ fun LevelButton(
 fun LevelFilterBar(
     isExpanded: Boolean,
     selectedLevel: FilterLevel? = null,
+    selectedLanguageCode: String = "en", // 추가: 일관성을 위한 파라미터 (현재는 사용하지 않음)
     onLevelSelected: (FilterLevel) -> Unit = {}
 ) {
     Row(
@@ -108,36 +106,17 @@ fun LevelFilterBar(
                 modifier = Modifier.padding(start = 8.dp).padding(top = 2.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                LevelButton(
-                    level = FilterLevel.ONE,
-                    isSelected = selectedLevel == FilterLevel.ONE,
-                    onLevelSelected = onLevelSelected
-                )
-                LevelButton(
-                    level = FilterLevel.TWO,
-                    isSelected = selectedLevel == FilterLevel.TWO,
-                    onLevelSelected = onLevelSelected
-                )
-                LevelButton(
-                    level = FilterLevel.THREE,
-                    isSelected = selectedLevel == FilterLevel.THREE,
-                    onLevelSelected = onLevelSelected
-                )
-                LevelButton(
-                    level = FilterLevel.FOUR,
-                    isSelected = selectedLevel == FilterLevel.FOUR,
-                    onLevelSelected = onLevelSelected
-                )
-                LevelButton(
-                    level = FilterLevel.FIVE,
-                    isSelected = selectedLevel == FilterLevel.FIVE,
-                    onLevelSelected = onLevelSelected
-                )
+                FilterLevel.values().forEach { level ->
+                    LevelButton(
+                        level = level,
+                        isSelected = selectedLevel == level,
+                        onLevelSelected = onLevelSelected
+                    )
+                }
             }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

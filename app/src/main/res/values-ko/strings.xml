@@ -4,37 +4,29 @@
     <!-- Bookcover -->
     <string name="bookcover_download">다운로드</string>
     <string name="bookcover_downloading">다운로드 중…</string>
-    <string name="bookcover_retry">다시 시도</string>
+    <string name="bookcover_retry">재시도</string>
     <string name="bookcover_update">업데이트</string>
 
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">전체</string>
     <string name="filter_stage">단계</string>
-    <string name="filter_category">카테고리</string>
-
-    <!-- Category Names -->
-    <string name="category_legend">전설</string>
-    <string name="category_folktale">민담</string>
-    <string name="category_culture">문화</string>
-    <string name="category_life">일상</string>
-    <string name="category_environment">환경</string>
-    <string name="category_science">과학</string>
-    <string name="category_adventure">모험</string>
+    <string name="filter_category">주제</string>
     
-    <!-- New Category Groups -->
-    <string name="category_folktales_history">민담/역사</string>
+    <!-- Category Groups -->
+    <string name="category_environment_nature">환경/자연</string>
+    <string name="category_science_math">수학/과학</string>
     <string name="category_culture_world">문화/세계</string>
-    <string name="category_daily_life">일상/생활</string>
-    <string name="category_science_nature">과학/자연</string>
     <string name="category_social_emotional">사회/정서</string>
+    <string name="category_folktales_history">이야기/역사</string>
+    <string name="category_daily_life">일상/생활</string>
     <string name="category_adventure_fantasy">모험/판타지</string>
 
     <!-- Reading Levels -->
     <string name="level_1">첫걸음</string>
-    <string name="level_2">초급 읽기</string>
-    <string name="level_3">중급 읽기</string>
-    <string name="level_4">숙련 읽기</string>
-    <string name="level_5">고급 읽기</string>
+    <string name="level_2">초급 독자</string>
+    <string name="level_3">성장 독자</string>
+    <string name="level_4">자신감 독자</string>
+    <string name="level_5">고급 독자</string>
     
     <!-- Age Ranges -->
     <string name="age_3_5">3-5세</string>
@@ -45,7 +37,7 @@
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">책이 없습니다</string>
-    <string name="empty_bookshelf_message">인터넷에 연결하여 새 책을 다운로드하세요</string>
+    <string name="empty_bookshelf_message">인터넷 연결을 확인하여 새로운 책을 다운로드하세요</string>
     <string name="empty_filter_title">검색 결과가 없습니다</string>
     <string name="empty_filter_message">필터 설정을 변경해 보세요</string>
     <string name="empty_downloading">새로운 책을 찾는 중…</string>
@@ -58,24 +50,25 @@
     <string name="info_sound_volume">효과음 볼륨</string>
     <string name="info_off">끄기</string>
     <string name="info_on">켜기</string>
-    <string name="info_created_by">제작진</string>
+    <string name="info_created_by">제작자</string>
     <string name="info_dev_yujin">개발/최유진</string>
     <string name="info_dev_jaeyeon">개발/김재연</string>
     <string name="info_des_jinsung">디자인/곽진성</string>
-    <string name="info_des_yuni">교육/이시윤</string>
+    <string name="info_edu_yuni">교육/이시윤</string>
+    <string name="info_edu_jiyoung">교육/손지영</string>
     <string name="info_cm_jisu">사업운영/안지수</string>
     <string name="info_about">정보</string>
     <string name="info_version">버전</string>
-    <string name="info_license">라이선스</string>
+    <string name="info_license">라이센스</string>
 
     <!-- Reading Screen -->
     <string name="reading_scroll_hint">스크롤하여 더 읽기</string>
 
     <!-- Update Dialog -->
-    <string name="update_dialog_title_optional">업데이트 알림</string>
+    <string name="update_dialog_title_optional">업데이트 가능</string>
     <string name="update_dialog_title_required">필수 업데이트</string>
     <string name="update_dialog_new_version">새 버전: %s</string>
-    <string name="update_dialog_release_notes">변경사항:</string>
+    <string name="update_dialog_release_notes">새로운 기능:</string>
     <string name="update_dialog_button_later">나중에</string>
     <string name="update_dialog_button_update">업데이트</string>
     <string name="update_dialog_button_update_now">지금 업데이트</string>

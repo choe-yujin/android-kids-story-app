@@ -11,13 +11,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -28,18 +23,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
-import com.timor.kidsstory.presentation.util.getCategoryName
+import com.timor.kidsstory.presentation.util.getCategoryNameInLanguage
 
 @Composable
 fun CategoryFilterBar(
     isExpanded: Boolean,
     selectedCategory: FilterBookCategory? = null,
+    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
     onCategorySelected: (FilterBookCategory) -> Unit = {},
 ) {
     Row(
@@ -51,42 +48,37 @@ fun CategoryFilterBar(
             exit = shrinkHorizontally()
         ) {
             BoxWithConstraints {
-                // val itemWidth = maxWidth / FilterBookCategory.values().size // No longer needed
-
-                // Layer 1: Icons
                 Row(
                     modifier = Modifier.padding(start = 8.dp),
                     verticalAlignment = Alignment.Top,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp) // Use fixed spacing
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     FilterBookCategory.values().forEach { category ->
                         CategoryIcon(
                             category = category,
                             isSelected = selectedCategory == category,
                             onCategorySelected = onCategorySelected,
-                            showTextLabel = selectedCategory == category, // Show text only for selected
-                            textLabel = getCategoryName(LocalContext.current, category) // Pass category name
+                            showTextLabel = selectedCategory == category,
+                            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
                         )
                     }
                 }
-
-                // Layer 2: Text (Moved inside CategoryIcon)
-                // if (selectedCategory != null) { ... } // Removed from here
             }
         }
     }
 }
-
 
 @Composable
 fun CategoryIcon(
     modifier: Modifier = Modifier,
     category: FilterBookCategory,
     isSelected: Boolean = false,
+    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
     onCategorySelected: (FilterBookCategory) -> Unit,
-    showTextLabel: Boolean = false, // New parameter
-    textLabel: String? = null // New parameter
+    showTextLabel: Boolean = false
 ) {
+    val context = LocalContext.current
+    
     val categoryBackgroundColor = when (category) {
         FilterBookCategory.FOLKTALES_HISTORY -> Color(0xFFE4E9D6)
         FilterBookCategory.CULTURE_WORLD -> Color(0xFFDFE9F2)
@@ -137,20 +129,22 @@ fun CategoryIcon(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = category.displayName,
+                contentDescription = stringResource(category.displayNameRes),
                 tint = Color.Unspecified,
                 modifier = Modifier.size(20.dp)
             )
         }
 
-        if (showTextLabel && textLabel != null) {
+        if (showTextLabel) {
+            // 선택된 언어로 카테고리명 표시
+            val categoryName = getCategoryNameInLanguage(context, category, selectedLanguageCode)
             Text(
-                text = textLabel,
+                text = categoryName,
                 fontSize = 12.sp,
                 color = Color.Black,
                 maxLines = 1,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 4.dp) // Position text below icon with a small padding
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
     }

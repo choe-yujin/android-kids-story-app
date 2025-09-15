@@ -18,7 +18,6 @@ import com.timor.kidsstory.presentation.bookshelf.components.AppUpdateDialog
 import androidx.compose.runtime.*
 import android.util.Log
 import kotlinx.coroutines.delay
-import com.timor.kidsstory.domain.util.LocaleHelper.getSystemLanguageCode
 import com.timor.kidsstory.domain.util.LocaleHelper.updateLanguage
 import com.timor.kidsstory.presentation.navigation.NavGraph
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
@@ -167,26 +166,30 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // 언어 설정 적용
+    /**
+     * 언어 설정 적용 (시스템 언어 무시하고 앱 설정 사용)
+     */
     private fun applyLanguageSetting(onLanguageApplied: () -> Unit) {
         val entryPoint = EntryPointAccessors.fromApplication(applicationContext, UseCaseEntryPoint::class.java)
         val loadLanguageUseCase = entryPoint.getUserPreferenceUseCase()
 
         lifecycleScope.launch {
             loadLanguageUseCase().collect { userPref ->
-                Logger.e("설정 확인 1: $userPref")
+                Logger.e("사용자 설정 확인: $userPref")
+                
+                // 저장된 언어 코드 사용 (시스템 언어 무시)
+                // 빈 문자열이면 기본값 "en-ph" 사용
                 val languageCode = if (userPref.languageCode.isBlank()) {
-                    // 저장된 언어가 없으면 시스템 언어 가져오기
-                    getSystemLanguageCode(this@MainActivity)
+                    "en-ph" // 시스템 언어 대신 기본값 사용
                 } else {
                     userPref.languageCode
                 }
 
-                Logger.e("설정 확인 2: $languageCode")
+                Logger.e("적용할 언어: $languageCode")
 
-                // 언어 설정
+                // 언어 설정 적용
                 updateLanguage(languageCode)
-                onLanguageApplied()     // 완료 콜백
+                onLanguageApplied()
             }
         }
     }

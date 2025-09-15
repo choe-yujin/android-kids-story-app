@@ -21,17 +21,19 @@ fun BookShelfScreenRoot(
     onChatbotClick: () -> Unit,
     onSettingClick: () -> Unit,
 ) {
+    val state = viewModel.state.collectAsStateWithLifecycle().value
+    
     // 책장 UI 컴포넌트 호출
     BookshelfScreen(
-        state = viewModel.state.collectAsStateWithLifecycle().value,
+        state = state,
         onAction = { action ->
             when (action) {
                 is BookShelfAction.BookSelect ->  {
                     // 뷰모델에 먼저 액션을 전달하여 효과음 재생
                     viewModel.onAction(action)
                     // 책 선택 처리 및 네비게이션
-                    val selectedBook = viewModel.onBookSelected(action.index)
-                    if (selectedBook != null) {
+                    if (action.index >= 0 && action.index < state.books.size) {
+                        val selectedBook = state.books[action.index]
                         onBookSelect(selectedBook.storyId)
                     }
                 }

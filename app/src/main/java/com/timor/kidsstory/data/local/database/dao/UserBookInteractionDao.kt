@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.timor.kidsstory.data.local.database.entity.UserBookInteractionEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -16,9 +17,35 @@ interface UserBookInteractionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdate(interaction: UserBookInteractionEntity)
     
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUserBookInteraction(interaction: UserBookInteractionEntity)
+    
+    @Update
+    suspend fun updateUserBookInteraction(interaction: UserBookInteractionEntity)
+    
+    // BookInteractionManager용 메서드들 - 기존 컬럼명 사용하되 storyId 대신 bookId 사용
+    @Query("SELECT * FROM user_book_interactions WHERE userId = :userId AND bookId = :bookId AND language = :language")
+    suspend fun getUserBookInteraction(userId: String, bookId: Int, language: String): UserBookInteractionEntity?
+    
     // 완독 책 개수 조회 (읽기 진도용)
     @Query("SELECT COUNT(*) FROM user_book_interactions WHERE userId = :userId AND language = :language AND isCompleted = 1")
     suspend fun getCompletedBooksCount(userId: String, language: String): Int
+    
+    // 전체 완독 책 개수 조회
+    @Query("SELECT COUNT(*) FROM user_book_interactions WHERE userId = :userId AND isCompleted = 1")
+    suspend fun getTotalCompletedBooksCount(userId: String): Int
+    
+    // 진행 중인 책 목록 조회
+    @Query("SELECT * FROM user_book_interactions WHERE userId = :userId AND language = :language AND currentPage > 0 AND isCompleted = 0")
+    suspend fun getInProgressBooks(userId: String, language: String): List<UserBookInteractionEntity>
+    
+    // 최근 읽은 책 목록 조회
+    @Query("SELECT * FROM user_book_interactions WHERE userId = :userId ORDER BY lastReadAt DESC LIMIT :limit")
+    suspend fun getRecentlyReadBooks(userId: String, limit: Int): List<UserBookInteractionEntity>
+    
+    // 시작한 책 총 개수 조회
+    @Query("SELECT COUNT(*) FROM user_book_interactions WHERE userId = :userId AND language = :language")
+    suspend fun getTotalBooksStarted(userId: String, language: String): Int
     
     // 읽는 중인 책 개수 조회 (읽기 진도용)
     @Query("SELECT COUNT(*) FROM user_book_interactions WHERE userId = :userId AND language = :language AND currentPage > 0 AND isCompleted = 0")

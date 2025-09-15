@@ -33,14 +33,15 @@ import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 
-/*
-* 메인 - 필터바
-* Create by JaeYeon Kim
-* @since 2025.04.02
-* */
+/**
+ * 메인 - 필터바
+ * Create by JaeYeon Kim
+ * @since 2025.04.02
+ */
 @Composable
 fun FilterBar(
     filterBarState: FilterBarState = FilterBarState(),
+    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
     onAllClick: () -> Unit = {},
     onStageClick: () -> Unit = {},
     onCategoryClick: () -> Unit = {},
@@ -77,6 +78,7 @@ fun FilterBar(
         LevelFilterBar(
             isExpanded = filterBarState.isStageFilterExpanded,
             selectedLevel = filterBarState.selectedStage,
+            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
         ) { level ->
             onLevelClick(level)
         }
@@ -99,12 +101,12 @@ fun FilterBar(
         CategoryFilterBar(
             isExpanded = filterBarState.isCategoryFilterExpanded,
             selectedCategory = filterBarState.selectedCategory,
+            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
         ) { bookCategory ->
             onBookCategoryClick(bookCategory)
         }
     }
 }
-
 
 @Composable
 fun FilterBarButton(
@@ -166,8 +168,6 @@ fun FilterBarButtonPreview() {
         ) {
             FilterBarButton(textResId = R.string.filter_all, isSelected = false)
             FilterBarButton(textResId = R.string.filter_all, isSelected = true)
-
         }
-
     }
 }

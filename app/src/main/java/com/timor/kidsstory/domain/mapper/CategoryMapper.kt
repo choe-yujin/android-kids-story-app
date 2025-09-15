@@ -4,31 +4,49 @@ import com.timor.kidsstory.domain.model.Category
 import com.timor.kidsstory.domain.model.ReadingLevel
 
 /**
- * 레거시 카테고리 문자열을 새로운 Category enum으로 매핑
+ * 카테고리 및 읽기 레벨 매핑을 담당하는 유틸리티 클래스
+ * - 기존 문자열/숫자 데이터를 enum으로 변환
+ * - 향후 확장성을 위한 매핑 로직 제공
  */
 object CategoryMapper {
-    
-    fun mapToCategory(categoryString: String): Category {
-        return when (categoryString.lowercase()) {
-            "legend", "folktale", "myth", "myths" -> Category.FOLKTALES_HISTORY
-            "culture", "cultural", "tradition" -> Category.CULTURE_WORLD
-            "life", "daily", "daily life" -> Category.DAILY_LIFE
-            "environment", "env", "nature conservation" -> Category.ENVIRONMENT
-            "science", "nature", "science & nature" -> Category.SCIENCE_NATURE
-            "emotion", "social", "feelings" -> Category.SOCIAL_EMOTIONAL
-            "adventure", "fantasy", "magic" -> Category.ADVENTURE_FANTASY
-            else -> Category.DAILY_LIFE // 기본값
-        }
+
+    /**
+     * 문자열 카테고리를 Category enum으로 매핑
+     * 
+     * @param category 원본 카테고리 문자열
+     * @return 매핑된 Category enum
+     */
+    fun mapToCategory(category: String): Category {
+        return Category.fromString(category)
     }
-    
+
+    /**
+     * 숫자 레벨을 ReadingLevel enum으로 매핑
+     * 
+     * @param level 원본 레벨 숫자 (1-5)
+     * @return 매핑된 ReadingLevel enum
+     */
     fun mapToReadingLevel(level: Int): ReadingLevel {
-        return when (level) {
-            1 -> ReadingLevel.FIRST_STEPS
-            2 -> ReadingLevel.EARLY_READER
-            3 -> ReadingLevel.GROWING_READER
-            4 -> ReadingLevel.CONFIDENT_READER
-            5 -> ReadingLevel.ADVANCED_READER
-            else -> ReadingLevel.EARLY_READER // 기본값
-        }
+        return ReadingLevel.fromInt(level)
+    }
+
+    /**
+     * Category enum을 표시용 문자열로 변환
+     * 
+     * @param category Category enum
+     * @return 표시용 문자열
+     */
+    fun categoryToDisplayString(category: Category): String {
+        return category.displayName
+    }
+
+    /**
+     * ReadingLevel enum을 표시용 문자열로 변환
+     * 
+     * @param readingLevel ReadingLevel enum
+     * @return 표시용 문자열
+     */
+    fun readingLevelToDisplayString(readingLevel: ReadingLevel): String {
+        return readingLevel.displayName
     }
 }

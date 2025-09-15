@@ -41,6 +41,7 @@ fun SettingCardContent(
         SettingToggleRow(
             titleResId = R.string.info_music,
             isChecked = state.isMusicOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.MusicSwitchClick(it)) }
         )
 
@@ -58,6 +59,7 @@ fun SettingCardContent(
         SettingToggleRow(
             titleResId = R.string.info_sound_effect,
             isChecked = state.isSoundEffectOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.SoundEffectSwitchClick(it)) }
         )
 
@@ -95,6 +97,7 @@ fun SmallSettingCardContent(
         SmallSettingToggleRow(
             titleResId = R.string.info_music,
             isChecked = state.isMusicOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.MusicSwitchClick(it)) }
         )
 
@@ -112,6 +115,7 @@ fun SmallSettingCardContent(
         SmallSettingToggleRow(
             titleResId = R.string.info_sound_effect,
             isChecked = state.isSoundEffectOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.SoundEffectSwitchClick(it)) }
         )
 
@@ -149,6 +153,7 @@ fun VerySmallSettingCardContent(
         VerySmallSettingToggleRow(
             titleResId = R.string.info_music,
             isChecked = state.isMusicOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.MusicSwitchClick(it)) }
         )
 
@@ -166,6 +171,7 @@ fun VerySmallSettingCardContent(
         VerySmallSettingToggleRow(
             titleResId = R.string.info_sound_effect,
             isChecked = state.isSoundEffectOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.SoundEffectSwitchClick(it)) }
         )
 
@@ -183,6 +189,7 @@ fun VerySmallSettingCardContent(
 fun SettingToggleRow(
     titleResId: Int,
     isChecked: Boolean,
+    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
     onToggle: (Boolean) -> Unit
 ) {
     Row(
@@ -199,7 +206,8 @@ fun SettingToggleRow(
 
         CustomToggle(
             isChecked = isChecked,
-            onToggle = onToggle
+            onToggle = onToggle,
+            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
         )
     }
 }
@@ -208,6 +216,7 @@ fun SettingToggleRow(
 fun SmallSettingToggleRow(
     titleResId: Int,
     isChecked: Boolean,
+    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
     onToggle: (Boolean) -> Unit
 ) {
     Row(
@@ -225,7 +234,8 @@ fun SmallSettingToggleRow(
 
         CustomToggle(
             isChecked = isChecked,
-            onToggle = onToggle
+            onToggle = onToggle,
+            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
         )
     }
 }
@@ -234,6 +244,7 @@ fun SmallSettingToggleRow(
 fun VerySmallSettingToggleRow(
     titleResId: Int,
     isChecked: Boolean,
+    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
     onToggle: (Boolean) -> Unit
 ) {
     Row(
@@ -251,7 +262,8 @@ fun VerySmallSettingToggleRow(
 
         CustomToggle(
             isChecked = isChecked,
-            onToggle = onToggle
+            onToggle = onToggle,
+            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
         )
     }
-} 
+}

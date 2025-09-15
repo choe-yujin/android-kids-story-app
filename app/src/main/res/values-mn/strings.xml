@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TaleTail</string>
 
@@ -12,29 +11,21 @@
     <string name="filter_all">Бүгд</string>
     <string name="filter_stage">Түвшин</string>
     <string name="filter_category">Ангилал</string>
-
-    <!-- Category Names -->
-    <string name="category_legend">Домог</string>
-    <string name="category_folktale">Ардын үлгэр</string>
-    <string name="category_culture">Соёл</string>
-    <string name="category_life">Амьдрал</string>
-    <string name="category_environment">Байгаль орчин</string>
-    <string name="category_science">Шинжлэх ухаан</string>
-    <string name="category_adventure">Адал явдал</string>
     
-    <!-- New Category Groups -->
-    <string name="category_folktales_history">Ардын үлгэр/Түүх</string>
-    <string name="category_culture_world">Соёл/Дэлхий</string>
-    <string name="category_daily_life">Өдөр тутмын амьдрал</string>
-    <string name="category_science_nature">Шинжлэх ухаан/Байгаль</string>
-    <string name="category_social_emotional">Нийгэм/Сэтгэл хөдлөл</string>
-    <string name="category_adventure_fantasy">Адал явдал/Уран зөгнөл</string>
+    <!-- Category Groups -->
+    <string name="category_environment_nature">Байгаль</string>
+    <string name="category_science_math">Шинжлэх ухаан</string>
+    <string name="category_culture_world">Соёл</string>
+    <string name="category_social_emotional">Сэтгэл</string>
+    <string name="category_folktales_history">Түүх</string>
+    <string name="category_daily_life">Амьдрал</string>
+    <string name="category_adventure_fantasy">Адал явдал</string>
 
     <!-- Reading Levels -->
     <string name="level_1">Эхний алхам</string>
     <string name="level_2">Анхан шат</string>
     <string name="level_3">Дунд шат</string>
-    <string name="level_4">Итгэлтэй уншигч</string>
+    <string name="level_4">Итгэлтэй</string>
     <string name="level_5">Ахисан шат</string>
     
     <!-- Age Ranges -->
@@ -56,14 +47,15 @@
     <string name="info_music">Хөгжим</string>
     <string name="info_sound_effect">Дуу чимээ</string>
     <string name="info_music_volume">Хөгжмийн дуу</string>
-    <string name="info_sound_volume">Дуу чимээний түвшин</string>
+    <string name="info_sound_volume">Дуу түвшин</string>
     <string name="info_off">Унтраах</string>
     <string name="info_on">Асаах</string>
     <string name="info_created_by">Бүтээгч</string>
     <string name="info_dev_yujin">Хөгжүүлэгч/Южин Чой</string>
     <string name="info_dev_jaeyeon">Хөгжүүлэгч/Жэёон Ким</string>
     <string name="info_des_jinsung">Дизайн/Жинсүң Куак</string>
-    <string name="info_des_yuni">Боловсрол/Сиюн Ли</string>
+    <string name="info_edu_yuni">Боловсрол/Сиюн Ли</string>
+    <string name="info_edu_jiyoung">Боловсрол/Жийоунг Шон</string>
     <string name="info_cm_jisu">Менежмент/Жису Ан</string>
     <string name="info_about">Тухай</string>
     <string name="info_version">Хувилбар</string>

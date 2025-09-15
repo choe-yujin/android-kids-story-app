@@ -1,68 +1,98 @@
 package com.timor.kidsstory.presentation.bookshelf.model
 
-import com.timor.kidsstory.domain.model.Category
+import androidx.annotation.StringRes
+import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.ReadingLevel
 
+/**
+ * 필터 바 상태 관리
+ */
 data class FilterBarState(
     val selectedFilter: FilterBarCategory = FilterBarCategory.All,
-    val selectedStage: FilterLevel? = null,
-    val selectedCategory: FilterBookCategory? = null,
+    val selectedStage: FilterLevel = FilterLevel.ONE,
+    val selectedCategory: FilterBookCategory = FilterBookCategory.ENVIRONMENT,
     val isStageFilterExpanded: Boolean = false,
-    val isCategoryFilterExpanded: Boolean = false,
+    val isCategoryFilterExpanded: Boolean = false
 )
 
-enum class FilterBarCategory(
-    val displayName: String
-) {
-    All("All"),
-    STAGE("Stage"),
-    CATEGORY("Category")
+/**
+ * 필터 바 카테고리 타입
+ */
+enum class FilterBarCategory(@StringRes val displayNameRes: Int) {
+    All(R.string.filter_all),
+    STAGE(R.string.filter_stage),
+    CATEGORY(R.string.filter_category)
 }
 
+/**
+ * 읽기 단계 필터
+ */
 enum class FilterLevel(
+    val level: Int, 
+    val readingLevel: ReadingLevel,
     val displayName: String,
-    val level: Int
+    @StringRes val levelNameRes: Int,
+    @StringRes val ageRangeRes: Int
 ) {
-    ONE("1", 1),
-    TWO("2", 2),
-    THREE("3", 3),
-    FOUR("4", 4),
-    FIVE("5", 5);
-    
-    fun toReadingLevel(): ReadingLevel {
-        return when(this) {
-            ONE -> ReadingLevel.FIRST_STEPS
-            TWO -> ReadingLevel.EARLY_READER
-            THREE -> ReadingLevel.GROWING_READER
-            FOUR -> ReadingLevel.CONFIDENT_READER
-            FIVE -> ReadingLevel.ADVANCED_READER
-        }
-    }
+    ONE(1, ReadingLevel.FIRST_STEPS, "1", R.string.level_1, R.string.age_3_5),
+    TWO(2, ReadingLevel.EARLY_READER, "2", R.string.level_2, R.string.age_5_7),
+    THREE(3, ReadingLevel.GROWING_READER, "3", R.string.level_3, R.string.age_7_9),
+    FOUR(4, ReadingLevel.CONFIDENT_READER, "4", R.string.level_4, R.string.age_9_11),
+    FIVE(5, ReadingLevel.ADVANCED_READER, "5", R.string.level_5, R.string.age_11_plus)
 }
 
+/**
+ * 책 주제 카테고리 필터 (간결한 카테고리명)
+ */
 enum class FilterBookCategory(
-    val displayName: String,
-    val categoryId: String
+    @StringRes val displayNameRes: Int, 
+    val keywords: List<String>
 ) {
-    ENVIRONMENT("Environment", "ENVIRONMENT"),
-    SCIENCE_NATURE("Science & Nature", "SCIENCE_NATURE"),
-    CULTURE_WORLD("Culture & World", "CULTURE_WORLD"),
-    SOCIAL_EMOTIONAL("Social Emotional", "SOCIAL_EMOTIONAL"),
-    FOLKTALES_HISTORY("Folktales & History", "FOLKTALES_HISTORY"),
-    DAILY_LIFE("Daily Life", "DAILY_LIFE"),
-    ADVENTURE_FANTASY("Adventure & Fantasy", "ADVENTURE_FANTASY");
+    ENVIRONMENT(
+        displayNameRes = R.string.category_environment_nature,
+        keywords = listOf("environment", "nature", "환경", "자연", "생태", "동물", "식물", "기후", "재활용")
+    ),
+    SCIENCE_NATURE(
+        displayNameRes = R.string.category_science_math, 
+        keywords = listOf("math", "science", "수학", "과학", "실험", "숫자", "계산", "우주", "물리")
+    ),
+    CULTURE_WORLD(
+        displayNameRes = R.string.category_culture_world,
+        keywords = listOf("culture", "world", "문화", "세계", "전통", "음식", "축제", "여행", "나라")
+    ),
+    SOCIAL_EMOTIONAL(
+        displayNameRes = R.string.category_social_emotional,
+        keywords = listOf("social", "emotional", "사회", "정서", "감정", "우정", "가족", "갈등", "친구")
+    ),
+    FOLKTALES_HISTORY(
+        displayNameRes = R.string.category_folktales_history,
+        keywords = listOf("folktale", "history", "이야기", "역사", "전설", "신화", "옛이야기", "위인", "과거")
+    ),
+    DAILY_LIFE(
+        displayNameRes = R.string.category_daily_life,
+        keywords = listOf("daily", "life", "일상", "생활", "학교", "집", "일과", "습관", "하루")
+    ),
+    ADVENTURE_FANTASY(
+        displayNameRes = R.string.category_adventure_fantasy,
+        keywords = listOf("adventure", "fantasy", "모험", "판타지", "탐험", "마법", "상상", "꿈", "여행")
+    );
 
-    fun toCategory(): Category {
-        return when(categoryId) {
-            "ENVIRONMENT" -> Category.ENVIRONMENT
-            "SCIENCE_NATURE" -> Category.SCIENCE_NATURE
-            "CULTURE_WORLD" -> Category.CULTURE_WORLD
-            "SOCIAL_EMOTIONAL" -> Category.SOCIAL_EMOTIONAL
-            "FOLKTALES_HISTORY" -> Category.FOLKTALES_HISTORY
-            "DAILY_LIFE" -> Category.DAILY_LIFE
-            "ADVENTURE_FANTASY" -> Category.ADVENTURE_FANTASY
-            else -> Category.DAILY_LIFE
+    /**
+     * 주어진 카테고리 문자열이 이 필터와 일치하는지 확인
+     */
+    fun matches(category: String): Boolean {
+        return keywords.any { keyword ->
+            category.contains(keyword, ignoreCase = true) ||
+            keyword.contains(category, ignoreCase = true)
         }
     }
 
+    companion object {
+        /**
+         * 카테고리 문자열에서 적절한 FilterBookCategory 찾기
+         */
+        fun fromCategoryString(category: String): FilterBookCategory? {
+            return values().find { it.matches(category) }
+        }
+    }
 }

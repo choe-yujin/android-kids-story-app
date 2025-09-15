@@ -55,7 +55,6 @@ sealed interface BookShelfAction {
      */
     data class ShowLanguageDialog(val isShow: Boolean) : BookShelfAction
 
-
     /**
      * 책 다운로드 액션
      * - 사용자가 다운로드 버튼을 클릭했을 때 발생
@@ -63,12 +62,26 @@ sealed interface BookShelfAction {
      * @property index 다운로드할 책의 인덱스
      */
     data class DownloadBook(val index: Int) : BookShelfAction
-    /*
-    * 책 리스트 필터링
-    * */
+
+    /**
+     * 책 리스트 필터링 액션
+     */
     data class SelectFilter(
         val filter: FilterBarCategory? = null,
         val stage: FilterLevel? = null,
         val category: FilterBookCategory? = null
     ) : BookShelfAction
+
+    /**
+     * 출석 팝업 닫기 액션
+     * - 출석 축하 팝업을 닫을 때 발생
+     */
+    data object DismissAttendancePopup : BookShelfAction
+
+    /**
+     * MyPage 클릭 액션
+     * - 출석/진도 영역을 클릭하여 MyPage로 이동할 때 발생
+     * - 현재는 로그만 출력하고 향후 네비게이션 구현 예정
+     */
+    data object MyPageClick : BookShelfAction
 }

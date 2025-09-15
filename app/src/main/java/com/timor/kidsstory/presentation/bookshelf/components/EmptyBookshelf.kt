@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -15,6 +16,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
+import com.timor.kidsstory.presentation.util.getEmptyBookshelfMessage
+import com.timor.kidsstory.presentation.util.getEmptyBookshelfTitle
+import com.timor.kidsstory.presentation.util.getEmptyStateMessage
+import com.timor.kidsstory.presentation.util.getEmptyStateTitle
+import com.timor.kidsstory.presentation.util.ContextLanguageHelper
 import com.timor.kidsstory.ui.theme.AppTextStyles
 
 /**
@@ -24,8 +30,11 @@ import com.timor.kidsstory.ui.theme.AppTextStyles
 fun EmptyBookshelf(
     modifier: Modifier = Modifier,
     isFiltered: Boolean = false,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    selectedLanguageCode: String = "en" // 추가: 선택된 언어 코드
 ) {
+    val context = LocalContext.current
+    
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -38,12 +47,14 @@ fun EmptyBookshelf(
             // 아이콘 또는 일러스트 (추후 추가)
             Spacer(modifier = Modifier.height(24.dp))
             
-            // 제목
+            // 제목 (선택된 언어로 표시)
             Text(
                 text = when {
-                    isLoading -> stringResource(R.string.empty_downloading)
-                    isFiltered -> stringResource(R.string.empty_filter_title)
-                    else -> stringResource(R.string.empty_bookshelf_title)
+                    isLoading -> ContextLanguageHelper.getStringInLanguage(
+                        context, selectedLanguageCode, R.string.empty_downloading
+                    )
+                    isFiltered -> getEmptyStateTitle(context, selectedLanguageCode)
+                    else -> getEmptyBookshelfTitle(context, selectedLanguageCode)
                 },
                 style = AppTextStyles.gummyLgSemiboldItalic.copy(
                     fontSize = 24.sp,
@@ -55,13 +66,13 @@ fun EmptyBookshelf(
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            // 설명 메시지
+            // 설명 메시지 (선택된 언어로 표시)
             if (!isLoading) {
                 Text(
                     text = if (isFiltered) {
-                        stringResource(R.string.empty_filter_message)
+                        getEmptyStateMessage(context, selectedLanguageCode)
                     } else {
-                        stringResource(R.string.empty_bookshelf_message)
+                        getEmptyBookshelfMessage(context, selectedLanguageCode)
                     },
                     style = AppTextStyles.gummyMedium.copy(
                         fontSize = 16.sp
