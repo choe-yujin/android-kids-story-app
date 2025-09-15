@@ -1,0 +1,68 @@
+package com.timor.kidsstory.domain.usecase.attendance
+
+import com.timor.kidsstory.domain.manager.AttendanceManager
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Test
+import org.junit.Assert.*
+
+/**
+ * CheckTodayAttendanceUseCase 단위 테스트
+ * 
+ * 출석 체크 로직의 동작을 검증
+ * - 새로운 출석 처리 테스트
+ * - 이미 출석한 경우 테스트  
+ * - 오류 처리 테스트
+ */
+class CheckTodayAttendanceUseCaseTest {
+
+    @MockK
+    private lateinit var attendanceManager: AttendanceManager
+
+    private lateinit var useCase: CheckTodayAttendanceUseCase
+
+    @Before
+    fun setup() {
+        MockKAnnotations.init(this)
+        useCase = CheckTodayAttendanceUseCase(attendanceManager)
+    }
+
+    @Test
+    fun `when user has not attended today, should return true for new attendance`() = runTest {
+        // Given
+        coEvery { attendanceManager.checkTodayAttendance() } returns true
+
+        // When
+        val result = useCase()
+
+        // Then
+        assertTrue("Should return true for new attendance", result)
+    }
+
+    @Test
+    fun `when user has already attended today, should return false`() = runTest {
+        // Given
+        coEvery { attendanceManager.checkTodayAttendance() } returns false
+
+        // When
+        val result = useCase()
+
+        // Then
+        assertFalse("Should return false for already attended", result)
+    }
+
+    @Test
+    fun `when attendance manager throws exception, should return false`() = runTest {
+        // Given
+        coEvery { attendanceManager.checkTodayAttendance() } throws RuntimeException("Database error")
+
+        // When
+        val result = useCase()
+
+        // Then
+        assertFalse("Should return false when exception occurs", result)
+    }
+}

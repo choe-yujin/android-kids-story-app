@@ -1,0 +1,208 @@
+package com.timor.kidsstory.domain.usecase.book
+
+import com.timor.kidsstory.domain.model.Book
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
+import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Test
+import org.junit.Assert.*
+
+/**
+ * FilterBooksUseCase 단위 테스트
+ * 
+ * 책 필터링 로직의 동작을 검증
+ * - 레벨별 필터링 테스트
+ * - 카테고리별 필터링 테스트
+ * - 전체 보기 테스트
+ * - 빈 목록 처리 테스트
+ */
+class FilterBooksUseCaseTest {
+
+    private lateinit var useCase: FilterBooksUseCase
+    private lateinit var testBooks: List<Book>
+
+    @Before
+    fun setup() {
+        useCase = FilterBooksUseCase()
+        testBooks = createTestBooks()
+    }
+
+    @Test
+    fun `when filter is All, should return all books`() = runTest {
+        // Given
+        val filter = FilterBarCategory.All
+
+        // When
+        val result = useCase(testBooks, filter)
+
+        // Then
+        assertEquals("Should return all books", testBooks.size, result.size)
+        assertEquals("Should return same books", testBooks, result)
+    }
+
+    @Test
+    fun `when filter is STAGE with level 1, should return only level 1 books`() = runTest {
+        // Given
+        val filter = FilterBarCategory.STAGE
+        val selectedStage = FilterLevel.ONE // level 1
+
+        // When
+        val result = useCase(testBooks, filter, selectedStage = selectedStage)
+
+        // Then
+        assertEquals("Should return 2 level 1 books", 2, result.size)
+        result.forEach { book ->
+            assertEquals("All books should be level 1", 1, book.level)
+        }
+    }
+
+    @Test
+    fun `when filter is STAGE with level 3, should return only level 3 books`() = runTest {
+        // Given
+        val filter = FilterBarCategory.STAGE
+        val selectedStage = FilterLevel.THREE // level 3
+
+        // When
+        val result = useCase(testBooks, filter, selectedStage = selectedStage)
+
+        // Then
+        assertEquals("Should return 1 level 3 book", 1, result.size)
+        assertEquals("Book should be level 3", 3, result[0].level)
+        assertEquals("Should be the science book", "과학 실험", result[0].title)
+    }
+
+    @Test
+    fun `when filter is CATEGORY with environment, should return environment books`() = runTest {
+        // Given
+        val filter = FilterBarCategory.CATEGORY
+        val selectedCategory = FilterBookCategory.ENVIRONMENT
+
+        // When
+        val result = useCase(testBooks, filter, selectedCategory = selectedCategory)
+
+        // Then
+        assertEquals("Should return 1 environment book", 1, result.size)
+        assertEquals("Should be the nature book", "자연 이야기", result[0].title)
+        assertTrue("Category should match environment", 
+            selectedCategory.matches(result[0].category))
+    }
+
+    @Test
+    fun `when filter is CATEGORY with science, should return science books`() = runTest {
+        // Given
+        val filter = FilterBarCategory.CATEGORY
+        val selectedCategory = FilterBookCategory.SCIENCE_NATURE
+
+        // When
+        val result = useCase(testBooks, filter, selectedCategory = selectedCategory)
+
+        // Then
+        assertEquals("Should return 1 science book", 1, result.size)
+        assertEquals("Should be the science book", "과학 실험", result[0].title)
+        assertTrue("Category should match science", 
+            selectedCategory.matches(result[0].category))
+    }
+
+    @Test
+    fun `when filter stage is null, should return all books`() = runTest {
+        // Given
+        val filter = FilterBarCategory.STAGE
+        val selectedStage = null
+
+        // When
+        val result = useCase(testBooks, filter, selectedStage = selectedStage)
+
+        // Then
+        assertEquals("Should return all books when stage is null", testBooks.size, result.size)
+    }
+
+    @Test
+    fun `when filter category is null, should return all books`() = runTest {
+        // Given
+        val filter = FilterBarCategory.CATEGORY
+        val selectedCategory = null
+
+        // When
+        val result = useCase(testBooks, filter, selectedCategory = selectedCategory)
+
+        // Then
+        assertEquals("Should return all books when category is null", testBooks.size, result.size)
+    }
+
+    @Test
+    fun `when books list is empty, should return empty list`() = runTest {
+        // Given
+        val emptyBooks = emptyList<Book>()
+        val filter = FilterBarCategory.STAGE
+        val selectedStage = FilterLevel.ONE
+
+        // When
+        val result = useCase(emptyBooks, filter, selectedStage = selectedStage)
+
+        // Then
+        assertTrue("Should return empty list", result.isEmpty())
+    }
+
+    @Test
+    fun `getBooksByLevel should return books of specific level`() = runTest {
+        // Given
+        val targetLevel = 2
+
+        // When
+        val result = useCase.getBooksByLevel(testBooks, targetLevel)
+
+        // Then
+        assertEquals("Should return 1 level 2 book", 1, result.size)
+        assertEquals("Book should be level 2", 2, result[0].level)
+        assertEquals("Should be the daily life book", "일상 이야기", result[0].title)
+    }
+
+    @Test
+    fun `getBooksByCategory should return books with category keyword`() = runTest {
+        // Given
+        val categoryKeyword = "문화"
+
+        // When
+        val result = useCase.getBooksByCategory(testBooks, categoryKeyword)
+
+        // Then
+        assertEquals("Should return 1 culture book", 1, result.size)
+        assertEquals("Should be the culture book", "문화 탐험", result[0].title)
+        assertTrue("Category should contain keyword", 
+            result[0].category.contains(categoryKeyword, ignoreCase = true))
+    }
+
+    /**
+     * 테스트용 책 목록 생성
+     */
+    private fun createTestBooks(): List<Book> {
+        return listOf(
+            createMockBook("801_ko-kr", "자연 이야기", 1, "environment"),
+            createMockBook("802_ko-kr", "일상 이야기", 2, "daily"),
+            createMockBook("803_ko-kr", "과학 실험", 3, "science"),
+            createMockBook("804_ko-kr", "문화 탐험", 1, "culture"),
+            createMockBook("805_ko-kr", "모험 이야기", 2, "adventure")
+        )
+    }
+
+    /**
+     * 테스트용 Mock Book 생성 헬퍼 함수
+     */
+    private fun createMockBook(storyId: String, title: String, level: Int, category: String): Book {
+        return Book(
+            storyId = storyId,
+            title = title,
+            coverImage = "test_cover.jpg",
+            level = level,
+            category = category,
+            pageCount = 10,
+            contributors = emptyList(),
+            sponsors = emptyList(),
+            copyright = "test copyright",
+            originalCopyright = null,
+            pages = emptyList()
+        )
+    }
+}

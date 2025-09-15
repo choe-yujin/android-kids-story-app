@@ -1,11 +1,11 @@
 package com.timor.kidsstory.di
 
-import com.timor.kidsstory.data.local.database.dao.AttendanceDao
-import com.timor.kidsstory.data.local.database.dao.UserBookInteractionDao
 import com.timor.kidsstory.data.local.database.dao.UserDao
 import com.timor.kidsstory.domain.manager.AttendanceManager
 import com.timor.kidsstory.domain.manager.BookInteractionManager
 import com.timor.kidsstory.domain.manager.UserManager
+import com.timor.kidsstory.domain.repository.AttendanceRepository
+import com.timor.kidsstory.domain.repository.ReadingProgressRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,18 +30,16 @@ object ManagerModule {
     @Provides
     @Singleton
     fun provideAttendanceManager(
-        attendanceDao: AttendanceDao,
-        userManager: UserManager
+        attendanceRepository: AttendanceRepository
     ): AttendanceManager {
-        return AttendanceManager(attendanceDao, userManager)
+        return AttendanceManager(attendanceRepository)
     }
 
     @Provides
     @Singleton
     fun provideBookInteractionManager(
-        userBookInteractionDao: UserBookInteractionDao,
-        userManager: UserManager
+        readingProgressRepository: ReadingProgressRepository
     ): BookInteractionManager {
-        return BookInteractionManager(userBookInteractionDao, userManager)
+        return BookInteractionManager(readingProgressRepository)
     }
 }

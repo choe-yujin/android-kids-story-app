@@ -12,12 +12,14 @@ import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.data.local.database.dao.UserDao
 import com.timor.kidsstory.data.local.database.dao.UserBookInteractionDao
 import com.timor.kidsstory.data.local.database.dao.AttendanceDao
+import com.timor.kidsstory.data.local.database.dao.ReadingProgressDao
 import com.timor.kidsstory.data.local.database.dao.UnlockProgressDao
 import com.timor.kidsstory.data.local.database.entity.AvailableBookEntity
 import com.timor.kidsstory.data.local.database.entity.DownloadedBookEntity
 import com.timor.kidsstory.data.local.database.entity.UserEntity
 import com.timor.kidsstory.data.local.database.entity.UserBookInteractionEntity
 import com.timor.kidsstory.data.local.database.entity.AttendanceEntity
+import com.timor.kidsstory.data.local.database.entity.ReadingProgressEntity
 import com.timor.kidsstory.data.local.database.entity.UnlockProgressEntity
 
 @Database(
@@ -27,9 +29,10 @@ import com.timor.kidsstory.data.local.database.entity.UnlockProgressEntity
         UserEntity::class,
         UserBookInteractionEntity::class,
         AttendanceEntity::class,
+        ReadingProgressEntity::class,  // 새로 추가
         UnlockProgressEntity::class
     ],
-    version = 5,
+    version = 6,  // 버전 증가
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -40,6 +43,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun userBookInteractionDao(): UserBookInteractionDao
     abstract fun attendanceDao(): AttendanceDao
+    abstract fun readingProgressDao(): ReadingProgressDao  // 새로 추가
     abstract fun unlockProgressDao(): UnlockProgressDao
 
     companion object {
@@ -125,6 +129,53 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // 새로운 마이그레이션 5 -> 6 (ReadingProgressEntity 추가)
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // reading_progress 테이블 생성
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS reading_progress (
+                        id TEXT NOT NULL PRIMARY KEY,
+                        userId TEXT NOT NULL,
+                        bookId TEXT NOT NULL,
+                        languageCode TEXT NOT NULL,
+                        currentPage INTEGER NOT NULL DEFAULT 0,
+                        totalPages INTEGER NOT NULL DEFAULT 0,
+                        isCompleted INTEGER NOT NULL DEFAULT 0,
+                        lastReadAtTimestamp INTEGER,
+                        startedAtTimestamp INTEGER,
+                        completedAtTimestamp INTEGER,
+                        createdAt INTEGER NOT NULL,
+                        updatedAt INTEGER NOT NULL
+                    )
+                """)
+                
+                // 기존 user_book_interactions 테이블의 데이터를 새 테이블로 마이그레이션
+                database.execSQL("""
+                    INSERT INTO reading_progress (
+                        id, userId, bookId, languageCode, currentPage, totalPages, 
+                        isCompleted, lastReadAtTimestamp, startedAtTimestamp, 
+                        completedAtTimestamp, createdAt, updatedAt
+                    )
+                    SELECT 
+                        userId || '_' || bookId || '_' || language as id,
+                        userId,
+                        CAST(bookId as TEXT) as bookId,
+                        language as languageCode,
+                        currentPage,
+                        totalPages,
+                        isCompleted,
+                        lastReadAt as lastReadAtTimestamp,
+                        startedAt as startedAtTimestamp,
+                        completedAt as completedAtTimestamp,
+                        ${System.currentTimeMillis()} as createdAt,
+                        ${System.currentTimeMillis()} as updatedAt
+                    FROM user_book_interactions
+                    WHERE currentPage > 0 OR isCompleted = 1
+                """)
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -132,7 +183,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "storybook_database"
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                     // TODO: 프로덕션 출시 전 반드시 제거 필요
                     .fallbackToDestructiveMigration()
                     .build()

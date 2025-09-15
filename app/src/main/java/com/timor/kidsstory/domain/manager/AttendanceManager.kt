@@ -1,26 +1,22 @@
 package com.timor.kidsstory.domain.manager
 
-import com.timor.kidsstory.data.local.database.dao.AttendanceDao
-import com.timor.kidsstory.data.local.database.entity.AttendanceEntity
+import com.timor.kidsstory.domain.repository.AttendanceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * 출석 체크 시스템을 관리하는 Manager
- * - 일별 출석 기록 및 연속 출석 일수 관리
- * - 출석 팝업 표시 여부 결정
+ * - AttendanceRepository를 통한 출석 관리
+ * - UI 상태 관리 (팝업 표시 등)
  */
 @Singleton
 class AttendanceManager @Inject constructor(
-    private val attendanceDao: AttendanceDao,
-    private val userManager: UserManager
+    private val attendanceRepository: AttendanceRepository
 ) {
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     
     private val _currentStreak = MutableStateFlow(0)
     val currentStreak: StateFlow<Int> = _currentStreak.asStateFlow()
@@ -33,11 +29,10 @@ class AttendanceManager @Inject constructor(
      * @return 첫 출석인지 여부 (팝업 표시용)
      */
     suspend fun checkTodayAttendance(): Boolean {
-        val userId = userManager.getCurrentUserId()
-        val today = dateFormat.format(Date())
+        val today = LocalDate.now()
         
         // 오늘 이미 출석했는지 확인
-        val hasAttendedToday = attendanceDao.hasAttendanceOnDate(userId, today)
+        val hasAttendedToday = attendanceRepository.hasAttendedToday(today)
         
         return if (!hasAttendedToday) {
             // 오늘 첫 출석 처리
@@ -55,55 +50,22 @@ class AttendanceManager @Inject constructor(
      * 오늘 출석 처리
      */
     private suspend fun markTodayAttendance() {
-        val userId = userManager.getCurrentUserId()
-        val today = dateFormat.format(Date())
-        val yesterday = getYesterday()
+        val today = LocalDate.now()
         
-        // 어제 출석했는지 확인
-        val attendedYesterday = attendanceDao.hasAttendanceOnDate(userId, yesterday)
+        // 출석 기록 저장
+        attendanceRepository.markAttendance(today)
         
-        // 연속 출석 일수 계산
-        val newStreakCount = if (attendedYesterday) {
-            // 어제도 출석했으면 연속 출석 +1
-            val latestAttendance = attendanceDao.getLatestAttendance(userId)
-            (latestAttendance?.streakCount ?: 0) + 1
-        } else {
-            // 어제 출석 안했으면 새로 시작 (1일차)
-            1
-        }
-        
-        // 오늘 출석 기록 저장
-        val attendanceEntity = AttendanceEntity(
-            userId = userId,
-            date = today,
-            timestamp = System.currentTimeMillis(),
-            streakCount = newStreakCount
-        )
-        
-        attendanceDao.markAttendance(attendanceEntity)
-        _currentStreak.value = newStreakCount
+        // 현재 연속 출석 일수 업데이트
+        val currentStreak = attendanceRepository.getCurrentStreak()
+        _currentStreak.value = currentStreak
     }
 
     /**
      * 현재 연속 출석 일수 업데이트
      */
     private suspend fun updateCurrentStreak() {
-        val userId = userManager.getCurrentUserId()
-        val latestAttendance = attendanceDao.getLatestAttendance(userId)
-        
-        if (latestAttendance != null) {
-            val today = dateFormat.format(Date())
-            
-            // 최근 출석이 오늘인지 확인
-            if (latestAttendance.date == today) {
-                _currentStreak.value = latestAttendance.streakCount
-            } else {
-                // 오늘 출석 안함 - 연속 출석 끊김
-                _currentStreak.value = 0
-            }
-        } else {
-            _currentStreak.value = 0
-        }
+        val currentStreak = attendanceRepository.getCurrentStreak()
+        _currentStreak.value = currentStreak
     }
 
     /**
@@ -117,41 +79,28 @@ class AttendanceManager @Inject constructor(
      * 연속 출석 일수 조회
      */
     suspend fun getCurrentStreak(): Int {
-        val userId = userManager.getCurrentUserId()
-        val latestAttendance = attendanceDao.getLatestAttendance(userId)
-        val today = dateFormat.format(Date())
-        
-        return if (latestAttendance?.date == today) {
-            latestAttendance.streakCount
-        } else {
-            0 // 오늘 출석 안함
-        }
+        return attendanceRepository.getCurrentStreak()
     }
 
     /**
      * 최대 연속 출석 일수 조회
      */
     suspend fun getMaxStreak(): Int {
-        val userId = userManager.getCurrentUserId()
-        return attendanceDao.getMaxStreak(userId) ?: 0
+        val attendanceStatus = attendanceRepository.getTodayAttendanceStatus()
+        return attendanceStatus.longestStreak
     }
 
     /**
      * 총 출석 일수 조회
      */
     suspend fun getTotalAttendanceDays(): Int {
-        val userId = userManager.getCurrentUserId()
-        return attendanceDao.getTotalAttendanceDays(userId)
+        return attendanceRepository.getTotalAttendanceDays()
     }
 
     /**
-     * 어제 날짜 문자열 생성
+     * 출석 상태 정보 조회
      */
-    private fun getYesterday(): String {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -1)
-        return dateFormat.format(calendar.time)
-    }
+    suspend fun getAttendanceStatus() = attendanceRepository.getTodayAttendanceStatus()
 
     /**
      * 연속 출석 일수 포맷팅 (UI 표시용)
@@ -163,5 +112,12 @@ class AttendanceManager @Inject constructor(
             1 -> "1day"
             else -> "${streak}days"
         }
+    }
+    
+    /**
+     * 출석 팝업 강제 표시 (테스트용)
+     */
+    fun showAttendancePopup() {
+        _shouldShowAttendancePopup.value = true
     }
 }

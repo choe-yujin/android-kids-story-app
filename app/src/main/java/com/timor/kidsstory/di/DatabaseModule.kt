@@ -7,6 +7,7 @@ import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.data.local.database.dao.UserDao
 import com.timor.kidsstory.data.local.database.dao.UserBookInteractionDao
 import com.timor.kidsstory.data.local.database.dao.AttendanceDao
+import com.timor.kidsstory.data.local.database.dao.ReadingProgressDao
 import com.timor.kidsstory.data.local.database.dao.UnlockProgressDao
 import dagger.Module
 import dagger.Provides
@@ -50,6 +51,11 @@ object DatabaseModule {
     @Provides
     fun provideAttendanceDao(database: AppDatabase): AttendanceDao {
         return database.attendanceDao()
+    }
+
+    @Provides
+    fun provideReadingProgressDao(database: AppDatabase): ReadingProgressDao {
+        return database.readingProgressDao()
     }
 
     @Provides

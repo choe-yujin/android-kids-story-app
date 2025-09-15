@@ -1,151 +1,132 @@
 package com.timor.kidsstory.presentation.bookshelf
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.timor.kidsstory.data.local.assets.AssetDataSource
-import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
-import com.timor.kidsstory.data.mapper.toBook
-import com.timor.kidsstory.domain.model.Book
-import com.timor.kidsstory.domain.model.DownloadProgress
-import com.timor.kidsstory.domain.model.DownloadStatus
 import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
-import com.timor.kidsstory.domain.usecase.book.GetBooksUseCase
+import com.timor.kidsstory.domain.usecase.book.FilterBooksUseCase
+import com.timor.kidsstory.domain.usecase.book.GetAllBooksUseCase
+import com.timor.kidsstory.domain.usecase.language.ChangeLanguageUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
-import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.LanguageManager
 import com.timor.kidsstory.domain.util.MusicManager
 import com.timor.kidsstory.domain.util.SoundEffectManager
-import com.timor.kidsstory.domain.manager.AttendanceManager
-import com.timor.kidsstory.domain.manager.BookInteractionManager
+import com.timor.kidsstory.presentation.bookshelf.BookShelfAction
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.inject.Inject
 
 /**
- * 책장 화면의 상태 관리 및 비즈니스 로직 처리 뷰모델
- * - 책 목록 로드 및 필터링
- * - 언어 설정 관리
+ * 책장 화면 전용 ViewModel (슬림화됨)
+ * 
+ * 단일 책임: 책장 UI 상태 관리
+ * - 책 목록 로드 및 표시
+ * - 책 필터링
+ * - 언어 변경
  * - 배경 음악 제어
- * - 출석 체크 및 읽기 진도 관리
+ * - 사운드 이펙트 관리
+ * 
+ * 제거된 책임들:
+ * - 출석 관리 → AttendanceViewModel
+ * - 읽기 진도 관리 → ProgressViewModel
+ * - 복잡한 다운로드 로직 → 향후 분리 예정
  */
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
-    private val getBooksUseCase: GetBooksUseCase,
+    private val getAllBooksUseCase: GetAllBooksUseCase,
+    private val filterBooksUseCase: FilterBooksUseCase,
+    private val changeLanguageUseCase: ChangeLanguageUseCase,
     private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
-    private val saveUserPreferenceUseCase: SaveUserPreferenceUseCase,
     private val musicSettingUseCase: MusicSettingUseCase,
     private val musicManager: MusicManager,
-    private val soundEffectManager: SoundEffectManager,
-    private val downloadedBooksDao: DownloadedBooksDao,
-    private val assetDataSource: AssetDataSource,
-    private val attendanceManager: AttendanceManager,
-    private val bookInteractionManager: BookInteractionManager,
-    @ApplicationContext private val context: Context
+    private val soundEffectManager: SoundEffectManager
 ) : ViewModel() {
 
-    // UI 상태 관리
+    // 핵심 UI 상태만 관리
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
 
-    // 출석 관련 상태
-    private val _attendanceStreak = MutableStateFlow(0)
-    val attendanceStreak = _attendanceStreak.asStateFlow()
-
-    private val _shouldShowAttendancePopup = MutableStateFlow(false)
-    val shouldShowAttendancePopup = _shouldShowAttendancePopup.asStateFlow()
-
-    // 읽기 진도 관련 상태
-    private val _readingProgress = MutableStateFlow(0f)
-    val readingProgress = _readingProgress.asStateFlow()
-
-    private val _completedBooksCount = MutableStateFlow(0)
-    val completedBooksCount = _completedBooksCount.asStateFlow()
-
-    private val _totalBooksCount = MutableStateFlow(0)
-    val totalBooksCount = _totalBooksCount.asStateFlow()
-
     init {
-        loadInitialData()
+        initializeBookshelf()
         observeUserPreference()
         loadMusicSetting()
-        observeAttendanceAndProgress()
     }
 
-    private fun observeAttendanceAndProgress() {
-        viewModelScope.launch {
-            attendanceManager.currentStreak.collect { streak ->
-                _attendanceStreak.value = streak
-            }
-        }
-
-        viewModelScope.launch {
-            attendanceManager.shouldShowAttendancePopup.collect { shouldShow ->
-                _shouldShowAttendancePopup.value = shouldShow
-            }
-        }
-
+    /**
+     * 책장 초기화
+     */
+    private fun initializeBookshelf() {
         viewModelScope.launch {
             try {
-                attendanceManager.checkTodayAttendance()
-            } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Error checking attendance", e)
-            }
-        }
-    }
-
-    private fun updateReadingProgress() {
-        viewModelScope.launch {
-            try {
-                val currentLanguage = _state.value.currentLanguage.code
-                val completedBooks = bookInteractionManager.getCompletedBooksCount(currentLanguage)
-                val totalBooks = _state.value.books.size
-
-                _completedBooksCount.value = completedBooks
-                _totalBooksCount.value = totalBooks
-
-                val progress = if (totalBooks > 0) {
-                    completedBooks.toFloat() / totalBooks.toFloat()
+                val preference = getUserPreferenceUseCase().first()
+                
+                val languageCode = if (preference.languageCode.isBlank()) {
+                    LanguageConstants.DEFAULT_LANGUAGE.code
                 } else {
-                    0f
+                    preference.languageCode
                 }
-                _readingProgress.value = progress
 
-                Log.d("BookshelfViewModel", "Reading progress updated: $completedBooks/$totalBooks")
+                val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
+                    it.code == languageCode
+                } ?: LanguageConstants.DEFAULT_LANGUAGE
+
+                LanguageManager.setCurrentLanguageCode(language.code)
+                _state.update { it.copy(currentLanguage = language) }
+                
+                loadBooks(language.code)
+                
+                Log.d("BookshelfViewModel", "Bookshelf initialized with language: ${language.code}")
+                
             } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Error updating reading progress", e)
+                Log.e("BookshelfViewModel", "Error initializing bookshelf", e)
+                _state.update { 
+                    it.copy(
+                        isLoading = false,
+                        error = "책장을 초기화할 수 없습니다: ${e.message}"
+                    )
+                }
             }
         }
     }
 
-    fun onAttendancePopupDismiss() {
-        attendanceManager.onAttendancePopupShown()
+    /**
+     * 사용자 언어 설정 변화 관찰
+     */
+    private fun observeUserPreference() {
+        viewModelScope.launch {
+            getUserPreferenceUseCase().collect { preference ->
+                val languageCode = if (preference.languageCode.isBlank()) {
+                    LanguageConstants.DEFAULT_LANGUAGE.code
+                } else {
+                    preference.languageCode
+                }
+
+                val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
+                    it.code == languageCode
+                } ?: LanguageConstants.DEFAULT_LANGUAGE
+
+                if (language.code != _state.value.currentLanguage.code) {
+                    LanguageManager.setCurrentLanguageCode(language.code)
+                    _state.update { it.copy(currentLanguage = language) }
+                    loadBooks(language.code)
+                }
+            }
+        }
     }
 
-    fun onMyPageClick() {
-        soundEffectManager.playButtonClick()
-        Log.d("BookshelfViewModel", "MyPage clicked - navigation to be implemented")
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        musicManager.release()
-        soundEffectManager.release()
-    }
-
+    /**
+     * 배경 음악 설정 로드 및 관찰
+     */
     private fun loadMusicSetting() {
         viewModelScope.launch {
             musicSettingUseCase.isMusicOn.collect { isMusicOn ->
@@ -175,100 +156,37 @@ class BookshelfViewModel @Inject constructor(
         }
     }
 
-    private fun loadInitialData() {
-        viewModelScope.launch {
-            val preference = getUserPreferenceUseCase().first()
-
-            val languageCode = if (preference.languageCode.isBlank()) {
-                LanguageConstants.DEFAULT_LANGUAGE.code
-            } else {
-                preference.languageCode
-            }
-
-            val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
-                it.code == languageCode
-            } ?: LanguageConstants.DEFAULT_LANGUAGE
-
-            LanguageManager.setCurrentLanguageCode(language.code)
-
-            _state.update { it.copy(currentLanguage = language) }
-            loadStories(language.code)
-        }
-    }
-
-    private fun observeUserPreference() {
-        viewModelScope.launch {
-            getUserPreferenceUseCase().collect { preference ->
-                val languageCode = if (preference.languageCode.isBlank()) {
-                    LanguageConstants.DEFAULT_LANGUAGE.code
-                } else {
-                    preference.languageCode
-                }
-
-                val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
-                    it.code == languageCode
-                } ?: LanguageConstants.DEFAULT_LANGUAGE
-
-                if (language.code != _state.value.currentLanguage.code) {
-                    LanguageManager.setCurrentLanguageCode(language.code)
-                    _state.update { it.copy(currentLanguage = language) }
-                    loadStories(language.code)
-                }
-            }
-        }
-    }
-
-    private suspend fun loadStories(languageCode: String) {
+    /**
+     * 책 목록 로드 (UseCase 사용)
+     */
+    private fun loadBooks(languageCode: String) {
         viewModelScope.launch {
             try {
                 _state.update { it.copy(isLoading = true, error = null) }
-
-                val result = getBooksUseCase(languageCode)
-                val downloadedBooks = loadDownloadedBooks(languageCode)
-
+                
+                Log.d("BookshelfViewModel", "Loading books for language: $languageCode")
+                
+                // GetAllBooksUseCase를 통한 통합 책 목록 조회
+                val result = getAllBooksUseCase(languageCode)
+                
                 result.fold(
-                    onSuccess = { localBooks ->
-                        val localBooksWithDownloadStatus = localBooks.map { localBook ->
-                            localBook.copy(
-                                isDownloaded = true,
-                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
+                    onSuccess = { books ->
+                        _state.update { currentState ->
+                            currentState.copy(
+                                books = books,
+                                filteredBooks = books, // 초기에는 필터링 없이 전체 표시
+                                isLoading = false,
+                                error = null
                             )
                         }
-
-                        val localStoryIds =
-                            localBooksWithDownloadStatus.map { it.storyId.split("_").first() }
-                                .toSet()
-                        val newDownloadedBooks = downloadedBooks.filter {
-                            !localStoryIds.contains(it.storyId.split("_").first())
-                        }
-
-                        val combinedBooks = localBooksWithDownloadStatus + newDownloadedBooks
-
+                        
+                        // 현재 필터가 적용된 경우 다시 필터링
                         val currentFilter = _state.value.filterBarState.selectedFilter
-                        val shouldApplyFilters = currentFilter != FilterBarCategory.All
-
-                        _state.update {
-                            if (shouldApplyFilters) {
-                                it.copy(books = combinedBooks, isLoading = false)
-                            } else {
-                                it.copy(
-                                    books = combinedBooks,
-                                    filteredBooks = combinedBooks,
-                                    isLoading = false
-                                )
-                            }
+                        if (currentFilter != FilterBarCategory.All) {
+                            applyCurrentFilter()
                         }
-
-                        if (shouldApplyFilters) {
-                            applyFilters()
-                        }
-
-                        updateReadingProgress()
-
-                        Log.d(
-                            "BookshelfViewModel",
-                            "Loaded total ${combinedBooks.size} books"
-                        )
+                        
+                        Log.d("BookshelfViewModel", "Successfully loaded ${books.size} books")
                     },
                     onFailure = { error ->
                         Log.e("BookshelfViewModel", "Error loading books", error)
@@ -280,8 +198,9 @@ class BookshelfViewModel @Inject constructor(
                         }
                     }
                 )
+                
             } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Exception in loadStories", e)
+                Log.e("BookshelfViewModel", "Exception in loadBooks", e)
                 _state.update {
                     it.copy(
                         isLoading = false,
@@ -292,49 +211,34 @@ class BookshelfViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadDownloadedBooks(languageCode: String): List<Book> {
-        return try {
-            val downloadedEntities = downloadedBooksDao.getDownloadedBooksByLanguage(languageCode)
-
-            downloadedEntities.mapNotNull { entity ->
-                val bookContentResult =
-                    assetDataSource.loadExternalBookContent(entity.contentJsonPath)
-                bookContentResult.getOrNull()?.let { response ->
-                    val contentJsonFile = File(entity.contentJsonPath)
-                    val bookRootDir = contentJsonFile.parentFile?.parentFile
-                    val imageFolderPath = File(bookRootDir, "images").absolutePath
-                    response.toBook(
-                        languageCode,
-                        entity.level,
-                        entity.category,
-                        entity.coverImagePath,
-                        imageFolderPath
-                    )
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("BookshelfViewModel", "Error loading downloaded books", e)
-            emptyList()
-        }
-    }
-
+    /**
+     * 사용자 액션 처리 (슬림화됨)
+     */
     fun onAction(action: BookShelfAction) {
         when (action) {
             is BookShelfAction.BookSelect -> {
                 soundEffectManager.playButtonClick()
+                // 책 선택은 Navigation에서 처리
             }
 
             is BookShelfAction.ChatbotClick -> {
                 soundEffectManager.playButtonClick()
+                // Chatbot 네비게이션은 외부에서 처리
             }
 
             is BookShelfAction.SettingClick -> {
                 soundEffectManager.playButtonClick()
+                // Settings 네비게이션은 외부에서 처리
+            }
+            
+            is BookShelfAction.MyPageClick -> {
+                soundEffectManager.playButtonClick()
+                // MyPage 네비게이션은 외부에서 처리
             }
 
             is BookShelfAction.ShowLanguageDialog -> {
                 soundEffectManager.playButtonClick()
-                handleLanguageSelector(action.isShow)
+                handleLanguageDialog(action.isShow)
             }
 
             is BookShelfAction.ChangeLanguage -> {
@@ -344,8 +248,10 @@ class BookshelfViewModel @Inject constructor(
 
             is BookShelfAction.StartMusic -> startMusic()
             is BookShelfAction.StopMusic -> stopMusic()
+            
             is BookShelfAction.DownloadBook -> {
                 soundEffectManager.playButtonClick()
+                // 다운로드 로직은 별도 ViewModel에서 처리 예정
             }
 
             is BookShelfAction.SelectFilter -> {
@@ -356,21 +262,24 @@ class BookshelfViewModel @Inject constructor(
                     category = action.category,
                 )
             }
-
+            
+            // 출석/진도 관련 액션들은 제거됨 (각각의 ViewModel에서 처리)
             is BookShelfAction.DismissAttendancePopup -> {
-                onAttendancePopupDismiss()
-            }
-
-            is BookShelfAction.MyPageClick -> {
-                onMyPageClick()
+                // AttendanceViewModel에서 처리
             }
         }
     }
 
-    private fun handleLanguageSelector(isShow: Boolean) {
+    /**
+     * 언어 선택 다이얼로그 표시/숨김
+     */
+    private fun handleLanguageDialog(isShow: Boolean) {
         _state.update { it.copy(showLanguageDialog = isShow) }
     }
 
+    /**
+     * 언어 변경 (UseCase 사용)
+     */
     private fun changeLanguage(language: Language) {
         Log.d("BookshelfViewModel", "Changing language to: ${language.code}")
 
@@ -380,18 +289,28 @@ class BookshelfViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             showLanguageDialog = false,
+                            isLoading = true,
                             currentLanguage = language
                         )
                     }
 
-                    saveUserPreferenceUseCase.updateLanguage(language.code)
+                    // ChangeLanguageUseCase를 통한 언어 변경
+                    changeLanguageUseCase(language)
                     LanguageManager.setCurrentLanguageCode(language.code)
 
                     kotlinx.coroutines.delay(100)
-                    loadStories(language.code)
+                    loadBooks(language.code)
+                    
+                    Log.d("BookshelfViewModel", "Language changed successfully to: ${language.code}")
+                    
                 } catch (e: Exception) {
                     Log.e("BookshelfViewModel", "언어 변경 중 오류 발생", e)
-                    _state.update { it.copy(isLoading = false) }
+                    _state.update { 
+                        it.copy(
+                            isLoading = false,
+                            error = "언어 변경에 실패했습니다: ${e.message}"
+                        )
+                    }
                 }
             }
         } else {
@@ -399,14 +318,23 @@ class BookshelfViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 배경 음악 시작
+     */
     private fun startMusic() {
         musicManager.startMusic()
     }
 
+    /**
+     * 배경 음악 정지
+     */
     private fun stopMusic() {
         musicManager.stopMusic()
     }
 
+    /**
+     * 필터 옵션 선택 처리
+     */
     private fun onFilterOptionSelected(
         filter: FilterBarCategory? = null,
         stage: FilterLevel? = null,
@@ -448,27 +376,57 @@ class BookshelfViewModel @Inject constructor(
                 )
             )
         }
-        applyFilters()
+        applyCurrentFilter()
     }
 
-    private fun applyFilters() {
-        val selectedFilter = _state.value.filterBarState.selectedFilter
-        val selectedStage = _state.value.filterBarState.selectedStage
-        val selectedCategory = _state.value.filterBarState.selectedCategory
-
-        val filteredList = _state.value.books.filter { book ->
-            when (selectedFilter) {
-                FilterBarCategory.STAGE -> selectedStage?.let { book.level == (it.ordinal + 1) }
-                    ?: true
-
-                FilterBarCategory.CATEGORY -> selectedCategory?.let {
-                    it.matches(book.category)
-                } ?: true
-
-                else -> true
+    /**
+     * 현재 선택된 필터 적용 (UseCase 사용)
+     */
+    private fun applyCurrentFilter() {
+        viewModelScope.launch {
+            try {
+                val currentState = _state.value
+                val selectedFilter = currentState.filterBarState.selectedFilter
+                val selectedStage = currentState.filterBarState.selectedStage
+                val selectedCategory = currentState.filterBarState.selectedCategory
+                
+                // FilterBooksUseCase를 통한 필터링 (Presentation 모델 사용)
+                val filteredBooks = filterBooksUseCase(
+                    books = currentState.books,
+                    selectedFilter = selectedFilter,
+                    selectedStage = selectedStage,
+                    selectedCategory = selectedCategory
+                )
+                
+                _state.update { it.copy(filteredBooks = filteredBooks) }
+                
+                Log.d("BookshelfViewModel", "Filtered books: ${filteredBooks.size}/${currentState.books.size}")
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error applying filter", e)
             }
         }
+    }
 
-        _state.update { it.copy(filteredBooks = filteredList) }
+    /**
+     * 에러 메시지 클리어
+     */
+    fun clearError() {
+        _state.update { it.copy(error = null) }
+    }
+
+    /**
+     * 책 목록 새로고침
+     */
+    fun refreshBooks() {
+        val currentLanguage = _state.value.currentLanguage.code
+        loadBooks(currentLanguage)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        musicManager.release()
+        soundEffectManager.release()
+        Log.d("BookshelfViewModel", "ViewModel cleared")
     }
 }

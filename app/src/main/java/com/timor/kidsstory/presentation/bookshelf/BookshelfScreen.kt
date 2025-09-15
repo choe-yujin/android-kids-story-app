@@ -25,8 +25,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.presentation.attendance.AttendancePopup
+import com.timor.kidsstory.presentation.attendance.AttendanceViewModel
 import com.timor.kidsstory.presentation.bookshelf.components.BookCover
 import com.timor.kidsstory.presentation.bookshelf.components.BookshelfHeader
 import com.timor.kidsstory.presentation.bookshelf.components.EmptyBookshelf
@@ -35,42 +37,59 @@ import com.timor.kidsstory.presentation.bookshelf.components.ProgressAndAttendan
 import com.timor.kidsstory.presentation.bookshelf.components.filter.FilterBar
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
+import com.timor.kidsstory.presentation.progress.ProgressViewModel
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
-import androidx.hilt.navigation.compose.hiltViewModel
 
 /**
- * 책장 화면 UI 컴포넌트
- * - 사용자에게 전체 동화책 목록을 그리드 형태로 표시
- * - 언어 선택, 설정, 챗봇 기능 접근 제공
- * - 출석 체크 및 읽기 진도 표시
- * - 생명주기에 따른 배경음악 관리
- *
- * @param state 책장 화면 UI 상태
- * @param lifecycleOwner 생명주기 소유자 (기본값: 현재 콤포저블의 생명주기)
- * @param onAction 사용자 액션 처리 콜백
- * @param viewModel 뷰모델 (출석 및 진도 데이터 접근용)
+ * 책장 화면 UI 컴포넌트 (리팩토링됨)
+ * 
+ * Clean Architecture 적용:
+ * - UI는 완전히 stateless
+ * - 3개의 분리된 ViewModel 사용
+ * - 각 ViewModel의 상태를 조합하여 UI 구성
+ * 
+ * @param bookshelfViewModel 책장 상태 관리 (책 목록, 언어, 음악)
+ * @param attendanceViewModel 출석 상태 관리 (출석 팝업, 연속 출석)
+ * @param progressViewModel 읽기 진도 상태 관리 (완독 책, 진도율)
+ * @param lifecycleOwner 생명주기 소유자
+ * @param onBookSelect 책 선택 콜백
+ * @param onSettingClick 설정 버튼 클릭 콜백
+ * @param onChatbotClick 챗봇 버튼 클릭 콜백
  */
 @Composable
 fun BookshelfScreen(
-    state: BookshelfUiState,
+    bookshelfViewModel: BookshelfViewModel = hiltViewModel(),
+    attendanceViewModel: AttendanceViewModel = hiltViewModel(),
+    progressViewModel: ProgressViewModel = hiltViewModel(),
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    onAction: (BookShelfAction) -> Unit,
-    viewModel: BookshelfViewModel = hiltViewModel()
+    onBookSelect: (Int) -> Unit = {},
+    onSettingClick: () -> Unit = {},
+    onChatbotClick: () -> Unit = {},
+    onMyPageClick: () -> Unit = {}
 ) {
-    // 출석 및 진도 관련 상태 수집
-    val attendanceStreak by viewModel.attendanceStreak.collectAsState()
-    val shouldShowAttendancePopup by viewModel.shouldShowAttendancePopup.collectAsState()
-    val readingProgress by viewModel.readingProgress.collectAsState()
-    val completedBooksCount by viewModel.completedBooksCount.collectAsState()
-    val totalBooksCount by viewModel.totalBooksCount.collectAsState()
+    // 각 ViewModel의 상태 수집 (Stateless UI)
+    val bookshelfState by bookshelfViewModel.state.collectAsState()
+    val attendanceState by attendanceViewModel.attendanceState.collectAsState()
+    val shouldShowAttendancePopup by attendanceViewModel.shouldShowAttendancePopup.collectAsState()
+    val progressState by progressViewModel.progressState.collectAsState()
+
+    // 언어 변경 시 진도 데이터 다시 로드
+    LaunchedEffect(bookshelfState.currentLanguage.code, bookshelfState.books.size) {
+        if (bookshelfState.books.isNotEmpty()) {
+            progressViewModel.loadProgress(
+                languageCode = bookshelfState.currentLanguage.code,
+                totalBooks = bookshelfState.books.size
+            )
+        }
+    }
 
     // 음악 상태 변경 감지 및 처리
-    LaunchedEffect(state.isMusicOn) {
-        if (state.isMusicOn) {
-            onAction(BookShelfAction.StartMusic)
+    LaunchedEffect(bookshelfState.isMusicOn) {
+        if (bookshelfState.isMusicOn) {
+            bookshelfViewModel.onAction(BookShelfAction.StartMusic)
         } else {
-            onAction(BookShelfAction.StopMusic)
+            bookshelfViewModel.onAction(BookShelfAction.StopMusic)
         }
     }
 
@@ -78,8 +97,12 @@ fun BookshelfScreen(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_STOP -> onAction(BookShelfAction.StopMusic)// 앱이 백그라운드로 가면 정지
-                Lifecycle.Event.ON_START -> if (state.isMusicOn) onAction(BookShelfAction.StartMusic) // 다시 돌아오면 실행
+                Lifecycle.Event.ON_STOP -> bookshelfViewModel.onAction(BookShelfAction.StopMusic)
+                Lifecycle.Event.ON_START -> {
+                    if (bookshelfState.isMusicOn) {
+                        bookshelfViewModel.onAction(BookShelfAction.StartMusic)
+                    }
+                }
                 else -> {}
             }
         }
@@ -87,30 +110,69 @@ fun BookshelfScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    // 메인 UI 구성
+    // 메인 UI 구성 (완전히 stateless)
+    BookshelfScreenContent(
+        bookshelfState = bookshelfState,
+        attendanceStreak = attendanceState.currentStreak,
+        shouldShowAttendancePopup = shouldShowAttendancePopup,
+        readingProgress = progressState.progressPercentage,
+        completedBooksCount = progressState.completedBooks,
+        totalBooksCount = progressState.totalBooks,
+        onBookshelfAction = { action ->
+            when (action) {
+                is BookShelfAction.BookSelect -> onBookSelect(action.index)
+                is BookShelfAction.SettingClick -> onSettingClick()
+                is BookShelfAction.ChatbotClick -> onChatbotClick()
+                is BookShelfAction.MyPageClick -> onMyPageClick()
+                is BookShelfAction.DismissAttendancePopup -> {
+                    attendanceViewModel.onAttendancePopupDismiss()
+                }
+                else -> {
+                    bookshelfViewModel.onAction(action)
+                }
+            }
+        }
+    )
+}
+
+/**
+ * 책장 화면의 실제 UI 컨텐츠 (Stateless)
+ * 
+ * 모든 상태를 매개변수로 받아 완전히 stateless하게 구성
+ */
+@Composable
+private fun BookshelfScreenContent(
+    bookshelfState: BookshelfUiState,
+    attendanceStreak: Int,
+    shouldShowAttendancePopup: Boolean,
+    readingProgress: Float,
+    completedBooksCount: Int,
+    totalBooksCount: Int,
+    onBookshelfAction: (BookShelfAction) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.primary50) // 전체 배경색 적용
+            .background(AppColors.primary50)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .navigationBarsPadding()
         ) {
-            // 헤더 - 언어 선택, 설정, 챗봇 버튼과 출석/진도 표시 포함
+            // 헤더 - 언어 선택, 설정, 챗봇 버튼과 출석/진도 표시
             BookshelfHeader(
-                currentLanguage = state.currentLanguage,
+                currentLanguage = bookshelfState.currentLanguage,
                 onSettingClick = {
-                    onAction(BookShelfAction.SettingClick)
+                    onBookshelfAction(BookShelfAction.SettingClick)
                 },
                 onLanguageClick = {
-                    onAction(BookShelfAction.ShowLanguageDialog(true))
+                    onBookshelfAction(BookShelfAction.ShowLanguageDialog(true))
                 },
                 onChatbotClick = {
-                    onAction(BookShelfAction.ChatbotClick)
+                    onBookshelfAction(BookShelfAction.ChatbotClick)
                 },
-                // 출석 및 진도 컴포넌트 추가
+                // 출석 및 진도 컴포넌트 (stateless)
                 progressAndAttendanceContent = {
                     ProgressAndAttendanceSection(
                         streakCount = attendanceStreak,
@@ -118,7 +180,7 @@ fun BookshelfScreen(
                         completedBooks = completedBooksCount,
                         totalBooks = totalBooksCount,
                         onMyPageClick = {
-                            onAction(BookShelfAction.MyPageClick)
+                            onBookshelfAction(BookShelfAction.MyPageClick)
                         }
                     )
                 }
@@ -126,54 +188,60 @@ fun BookshelfScreen(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // 선택된 언어 코드를 FilterBar에 전달
+            // 필터 바
             FilterBar(
-                filterBarState = state.filterBarState,
-                selectedLanguageCode = state.currentLanguage.code, // 현재 선택된 언어 코드 전달
+                filterBarState = bookshelfState.filterBarState,
+                selectedLanguageCode = bookshelfState.currentLanguage.code,
                 onAllClick = {
-                    onAction(BookShelfAction.SelectFilter(FilterBarCategory.All))
+                    onBookshelfAction(BookShelfAction.SelectFilter(FilterBarCategory.All))
                 },
                 onStageClick = {
-                    onAction(BookShelfAction.SelectFilter(FilterBarCategory.STAGE))
+                    onBookshelfAction(BookShelfAction.SelectFilter(FilterBarCategory.STAGE))
                 },
                 onCategoryClick = {
-                    onAction(BookShelfAction.SelectFilter(FilterBarCategory.CATEGORY))
+                    onBookshelfAction(BookShelfAction.SelectFilter(FilterBarCategory.CATEGORY))
                 },
                 onLevelClick = { level ->
-                    onAction(BookShelfAction.SelectFilter(stage = level))
+                    onBookshelfAction(BookShelfAction.SelectFilter(stage = level))
                 },
                 onBookCategoryClick = { bookCategory ->
-                    onAction(BookShelfAction.SelectFilter(category = bookCategory))
+                    onBookshelfAction(BookShelfAction.SelectFilter(category = bookCategory))
                 }
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 책 그리드 또는 빈 상태 표시
-            if (state.filteredBooks.isEmpty()) {
-                // 책이 없을 때 빈 상태 표시 (선택된 언어로 표시)
+            // 책 그리드 또는 빈 상태
+            if (bookshelfState.filteredBooks.isEmpty()) {
                 EmptyBookshelf(
-                    isFiltered = state.filterBarState.selectedFilter != FilterBarCategory.All,
-                    isLoading = state.isLoading,
-                    selectedLanguageCode = state.currentLanguage.code // 언어 코드 전달
+                    isFiltered = bookshelfState.filterBarState.selectedFilter != FilterBarCategory.All,
+                    isLoading = bookshelfState.isLoading,
+                    selectedLanguageCode = bookshelfState.currentLanguage.code
                 )
             } else {
-                // 책 그리드 표시
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(5),  // 5열 그리드
+                    columns = GridCells.Fixed(5),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
-                    contentPadding = PaddingValues(top = 4.dp, bottom = 24.dp), // 상단 4dp, 하단 24dp 패딩
+                    contentPadding = PaddingValues(top = 4.dp, bottom = 24.dp),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 48.dp)
                 ) {
-                    items(state.filteredBooks) { book ->
+                    items(bookshelfState.filteredBooks) { book ->
                         BookCover(
                             book = book,
-                            onClick = { onAction(BookShelfAction.BookSelect(state.books.indexOf(book))) },
+                            onClick = { 
+                                onBookshelfAction(
+                                    BookShelfAction.BookSelect(bookshelfState.books.indexOf(book))
+                                ) 
+                            },
                             onDownloadClick = if (!book.isDownloaded) {
-                                { onAction(BookShelfAction.DownloadBook(state.books.indexOf(book))) }
+                                { 
+                                    onBookshelfAction(
+                                        BookShelfAction.DownloadBook(bookshelfState.books.indexOf(book))
+                                    ) 
+                                }
                             } else null
                         )
                     }
@@ -181,27 +249,26 @@ fun BookshelfScreen(
             }
         }
 
-        // 언어 선택 다이얼로그 표시
-        if (state.showLanguageDialog) {
+        // 언어 선택 다이얼로그
+        if (bookshelfState.showLanguageDialog) {
             LanguageDialog(
                 languages = LanguageConstants.SUPPORTED_LANGUAGES,
-                selectedLanguage = state.currentLanguage,
+                selectedLanguage = bookshelfState.currentLanguage,
                 onLanguageSelected = {
-                    onAction(BookShelfAction.ChangeLanguage(it))
-                    // 액티비티 재시작 제거 - LocalizedText가 동적으로 처리함
+                    onBookshelfAction(BookShelfAction.ChangeLanguage(it))
                 },
                 onDismiss = {
-                    onAction(BookShelfAction.ShowLanguageDialog(false))
+                    onBookshelfAction(BookShelfAction.ShowLanguageDialog(false))
                 }
             )
         }
 
-        // 출석 축하 팝업 표시
+        // 출석 축하 팝업
         AttendancePopup(
             isVisible = shouldShowAttendancePopup,
             streakCount = attendanceStreak,
             onDismiss = {
-                onAction(BookShelfAction.DismissAttendancePopup)
+                onBookshelfAction(BookShelfAction.DismissAttendancePopup)
             }
         )
     }
@@ -211,9 +278,14 @@ fun BookshelfScreen(
 @Composable
 private fun BookShelfScreenPreview() {
     KidsStoryTheme {
-        BookshelfScreen(
-            state = BookshelfUiState(),
-            onAction = {}
+        BookshelfScreenContent(
+            bookshelfState = BookshelfUiState(),
+            attendanceStreak = 5,
+            shouldShowAttendancePopup = false,
+            readingProgress = 0.3f,
+            completedBooksCount = 3,
+            totalBooksCount = 10,
+            onBookshelfAction = {}
         )
     }
 }

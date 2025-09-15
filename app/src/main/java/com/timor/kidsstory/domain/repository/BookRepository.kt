@@ -1,6 +1,7 @@
 package com.timor.kidsstory.domain.repository
 
 import com.timor.kidsstory.domain.model.Book
+import com.timor.kidsstory.data.dto.PageContentResponse
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -34,4 +35,19 @@ interface BookRepository {
      * 다운로드 진행률 관찰
      */
     fun observeDownloadProgress(storyId: String): Flow<Float>
+    
+    /**
+     * 로컬 Asset 책만 가져오기 (GetAllBooksUseCase에서 사용)
+     */
+    suspend fun getLocalBooks(languageCode: String): Result<List<Book>>
+    
+    /**
+     * 다운로드된 책만 가져오기 (GetAllBooksUseCase에서 사용)
+     */
+    suspend fun getDownloadedBooks(languageCode: String): Result<List<Book>>
+    
+    /**
+     * 외부 파일에서 책 콘텐츠 로드 (BookshelfViewModel의 loadExternalBookContent 로직 이동)
+     */
+    suspend fun loadExternalBookContent(contentPath: String): Result<PageContentResponse>
 }

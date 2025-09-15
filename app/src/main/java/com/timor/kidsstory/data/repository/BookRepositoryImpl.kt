@@ -1,6 +1,7 @@
 package com.timor.kidsstory.data.repository
 
 import android.util.Log
+import com.timor.kidsstory.data.dto.PageContentResponse
 import com.timor.kidsstory.data.local.assets.AssetDataSource
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.data.mapper.BookMapper
@@ -37,7 +38,8 @@ class BookRepositoryImpl @Inject constructor(
             val localBooks = localBooksResult.getOrNull() ?: emptyList()
             
             // 2. 다운로드된 책 로드
-            val downloadedBooks = getDownloadedBooks(languageCode)
+            val downloadedBooksResult = getDownloadedBooks(languageCode)
+            val downloadedBooks = downloadedBooksResult.getOrNull() ?: emptyList()
             
             // 3. 로컬 책은 다운로드 상태로 표시
             val localBooksWithDownloadStatus = localBooks.map { localBook ->
@@ -87,7 +89,7 @@ class BookRepositoryImpl @Inject constructor(
     /**
      * 로컬 Asset 책 목록 로드
      */
-    private suspend fun getLocalBooks(languageCode: String): Result<List<Book>> {
+    override suspend fun getLocalBooks(languageCode: String): Result<List<Book>> {
         return try {
             // AssetDataSource의 실제 메서드 사용
             val booksResult = assetDataSource.loadBooks()
@@ -121,11 +123,11 @@ class BookRepositoryImpl @Inject constructor(
     /**
      * 다운로드된 책 목록 로드
      */
-    private suspend fun getDownloadedBooks(languageCode: String): List<Book> {
+    override suspend fun getDownloadedBooks(languageCode: String): Result<List<Book>> {
         return try {
             val downloadedEntities = downloadedBooksDao.getDownloadedBooksByLanguage(languageCode)
 
-            downloadedEntities.mapNotNull { entity ->
+            val books = downloadedEntities.mapNotNull { entity ->
                 val bookContentResult = assetDataSource.loadExternalBookContent(entity.contentJsonPath)
                 bookContentResult.getOrNull()?.let { response ->
                     val contentJsonFile = File(entity.contentJsonPath)
@@ -142,9 +144,11 @@ class BookRepositoryImpl @Inject constructor(
                     )
                 }
             }
+            
+            Result.success(books)
         } catch (e: Exception) {
             Log.e("BookRepositoryImpl", "Error loading downloaded books", e)
-            emptyList()
+            Result.failure(e)
         }
     }
 
@@ -160,10 +164,13 @@ class BookRepositoryImpl @Inject constructor(
             }
 
             // 다운로드된 책인지 확인
-            val downloadedBooks = downloadedBooksDao.getDownloadedBooksByLanguage(languageCode)
-            downloadedBooks.any { entity ->
-                entity.storyId == storyId
+            val downloadedBooksResult = getDownloadedBooks(languageCode)
+            if (downloadedBooksResult.isSuccess) {
+                val downloadedBooks = downloadedBooksResult.getOrNull() ?: emptyList()
+                return downloadedBooks.any { it.storyId == storyId }
             }
+            
+            return false
         } catch (e: Exception) {
             false
         }
@@ -177,5 +184,9 @@ class BookRepositoryImpl @Inject constructor(
     override fun observeDownloadProgress(storyId: String): Flow<Float> {
         // TODO: 다운로드 진행률 관찰 구현
         return flowOf(0f)
+    }
+    
+    override suspend fun loadExternalBookContent(contentPath: String): Result<PageContentResponse> {
+        return assetDataSource.loadExternalBookContent(contentPath)
     }
 }

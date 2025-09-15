@@ -1,28 +1,59 @@
 package com.timor.kidsstory.data.local.database.entity
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
+import java.time.LocalDate
 
 /**
- * 출석 체크 시스템을 위한 Entity
- * - 일별 출석 기록 및 연속 출석 일수(streak) 관리
- * - 사용자별 출석 데이터 분리
+ * 출석 기록을 저장하는 Room Entity
+ * - 기존 Database 스키마에 맞춘 복합 키 구조
  */
 @Entity(
     tableName = "attendance",
-    primaryKeys = ["userId", "date"],
-    foreignKeys = [
-        ForeignKey(
-            entity = UserEntity::class,
-            parentColumns = ["userId"],
-            childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+    primaryKeys = ["userId", "date"]
 )
 data class AttendanceEntity(
+    /**
+     * 사용자 ID
+     */
     val userId: String = "default_user",
-    val date: String, // yyyy-MM-dd format
+    
+    /**
+     * 출석 날짜 (yyyy-MM-dd 형식)
+     */
+    val date: String,
+    
+    /**
+     * 출석 시간 (timestamp)
+     */
     val timestamp: Long = System.currentTimeMillis(),
+    
+    /**
+     * 연속 출석 일수 (해당 날짜까지의)
+     */
     val streakCount: Int = 1
-)
+) {
+    companion object {
+        /**
+         * LocalDate와 사용자 정보로 Entity 생성
+         */
+        fun fromDate(
+            userId: String = "default_user",
+            date: LocalDate, 
+            streakCount: Int = 1
+        ): AttendanceEntity {
+            return AttendanceEntity(
+                userId = userId,
+                date = date.toString(),
+                timestamp = System.currentTimeMillis(),
+                streakCount = streakCount
+            )
+        }
+    }
+    
+    /**
+     * Entity를 LocalDate로 변환
+     */
+    fun toLocalDate(): LocalDate {
+        return LocalDate.parse(date)
+    }
+}
