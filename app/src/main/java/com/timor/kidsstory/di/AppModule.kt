@@ -6,7 +6,7 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import com.google.ai.client.generativeai.GenerativeModel
 import com.timor.kidsstory.BuildConfig
-import com.timor.kidsstory.data.local.assets.AssetDataSource
+import com.timor.kidsstory.data.local.assets.UnifiedDataSource
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import com.timor.kidsstory.domain.util.SoundEffectManager
 import dagger.Module
@@ -23,8 +23,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAssetDataSource(@ApplicationContext context: Context): AssetDataSource {
-        return AssetDataSource(context)
+    fun provideUnifiedDataSource(@ApplicationContext context: Context): UnifiedDataSource {
+        return UnifiedDataSource(context)
     }
 
     @Provides

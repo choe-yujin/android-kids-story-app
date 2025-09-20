@@ -1,7 +1,7 @@
 package com.timor.kidsstory.di
 
 import android.content.Context
-import com.timor.kidsstory.data.local.assets.AssetDataSource
+import com.timor.kidsstory.data.local.assets.UnifiedDataSource
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.data.remote.BookDownloader
 import com.timor.kidsstory.data.remote.network.BookNetworkService
@@ -22,8 +22,8 @@ object RepositoryModule {
         @ApplicationContext context: Context,
         networkService: BookNetworkService,
         downloadedBooksDao: DownloadedBooksDao,
-        assetDataSource: AssetDataSource
+        unifiedDataSource: UnifiedDataSource
     ): BookDownloader {
-        return BookDownloader(context, networkService, downloadedBooksDao, assetDataSource)
+        return BookDownloader(context, networkService, downloadedBooksDao, unifiedDataSource)
     }
 }

@@ -108,5 +108,12 @@ object AppColors {
     val level4 = Color(0xFF791813)
     val level5 = Color(0xFF1F002C)
 
-
+    /**
+     * Grade 색상 - 필터 레벨 및 카테고리용
+     */
+    val grade1 = Color(0xFF47A714)
+    val grade2 = Color(0xFFC9A93B) 
+    val grade3 = Color(0xFFE38400)
+    val grade4 = Color(0xFFC52820)
+    val grade5 = Color(0xFF67387A)
 }

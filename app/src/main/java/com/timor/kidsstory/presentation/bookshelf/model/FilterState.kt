@@ -42,39 +42,47 @@ enum class FilterLevel(
 }
 
 /**
- * 책 주제 카테고리 필터 (간결한 카테고리명)
+ * 책 주제 카테고리 필터 - 기존 7개 카테고리만 사용
  */
 enum class FilterBookCategory(
     @StringRes val displayNameRes: Int, 
-    val keywords: List<String>
+    val keywords: List<String>,
+    val iconRes: Int
 ) {
     ENVIRONMENT(
         displayNameRes = R.string.category_environment_nature,
-        keywords = listOf("environment", "nature", "환경", "자연", "생태", "동물", "식물", "기후", "재활용")
+        keywords = listOf("environment", "nature", "환경", "자연", "생태", "동물", "식물", "기후", "재활용"),
+        iconRes = R.drawable.ic_category_environment
     ),
     SCIENCE_NATURE(
         displayNameRes = R.string.category_science_math, 
-        keywords = listOf("math", "science", "수학", "과학", "실험", "숫자", "계산", "우주", "물리")
+        keywords = listOf("math", "science", "수학", "과학", "실험", "숫자", "계산", "우주", "물리"),
+        iconRes = R.drawable.ic_category_math
     ),
     CULTURE_WORLD(
         displayNameRes = R.string.category_culture_world,
-        keywords = listOf("culture", "world", "문화", "세계", "전통", "음식", "축제", "여행", "나라")
+        keywords = listOf("culture", "world", "문화", "세계", "전통", "음식", "축제", "여행", "나라"),
+        iconRes = R.drawable.ic_category_culture
     ),
     SOCIAL_EMOTIONAL(
         displayNameRes = R.string.category_social_emotional,
-        keywords = listOf("social", "emotional", "사회", "정서", "감정", "우정", "가족", "갈등", "친구")
+        keywords = listOf("social", "emotional", "사회", "정서", "감정", "우정", "가족", "갈등", "친구"),
+        iconRes = R.drawable.ic_category_society
     ),
     FOLKTALES_HISTORY(
         displayNameRes = R.string.category_folktales_history,
-        keywords = listOf("folktale", "history", "이야기", "역사", "전설", "신화", "옛이야기", "위인", "과거")
+        keywords = listOf("folktale", "history", "이야기", "역사", "전설", "신화", "옛이야기", "위인", "과거"),
+        iconRes = R.drawable.ic_category_history
     ),
     DAILY_LIFE(
         displayNameRes = R.string.category_daily_life,
-        keywords = listOf("daily", "life", "일상", "생활", "학교", "집", "일과", "습관", "하루")
+        keywords = listOf("daily", "life", "일상", "생활", "학교", "집", "일과", "습관", "하루"),
+        iconRes = R.drawable.ic_category_life
     ),
     ADVENTURE_FANTASY(
         displayNameRes = R.string.category_adventure_fantasy,
-        keywords = listOf("adventure", "fantasy", "모험", "판타지", "탐험", "마법", "상상", "꿈", "여행")
+        keywords = listOf("adventure", "fantasy", "모험", "판타지", "탐험", "마법", "상상", "꿈", "여행"),
+        iconRes = R.drawable.ic_category_adventure
     );
 
     /**
