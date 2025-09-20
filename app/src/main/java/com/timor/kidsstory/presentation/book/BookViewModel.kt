@@ -8,6 +8,8 @@ import com.orhanobut.logger.Logger
 import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.usecase.book.GetBookDetailUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
+import com.timor.kidsstory.domain.repository.ReadingProgressRepository
+import com.timor.kidsstory.domain.model.ReadingProgress
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import com.timor.kidsstory.domain.util.SoundEffectManager
@@ -41,6 +43,7 @@ import javax.inject.Inject
 class BookViewModel @Inject constructor(
     private val getBookDetailUseCase: GetBookDetailUseCase,
     private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
+    private val readingProgressRepository: ReadingProgressRepository,
     private val textToSpeechHelper: TextToSpeechHelper,
     private val soundEffectManager: SoundEffectManager,
     savedStateHandle: SavedStateHandle,
@@ -58,6 +61,11 @@ class BookViewModel @Inject constructor(
 
     // 원본 페이지 데이터
     private var pages: List<Page> = emptyList()
+    
+    // 현재 책 메타데이터
+    private var currentBookId: String = ""
+    private var currentLanguageCode: String = ""
+    private var currentUserId: String = "default_user" // 기본 사용자 ID
 
     /**
      * 초기화 - 책 데이터 로드 및 TTS 초기화
@@ -109,6 +117,13 @@ class BookViewModel @Inject constructor(
                             return@fold
                         }
 
+                        // 책 메타데이터 저장
+                        currentBookId = storyId
+                        // storyId에서 직접 언어 코드 추출 (단순화된 형태: ko, en, tet)
+                        currentLanguageCode = storyId.split("_").getOrNull(1) ?: "ko"
+                        
+                        Log.d("BookViewModel", "Book metadata: storyId=$storyId, extractedLanguageCode=$currentLanguageCode, book.languageCode=${book.languageCode}")
+                        
                         // 페이지 정보 저장
                         pages = book.pages // Changed from loadedPages
 
@@ -167,6 +182,14 @@ class BookViewModel @Inject constructor(
         _state.update {
             it.copy(currentPageIndex = newPageIndex)
         }
+        
+        // 읽기 진도 업데이트 (페이지는 0부터 시작하지만 로직상 1부터 시작)
+        val currentPage = newPageIndex + 1
+        val totalPages = pages.size
+        
+        if (currentBookId.isNotEmpty() && currentLanguageCode.isNotEmpty()) {
+            updateReadingProgress(currentBookId, currentPage, totalPages, currentLanguageCode)
+        }
     }
 
     /**
@@ -182,9 +205,76 @@ class BookViewModel @Inject constructor(
         }
     }
 
-    /*
-    * 초기 진입시 현재 언어 셋팅으로 tts 셋팅
-    * */
+    /**
+     * 읽기 진도 업데이트
+     * - 현재 페이지 = 총 페이지 수이면 완독 처리
+     * - 0 < 현재 페이지 < 총 페이지 수이면 읽는 중 처리
+     *
+     * @param bookId 책 ID
+     * @param currentPage 현재 페이지 (1부터 시작)
+     * @param totalPages 총 페이지 수
+     * @param languageCode 언어 코드
+     */
+    private fun updateReadingProgress(
+        bookId: String,
+        currentPage: Int,
+        totalPages: Int,
+        languageCode: String
+    ) {
+        viewModelScope.launch {
+            try {
+                Log.d("BookViewModel", "Updating reading progress: bookId=$bookId, page=$currentPage/$totalPages, language=$languageCode")
+                
+                val now = java.time.LocalDateTime.now()
+                
+                // 기존 진도 조회
+                val existingProgress = readingProgressRepository.getReadingProgress(
+                    userId = currentUserId,
+                    bookId = bookId
+                )
+                
+                val updatedProgress = when {
+                    // 마지막 페이지에 도달하면 완독 처리
+                    currentPage >= totalPages -> {
+                        ReadingProgress(
+                            currentPage = currentPage,
+                            totalPages = totalPages,
+                            isCompleted = true,
+                            lastReadAt = now,
+                            startedAt = existingProgress?.startedAt ?: now,
+                            completedAt = if (existingProgress?.isCompleted != true) now else existingProgress.completedAt
+                        )
+                    }
+                    // 읽는 중 상태
+                    currentPage > 0 -> {
+                        ReadingProgress(
+                            currentPage = currentPage,
+                            totalPages = totalPages,
+                            isCompleted = existingProgress?.isCompleted ?: false, // 이미 완독한 책은 완독 상태 유지
+                            lastReadAt = now,
+                            startedAt = existingProgress?.startedAt ?: now,
+                            completedAt = existingProgress?.completedAt // 기존 완독 시간 유지
+                        )
+                    }
+                    // 첫 페이지 (0 페이지)는 업데이트하지 않음
+                    else -> return@launch
+                }
+                
+                // 진도 저장
+                readingProgressRepository.updateReadingProgress(
+                    userId = currentUserId,
+                    bookId = bookId,
+                    progress = updatedProgress,
+                    languageCode = languageCode
+                )
+                
+                Log.d("BookViewModel", "Reading progress updated: $bookId, page $currentPage/$totalPages, completed: ${updatedProgress.isCompleted}, language: $languageCode")
+                
+            } catch (e: Exception) {
+                Log.e("BookViewModel", "Error updating reading progress", e)
+            }
+        }
+    }
     private fun settingTTSLanguage() {
         viewModelScope.launch {
             val userInfo = getUserPreferenceUseCase().first()
@@ -330,6 +420,14 @@ class BookViewModel @Inject constructor(
                     action.pageIndex,
                     action.scrollOffset,
                     action.maxScrollOffset
+                )
+            }
+            is BookAction.UpdateReadingProgress -> {
+                updateReadingProgress(
+                    action.bookId,
+                    action.currentPage,
+                    action.totalPages,
+                    action.languageCode
                 )
             }
         }

@@ -1,154 +1,215 @@
 {
-  "storyId": "807_tetum",
+  "bookId": 807,
+  "language": "tet",
+  "title": "Lenda Kona-ba Samea Mutin",
+  "summary": "Lenda Kona-ba Samea Mutin hatán istoria kona-ba Bai Suzhen, espiritu samea ida ne'ebé transforma ba feto bonita no nia moris ho mane Xu Xian, farmasista barak. Sira nia amor akontese hela problema husi feiticeiru no monje ne'ebé buka fó hanoin ba identitadi verdadeira Bai Suzhen. Depois, nia oan mane Xu Shilin ajuda fali reunia familía ba final feliz.",
   "pages": [
     {
       "pageNumber": 0,
-      "texts": ["Lenda Kona-ba Samea Mutin"]
+      "image": "book_807_page_0.jpg",
+      "texts": ["Lenda Kona-ba Samea Mutin"],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
+      "image": "book_807_page_1.jpg",
       "texts": [
         "Iha tempu uluk, iha loron ida ai-funan sira(book an) dansa iha ai-hun sira, espiritu samea jigante ida tun hosi foho ida no sai feto bonita ida.",
         "Feto ne'e naran maka Bai Suzhen, espiritu samea ida ne'ebé iha tinan rihun ida koko atu sai ema."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 2,
+      "image": "book_807_page_2.jpg",
       "texts": [
         "Tinan rihun ida liubaa ,Bainhira Bai Suzhen sei samea ki'ik ida ,nia hetan kanek no salva hosi labarik ida ne'ebé liu hela hosi fatin ne'ebá.",
         "Bai Suzhen transforma ona ba ema hodi hetan ema ne'ebé salva nia."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 3,
+      "image": "book_807_page_3.jpg",
       "texts": [
         "Bai Suzhen buka fatin sira ne'ebé nakonu ho Xiaoqing ,espiritu samea azul nian.",
         "Loron ida ,nia hasoru ema ne'ebé nia mehi iha sidade furak Hangzhou nian.",
         "Mane nia naran Xu Xian, no nia profisaun farmasista."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 4,
+      "image": "book_807_page_4.jpg",
       "texts": [
         "Xu Xian laran monu ba Bai Suzhen ,ne'ebé laran di'ak no bonita.",
         "Bai Suzhen haksolok loos bainhira nia hasoru ema ne'ebé salva nia moris.",
         "Sira na'in rua nia laran monu ba malu no kaben.",
         "Sira nain rua hamutuk loke farmasia ida."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 5,
+      "image": "book_807_page_5.jpg",
       "texts": [
         "Maibé iha loron ida ,Virus espalla(namkari) ka da'et iha aldeia refere.",
         "Maibé la importa aimoruk saida de'it mak Xu Xian uza ,ema iha aldeia refere la di'ak nafatin.",
         "Bai Suzhen hahú buka razaun ba fenómenu estranhu ida -ne'e hodi ajuda nia La'en."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 6,
+      "image": "book_807_page_6.jpg",
       "texts": [
         "Nia deskobre katak feiticeiru gananciozu ida iha Templo Jinshan envenena bee-foun atu hetan osan husi ema moras.",
         "Bai Shuzen uza majiku atu kastiga feiticeiru, maibé feiticeiru halai tanba nia hatene katak Bai Shuzen mak espíritu serpente."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 7,
+      "image": "book_807_page_7.jpg",
       "texts": [
         "Nia(feto) deskobre katak iha penyihir kan osan ida iha kuil Jinshan mak tau veneno iha posu bee nian hodi hetan osan husi ne'ebá.",
         "Bai Suzhen uza májika hodi fó kastigu ba matan-dook,maibé matan-doo ne'e fó tua xiong huang botir ida ba Xu Xian no haruka nia atu hemu ho nia feen."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 8,
+      "image": "book_807_page_8.jpg",
       "texts": [
         "Iha Loron Festivál Ró Dragão nian, povu Hangzhou hemu tua xionghua hodi selebra.",
         "Maibé tua Xionghuang iha kbiit misteriozu ida hodi halo ema sira ne'ebé la'os ema fila- fali ba sira nia forma original.",
         "Bai Suzhen ho laran-rua hemu tua Xiong Huang tanba nia la'en nia obriga aan."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 9,
+      "image": "book_807_page_9.jpg",
       "texts": [
         "Wainhira hemu tiha tua refere Bai Suzhen transforma fali nia an ba samea mutin boot ida.",
         "Nia laen, hakfodak no desmaia kedas iha fatin akontesimentu.",
         "Bai Suzhen hamoos tiha nia la'en nia memória husi nia hanoin,",
         "Maibé durante iha estrundu nia laran nee,Fahai ema monje ida iha templu Jinshan nia hatene identidade loloos husi Bai Suzhen nian."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 10,
+      "image": "book_807_page_10.jpg",
       "texts": [
         "Haluha tiha insidente ne'e,Xu Xian ho Bai Suzhen kontinua ho sira nia moris hanesan buat ida la akontese.",
         "husi sira na'in rua nia hamutuk ida ne'e ate hetan oan mane ida.",
         "Maibé ba fahai hanoin katak nee la loos ba jelma'an samea ida bele hela entre iha ema nia klaran .",
         "Nia (Fahai ) foo fila memoria ne'ebé akontese iha festival ne'e no foo hanoin ba nia atu haruka Bai Suzhen no Xiaoqing sai tamba sira la'os ema."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 11,
+      "image": "book_807_page_11.jpg",
       "texts": [
         "Xu Xian Koko atu defende Bai Suzhen Maibé Fahai Obriga nafatin.",
         "Tanba Nervozu Bai Suzhen halo magiku boot hodi hamosu inundasaun iha templu Jinshan.",
         "Ikus mai ema barak mak mate .",
         "Fahai xave tiha Bai Suzhen iha Torre tamba viola lei lalehan nian.",
         "Pagoda Leifeng ne'ebé famozu tebes iha hangzhou mak sai fatin kastigu nian ba Bai Suzhen."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 12,
+      "image": "book_807_page_12.jpg",
       "texts": [
         "Laran Susar tamba lakon nia feen ,nia tesi nia fuuk halo botak hodi sai monje ba hela iha foho.",
         "Entretantu, Xu Xian no Bai Suzhen nia oan mane ,Xu Shilin hetan adopsi husi Xu Xian nia familia.",
         "Dadur iha torre laran ,Bai Suzhen hanoin fali kona-ba tinan rihun ida liu bá.",
         "Depois de Liu tinan rua-nulu (20)."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 13,
+      "image": "book_807_page_13.jpg",
       "texts": [
         "Wainhira Xu Shilin halo Vinte anos ,nia familia sira ko'alia ka konta kona-ba nia papa ho Mama ba nia.",
         "dala ida ,Xu Shilin halai ba Pagoda Leifeng hodi bolu nia Mama",
         "Rona nia oan-mane nia hakilar husi torre,Bai Suzhen foo hanoin ba nia oan katak sira nia familia bele hamutuk fali se nia sai matenek-na'in di'ak liu iha ezame imperial."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 14,
+      "image": "book_807_page_14.jpg",
       "texts": [
         "Nia iha Esperansa boot hakarak hasoru nia inan-aman, Xu Shilin esforsu an hodi estuda nafatin iha loron mesmu kalan moos.",
         "Ikus mai nia rona rezultado katak nia mak sai vensedór iha ezame refere.",
         "Simu tiha pozisaun ida ne'e ,Xu Shilin fila fali ba nia knua.",
         "Nia reza tuir dalan ba to'o templo Jinshan."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 15,
+      "image": "book_807_page_15.jpg",
       "texts": [
         "Ho orasaun Xu Shilin nian,Lalehan rona no hasai Bai Suzhen.",
         "Xu Xian ne'ebé hela iha fatin Izolamentu iha foho sira,fila fali ba uma bainhira rona notisia nee.",
         "depois de buat sira ne'e hotu,sira na'in tolu hasoru malu fifa fali moris iha haksolok nia laran nafatin ba nafatin."
-      ]
+      ],
+      "pageType": "SPLIT"
     }
   ],
-  "bookVersion": 1,
-  "contributors": {
-    "ko": {
-      "글": ["이흠"],
-      "삽화": ["스페이시 호"]
-    },
-    "en": {
-      "Writer": ["李鑫"],
-      "Illustrator": ["Spacey Ho"],
-      "Translator": ["Jennifer An"]
-    },
-    "tetum": {
-      "Writer": ["李鑫"],
-      "Illustrator": ["Spacey Ho"],
-      "Translator": ["Helia"],
-      "Proofreader": ["Jisu An"]
-    }
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "Saa mak Bai Suzhen no saida mak nia halo atu sai ema?",
+        "keyConcepts": ["espiritu samea", "transformasaun", "tinan rihun", "ema"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "Saida mak Bai Suzhen enfrenta tanba identidada loloos nia?",
+        "keyConcepts": ["feiticeiru", "monje Fahai", "hanoin la'o", "tempuzioni"]
+      }
+    ]
   },
-  "sponsors": {},
-  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
-  "originalCopyright": "",
-  "title": "Lenda Kona-ba Samea Mutin"
+  "vocabulary": [
+    {
+      "word": "espiritu samea",
+      "definition": "Kria mitologiku ida ne'ebé bele transforma ba ema.",
+      "pageNumber": 1
+    },
+    {
+      "word": "transformasaun",
+      "definition": "Mosensa husi forma ida ba forma seluk.",
+      "pageNumber": 2
+    },
+    {
+      "word": "Festivál Ró Dragão",
+      "definition": "Festivál tradisionál Xinés ho corrida no rituál kona-ba barak.",
+      "pageNumber": 8
+    }
+  ],
+  "missions": [
+    {
+      "title": "Reuniaun Familía",
+      "description": "Imagína ho hala'o istória kona-ba reuniaun familía atu inspiradu husi Lenda Kona-ba Samea Mutin.",
+      "type": "CREATIVE_WRITING"
+    }
+  ],
+  "contributors": {
+    "Writer": ["李鑫"],
+    "Illustrator": ["Spacey Ho"],
+    "Translator": ["Helia"],
+    "Proofreader": ["Jisu An"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
 }

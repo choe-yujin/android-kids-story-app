@@ -1,139 +1,193 @@
 {
-  "storyId": "810_en-ph",
+  "bookId": 810,
+  "language": "en",
+  "title": "Houyi and Chang’e",
+  "summary": "This is the story of the archer Houyi and his wife Chang’e from Chinese mythology. Houyi was tasked to shoot down nine of the ten suns that scorched the earth, earning respect as a hero. He received an elixir of immortality which Chang’e swallowed to protect from a thief, causing her to ascend to the moon and become the Moon Goddess. Houyi mourned her loss, and people now honor her during the Mid-Autumn Festival with offerings and prayers.",
   "pages": [
     {
       "pageNumber": 0,
-      "texts": ["Houyi and Chang\u2019e"]
+      "image": "book_810_page_0.jpg",
+      "texts": ["Houyi and Chang’e"],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
+      "image": "book_810_page_1.jpg",
       "texts": [
         "A long time ago, the Jade Emperor fell in love with goddess Xihe who lived in the east sea.",
         "The Jade Emperor and Xihe had ten sons, all of whom were suns.",
         "Each day, Xihe would take one of her sons up to the sky and come down at evening to rest in the sea.",
         "This is how night and day came to be in the human world."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 2,
+      "image": "book_810_page_2.jpg",
       "texts": [
         "One thousand years passed.",
         "All ten sons grew up, and they did not listen to their mother.",
         "Instead of going up to the sky one at a time, all ten of them decided to go together.",
         "When ten suns appeared in the sky, humans suffered great heat and all the crops dried up."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 3,
+      "image": "book_810_page_3.jpg",
       "texts": [
         "Queen Mother of the West, who lived on Kunlun Mountain, found out and became furious.",
         "She advised the Jade Emperor to get rid of all ten suns.",
         "Emperor Yao of the human world recommended a skilled archer named Houyi for the task.",
         "The Jade Emperor gave Houyi a magic bow and ten arrows and ordered him to shoot the suns."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 4,
+      "image": "book_810_page_4.jpg",
       "texts": [
         "Houyi climbed to the top of Kunlun Mountain and shot down nine suns with his bow.",
         "Believing that humans needed at least one sun, however, Houyi said to the last sun,",
-        "\u201cYour life I will spare.",
+        "\"Your life I will spare.",
         "But you must rise and set on time each morning and night, and you must not run away or be lazy.",
-        "If you don\u2019t obey, I will shoot you down, too.\u201d"
-      ]
+        "If you don't obey, I will shoot you down, too.\""
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 5,
+      "image": "book_810_page_5.jpg",
       "texts": [
-        "The tenth sun, frightened by Houyi\u2019s words, promised he would obey.",
+        "The tenth sun, frightened by Houyi’s words, promised he would obey.",
         "Thanks to Houyi, peace was restored on Earth.",
         "Houyi earned the respect of many people.",
         "Many apprentices sought him to learn archery.",
-        "Houyi married a beautiful woman named Chang\u2019e and was living a happy life."
-      ]
+        "Houyi married a beautiful woman named Chang’e and was living a happy life."
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 6,
+      "image": "book_810_page_6.jpg",
       "texts": [
         "Then one day, Houyi was hiking Kunlun Mountain when he encountered Queen Mother of the West.",
         "She gave him a precious gift after learning that he was the archer who shot down the nine suns.",
         "It was an elixir of immortality which could transform the drinker into an ever-living god of the heavens."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 7,
+      "image": "book_810_page_7.jpg",
       "texts": [
-        "Back at home, Houyi told Chang\u2019e about the immortality potion.",
+        "Back at home, Houyi told Chang’e about the immortality potion.",
         "The couple did not want to leave the human world yet.",
         "They decided to become gods when both of them were ready.",
         "The elixir was hidden deep inside the house.",
         "Meanwhile, an apprentice named Feng Meng had overheard their conversation."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 8,
+      "image": "book_810_page_8.jpg",
       "texts": [
         "A few days later, Houyi went on a hunting trip far away with his apprentices.",
-        "Feng Meng stayed behind and snuck into Houyi\u2019s house.",
-        "He threatened Chang\u2019e to give him the elixir of immortality or otherwise die at his hands."
-      ]
+        "Feng Meng stayed behind and snuck into Houyi’s house.",
+        "He threatened Chang’e to give him the elixir of immortality or otherwise die at his hands."
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 9,
+      "image": "book_810_page_9.jpg",
       "texts": [
-        "Chang\u2019e wanted to keep the elixir of immortality hidden, but Feng Meng was too strong.",
-        "\u201cI must keep an evil man like Feng Meng from becoming a god!\u201d she thought.",
-        "Chang\u2019e swallowed the elixir.",
+        "Chang’e wanted to keep the elixir of immortality hidden, but Feng Meng was too strong.",
+        "\"I must keep an evil man like Feng Meng from becoming a god!\" she thought.",
+        "Chang’e swallowed the elixir.",
         "Her body became lighter and she floated up into the air.",
-        "When she reached the sky, Chang\u2019e decided to become the goddess of the Moon so that she could be closer to her husband."
-      ]
+        "When she reached the sky, Chang’e decided to become the goddess of the Moon so that she could be closer to her husband."
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 10,
+      "image": "book_810_page_10.jpg",
       "texts": [
-        "Upon returning from the hunt, Houyi learned what had happened to Chang\u2019e.",
+        "Upon returning from the hunt, Houyi learned what had happened to Chang’e.",
         "He was furious, but Feng Meng had already run away.",
         "Houyi cried out to the heavens in rage and sorrow.",
         "He could not believe that he would never see his beloved wife again."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 11,
+      "image": "book_810_page_11.jpg",
       "texts": [
         "In the sky hung a bright, round moon.",
-        "The shadow in the moon was blurry, but Houyi knew it was Chang\u2019e.",
-        "Houyi addressed his longing for Chang\u2019e by setting up an altar prepared with her favorite snacks and fruit."
-      ]
+        "The shadow in the moon was blurry, but Houyi knew it was Chang’e.",
+        "Houyi addressed his longing for Chang’e by setting up an altar prepared with her favorite snacks and fruit."
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 12,
+      "image": "book_810_page_12.jpg",
       "texts": [
         "Others followed.",
-        "People prayed to Chang\u2019e for good fortune while offering up round snacks and fruits.",
+        "People prayed to Chang’e for good fortune while offering up round snacks and fruits.",
         "This is the origin of preparing an alter for the Moon Goddess on the Mid-Autumn Festival, which falls on August 15 on the lunar calendar."
-      ]
+      ],
+      "pageType": "SPLIT"
     }
   ],
-  "bookVersion": 1,
-  "contributors": {
-    "ko": {
-      "글": ["이흠"],
-      "삽화": ["동동"]
-    },
-    "en": {
-      "Writer": ["李鑫"],
-      "Illustrator": ["Dong Dong"],
-      "Translator": ["Jennifer An"]
-    },
-    "tetum": {
-      "Writer": ["李鑫"],
-      "Illustrator": ["Dong Dong"],
-      "Translator": ["Rosarina"],
-      "Proofreader": ["Jisu An"]
-    }
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "Why did Houyi shoot down nine of the ten suns?",
+        "keyConcepts": ["ten suns", "scorching earth", "Jade Emperor", "archer"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "What happened to Chang’e after she drank the elixir of immortality?",
+        "keyConcepts": ["immortality", "moon goddess", "sacrifice", "husband"]
+      }
+    ]
   },
-  "sponsors": {},
-  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
-  "originalCopyright": "",
-  "title": "Houyi and Chang’e"
+  "vocabulary": [
+    {
+      "word": "Jade Emperor",
+      "definition": "The ruler of Heaven in Chinese mythology.",
+      "pageNumber": 1
+    },
+    {
+      "word": "elixir of immortality",
+      "definition": "A magical potion that grants eternal life.",
+      "pageNumber": 6
+    },
+    {
+      "word": "Mid-Autumn Festival",
+      "definition": "A traditional Chinese festival celebrated on the 15th day of the eighth lunar month.",
+      "pageNumber": 12
+    }
+  ],
+  "missions": [
+    {
+      "title": "Prayer for Chang’e",
+      "description": "Write a prayer or wish for Chang’e, the Moon Goddess, expressing your hopes and feelings.",
+      "type": "CREATIVE_WRITING"
+    }
+  ],
+  "contributors": {
+    "Writer": ["李鑫"],
+    "Illustrator": ["Dong Dong"],
+    "Translator": ["Jennifer An"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
 }

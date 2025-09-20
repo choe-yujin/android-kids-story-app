@@ -1,6 +1,6 @@
 package com.timor.kidsstory.domain.model
 
-import com.timor.kidsstory.domain.mapper.CategoryMapper
+
 
 /**
  * 책의 기본 정보를 담는 도메인 모델 클래스
@@ -54,21 +54,15 @@ data class Book(
     val unlockStep: Int = 1, // 메타데이터에서 가져옴
     val tags: List<String> = emptyList() // 메타데이터에서 가져옴
 ) {
-    // 새로운 Category enum으로 변환하는 속성
-    val categoryEnum: Category
-        get() = CategoryMapper.mapToCategory(category)
-    
-    // 새로운 ReadingLevel enum으로 변환하는 속성
-    val readingLevel: ReadingLevel
-        get() = CategoryMapper.mapToReadingLevel(level)
+    // TODO: 필요한 경우 FilterBookCategory와 매핑하는 로직 추가 가능
     
     // 책 ID 추출 (숫자)
     val bookId: Int?
         get() = storyId.split("_").firstOrNull()?.toIntOrNull()
     
-    // 언어 코드 추출
+    // 언어 코드 추출 (단순화된 형태: ko, en, tet)
     val languageCode: String
-        get() = storyId.split("_").getOrNull(1)?.split("-")?.firstOrNull() ?: "ko"
+        get() = storyId.split("_").getOrNull(1) ?: "ko"
     
     // 읽기 상태 계산
     val readingStatus: ReadingStatus

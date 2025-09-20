@@ -1,132 +1,187 @@
 {
-  "storyId": "810_tetum",
+  "bookId": 810,
+  "language": "tet",
+  "title": "Desendente sira no Pan sira",
+  "summary": "Istória ida kona-ba estratéjia Houyi no feto malu nia Chang'e husi mitolojia Xinés. Houyi harrisa ho loron ida note balun no sosok halo ema hela hosi fuan hela iha rai. Depois, sira simu elixir ba imortalidade no Chang'e hasai hela ba fulan no sai feto Pan sira, nia fali moris barak liu tan. Houyi sente saudoz ba nia feto malu no ema halo oferta iha Dia Festival Meio outono.",
   "pages": [
     {
       "pageNumber": 0,
-      "texts": ["Desendente sira no Pan sira"]
+      "image": "book_810_page_0.jpg",
+      "texts": ["Desendente sira no Pan sira"],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
+      "image": "book_810_page_1.jpg",
       "texts": [
         "Tempu uluk liubá, Imperadór Jade hadomin ho karikatura deusa ne'ebé moris iha tasi leste.",
         "Imperadór Jade no Imperadór Jade iha oan-mane sanulu, sira hotu maka loro-matan.",
         "Hee-hwa lori nia oan-mane ba lalehan loroloron no depois fila fali ba tasi iha kalan hodi deskansa.",
         "Tanba ne'e maka iha loron no kalan iha ema nia mundu."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 2,
+      "image": "book_810_page_2.jpg",
       "texts": [
         "Liutiha tinan rihun ida,",
         "oan-mane na'in sanulu sai boot no la rona sira nia inan ho di'ak.",
         "Nune’e envezde loron ida sa’e ba lalehan ida-idak, ami na’in sanulu hotu sa’e lalehan hamutuk.",
         "Bainhira loro-matan sanulu mosu iha lalehan iha tempu hanesan, ema sofre tanba manas makaʼas, no toʼos maran no mate."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 3,
+      "image": "book_810_page_3.jpg",
       "texts": [
         "Seo Wang-mo, deusa ida ne'ebé hela iha foho Gonryunsan, sai hirus tebes bainhira nia hatene no hateten ba Imperadór Jade katak loro-matan sanulu tenke hasai.",
         "Iha tempu ne'ebá, Liurai Yao hosi mundu umanu rekomenda mane ida naran Houyi, ne'ebé matenek tebes iha tiru arku.",
         "Imperadór Jade fó ba nia bei-oan sira arku misteriozu ida no flecha sanulu no hatete ba nia atu tiru loro-matan."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 4,
+      "image": "book_810_page_4.jpg",
       "texts": [
         "Houyi sa'e ba foho Kunlun nia tutun no ho nia rama nia tiru monu loro-matan neen.",
         "Houyi hanoin katak mundu umanu tenke iha nafatin loro-matan ida, nune'e nia ko'alia ba loro-matan ikus.",
         "Ha'u sei salva ó, mesak de'it. Maibé hahú agora, loron-loron tenke sa'e no tun tuir oras. Imi labele halai ka sai baruk-teen. Se ó halo nuneʼe, \u200B\u200Bhaʼu mós sei tiru ó toʼo mate."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 5,
+      "image": "book_810_page_5.jpg",
       "texts": [
         "Rona Houyi nia liafuan sira, loro-matan sanulu ne'ebé tauk promete atu halo tuir nia.",
         "Tamba Houyi, mundu umanu hetan fali dame, nune'e ema respeita nia.",
         "Estudante barak mós mai atu aprende oinsá atu tiru arku.",
         "Houyi kaben ho feto bonita ida naran Chang'e, no sira moris loron kontente hamutuk."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 6,
+      "image": "book_810_page_6.jpg",
       "texts": [
         "Loron ida, Houyi ba foho Kunlun no hasoru Xi Wangmu.",
         "Xi Wangmu hatene katak Houyi maka ida ne'ebé maka tiru monu loro-matan sia, no depois fó prezente folin-boot ida ba nia.",
         "Ida-ne'e maka elixir ida imortalidade nian ne'ebé, bainhira hemu, halo ema ida sai imortal no moris ba nafatin."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 7,
+      "image": "book_810_page_7.jpg",
       "texts": [
         "Hafoin fila ba uma, Houyi konta ba Chang'e kona-ba elixir ba imortalidade.",
         "Sira na'in-rua lakohi husik kedas mundu umanu, nune'e sira deside atu sai imortal (maromak) hamutuk bainhira tempu to'o ona.",
         "Ai-moruk ne'e subar ho di'ak iha uma laran.",
         "Maibé, Houyi nia dixípulu Feng Meng rona ho segredu sira nia konversa."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 8,
+      "image": "book_810_page_8.jpg",
       "texts": [
         "Tempu balun liutiha, Houyi halo viajen naruk ida ba kasa ho nia dixípulu sira.",
         "Feng Meng la hamutuk ho kasa, nafatin hela, hafoin subar-subar ba Houyi nia uma.",
         "Depois nia ameasa Chang'e, hodi hatete katak se nia la entrega elixir imortalidade nian, nia sei oho nia."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 9,
+      "image": "book_810_page_9.jpg",
       "texts": [
         "Chang'e hakarak atu mantein elixir imortalidade nian, maibé nia labele halakon Feng Meng ho nia forsa fíziku.",
         "Ha'u tenke prevene ema aat hanesan Feng Meng atu labele sai imortal!",
         "Chang'e tolan Ai-moruk ne'e.",
         "Depois nia isin sai kmaan no nia namlele iha anin.",
         "Chang'e, ne'ebé semo ba lalehan, lakohi dook liu hosi nia la'en, nune'e nia sai ser imortal ida ne'ebé moris iha fulan ne'ebé besik liu ba rai."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 10,
+      "image": "book_810_page_10.jpg",
       "texts": [
         "Hafoin fila hosi kazamentu, Houyi rona saida maka akontese ba Chang'e, nia sai hirus tebes no buka Feng Meng, maibé Feng Meng halai sai tiha ona.",
         "Houyi sente hirus no triste, hafoin hakilar ba lalehan.",
         "Nia la fiar katak nia sei nunka hasoru tan nia feen ne'ebé nia hadomi."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 11,
+      "image": "book_810_page_11.jpg",
       "texts": [
         "Iha lalehan ne’ebé Houyi haree, iha fulan ne’ebé nabilan no redonda.",
         "Lalatak iha fulan ne'e fraku, maibé Houyi bele rekoñese katak ida-ne'e maka Chang'e.",
         "Houyi prepara bolo no ai-fuan sira ne'ebé Chang'e gosta, hafoin hala'o serimónia oferta ida ne'ebé hateke ba fulan hodi hakmatek nia saudades."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 12,
+      "image": "book_810_page_12.jpg",
       "texts": [
         "Hahú husi ne'ebá, ema seluk mós prepara ona bolo redonda no ai-fuan redonda, no halo oferta ba Chang'e enkuantu husu bensaun.",
         "Hateten katak tradisaun atu halo oferta ba fulan iha loron 15 fulan lunár nian, ne'ebé maka hanesan Festivál Outubru-Mean iha Xina, hahú iha tempu ne'ebá."
-      ]
+      ],
+      "pageType": "SPLIT"
     }
   ],
-  "bookVersion": 1,
-  "contributors": {
-    "ko": {
-      "글": ["이흠"],
-      "삽화": ["동동"]
-    },
-    "en": {
-      "Writer": ["李鑫"],
-      "Illustrator": ["Dong Dong"],
-      "Translator": ["Jennifer An"]
-    },
-    "tetum": {
-      "Writer": ["李鑫"],
-      "Illustrator": ["Dong Dong"],
-      "Translator": ["Alex"],
-      "Proofreader": ["Jisu An"]
-    }
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "Tanba saida mak Houyi haler naruk ba loro-matan ne'ebé mosu rai?",
+        "keyConcepts": ["loro-matan sanulu", "manas maka'as", "Imperadór Jade", "hau mane tiru arku"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "Saida mak akontese ba Chang'e bainhira nia hasai elixir imortalidade?",
+        "keyConcepts": ["elixir imortalidade", "Pan sira", "kolera", "matadór"]
+      }
+    ]
   },
-  "sponsors": {},
-  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
-  "originalCopyright": "",
-  "title": "Desendente sira no Pan sira"
+  "vocabulary": [
+    {
+      "word": "Imperadór Jade",
+      "definition": "Rei husi Rai iha mitolojia Xinés.",
+      "pageNumber": 1
+    },
+    {
+      "word": "elixir imortalidade",
+      "definition": "Potas májiku ne'ebé fó moris laran nafatin.",
+      "pageNumber": 6
+    },
+    {
+      "word": "Festivál Outubru-Mean",
+      "definition": "Festivál tradisionál iha loron 15 fulan lunar nian.",
+      "pageNumber": 12
+    }
+  ],
+  "missions": [
+    {
+      "title": "Orasaun ba Chang'e",
+      "description": "Escreve orasaun ka hein atu hatene ba Chang'e, Pan Sira, hodi halo sentido no esperansa.",
+      "type": "CREATIVE_WRITING"
+    }
+  ],
+  "contributors": {
+    "Writer": ["李鑫"],
+    "Illustrator": ["Dong Dong"],
+    "Translator": ["Alex"],
+    "Proofreader": ["Jisu An"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
 }

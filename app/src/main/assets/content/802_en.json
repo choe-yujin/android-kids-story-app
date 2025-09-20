@@ -1,151 +1,209 @@
 {
-  "storyId": "802_en-ph",
+  "bookId": 802,
+  "language": "en",
+  "title": "Hoang Nhan’s Day",
+  "summary": "This book tells the story of Hoang Nhan, a young student living in Ho Chi Minh City, Vietnam. Readers follow Nhan through his daily routine from waking up early, traveling to school with his father, learning with his classmates, having lunch and napping at school, enjoying afternoon classes and playing sports, then spending the evening studying, having dinner with his family and relaxing before bed.",
   "pages": [
     {
       "pageNumber": 0,
-      "texts": ["Hoang Nhan\u2019s Day"]
+      "image": "book_802_page_0.jpg",
+      "texts": ["Hoang Nhan’s Day"],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
+      "image": "book_802_page_1.jpg",
       "texts": [
         "My name is Hoang Nhan, and I live in Vietnam.",
         "I live in Ho Chi Minh City, the largest city in Vietnam, with my parents and little sister, Anh Duong."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 2,
+      "image": "book_802_page_2.jpg",
       "texts": [
         "When the alarm rings at 5:45 in the morning, I get up and make my bed.",
         "I brush my teeth and wash my face, then pack my bag and go to school with my dad."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 3,
+      "image": "book_802_page_3.jpg",
       "texts": [
         "My dad takes me to school on his motorbike.",
         "Every time we need to ride a motorbike, he gives me a helmet.",
         "On the way to school, we pass by Ben Thanh market.",
         "There are trees on both sides of the street, and I can also see my friends going to school on motorbikes with their parents like me."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 4,
+      "image": "book_802_page_4.jpg",
       "texts": [
         "I have breakfast with my dad at a restaurant near my school.",
-        "For breakfast, lots of people here eat \u201ccom suon\u201d, which is rice with grilled pork, a Vietnamese sandwich called \u201cbanh mi\u201d, or beef on sticky rice or rice noodles.",
+        "For breakfast, lots of people here eat “com suon”, which is rice with grilled pork, a Vietnamese sandwich called “banh mi”, or beef on sticky rice or rice noodles.",
         "Today we are having banh mi with eggs.",
         "This is our favorite food."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 5,
+      "image": "book_802_page_5.jpg",
       "texts": [
         "After we finish breakfast, we get to school at 6:50.",
         "Then, I give the helmet back to my dad, say goodbye to him, and walk into school.",
         "At 7:00, when the morning classes start, the front gate is closed."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 6,
+      "image": "book_802_page_6.jpg",
       "texts": [
         "I study with 40 friends in one classroom.",
         "The whole class stays together all the way from 1st to 5th grade.",
         "My homeroom teacher is Mrs. Lan.",
-        "She always wears an \u201cao dai\u201d to school.",
+        "She always wears an “ao dai” to school.",
         "In the morning, I learn math, Vietnamese, English, and ethics."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 7,
+      "image": "book_802_page_7.jpg",
       "texts": [
         "At 11:00, the morning classes are over.",
         "I clean up my place and wash my hands to have lunch.",
         "I have lunch with my teachers and friends in the school cafeteria.",
-        "Today\u2019s lunch is stir-fried beef, rice, boiled vegetables, and pumpkin soup.",
-        "Before eating, we say, \u201cEat together (Xin moi cac ban).\u201d"
-      ]
+        "Today’s lunch is stir-fried beef, rice, boiled vegetables, and pumpkin soup.",
+        "Before eating, we say, “Eat together (Xin moi cac ban).”"
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 8,
+      "image": "book_802_page_8.jpg",
       "texts": [
         "After lunch, I brush my teeth, wash my face, and go back to the classroom.",
         "We put our desks to one side, spread out our blankets, and take a nap.",
         "I get tired at noon because school starts early in the morning, so I take a nap to get my energy back."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 9,
+      "image": "book_802_page_9.jpg",
       "texts": [
         "The school bell rings at 1:15.",
         "We get up and have milk or fruit as a snack.",
         "Afternoon classes start at 2:00.",
         "In the afternoon, we have classes like art, computer, physical education, and storytelling where I can dream up a story and tell it to my classmates."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 10,
+      "image": "book_802_page_10.jpg",
       "texts": [
         "Physical education is my favorite afternoon class.",
         "I can exercise and play with my friends.",
         "This class is taught by a physical education teacher instead of a homeroom teacher.",
         "We exercise together while music plays.",
         "In physical education, we learn badminton or the game of Go."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 11,
+      "image": "book_802_page_11.jpg",
       "texts": [
         "At 5:30, when all the fun afternoon classes are over, I go home.",
         "When I get home, I play with my sister and friends from next door at the playground.",
         "Then I come home, take a shower, and help my mom make dinner."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 12,
+      "image": "book_802_page_12.jpg",
       "texts": [
         "At 7:00, my whole family sits together at the table to eat dinner.",
         "We eat boiled pork, stir-fried vegetables, soup, and egg rolls.",
         "My sister and I like pork boiled in coconut water with boiled eggs the best out of all the foods Mom cooks.",
         "I eat watermelon for dessert."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 13,
+      "image": "book_802_page_13.jpg",
       "texts": [
         "At 8:00 in the evening, I go over the math and Vietnamese that I learned in the morning classes with Mom and do my homework.",
         "Mom also helps me get ready for school the next day."
-      ]
+      ],
+      "pageType": "SPLIT"
     },
     {
       "pageNumber": 14,
+      "image": "book_802_page_14.jpg",
       "texts": [
         "After I pack my school bag, I watch cartoons on TV with my sister.",
         "Then my sister and I go to bed.",
         "I lie in my wooden bed with a mosquito net and fall asleep, thinking about how much fun I will have playing tomorrow."
-      ]
+      ],
+      "pageType": "SPLIT"
     }
   ],
-  "bookVersion": 1,
-  "contributors": {
-    "ko": {
-      "글": ["황티장"],
-      "삽화": ["응우이엔 홍 안"]
-    },
-    "en": {
-      "Writer": ["Hoang Thi Trang"],
-      "Illustrator": ["Nguyen Hong Anh"],
-      "Translator": ["Haryeon Pyeon"],
-      "Proofreader": ["Laura Marie Kingdon"]
-    },
-    "tetum": {
-      "Writer": ["Hoang Thi Trang"],
-      "Illustrator": ["Nguyen Hong Anh"],
-      "Translator": ["Rosarina"],
-      "Proofreader": ["Jisu An"]
-    }
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "What is the first thing Hoang Nhan does when he wakes up?",
+        "keyConcepts": ["make bed", "organized", "morning routine"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "What is Hoang Nhan's favorite class and why does he like it?",
+        "keyConcepts": ["physical education", "exercise", "play with friends"]
+      }
+    ]
   },
-  "sponsors": {},
-  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
-  "originalCopyright": "",
-  "title": "Hoang Nhan’s Day"
+  "vocabulary": [
+    {
+      "word": "banh mi",
+      "definition": "A Vietnamese baguette sandwich filled with meat and vegetables.",
+      "pageNumber": 4
+    },
+    {
+      "word": "ao dai",
+      "definition": "A traditional Vietnamese long dress worn by women.",
+      "pageNumber": 6
+    },
+    {
+      "word": "Ben Thanh market",
+      "definition": "A famous market in Ho Chi Minh City, Vietnam.",
+      "pageNumber": 3
+    }
+  ],
+  "missions": [
+    {
+      "title": "My Morning Routine",
+      "description": "Describe your own morning routine and compare it with Hoang Nhan's. What is similar or different?",
+      "type": "ACTION_LOG"
+    }
+  ],
+  "contributors": {
+    "Writer": ["Hoang Thi Trang"],
+    "Illustrator": ["Nguyen Hong Anh"],
+    "Translator": ["Haryeon Pyeon"],
+    "Proofreader": ["Laura Marie Kingdon"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/."
 }
