@@ -139,6 +139,7 @@ class BookViewModel @Inject constructor(
                                         texts = page.texts,
                                         pageNumber = page.pageNumber + 1,
                                         totalPages = page.totalPages,
+                                        pageType = page.pageType, // 페이지 타입 추가
                                         textSectionState = PageTextSectionUiState(),
                                         // Pass new metadata to the first page
                                         contributors = if (page.pageNumber == 0) book.contributors else emptyList(),
