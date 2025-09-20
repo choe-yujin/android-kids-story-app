@@ -9,12 +9,14 @@ import com.timor.kidsstory.domain.usecase.book.FilterBooksUseCase
 import com.timor.kidsstory.domain.usecase.book.GetAllBooksUseCase
 import com.timor.kidsstory.domain.usecase.language.ChangeLanguageUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
+import com.timor.kidsstory.domain.repository.ReadingProgressRepository
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.LanguageManager
 import com.timor.kidsstory.domain.util.MusicManager
 import com.timor.kidsstory.domain.util.SoundEffectManager
 import com.timor.kidsstory.presentation.bookshelf.BookShelfAction
-import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
+import com.timor.kidsstory.presentation.bookshelf.BookshelfUiState
+import com.timor.kidsstory.presentation.bookshelf.components.ReadingStatusFilter
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
@@ -47,6 +49,7 @@ class BookshelfViewModel @Inject constructor(
     private val filterBooksUseCase: FilterBooksUseCase,
     private val changeLanguageUseCase: ChangeLanguageUseCase,
     private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
+    private val readingProgressRepository: ReadingProgressRepository,
     private val musicSettingUseCase: MusicSettingUseCase,
     private val musicManager: MusicManager,
     private val soundEffectManager: SoundEffectManager
@@ -55,6 +58,9 @@ class BookshelfViewModel @Inject constructor(
     // 핵심 UI 상태만 관리
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
+    
+    // 사용자 ID (기본값)
+    private val currentUserId = "default_user"
 
     init {
         initializeBookshelf()
@@ -267,6 +273,11 @@ class BookshelfViewModel @Inject constructor(
             is BookShelfAction.DismissAttendancePopup -> {
                 // AttendanceViewModel에서 처리
             }
+
+            is BookShelfAction.SelectReadingStatus -> {
+                soundEffectManager.playButtonClick()
+                selectReadingStatus(action.status)
+            }
         }
     }
 
@@ -398,7 +409,12 @@ class BookshelfViewModel @Inject constructor(
                     selectedCategory = selectedCategory
                 )
                 
-                _state.update { it.copy(filteredBooks = filteredBooks) }
+                _state.update { 
+                    it.copy(
+                        filteredBooks = filteredBooks,
+                        selectedReadingStatus = null // 필터 변경 시 ReadingStatus 리셋
+                    ) 
+                }
                 
                 Log.d("BookshelfViewModel", "Filtered books: ${filteredBooks.size}/${currentState.books.size}")
                 
@@ -409,8 +425,86 @@ class BookshelfViewModel @Inject constructor(
     }
 
     /**
-     * 에러 메시지 클리어
+     * 읽음 상태 필터 선택 처리
      */
+    private fun selectReadingStatus(status: ReadingStatusFilter) {
+        viewModelScope.launch {
+            try {
+                // 상태 업데이트
+                _state.update {
+                    it.copy(selectedReadingStatus = status)
+                }
+                
+                // 상태에 따른 책 필터링
+                applyReadingStatusFilter(status)
+                
+                Log.d("BookshelfViewModel", "Reading status filter applied: $status")
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error applying reading status filter", e)
+            }
+        }
+    }
+    
+    /**
+     * 읽기 상태에 따른 책 필터링
+     */
+    private suspend fun applyReadingStatusFilter(status: ReadingStatusFilter) {
+        val currentState = _state.value
+        val currentLanguage = currentState.currentLanguage.code
+        
+        // 현재 언어의 모든 읽기 진도 조회
+        val allProgress = readingProgressRepository.getAllProgressByLanguage(
+            userId = currentUserId,
+            languageCode = currentLanguage
+        )
+        
+        // 먼저 FilterBar에 의한 필터링 적용
+        val filterBarFilteredBooks = filterBooksUseCase(
+            books = currentState.books,
+            selectedFilter = currentState.filterBarState.selectedFilter,
+            selectedStage = currentState.filterBarState.selectedStage,
+            selectedCategory = currentState.filterBarState.selectedCategory
+        )
+        
+        // 그 다음 ReadingStatus에 따른 추가 필터링
+        val finalFilteredBooks = when (status) {
+            ReadingStatusFilter.ALL -> {
+                // 전체: FilterBar만 적용된 결과 그대로 사용
+                filterBarFilteredBooks
+            }
+            ReadingStatusFilter.UNREAD -> {
+                // 안 읽음: 진도가 없거나 currentPage = 0인 책
+                filterBarFilteredBooks.filter { book ->
+                    val progress = allProgress[book.storyId]
+                    progress == null || progress.currentPage == 0
+                }
+            }
+            ReadingStatusFilter.READING -> {
+                // 읽는 중: 0 < currentPage < totalPages 이고 완독되지 않은 책
+                filterBarFilteredBooks.filter { book ->
+                    val progress = allProgress[book.storyId]
+                    progress != null && 
+                    progress.currentPage > 0 && 
+                    !progress.isCompleted
+                }
+            }
+            ReadingStatusFilter.READ -> {
+                // 다 읽음: isCompleted = true인 책
+                filterBarFilteredBooks.filter { book ->
+                    val progress = allProgress[book.storyId]
+                    progress?.isCompleted == true
+                }
+            }
+        }
+        
+        // 필터링된 결과 업데이트
+        _state.update {
+            it.copy(filteredBooks = finalFilteredBooks)
+        }
+        
+        Log.d("BookshelfViewModel", "Filtered books by $status: ${finalFilteredBooks.size}/${currentState.books.size}")
+    }
     fun clearError() {
         _state.update { it.copy(error = null) }
     }

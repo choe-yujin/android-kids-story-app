@@ -12,16 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.orhanobut.logger.Logger
 import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
@@ -41,18 +39,28 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 @Composable
 fun FilterBar(
     filterBarState: FilterBarState = FilterBarState(),
-    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
+    currentLanguageCode: String = "en", // 현재 언어 코드
     onAllClick: () -> Unit = {},
     onStageClick: () -> Unit = {},
     onCategoryClick: () -> Unit = {},
     onLevelClick: (FilterLevel) -> Unit = {},
     onBookCategoryClick: (FilterBookCategory) -> Unit = {},
 ) {
+    // 화면 너비에 따른 동적 패딩 계산
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    
+    // 오른쪽 세로 바 너비 + 간격을 고려한 패딩
+    val horizontalPadding = when {
+        screenWidth >= 800 -> 48.dp // 태블릿
+        else -> 24.dp // 휴대폰
+    }
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp)
-            .height(58.dp), // Set fixed height
+            .padding(start = 48.dp, end = 16.dp) // 책 그리드와 동일한 좌측 패딩
+            .height(58.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
     ) {
@@ -61,7 +69,7 @@ fun FilterBar(
         }
 
         Box(
-            modifier = Modifier.height(42.dp), // Approx height of FilterBarButton
+            modifier = Modifier.height(42.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -78,13 +86,14 @@ fun FilterBar(
         LevelFilterBar(
             isExpanded = filterBarState.isStageFilterExpanded,
             selectedLevel = filterBarState.selectedStage,
-            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
-        ) { level ->
-            onLevelClick(level)
-        }
+            currentLanguageCode = currentLanguageCode,
+            onLevelSelected = { level ->
+                onLevelClick(level)
+            }
+        )
 
         Box(
-            modifier = Modifier.height(42.dp), // Approx height of FilterBarButton
+            modifier = Modifier.height(42.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -101,10 +110,11 @@ fun FilterBar(
         CategoryFilterBar(
             isExpanded = filterBarState.isCategoryFilterExpanded,
             selectedCategory = filterBarState.selectedCategory,
-            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
-        ) { bookCategory ->
-            onBookCategoryClick(bookCategory)
-        }
+            currentLanguageCode = currentLanguageCode,
+            onCategorySelected = { bookCategory ->
+                onBookCategoryClick(bookCategory)
+            }
+        )
     }
 }
 
@@ -120,7 +130,7 @@ fun FilterBarButton(
             modifier = Modifier
                 .background(AppColors.neutralWhite, shape = RoundedCornerShape(50.dp))
                 .border(width = 2.dp, color = AppColors.unknown200, shape = RoundedCornerShape(50.dp))
-                .noRippleClickable {
+                .clickable {
                     onClick()
                 }
         ) {
@@ -136,7 +146,7 @@ fun FilterBarButton(
         Box(
             modifier = Modifier
                 .background(AppColors.unknown300, shape = RoundedCornerShape(size = 50.dp))
-                .noRippleClickable {
+                .clickable {
                     onClick()
                 }
         ) {

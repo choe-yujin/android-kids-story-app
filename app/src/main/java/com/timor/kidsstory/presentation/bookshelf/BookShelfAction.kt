@@ -1,6 +1,7 @@
 package com.timor.kidsstory.presentation.bookshelf
 
 import com.timor.kidsstory.domain.model.Language
+import com.timor.kidsstory.presentation.bookshelf.components.ReadingStatusFilter
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
@@ -84,4 +85,12 @@ sealed interface BookShelfAction {
      * - 현재는 로그만 출력하고 향후 네비게이션 구현 예정
      */
     data object MyPageClick : BookShelfAction
+
+    /**
+     * 읽음 상태 필터 선택 액션
+     * - Reading Status Bar에서 상태를 선택했을 때 발생
+     *
+     * @property status 선택한 읽음 상태
+     */
+    data class SelectReadingStatus(val status: ReadingStatusFilter) : BookShelfAction
 }
