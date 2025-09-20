@@ -2,64 +2,75 @@ package com.timor.kidsstory.data.repository
 
 import android.util.Log
 import com.timor.kidsstory.data.dto.PageContentResponse
-import com.timor.kidsstory.data.local.assets.AssetDataSource
+import com.timor.kidsstory.data.local.assets.UnifiedDataSource
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.data.mapper.BookMapper
-import com.timor.kidsstory.data.mapper.toBook
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.model.DownloadProgress
 import com.timor.kidsstory.domain.model.DownloadStatus
 import com.timor.kidsstory.domain.repository.BookRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * BookRepository 구현체
- * - 로컬 Asset과 다운로드된 책을 통합 관리
+ * 통합 구조 전용 BookRepository 구현체
+ * - 새로운 통합 메타데이터 구조만 지원
+ * - 기존 호환성 코드 모두 제거
  */
 @Singleton
 class BookRepositoryImpl @Inject constructor(
-    private val assetDataSource: AssetDataSource,
+    private val unifiedDataSource: UnifiedDataSource,
     private val downloadedBooksDao: DownloadedBooksDao
 ) : BookRepository {
 
     /**
-     * 기존 GetBooksUseCase에서 사용하는 메서드
+     * 지정된 언어의 모든 책 가져오기
      */
     override suspend fun getBooks(languageCode: String): Result<List<Book>> {
         return try {
             Log.d("BookRepositoryImpl", "Getting books for language: $languageCode")
-            
-            // 1. 로컬 Asset 책 로드
-            val localBooksResult = getLocalBooks(languageCode)
-            val localBooks = localBooksResult.getOrNull() ?: emptyList()
-            
-            // 2. 다운로드된 책 로드
-            val downloadedBooksResult = getDownloadedBooks(languageCode)
-            val downloadedBooks = downloadedBooksResult.getOrNull() ?: emptyList()
-            
-            // 3. 로컬 책은 다운로드 상태로 표시
-            val localBooksWithDownloadStatus = localBooks.map { localBook ->
-                localBook.copy(
-                    isDownloaded = true,
-                    downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
-                )
+
+            // 1. 통합 메타데이터 로드
+            val metadataResult = unifiedDataSource.loadBooksMetadata()
+            if (metadataResult.isFailure) {
+                return Result.failure(metadataResult.exceptionOrNull()!!)
             }
-            
-            // 4. 중복 제거 (로컬 책 우선)
-            val localStoryIds = localBooksWithDownloadStatus.map { it.storyId.split("_").first() }.toSet()
-            val newDownloadedBooks = downloadedBooks.filter {
-                !localStoryIds.contains(it.storyId.split("_").first())
+
+            val metadata = metadataResult.getOrNull()!!
+            val normalizedLanguageCode = normalizeLanguageCode(languageCode)
+
+            // 2. 해당 언어를 지원하는 책들만 필터링하여 변환
+            val books = metadata.books.mapNotNull { bookMeta ->
+                if (bookMeta.languages.containsKey(normalizedLanguageCode)) {
+                    try {
+                        // 각 책의 콘텐츠도 함께 로드하여 완전한 Book 객체 생성
+                        val contentResult = unifiedDataSource.loadBookContent(
+                            bookId = bookMeta.id,
+                            language = normalizedLanguageCode
+                        )
+                        
+                        val content = contentResult.getOrNull()
+                        val book = BookMapper.fromUnified(bookMeta, normalizedLanguageCode, content)
+                        
+                        // 다운로드 상태 설정 (내장 책은 항상 다운로드됨)
+                        book.copy(
+                            isDownloaded = true,
+                            downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
+                        )
+                    } catch (e: Exception) {
+                        Log.w("BookRepositoryImpl", "Failed to load book ${bookMeta.id}", e)
+                        null
+                    }
+                } else {
+                    null
+                }
             }
-            
-            val combinedBooks = localBooksWithDownloadStatus + newDownloadedBooks
-            
-            Log.d("BookRepositoryImpl", "Successfully loaded ${combinedBooks.size} books")
-            Result.success(combinedBooks)
-            
+
+            Log.d("BookRepositoryImpl", "Successfully loaded ${books.size} books")
+            Result.success(books)
+
         } catch (e: Exception) {
             Log.e("BookRepositoryImpl", "Error getting books", e)
             Result.failure(e)
@@ -67,19 +78,46 @@ class BookRepositoryImpl @Inject constructor(
     }
 
     /**
-     * 기존 GetBookDetailUseCase에서 사용하는 메서드
+     * 특정 책의 상세 정보 가져오기
      */
     override suspend fun getBookById(storyId: String, languageCode: String): Result<Book?> {
         return try {
             Log.d("BookRepositoryImpl", "Getting book detail for: $storyId")
-            
-            val allBooksResult = getBooks(languageCode)
-            if (allBooksResult.isSuccess) {
-                val book = allBooksResult.getOrNull()?.find { it.storyId == storyId }
-                Result.success(book)
-            } else {
-                allBooksResult.map { null }
+
+            // storyId에서 bookId와 언어 추출 (예: "801_ko" -> 801, "ko")
+            val parts = storyId.split("_")
+            if (parts.size != 2) {
+                return Result.failure(IllegalArgumentException("Invalid storyId format: $storyId"))
             }
+
+            val bookId = parts[0].toIntOrNull()
+                ?: return Result.failure(IllegalArgumentException("Invalid bookId in storyId: $storyId"))
+            
+            val normalizedLanguageCode = normalizeLanguageCode(languageCode)
+
+            // 1. 메타데이터에서 책 정보 찾기
+            val metadataResult = unifiedDataSource.loadBooksMetadata()
+            if (metadataResult.isFailure) {
+                return Result.failure(metadataResult.exceptionOrNull()!!)
+            }
+
+            val metadata = metadataResult.getOrNull()!!
+            val bookMeta = metadata.books.find { it.id == bookId }
+                ?: return Result.success(null)
+
+            if (!bookMeta.languages.containsKey(normalizedLanguageCode)) {
+                return Result.success(null)
+            }
+
+            // 2. 콘텐츠 로드
+            val contentResult = unifiedDataSource.loadBookContent(bookId, normalizedLanguageCode)
+            val content = contentResult.getOrNull()
+
+            // 3. Book 객체로 변환
+            val book = BookMapper.fromUnified(bookMeta, normalizedLanguageCode, content)
+
+            Result.success(book)
+
         } catch (e: Exception) {
             Log.e("BookRepositoryImpl", "Error getting book detail", e)
             Result.failure(e)
@@ -90,90 +128,21 @@ class BookRepositoryImpl @Inject constructor(
      * 로컬 Asset 책 목록 로드
      */
     override suspend fun getLocalBooks(languageCode: String): Result<List<Book>> {
-        return try {
-            // AssetDataSource의 실제 메서드 사용
-            val booksResult = assetDataSource.loadBooks()
-            
-            if (booksResult.isSuccess) {
-                val bookDtos = booksResult.getOrNull() ?: emptyList()
-                
-                // BookDto를 Book으로 변환하면서 언어 필터링
-                val books = bookDtos
-                    .filter { bookDto ->
-                        // 해당 언어 책만 필터링
-                        bookDto.storyId.contains(languageCode) || 
-                        (languageCode.startsWith("ko") && bookDto.storyId.contains("ko-kr")) ||
-                        (languageCode.startsWith("tet") && bookDto.storyId.contains("tetum")) ||
-                        (languageCode == "en-ph" && bookDto.storyId.contains("en-ph"))
-                    }
-                    .map { bookDto ->
-                        BookMapper.mapToDomain(bookDto, languageCode)
-                    }
-                
-                Result.success(books)
-            } else {
-                booksResult.map { emptyList() }
-            }
-        } catch (e: Exception) {
-            Log.e("BookRepositoryImpl", "Error loading local books", e)
-            Result.failure(e)
-        }
+        // getBooks와 동일 (모든 내장 책은 로컬 책)
+        return getBooks(languageCode)
     }
 
     /**
-     * 다운로드된 책 목록 로드
+     * 다운로드된 책 목록 로드 (향후 구현)
      */
     override suspend fun getDownloadedBooks(languageCode: String): Result<List<Book>> {
-        return try {
-            val downloadedEntities = downloadedBooksDao.getDownloadedBooksByLanguage(languageCode)
-
-            val books = downloadedEntities.mapNotNull { entity ->
-                val bookContentResult = assetDataSource.loadExternalBookContent(entity.contentJsonPath)
-                bookContentResult.getOrNull()?.let { response ->
-                    val contentJsonFile = File(entity.contentJsonPath)
-                    val bookRootDir = contentJsonFile.parentFile?.parentFile
-                    val imageFolderPath = File(bookRootDir, "images").absolutePath
-                    
-                    // toBook 메서드의 실제 시그니처에 맞게 호출
-                    response.toBook(
-                        language = languageCode,
-                        level = entity.level,
-                        category = entity.category,
-                        coverImage = entity.coverImagePath,
-                        imageFolderPath = imageFolderPath
-                    )
-                }
-            }
-            
-            Result.success(books)
-        } catch (e: Exception) {
-            Log.e("BookRepositoryImpl", "Error loading downloaded books", e)
-            Result.failure(e)
-        }
+        // TODO: 다운로드 기능 구현 시 추가
+        return Result.success(emptyList())
     }
 
     override suspend fun isBookDownloaded(storyId: String): Boolean {
-        return try {
-            val languageCode = storyId.split("_").getOrNull(1) ?: return false
-            
-            // 로컬 Asset 책인지 확인
-            val localBooksResult = getLocalBooks(languageCode)
-            if (localBooksResult.isSuccess) {
-                val hasLocalBook = localBooksResult.getOrNull()?.any { it.storyId == storyId } ?: false
-                if (hasLocalBook) return true
-            }
-
-            // 다운로드된 책인지 확인
-            val downloadedBooksResult = getDownloadedBooks(languageCode)
-            if (downloadedBooksResult.isSuccess) {
-                val downloadedBooks = downloadedBooksResult.getOrNull() ?: emptyList()
-                return downloadedBooks.any { it.storyId == storyId }
-            }
-            
-            return false
-        } catch (e: Exception) {
-            false
-        }
+        // 현재는 모든 내장 책이 "다운로드됨" 상태
+        return true
     }
 
     override suspend fun downloadBook(storyId: String): Result<Unit> {
@@ -185,8 +154,22 @@ class BookRepositoryImpl @Inject constructor(
         // TODO: 다운로드 진행률 관찰 구현
         return flowOf(0f)
     }
-    
+
     override suspend fun loadExternalBookContent(contentPath: String): Result<PageContentResponse> {
-        return assetDataSource.loadExternalBookContent(contentPath)
+        // TODO: 향후 다운로드 기능에서 필요시 구현
+        return Result.failure(UnsupportedOperationException("Legacy external content not supported"))
+    }
+
+    /**
+     * 언어 코드 정규화
+     */
+    private fun normalizeLanguageCode(language: String): String {
+        return when {
+            language.startsWith("ko") -> "ko"
+            language.startsWith("tet") -> "tet"
+            language.startsWith("en") -> "en"
+            language.startsWith("mn") -> "mn"
+            else -> "en"
+        }
     }
 }

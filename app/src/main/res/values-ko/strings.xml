@@ -72,4 +72,14 @@
     <string name="update_dialog_button_later">나중에</string>
     <string name="update_dialog_button_update">업데이트</string>
     <string name="update_dialog_button_update_now">지금 업데이트</string>
+
+    <!-- Reading Status Bar -->
+    <string name="reading_status_all">전체</string>
+    <string name="reading_status_reading">읽는 중</string>
+    <string name="reading_status_read">읽음</string>
+    <string name="reading_status_unread">안 읽음</string>
+    
+    <!-- Progress and Attendance -->
+    <string name="attendance_day">일</string>
+    <string name="attendance_days">일</string>
 </resources>

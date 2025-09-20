@@ -13,8 +13,8 @@
     <string name="filter_category">Kategoria</string>
     
     <!-- Category Groups -->
-    <string name="category_environment_nature">Natureza</string>
-    <string name="category_science_math">Siénsia</string>
+    <string name="category_environment_nature">Ambiente</string>
+    <string name="category_science_math">Matemátika</string>
     <string name="category_culture_world">Kultura</string>
     <string name="category_social_emotional">Emosaun</string>
     <string name="category_folktales_history">Istória</string>
@@ -29,11 +29,11 @@
     <string name="level_5">Lee máximu</string>
     
     <!-- Age Ranges -->
-    <string name="age_3_5">3-5 tinan</string>
-    <string name="age_5_7">5-7 tinan</string>
-    <string name="age_7_9">7-9 tinan</string>
-    <string name="age_9_11">9-11 tinan</string>
-    <string name="age_11_plus">11+ tinan</string>
+    <string name="age_3_5">tinan 3-5</string>
+    <string name="age_5_7">tinan 5-7</string>
+    <string name="age_7_9">tinan 7-9</string>
+    <string name="age_9_11">tinan 9-11</string>
+    <string name="age_11_plus">tinan 11+</string>
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">Livru la iha</string>
@@ -72,4 +72,14 @@
     <string name="update_dialog_button_later">Ikus liu</string>
     <string name="update_dialog_button_update">Update</string>
     <string name="update_dialog_button_update_now">Update agora</string>
+
+    <!-- Reading Status Bar -->
+    <string name="reading_status_all">Hotu</string>
+    <string name="reading_status_reading">Lee hela</string>
+    <string name="reading_status_read">Lee ona</string>
+    <string name="reading_status_unread">Seidauk lee</string>
+    
+    <!-- Progress and Attendance -->
+    <string name="attendance_day">loron</string>
+    <string name="attendance_days">loron</string>
 </resources>

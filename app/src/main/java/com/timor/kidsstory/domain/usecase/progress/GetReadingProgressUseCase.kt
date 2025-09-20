@@ -29,13 +29,15 @@ class GetReadingProgressUseCase @Inject constructor(
             
             // 1. 완독한 책 개수 조회
             val completedBooks = bookInteractionManager.getCompletedBooksCount(languageCode)
+            Log.d("GetReadingProgressUseCase", "Completed books for $languageCode: $completedBooks")
             
             // 2. 전체 책 개수 조회 (로컬 Asset 책 기준)
             val totalBooksResult = bookRepository.getLocalBooks(languageCode)
             val totalBooks = totalBooksResult.getOrElse { 
-                Log.w("GetReadingProgressUseCase", "Failed to get total books count", it)
+                Log.w("GetReadingProgressUseCase", "Failed to get total books count for $languageCode", it)
                 emptyList()
             }.size
+            Log.d("GetReadingProgressUseCase", "Total books for $languageCode: $totalBooks")
             
             // 3. 진행률 계산
             val progressPercentage = if (totalBooks > 0) {
@@ -46,6 +48,7 @@ class GetReadingProgressUseCase @Inject constructor(
             
             // 4. 추가 통계 정보 조회
             val readingStats = bookInteractionManager.getReadingStats(languageCode)
+            Log.d("GetReadingProgressUseCase", "Reading stats for $languageCode: inProgress=${readingStats.inProgressBooks}, started=${readingStats.totalBooksStarted}")
             
             val summary = ReadingProgressSummary(
                 languageCode = languageCode,
@@ -57,12 +60,12 @@ class GetReadingProgressUseCase @Inject constructor(
             )
             
             Log.d("GetReadingProgressUseCase", 
-                "Reading progress: $completedBooks/$totalBooks (${(progressPercentage * 100).toInt()}%)")
+                "Reading progress summary for $languageCode: $completedBooks/$totalBooks (${(progressPercentage * 100).toInt()}%)")
             
             summary
             
         } catch (e: Exception) {
-            Log.e("GetReadingProgressUseCase", "Error getting reading progress", e)
+            Log.e("GetReadingProgressUseCase", "Error getting reading progress for $languageCode", e)
             ReadingProgressSummary(languageCode = languageCode) // 오류 시 기본값 반환
         }
     }

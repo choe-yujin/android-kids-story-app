@@ -72,4 +72,14 @@
     <string name="update_dialog_button_later">Later</string>
     <string name="update_dialog_button_update">Update</string>
     <string name="update_dialog_button_update_now">Update Now</string>
+
+    <!-- Reading Status Bar -->
+    <string name="reading_status_all">All</string>
+    <string name="reading_status_reading">Reading</string>
+    <string name="reading_status_read">Read</string>
+    <string name="reading_status_unread">Unread</string>
+    
+    <!-- Progress and Attendance -->
+    <string name="attendance_day">day</string>
+    <string name="attendance_days">days</string>
 </resources>

@@ -31,8 +31,14 @@ interface ReadingProgressRepository {
      * @param userId 사용자 ID
      * @param bookId 책 ID
      * @param progress 진도 정보
+     * @param languageCode 언어 코드 (선택사항)
      */
-    suspend fun updateReadingProgress(userId: String, bookId: String, progress: ReadingProgress)
+    suspend fun updateReadingProgress(
+        userId: String, 
+        bookId: String, 
+        progress: ReadingProgress,
+        languageCode: String? = null
+    )
     
     /**
      * 책 완료 처리

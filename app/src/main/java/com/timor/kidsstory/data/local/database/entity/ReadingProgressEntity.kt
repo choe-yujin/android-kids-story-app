@@ -78,7 +78,7 @@ data class ReadingProgressEntity(
             progress: com.timor.kidsstory.domain.model.ReadingProgress
         ): ReadingProgressEntity {
             return ReadingProgressEntity(
-                id = "${userId}_${bookId}",
+                id = "${userId}_${bookId}_${languageCode}",
                 userId = userId,
                 bookId = bookId,
                 languageCode = languageCode,

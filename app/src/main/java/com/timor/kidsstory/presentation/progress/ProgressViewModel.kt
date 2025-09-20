@@ -42,12 +42,14 @@ class ProgressViewModel @Inject constructor(
     fun loadProgress(languageCode: String, totalBooks: Int = 0) {
         viewModelScope.launch {
             try {
-                Log.d("ProgressViewModel", "Loading progress for language: $languageCode")
+                Log.d("ProgressViewModel", "Loading progress for language: $languageCode, totalBooks: $totalBooks")
                 
                 _progressState.update { it.copy(isLoading = true, error = null) }
                 
                 // UseCase를 통한 읽기 진도 조회
                 val progressSummary = getReadingProgressUseCase(languageCode)
+                
+                Log.d("ProgressViewModel", "Progress summary: completed=${progressSummary.completedBooks}, total=${progressSummary.totalBooks}")
                 
                 // totalBooks가 외부에서 전달된 경우 해당 값 사용
                 val finalTotalBooks = if (totalBooks > 0) totalBooks else progressSummary.totalBooks
@@ -73,11 +75,11 @@ class ProgressViewModel @Inject constructor(
                 
                 Log.d("ProgressViewModel", 
                     "Progress loaded: ${progressSummary.completedBooks}/$finalTotalBooks " +
-                    "(${(finalProgressPercentage * 100).toInt()}%)"
+                    "(${(finalProgressPercentage * 100).toInt()}%) for $languageCode"
                 )
                 
             } catch (e: Exception) {
-                Log.e("ProgressViewModel", "Error loading progress", e)
+                Log.e("ProgressViewModel", "Error loading progress for $languageCode", e)
                 _progressState.update { 
                     it.copy(
                         isLoading = false, 

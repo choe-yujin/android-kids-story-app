@@ -33,8 +33,10 @@ class ReadingProgressRepositoryImpl @Inject constructor(
     override suspend fun updateReadingProgress(
         userId: String, 
         bookId: String, 
-        progress: ReadingProgress
+        progress: ReadingProgress,
+        languageCode: String?
     ): Unit = withContext(Dispatchers.IO) {
+        val finalLanguageCode = languageCode ?: extractLanguageCodeFromBookId(bookId)
         val existingEntity = readingProgressDao.getProgressByUserAndBook(userId, bookId)
         
         if (existingEntity != null) {
@@ -57,8 +59,7 @@ class ReadingProgressRepositoryImpl @Inject constructor(
             readingProgressDao.updateProgress(updatedEntity)
         } else {
             // 새 엔티티 생성
-            val languageCode = extractLanguageCodeFromBookId(bookId)
-            val newEntity = ReadingProgressEntity.create(userId, bookId, languageCode, progress)
+            val newEntity = ReadingProgressEntity.create(userId, bookId, finalLanguageCode, progress)
             readingProgressDao.insertOrUpdateProgress(newEntity)
         }
     }
@@ -147,9 +148,14 @@ class ReadingProgressRepositoryImpl @Inject constructor(
         }
     
     /**
-     * bookId에서 언어 코드 추출 (임시 구현)
+     * bookId에서 언어 코드 추출
+     * bookId 형식: "801_ko-kr", "819_en-ph" 등
      */
     private fun extractLanguageCodeFromBookId(bookId: String): String {
-        return bookId.substringAfterLast("_", "unknown")
+        return if (bookId.contains("_")) {
+            bookId.substringAfterLast("_")
+        } else {
+            "unknown"
+        }
     }
 }
