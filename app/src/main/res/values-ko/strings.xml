@@ -82,4 +82,9 @@
     <!-- Progress and Attendance -->
     <string name="attendance_day">일</string>
     <string name="attendance_days">일</string>
+    
+    <!-- Book Completion -->
+    <string name="completion_title">축하합니다!</string>
+    <string name="completion_message">책을 다 읽었어요!</string>
+    <string name="completion_button">책장으로 돌아가기</string>
 </resources>

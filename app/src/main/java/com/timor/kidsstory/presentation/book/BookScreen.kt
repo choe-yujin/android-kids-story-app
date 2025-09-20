@@ -7,10 +7,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.timor.kidsstory.presentation.book.components.BookCompletionScreen
+import com.timor.kidsstory.presentation.book.components.CompletionDialog
 import com.timor.kidsstory.presentation.book.components.PageContent
 import com.timor.kidsstory.presentation.book.components.pagetest.FlipPager
 import com.timor.kidsstory.presentation.book.model.BookUiState
@@ -55,6 +56,19 @@ fun BookScreen(
         LaunchedEffect(pagerState.currentPage) {
             onAction(BookAction.PageChange(pagerState.currentPage))
         }
+        
+        // 마지막 페이지에서 스와이프 감지 (오버스크롤 방식)
+        LaunchedEffect(Unit) {
+            snapshotFlow { 
+                pagerState.currentPageOffsetFraction
+            }.collect { offset ->
+                // 마지막 페이지에서 오른쪽으로 스와이프 시도 감지
+                if (pagerState.currentPage == state.pages.size - 1 && offset < -0.3f) {
+                    // 마지막 페이지에서 오른쪽으로 30% 이상 드래그하면 완독 처리
+                    onAction(BookAction.PageChange(state.pages.size))
+                }
+            }
+        }
 
         // Flip 효과를 넣은 Horizontal Pager로 페이지 표시
         FlipPager(
@@ -95,15 +109,19 @@ fun BookScreen(
             )
         }
 
-        // 완독 축하 화면 표시
-        if (state.showCompletionScreen) {
-            BookCompletionScreen(
-                onConfirm = {
-                    onAction(BookAction.CompletionConfirmed)
-                    onAction(BookAction.BackBookShelf) // 확인 후 책장으로 이동
-                }
-            )
-        }
+        // 완독 축하 다이얼로그 표시
+        CompletionDialog(
+            isVisible = state.showCompletionScreen,
+            currentLanguageCode = if (state.pages.isNotEmpty()) {
+                state.pages[0].currentLanguageCode
+            } else {
+                "ko"
+            },
+            onConfirm = {
+                onAction(BookAction.CompletionConfirmed)
+                onAction(BookAction.BackBookShelf) // 확인 후 책장으로 이동
+            }
+        )
     }
 }
 

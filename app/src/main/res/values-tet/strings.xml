@@ -82,4 +82,9 @@
     <!-- Progress and Attendance -->
     <string name="attendance_day">loron</string>
     <string name="attendance_days">loron</string>
+    
+    <!-- Book Completion -->
+    <string name="completion_title">Parabéns!</string>
+    <string name="completion_message">Ita lee ona livru tomak!</string>
+    <string name="completion_button">Fila ba livru sira</string>
 </resources>

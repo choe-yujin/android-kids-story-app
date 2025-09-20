@@ -82,4 +82,9 @@
     <!-- Progress and Attendance -->
     <string name="attendance_day">day</string>
     <string name="attendance_days">days</string>
+    
+    <!-- Book Completion -->
+    <string name="completion_title">Congratulations!</string>
+    <string name="completion_message">You have completed reading this book!</string>
+    <string name="completion_button">Back to Bookshelf</string>
 </resources>

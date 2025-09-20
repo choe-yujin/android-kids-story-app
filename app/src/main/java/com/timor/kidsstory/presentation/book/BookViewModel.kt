@@ -182,6 +182,21 @@ class BookViewModel @Inject constructor(
      * @param newPageIndex 새 페이지 인덱스
      */
     private fun onPageChanged(newPageIndex: Int) {
+        // 마지막 페이지에서 한 번 더 스와이프할 때 완독 팝업 표시
+        if (newPageIndex >= pages.size) {
+            Log.d("BookViewModel", "Reached end of book, showing completion screen")
+            _state.update {
+                it.copy(showCompletionScreen = true)
+            }
+            
+            // 마지막 페이지를 완독으로 처리
+            val totalPages = pages.size
+            if (currentBookId.isNotEmpty() && currentLanguageCode.isNotEmpty()) {
+                updateReadingProgress(currentBookId, totalPages, totalPages, currentLanguageCode)
+            }
+            return
+        }
+        
         _state.update {
             it.copy(currentPageIndex = newPageIndex)
         }

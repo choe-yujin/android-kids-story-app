@@ -301,7 +301,16 @@ class BookshelfViewModel @Inject constructor(
                         it.copy(
                             showLanguageDialog = false,
                             isLoading = true,
-                            currentLanguage = language
+                            currentLanguage = language,
+                            // 언어 변경 시 필터 상태 초기화
+                            filterBarState = it.filterBarState.copy(
+                                selectedFilter = FilterBarCategory.All,
+                                selectedStage = FilterLevel.ONE,
+                                selectedCategory = FilterBookCategory.ENVIRONMENT,
+                                isStageFilterExpanded = false,
+                                isCategoryFilterExpanded = false
+                            ),
+                            selectedReadingStatus = ReadingStatusFilter.ALL // ReadingStatus도 전체로 초기화
                         )
                     }
 
