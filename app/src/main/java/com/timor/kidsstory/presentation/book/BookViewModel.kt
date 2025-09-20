@@ -80,7 +80,7 @@ class BookViewModel @Inject constructor(
             _state.update { it.copy(error = "책 ID가 제공되지 않았습니다") }
         }
 
-        settingTTSLanguage()
+        // TTS 기본 초기화 (책 로드 후 언어 설정됨)
     }
 
     /**
@@ -123,6 +123,9 @@ class BookViewModel @Inject constructor(
                         currentLanguageCode = storyId.split("_").getOrNull(1) ?: "ko"
                         
                         Log.d("BookViewModel", "Book metadata: storyId=$storyId, extractedLanguageCode=$currentLanguageCode, book.languageCode=${book.languageCode}")
+                        
+                        // 책 언어에 맞춰 TTS 언어 설정
+                        settingTTSLanguageForBook(currentLanguageCode)
                         
                         // 페이지 정보 저장
                         pages = book.pages // Changed from loadedPages
@@ -275,6 +278,34 @@ class BookViewModel @Inject constructor(
             }
         }
     }
+    /**
+     * 책의 언어에 맞춰 TTS 언어 설정
+     *
+     * @param bookLanguageCode 책의 언어 코드 (ko, en, tet)
+     */
+    private fun settingTTSLanguageForBook(bookLanguageCode: String) {
+        viewModelScope.launch {
+            Log.d("BookViewModel", "Setting TTS language for book: $bookLanguageCode")
+
+            // 단순화된 언어 코드에 따른 Locale 셋팅: ko, en, tet
+            val locale: Locale = when (bookLanguageCode) {
+                "ko" -> Locale("ko", "KR")
+                "mn" -> Locale("mn", "MN") // Added for Mongolian
+                else -> Locale.ENGLISH // en, tet 등은 영어 TTS 사용
+            }
+
+            // TTS 초기화 및 언어 설정을 함께 수행
+            textToSpeechHelper.initializeWithLanguage(locale).collect { success ->
+                _isTTSInitialized.value = success
+                if (success) {
+                    Logger.d("TTS 초기화 및 언어 설정 완료: $locale (book language: $bookLanguageCode)")
+                } else {
+                    Logger.e("TTS 초기화 또는 언어 설정 실패")
+                }
+            }
+        }
+    }
+
     private fun settingTTSLanguage() {
         viewModelScope.launch {
             val userInfo = getUserPreferenceUseCase().first()

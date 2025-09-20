@@ -59,4 +59,20 @@ sealed interface BookAction {
      * - 축하 화면에서 확인 버튼 클릭 시 호출
      */
     data object CompletionConfirmed : BookAction
+    
+    /**
+     * 읽기 진도 업데이트
+     * - 페이지 변경 시 읽기 진도 저장
+     *
+     * @property bookId 책 ID
+     * @property currentPage 현재 페이지 (1부터 시작)
+     * @property totalPages 총 페이지 수
+     * @property languageCode 언어 코드
+     */
+    data class UpdateReadingProgress(
+        val bookId: String,
+        val currentPage: Int,
+        val totalPages: Int,
+        val languageCode: String
+    ) : BookAction
 }
