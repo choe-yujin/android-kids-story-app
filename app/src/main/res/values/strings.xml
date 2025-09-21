@@ -87,4 +87,19 @@
     <string name="completion_title">Congratulations!</string>
     <string name="completion_message">You have completed reading this book!</string>
     <string name="completion_button">Back to Bookshelf</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_title">Reading Level Test</string>
+    <string name="level_test_question_count">Question %1$d</string>
+    <string name="level_test_skip">SKIP</string>
+    <string name="level_test_next">Next</string>
+    <string name="level_test_result_title">Test Complete!</string>
+    <string name="level_test_recommendation">We recommend starting from Level %d!</string>
+    <string name="level_test_result_accuracy">Accuracy: %d%%</string>
+    <string name="level_test_result_questions">Questions answered: %d</string>
+    <string name="level_test_start_reading">Start Reading</string>
+    <string name="level_test_retake">Retake Test</string>
+    
+    <!-- Language Selection -->
+    <string name="language_selection_title">Choose Language</string>
 </resources>

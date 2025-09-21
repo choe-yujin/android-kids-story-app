@@ -87,4 +87,19 @@
     <string name="completion_title">축하합니다!</string>
     <string name="completion_message">책을 다 읽었어요!</string>
     <string name="completion_button">책장으로 돌아가기</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_title">읽기 레벨 테스트</string>
+    <string name="level_test_question_count">문제 %1$d</string>
+    <string name="level_test_skip">건너뛰기</string>
+    <string name="level_test_next">다음</string>
+    <string name="level_test_result_title">테스트 완료!</string>
+    <string name="level_test_recommendation">Level %d부터 독서를 시작해보시는 것을 추천해요!</string>
+    <string name="level_test_result_accuracy">정답률: %d%%</string>
+    <string name="level_test_result_questions">답변한 문제: %d개</string>
+    <string name="level_test_start_reading">독서 시작하기</string>
+    <string name="level_test_retake">다시 테스트</string>
+    
+    <!-- Language Selection -->
+    <string name="language_selection_title">언어 선택</string>
 </resources>

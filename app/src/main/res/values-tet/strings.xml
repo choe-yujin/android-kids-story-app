@@ -87,4 +87,19 @@
     <string name="completion_title">Parabéns!</string>
     <string name="completion_message">Ita lee ona livru tomak!</string>
     <string name="completion_button">Fila ba livru sira</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_title">Teste nivel lee nian</string>
+    <string name="level_test_question_count">Pergunta %1$d</string>
+    <string name="level_test_skip">IGNORA</string>
+    <string name="level_test_next">Tuir mai</string>
+    <string name="level_test_result_title">Teste remata!</string>
+    <string name="level_test_recommendation">Ami rekomenda atu hahú husi Level %d!</string>
+    <string name="level_test_result_accuracy">Rezultadu loos: %d%%</string>
+    <string name="level_test_result_questions">Pergunta sira neebé responde: %d</string>
+    <string name="level_test_start_reading">Hahú lee</string>
+    <string name="level_test_retake">Halo teste fali</string>
+    
+    <!-- Language Selection -->
+    <string name="language_selection_title">Hili lian</string>
 </resources>
