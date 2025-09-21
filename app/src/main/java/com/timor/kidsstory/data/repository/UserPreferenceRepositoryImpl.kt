@@ -52,6 +52,9 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         // SharedPreferences에 저장
         prefs.edit {
             putString(KEY_LANGUAGE, userPreference.languageCode)
+            putInt(KEY_SELECTED_LEVEL, userPreference.selectedLevel)
+            putBoolean(KEY_IS_FIRST_RUN, userPreference.isFirstRun)
+            putBoolean(KEY_HAS_COMPLETED_LEVEL_TEST, userPreference.hasCompletedLevelTest)
             putBoolean(KEY_MUSIC_ON, userPreference.isMusicOn)
             putBoolean(KEY_SOUND_EFFECT_ON, userPreference.isSoundEffectOn)
             putFloat(KEY_MUSIC_VOLUME, userPreference.musicVolume)
@@ -121,6 +124,39 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         val newPrefs = currentPrefs.copy(soundEffectVolume = volume)
         saveUserPreferences(newPrefs)
     }
+    
+    /**
+     * 첫 실행 상태 업데이트
+     * - 첫 실행 완료 처리
+     */
+    override suspend fun markFirstRunComplete() {
+        val currentPrefs = _userPreferencesFlow.value
+        val newPrefs = currentPrefs.copy(isFirstRun = false)
+        saveUserPreferences(newPrefs)
+    }
+    
+    /**
+     * 선택된 언어와 레벨 업데이트
+     * - 레벨 테스트 완료 후 언어와 레벨을 함께 저장
+     *
+     * @param languageCode 선택된 언어 코드
+     * @param level 측정된 또는 선택된 레벨
+     * @param hasCompletedTest 레벨 테스트 완료 여부
+     */
+    override suspend fun updateLanguageAndLevel(
+        languageCode: String,
+        level: Int,
+        hasCompletedTest: Boolean
+    ) {
+        val currentPrefs = _userPreferencesFlow.value
+        val newPrefs = currentPrefs.copy(
+            languageCode = languageCode,
+            selectedLevel = level,
+            hasCompletedLevelTest = hasCompletedTest,
+            isFirstRun = false // 언어/레벨 설정 시 첫 실행 완료
+        )
+        saveUserPreferences(newPrefs)
+    }
 
     /**
      * SharedPreferences에서 설정 로드
@@ -132,7 +168,10 @@ class UserPreferenceRepositoryImpl @Inject constructor(
     private fun loadFromPreferences(): UserPreference {
         // 기본값으로 UserPreference 객체 생성 (UserPreference.kt의 기본값과 완전 일치)
         val defaultPreference = UserPreference(
-            languageCode = DEFAULT_LANGUAGE,
+            languageCode = "", // 미선택 상태
+            selectedLevel = 3,
+            isFirstRun = true,
+            hasCompletedLevelTest = false,
             isMusicOn = true,  // 음악 기본값: 켜짐 (UserPreference.kt 기본값과 일치)
             isSoundEffectOn = true,  // 효과음 기본값: 켜짐 (UserPreference.kt와 일치)
             musicVolume = 0.7f,  // UserPreference.kt 기본값과 일치
@@ -140,34 +179,37 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         )
         
         // 앱 최초 실행 시 기본값들을 SharedPreferences에 저장
-        val isFirstRun = !prefs.contains(KEY_SOUND_EFFECT_ON) || 
-                        !prefs.contains(KEY_MUSIC_ON) ||
-                        !prefs.contains(KEY_MUSIC_VOLUME) ||
-                        !prefs.contains(KEY_SOUND_EFFECT_VOLUME)
+        val isFirstRun = !prefs.contains(KEY_IS_FIRST_RUN)
         
         if (isFirstRun) {
             // 기본값들을 SharedPreferences에 저장하여 동기화 보장
             prefs.edit {
                 putString(KEY_LANGUAGE, defaultPreference.languageCode)
+                putInt(KEY_SELECTED_LEVEL, defaultPreference.selectedLevel)
+                putBoolean(KEY_IS_FIRST_RUN, defaultPreference.isFirstRun)
+                putBoolean(KEY_HAS_COMPLETED_LEVEL_TEST, defaultPreference.hasCompletedLevelTest)
                 putBoolean(KEY_MUSIC_ON, defaultPreference.isMusicOn)
                 putBoolean(KEY_SOUND_EFFECT_ON, defaultPreference.isSoundEffectOn)
                 putFloat(KEY_MUSIC_VOLUME, defaultPreference.musicVolume)
                 putFloat(KEY_SOUND_EFFECT_VOLUME, defaultPreference.soundEffectVolume)
             }
-            android.util.Log.d("UserPreferenceRepository", "🎆 First run: saved defaults to SharedPreferences - soundEffect=${defaultPreference.isSoundEffectOn}")
+            android.util.Log.d("UserPreferenceRepository", "🎆 First run: saved defaults to SharedPreferences")
             return defaultPreference
         }
         
         // 기존 설정이 있는 경우 로드
         val loadedPreference = UserPreference(
             languageCode = prefs.getString(KEY_LANGUAGE, defaultPreference.languageCode) ?: defaultPreference.languageCode,
+            selectedLevel = prefs.getInt(KEY_SELECTED_LEVEL, defaultPreference.selectedLevel),
+            isFirstRun = prefs.getBoolean(KEY_IS_FIRST_RUN, defaultPreference.isFirstRun),
+            hasCompletedLevelTest = prefs.getBoolean(KEY_HAS_COMPLETED_LEVEL_TEST, defaultPreference.hasCompletedLevelTest),
             isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, defaultPreference.isMusicOn),
             isSoundEffectOn = prefs.getBoolean(KEY_SOUND_EFFECT_ON, defaultPreference.isSoundEffectOn),
             musicVolume = prefs.getFloat(KEY_MUSIC_VOLUME, defaultPreference.musicVolume),
             soundEffectVolume = prefs.getFloat(KEY_SOUND_EFFECT_VOLUME, defaultPreference.soundEffectVolume)
         )
         
-        android.util.Log.d("UserPreferenceRepository", "📁 Loaded existing preferences - soundEffect=${loadedPreference.isSoundEffectOn}")
+        android.util.Log.d("UserPreferenceRepository", "📁 Loaded existing preferences - isFirstRun=${loadedPreference.isFirstRun}")
         return loadedPreference
     }
 
@@ -175,7 +217,9 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         // SharedPreferences 파일명 및 키 상수
         private const val PREFERENCES_NAME = "tetum_dreams_preferences"
         private const val KEY_LANGUAGE = "language_code"
-        private const val DEFAULT_LANGUAGE = "en-ph"
+        private const val KEY_SELECTED_LEVEL = "selected_level"
+        private const val KEY_IS_FIRST_RUN = "is_first_run"
+        private const val KEY_HAS_COMPLETED_LEVEL_TEST = "has_completed_level_test"
         private const val KEY_MUSIC_ON = "music_on"
         private const val KEY_SOUND_EFFECT_ON = "sound_effect_on"
         private const val KEY_MUSIC_VOLUME = "music_volume"

@@ -1,6 +1,5 @@
 package com.timor.kidsstory.presentation.navigation
 
-import com.timor.kidsstory.presentation.splash.SplashScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,17 +11,31 @@ import com.timor.kidsstory.presentation.book.BookScreenRoot
 import com.timor.kidsstory.presentation.bookshelf.BookShelfScreenRoot
 import com.timor.kidsstory.presentation.chatbot.ChatbotScreenRoot
 import com.timor.kidsstory.presentation.setting.SettingScreenRoot
+import com.timor.kidsstory.presentation.languageselection.LanguageSelectionScreenRoot
+import com.timor.kidsstory.presentation.leveltest.LevelTestScreenRoot
+import com.timor.kidsstory.presentation.splash.SplashScreenRoot
 
 /**
  * 앱의 화면 간 네비게이션을 정의하는 클래스
- * - 책장 화면(Bookshelf)
- * - 책 읽기 화면(Reader)
- * - 챗봇 화면(ChatBot)
- * - 설정 화면(Setting)
  */
 sealed class Screen(val route: String) {
+    // 스플래시 화면
+    data object Splash : Screen("splash")
+    
+    // 언어 선택 화면 - 첫 실행시 표시
+    data object LanguageSelection : Screen("language_selection")
+    
+    // 레벨 테스트 화면 - 언어 선택 후 진행
+    data object LevelTest : Screen("level_test/{language}") {
+        fun createRoute(language: String) = "level_test/$language"
+    }
+    
      // 책장 화면 - 메인 화면
-    data object Bookshelf : Screen("bookshelf")
+    data object Bookshelf : Screen("bookshelf/{language}/{level}") {
+        fun createRoute(language: String, level: Int) = "bookshelf/$language/$level"
+        // 기본 경로 (호환성 유지)
+        val defaultRoute = "bookshelf"
+    }
 
     // 책 읽기 화면 - 특정 책의 상세 페이지 표시
     data object Reader : Screen("reader/{storyId}") {
@@ -35,14 +48,10 @@ sealed class Screen(val route: String) {
 
     // 설정 화면 - 앱 설정 관리
     data object Setting : Screen("setting")
-
-    // 스플래쉬
-    data object Splash : Screen("splash")
 }
 
 /**
  * 앱의 네비게이션 그래프를 구성하는 Composable 함수
- * - 각 화면 간의 이동 경로와 데이터 전달 정의
  */
 @Composable
 fun NavGraph(
@@ -50,21 +59,59 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route // ✅ splash가 시작화면
+        startDestination = Screen.Splash.route
     ) {
-        // Splash Screen
+        // 스플래시 화면
         composable(Screen.Splash.route) {
-            SplashScreen(
-                onFinish = {
-                    navController.navigate(Screen.Bookshelf.route) {
-                        popUpTo(Screen.Splash.route) { inclusive = true } // splash 스택 제거
+            SplashScreenRoot(
+                onNavigateToLanguageSelection = {
+                    navController.navigate(Screen.LanguageSelection.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                },
+                onNavigateToBookshelf = { language, level ->
+                    navController.navigate(Screen.Bookshelf.createRoute(language, level)) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+    
+        // 언어 선택 화면
+        composable(Screen.LanguageSelection.route) {
+            LanguageSelectionScreenRoot(
+                onLevelTestNavigation = { language ->
+                    navController.navigate(Screen.LevelTest.createRoute(language)) {
+                        launchSingleTop = true
+                    }
+                },
+                onBookshelfNavigation = { language, level ->
+                    navController.navigate(Screen.Bookshelf.createRoute(language, level)) {
+                        popUpTo(Screen.LanguageSelection.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        
+        // 레벨 테스트 화면
+        composable(
+            route = Screen.LevelTest.route,
+            arguments = listOf(navArgument("language") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val language = backStackEntry.arguments?.getString("language") ?: "en"
+            
+            LevelTestScreenRoot(
+                language = language,
+                onNavigateToBookshelf = { lang, level ->
+                    navController.navigate(Screen.Bookshelf.createRoute(lang, level)) {
+                        popUpTo(Screen.LanguageSelection.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        // 책장 화면
-        composable(Screen.Bookshelf.route) {
+        // 책장 화면 (기본 경로)
+        composable(Screen.Bookshelf.defaultRoute) {
             BookShelfScreenRoot(
                 onBookSelect = { index ->
                     navController.navigate(Screen.Reader.createRoute(index)) {
@@ -77,6 +124,33 @@ fun NavGraph(
                     }
                 },
                 onChatbotClick = { navController.navigate(Screen.ChatBot.route) },
+            )
+        }
+        
+        // 책장 화면 (언어/레벨 파라미터 포함)
+        composable(
+            route = Screen.Bookshelf.route,
+            arguments = listOf(
+                navArgument("language") { type = NavType.StringType },
+                navArgument("level") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val language = backStackEntry.arguments?.getString("language") ?: "en"
+            val level = backStackEntry.arguments?.getInt("level") ?: 3
+            
+            BookShelfScreenRoot(
+                onBookSelect = { index ->
+                    navController.navigate(Screen.Reader.createRoute(index)) {
+                        launchSingleTop = true
+                    }
+                },
+                onSettingClick = {
+                    navController.navigate(Screen.Setting.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onChatbotClick = { navController.navigate(Screen.ChatBot.route) },
+                // TODO: 초기 언어와 레벨 설정을 BookShelfScreenRoot에 전달
             )
         }
 

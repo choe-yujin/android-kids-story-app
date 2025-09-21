@@ -54,6 +54,13 @@ object UseCaseModule {
     // ChangeLanguageUseCase - 자동 주입됨 (@Inject constructor)
     
     /**
+     * Level Test 관련 UseCase들
+     */
+    
+    // GetLevelTestQuestionUseCase - 자동 주입됨 (@Inject constructor)
+    // PerformLevelTestUseCase - 자동 주입됨 (@Inject constructor)
+    
+    /**
      * 추후 필요시 명시적 @Provides를 통한 UseCase 제공 예시
      * 
      * @Provides

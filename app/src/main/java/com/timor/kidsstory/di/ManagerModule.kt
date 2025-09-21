@@ -3,9 +3,12 @@ package com.timor.kidsstory.di
 import com.timor.kidsstory.data.local.database.dao.UserDao
 import com.timor.kidsstory.domain.manager.AttendanceManager
 import com.timor.kidsstory.domain.manager.BookInteractionManager
+import com.timor.kidsstory.domain.manager.FirstRunManager
 import com.timor.kidsstory.domain.manager.UserManager
+import com.timor.kidsstory.domain.manager.questionbank.QuestionBankManager
 import com.timor.kidsstory.domain.repository.AttendanceRepository
 import com.timor.kidsstory.domain.repository.ReadingProgressRepository
+import com.timor.kidsstory.domain.repository.UserPreferenceRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,4 +45,15 @@ object ManagerModule {
     ): BookInteractionManager {
         return BookInteractionManager(readingProgressRepository)
     }
+    
+    @Provides
+    @Singleton
+    fun provideFirstRunManager(
+        userPreferenceRepository: UserPreferenceRepository,
+        questionBankManager: QuestionBankManager
+    ): FirstRunManager {
+        return FirstRunManager(userPreferenceRepository, questionBankManager)
+    }
+    
+    // QuestionBankManager는 @Inject constructor를 사용하므로 자동으로 제공됨
 }
