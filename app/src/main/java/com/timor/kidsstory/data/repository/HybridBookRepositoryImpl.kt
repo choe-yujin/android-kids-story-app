@@ -50,8 +50,8 @@ class HybridBookRepositoryImpl @Inject constructor(
                     val contentResult = hybridContentManager.loadBookContent(entity.id, entity.language)
                     val content = contentResult.getOrNull()
 
-                    // Book 객체로 변환
-                    val book = BookMapper.fromHybridEntity(entity, content)
+                    // Book 객체로 변환 (HybridContentManager 전달)
+                    val book = BookMapper.fromHybridEntity(entity, content, hybridContentManager)
                     
                     book.copy(
                         isDownloaded = true,
@@ -98,8 +98,8 @@ class HybridBookRepositoryImpl @Inject constructor(
             val contentResult = hybridContentManager.loadBookContent(bookId, normalizedLanguageCode)
             val content = contentResult.getOrNull()
 
-            // 3. Book 객체로 변환
-            val book = BookMapper.fromHybridEntity(bookEntity, content)
+            // 3. Book 객체로 변환 (HybridContentManager 전달)
+            val book = BookMapper.fromHybridEntity(bookEntity, content, hybridContentManager)
 
             Result.success(book)
 
@@ -123,7 +123,7 @@ class HybridBookRepositoryImpl @Inject constructor(
                 try {
                     val contentResult = hybridContentManager.loadBookContent(entity.id, entity.language)
                     val content = contentResult.getOrNull()
-                    BookMapper.fromHybridEntity(entity, content)
+                    BookMapper.fromHybridEntity(entity, content, hybridContentManager)
                 } catch (e: Exception) {
                     Log.w(TAG, "Failed to load bundled book ${entity.id}", e)
                     null
@@ -152,7 +152,7 @@ class HybridBookRepositoryImpl @Inject constructor(
                 try {
                     val contentResult = hybridContentManager.loadBookContent(entity.id, entity.language)
                     val content = contentResult.getOrNull()
-                    BookMapper.fromHybridEntity(entity, content)
+                    BookMapper.fromHybridEntity(entity, content, hybridContentManager)
                 } catch (e: Exception) {
                     Log.w(TAG, "Failed to load downloaded book ${entity.id}", e)
                     null
@@ -213,7 +213,7 @@ class HybridBookRepositoryImpl @Inject constructor(
                 try {
                     val contentResult = hybridContentManager.loadBookContent(entity.id, entity.language)
                     val content = contentResult.getOrNull()
-                    BookMapper.fromHybridEntity(entity, content)
+                    BookMapper.fromHybridEntity(entity, content, hybridContentManager)
                 } catch (e: Exception) {
                     Log.w(TAG, "Failed to load book ${entity.id} in observer", e)
                     null
@@ -233,7 +233,7 @@ class HybridBookRepositoryImpl @Inject constructor(
                 try {
                     val contentResult = hybridContentManager.loadBookContent(entity.id, entity.language)
                     val content = contentResult.getOrNull()
-                    BookMapper.fromHybridEntity(entity, content)
+                    BookMapper.fromHybridEntity(entity, content, hybridContentManager)
                 } catch (e: Exception) {
                     Log.w(TAG, "Failed to load downloaded book ${entity.id} in observer", e)
                     null

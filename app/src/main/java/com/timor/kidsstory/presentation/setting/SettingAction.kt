@@ -60,4 +60,14 @@ sealed interface SettingAction {
      * - 설정 화면에서 이전 화면으로 돌아가기
      */
     data object BackButtonClick : SettingAction
+    
+    /**
+     * 🔧 디버깅용: 앱 데이터 초기화 액션 (문제 해결 후 제거 예정)
+     */
+    data object ResetAppData : SettingAction
+    
+    /**
+     * 초기화 확인 다이얼로그 닫기 액션
+     */
+    data object DismissResetConfirmation : SettingAction
 }

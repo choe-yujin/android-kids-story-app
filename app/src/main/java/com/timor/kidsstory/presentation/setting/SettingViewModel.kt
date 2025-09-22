@@ -10,6 +10,7 @@ import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.SoundEffectManager
+import com.timor.kidsstory.domain.manager.FirstRunManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +34,7 @@ class SettingViewModel @Inject constructor(
     private val soundEffectManager: SoundEffectManager,
     private val userPreferenceRepository: UserPreferenceRepository,
     private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
+    private val firstRunManager: FirstRunManager,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
     // UI 상태 관리
@@ -183,6 +185,31 @@ class SettingViewModel @Inject constructor(
             // 일반적으로는 로그만 남기고 처리
         }
     }
+    
+    /**
+     * 🔧 디버깅용: 앱 데이터 초기화 (문제 해결 후 제거 예정)
+     */
+    private fun resetAppData() {
+        viewModelScope.launch {
+            try {
+                android.util.Log.w("SettingViewModel", "🔄 사용자 요청으로 앱 데이터 초기화 시작")
+                firstRunManager.resetAllPreferences()
+                android.util.Log.w("SettingViewModel", "✅ 앱 데이터 초기화 완료")
+                
+                // UI 상태 업데이트 알림
+                _state.update { it.copy(showResetConfirmation = true) }
+            } catch (e: Exception) {
+                android.util.Log.e("SettingViewModel", "❌ 앱 데이터 초기화 실패", e)
+            }
+        }
+    }
+    
+    /**
+     * 초기화 확인 다이얼로그 닫기
+     */
+    private fun dismissResetConfirmation() {
+        _state.update { it.copy(showResetConfirmation = false) }
+    }
 
     /**
      * UI 액션 처리
@@ -228,6 +255,13 @@ class SettingViewModel @Inject constructor(
                     soundEffectManager.playButtonClick()
                 }
                 setSoundEffectVolume(action.volume)
+            }
+            is SettingAction.ResetAppData -> {
+                soundEffectManager.playButtonClick()
+                resetAppData()
+            }
+            is SettingAction.DismissResetConfirmation -> {
+                dismissResetConfirmation()
             }
         }
     }

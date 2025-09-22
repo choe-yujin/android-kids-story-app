@@ -149,15 +149,15 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             // collect 대신 first() 사용하여 한 번만 실행
             val userPref = loadLanguageUseCase().first()
-            Logger.e("사용자 설정 확인: $userPref")
+            Logger.e("🔍 MainActivity - 사용자 설정 확인: isFirstRun=${userPref.isFirstRun}, languageCode='${userPref.languageCode}', level=${userPref.selectedLevel}")
             
             // 첫 실행이 아니고 언어가 설정되어 있을 때만 언어 적용
             if (!userPref.isFirstRun && userPref.languageCode.isNotBlank()) {
-                Logger.e("저장된 언어 적용: ${userPref.languageCode}")
+                Logger.e("🌐 저장된 언어 적용: ${userPref.languageCode}")
                 updateLanguage(userPref.languageCode)
             } else {
                 // 첫 실행이거나 언어가 설정되지 않은 경우 기본 언어 사용
-                Logger.e("기본 언어 사용: en")
+                Logger.e("🌐 기본 언어 사용: en (isFirstRun=${userPref.isFirstRun}, languageCode='${userPref.languageCode}')")
                 updateLanguage("en")
             }
             

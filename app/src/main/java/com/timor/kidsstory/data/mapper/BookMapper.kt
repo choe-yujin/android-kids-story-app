@@ -4,6 +4,7 @@ import android.util.Log
 import com.timor.kidsstory.data.dto.UnifiedBookMetadata
 import com.timor.kidsstory.data.dto.UnifiedBookContent
 import com.timor.kidsstory.data.local.database.entity.HybridBookEntity
+import com.timor.kidsstory.domain.manager.content.HybridContentManager
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.model.Contributor
 
@@ -21,7 +22,8 @@ object BookMapper {
     fun fromUnified(
         metadata: UnifiedBookMetadata,
         languageCode: String,
-        content: UnifiedBookContent? = null
+        content: UnifiedBookContent? = null,
+        hybridContentManager: HybridContentManager? = null
     ): Book {
         val normalizedLang = normalizeLanguageCode(languageCode)
         val languageContent = metadata.languages[normalizedLang] 
@@ -30,16 +32,19 @@ object BookMapper {
         val storyId = "${metadata.id}_${normalizedLang}"
         val baseId = metadata.id.toString()
         
-        // 커버 이미지 경로
-        val coverImageUrl = "file:///android_asset/images/$baseId/cover_${metadata.id}_$normalizedLang.jpg"
+        // 커버 이미지 경로 - HybridContentManager를 통해 결정
+        val coverImageUrl = if (hybridContentManager != null) {
+            hybridContentManager.getImageUrl(metadata.id, "cover_${metadata.id}_$normalizedLang.jpg")
+        } else {
+            "file:///android_asset/images/$baseId/cover_${metadata.id}_$normalizedLang.jpg"
+        }
         
         // 페이지 매핑
         val pages = content?.pages?.map { unifiedPage ->
             PageMapper.fromUnified(
                 unifiedPage = unifiedPage,
                 storyBaseId = baseId,
-                isDownloaded = true,
-                imageFolderPath = null
+                hybridContentManager = hybridContentManager
             )
         }?.sortedBy { it.pageNumber } ?: emptyList()
         
@@ -80,13 +85,17 @@ object BookMapper {
      */
     fun fromHybridEntity(
         entity: HybridBookEntity,
-        content: UnifiedBookContent? = null
+        content: UnifiedBookContent? = null,
+        hybridContentManager: HybridContentManager? = null
     ): Book {
         val storyId = "${entity.id}_${entity.language}"
         val baseId = entity.id.toString()
         
-        // 커버 이미지 경로 (내부저장소 or assets)
-        val coverImageUrl = if (entity.coverImagePath.startsWith("file://")) {
+        // 커버 이미지 경로 - HybridContentManager를 통해 결정
+        val coverImageUrl = if (hybridContentManager != null) {
+            val coverFileName = "cover_${entity.id}_${entity.language}.jpg"
+            hybridContentManager.getImageUrl(entity.id, coverFileName)
+        } else if (entity.coverImagePath.startsWith("file://")) {
             entity.coverImagePath
         } else {
             "file://${entity.coverImagePath}"
@@ -97,8 +106,7 @@ object BookMapper {
             PageMapper.fromUnified(
                 unifiedPage = unifiedPage,
                 storyBaseId = baseId,
-                isDownloaded = true,
-                imageFolderPath = entity.imagesDirectoryPath
+                hybridContentManager = hybridContentManager
             )
         }?.sortedBy { it.pageNumber } ?: emptyList()
         

@@ -151,14 +151,21 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         hasCompletedLevelTest: Boolean
     ) {
         val currentPrefs = _userPreferencesFlow.value
+        android.util.Log.d("UserPreferenceRepo", "🔄 BEFORE updateLanguageAndLevel - isFirstRun: ${currentPrefs.isFirstRun}, languageCode: '${currentPrefs.languageCode}', level: ${currentPrefs.selectedLevel}")
+        
         val newPrefs = currentPrefs.copy(
             languageCode = languageCode,
             selectedLevel = level,
             hasCompletedLevelTest = hasCompletedLevelTest,
             isFirstRun = false // 언어/레벨 설정 시 첫 실행 완료
         )
-        android.util.Log.d("UserPreferenceRepo", "Updating language and level. isFirstRun will be: ${newPrefs.isFirstRun}")
+        android.util.Log.d("UserPreferenceRepo", "🔄 NEW PREFS - isFirstRun: ${newPrefs.isFirstRun}, languageCode: '${newPrefs.languageCode}', level: ${newPrefs.selectedLevel}")
+        
         saveUserPreferences(newPrefs)
+        
+        // 저장 후 실제 Flow 값 확인
+        val savedPrefs = _userPreferencesFlow.value
+        android.util.Log.d("UserPreferenceRepo", "✅ AFTER updateLanguageAndLevel - isFirstRun: ${savedPrefs.isFirstRun}, languageCode: '${savedPrefs.languageCode}', level: ${savedPrefs.selectedLevel}")
     }
 
     /**
@@ -181,6 +188,13 @@ class UserPreferenceRepositoryImpl @Inject constructor(
             soundEffectVolume = 0.7f  // UserPreference.kt 기본값과 일치
         )
         
+        // SharedPreferences에서 실제 저장된 값들 디버깅 로그
+        android.util.Log.d("UserPreferenceRepo", "🔍 DEBUG - SharedPreferences raw values:")
+        android.util.Log.d("UserPreferenceRepo", "  - KEY_IS_FIRST_RUN: ${prefs.getBoolean(KEY_IS_FIRST_RUN, defaultPreference.isFirstRun)}")
+        android.util.Log.d("UserPreferenceRepo", "  - KEY_LANGUAGE: ${prefs.getString(KEY_LANGUAGE, defaultPreference.languageCode)}")
+        android.util.Log.d("UserPreferenceRepo", "  - KEY_SELECTED_LEVEL: ${prefs.getInt(KEY_SELECTED_LEVEL, defaultPreference.selectedLevel)}")
+        android.util.Log.d("UserPreferenceRepo", "  - KEY_HAS_COMPLETED_LEVEL_TEST: ${prefs.getBoolean(KEY_HAS_COMPLETED_LEVEL_TEST, defaultPreference.hasCompletedLevelTest)}")
+        
         // 기존 설정이 있는 경우 로드
         val loadedPreference = UserPreference(
             languageCode = prefs.getString(KEY_LANGUAGE, defaultPreference.languageCode) ?: defaultPreference.languageCode,
@@ -193,7 +207,7 @@ class UserPreferenceRepositoryImpl @Inject constructor(
             soundEffectVolume = prefs.getFloat(KEY_SOUND_EFFECT_VOLUME, defaultPreference.soundEffectVolume)
         )
         
-        android.util.Log.d("UserPreferenceRepository", "📁 Loaded existing preferences - isFirstRun=${loadedPreference.isFirstRun}")
+        android.util.Log.d("UserPreferenceRepository", "📁 Loaded existing preferences - isFirstRun=${loadedPreference.isFirstRun}, languageCode=${loadedPreference.languageCode}, level=${loadedPreference.selectedLevel}")
         return loadedPreference
     }
 

@@ -9,7 +9,7 @@
       "category": "FOLKTALES_HISTORY",
       "countryOfOrigin": "Vietnam",
       "aiFeatures": ["FEEDBACK"],
-      "imageAssetsUrl": "assets:///images/801/images.zip",
+      "imageAssetsUrl": "assets:///images/801/",
       "imageAssetsVersion": 100,
       "languages": {
         "ko": {
@@ -311,45 +311,6 @@
           "contentVersion": 101,
           "isBundled": true,
           "tags": ["festa", "tailandia", "kultura"]
-        }
-      }
-    },
-    {
-      "id": 821,
-      "level": 1,
-      "unlockStep": 0,
-      "category": "FOLKTALES_HISTORY",
-      "countryOfOrigin": "Thailand",
-      "aiFeatures": ["FEEDBACK"],
-      "imageAssetsUrl": "assets:///images/821/images.zip",
-      "imageAssetsVersion": 100,
-      "languages": {
-        "ko": {
-          "title": "병아리 별",
-          "coverImageUrl": "assets:///images/821/cover_821_ko.jpg",
-          "contentUrl": "assets:///content/821_ko.json",
-          "coverVersion": 100,
-          "contentVersion": 101,
-          "isBundled": true,
-          "tags": ["전설", "태국", "별"]
-        },
-        "en": {
-          "title": "The Chick Stars",
-          "coverImageUrl": "assets:///images/821/cover_821_en.jpg",
-          "contentUrl": "assets:///content/821_en.json",
-          "coverVersion": 100,
-          "contentVersion": 101,
-          "isBundled": true,
-          "tags": ["legend", "thailand", "stars"]
-        },
-        "tet": {
-          "title": "Fitun Manu-oan",
-          "coverImageUrl": "assets:///images/821/cover_821_tet.jpg",
-          "contentUrl": "assets:///content/821_tet.json",
-          "coverVersion": 100,
-          "contentVersion": 101,
-          "isBundled": true,
-          "tags": ["lenda", "tailandia", "fitun"]
         }
       }
     }

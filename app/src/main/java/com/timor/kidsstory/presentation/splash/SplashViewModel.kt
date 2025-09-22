@@ -26,37 +26,49 @@ class SplashViewModel @Inject constructor(
     private val hybridContentManager: HybridContentManager,
     private val contentUpdateService: ContentUpdateService
 ) : ViewModel() {
-    
+
     private val _uiState = MutableStateFlow(SplashUiState())
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
-    
+
     init {
+        android.util.Log.d("SplashViewModel", "🚀 SplashViewModel initialized")
         initializeAppContent()
     }
-    
+
     /**
-     * 앱 콘텐츠 전체 초기화 프로세스
-     */
+    * 앱 콘텐츠 전체 초기화 프로세스
+    */
     private fun initializeAppContent() {
+        android.util.Log.d("SplashViewModel", "🔄 initializeAppContent started")
         viewModelScope.launch {
             try {
-                // 1. 하이브리드 콘텐츠 시스템 초기화
+                // 1. 하이브리드 콘텐츠 시스템 초기화 (실패해도 계속 진행)
+                android.util.Log.d("SplashViewModel", "🔧 Starting hybrid content initialization...")
                 _uiState.value = _uiState.value.copy(
                     loadingMessage = "콘텐츠 초기화 중..."
                 )
                 
-                val hybridInitResult = hybridContentManager.initializeHybridContent()
-                if (hybridInitResult.isFailure) {
-                    throw Exception("하이브리드 콘텐츠 초기화 실패: ${hybridInitResult.exceptionOrNull()?.message}")
+                try {
+                    val hybridInitResult = hybridContentManager.initializeHybridContent()
+                    if (hybridInitResult.isSuccess) {
+                        android.util.Log.d("SplashViewModel", "✅ Hybrid content initialized successfully")
+                    } else {
+                        android.util.Log.w("SplashViewModel", "⚠️ Hybrid content init failed, continuing anyway: ${hybridInitResult.exceptionOrNull()?.message}")
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.w("SplashViewModel", "⚠️ Hybrid content init exception, continuing anyway", e)
                 }
                 
-                                // 2. 최소 스플래시 시간 보장
-                                delay(MINIMUM_SPLASH_DURATION)                
-                // 4. 첫 실행 여부에 따른 네비게이션 결정
+                // 2. 최소 스플래시 시간 보장
+                android.util.Log.d("SplashViewModel", "⏰ Waiting for minimum splash duration...")
+                delay(MINIMUM_SPLASH_DURATION)
+                
+                // 3. 네비게이션 결정
+                android.util.Log.d("SplashViewModel", "🎯 About to call determineNavigationTarget()")
                 determineNavigationTarget()
                 
             } catch (e: Exception) {
-                // 오류 발생시 언어 선택으로 fallback
+                android.util.Log.e("SplashViewModel", "❌ Exception in initializeAppContent", e)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     navigateTo = SplashNavigationTarget.LanguageSelection,
@@ -66,16 +78,18 @@ class SplashViewModel @Inject constructor(
             }
         }
     }
-    
+
     /**
      * 첫 실행 여부 확인 후 네비게이션 결정
      */
     private suspend fun determineNavigationTarget() {
         try {
             val isFirstRun = firstRunManager.isFirstRun()
-            
+            android.util.Log.d("SplashViewModel", "🔍 determineNavigationTarget - isFirstRun: $isFirstRun")
+
             if (isFirstRun) {
                 // 첫 실행: 언어 선택으로
+                android.util.Log.d("SplashViewModel", "🎯 First run detected -> LanguageSelection")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     navigateTo = SplashNavigationTarget.LanguageSelection,
@@ -84,8 +98,11 @@ class SplashViewModel @Inject constructor(
             } else {
                 // 재실행: 저장된 언어/레벨로 책장으로
                 val languageAndLevel = firstRunManager.getSelectedLanguageAndLevel()
+                android.util.Log.d("SplashViewModel", "🔍 getSelectedLanguageAndLevel result: $languageAndLevel")
+
                 if (languageAndLevel != null) {
                     val (language, level) = languageAndLevel
+                    android.util.Log.d("SplashViewModel", "🎯 Returning user detected -> Bookshelf (language: $language, level: $level)")
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         navigateTo = SplashNavigationTarget.Bookshelf(language, level),
@@ -93,6 +110,7 @@ class SplashViewModel @Inject constructor(
                     )
                 } else {
                     // 설정이 없으면 첫 실행으로 처리
+                    android.util.Log.d("SplashViewModel", "⚠️ No settings found -> LanguageSelection fallback")
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         navigateTo = SplashNavigationTarget.LanguageSelection,
@@ -100,9 +118,10 @@ class SplashViewModel @Inject constructor(
                     )
                 }
             }
-            
+
         } catch (e: Exception) {
             // 오류 발생시 언어 선택으로 fallback
+            android.util.Log.e("SplashViewModel", "❌ Error in determineNavigationTarget", e)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 navigateTo = SplashNavigationTarget.LanguageSelection,
@@ -111,7 +130,7 @@ class SplashViewModel @Inject constructor(
             )
         }
     }
-    
+
     companion object {
         private const val MINIMUM_SPLASH_DURATION = 2000L // 2초 (하이브리드 초기화 시간 고려)
     }
@@ -135,7 +154,7 @@ sealed class SplashNavigationTarget {
      * 언어 선택 화면으로 (첫 실행)
      */
     data object LanguageSelection : SplashNavigationTarget()
-    
+
     /**
      * 책장 화면으로 (재실행)
      */

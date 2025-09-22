@@ -356,6 +356,18 @@ class HybridContentManager @Inject constructor(
         return File(imagesDir, "$bookId/$imageName").absolutePath
     }
     
+    /**
+     * 이미지 URL 반환 (내부저장소 우선, assets fallback)
+     */
+    fun getImageUrl(bookId: Int, imageName: String): String {
+        val internalImageFile = File(imagesDir, "$bookId/$imageName")
+        return if (internalImageFile.exists()) {
+            "file://${internalImageFile.absolutePath}"  // 내부저장소 우선
+        } else {
+            "file:///android_asset/images/$bookId/$imageName"  // assets fallback
+        }
+    }
+    
     // ========== Private Helper Methods ==========
     
     /**

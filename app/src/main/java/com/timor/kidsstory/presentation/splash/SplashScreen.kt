@@ -27,12 +27,15 @@ fun SplashScreenRoot(
     LaunchedEffect(uiState.navigateTo) {
         when (val target = uiState.navigateTo) {
             is SplashNavigationTarget.LanguageSelection -> {
+                android.util.Log.d("SplashScreen", "🎯 Navigating to LanguageSelection")
                 onNavigateToLanguageSelection()
             }
             is SplashNavigationTarget.Bookshelf -> {
+                android.util.Log.d("SplashScreen", "🎯 Navigating to Bookshelf (language: ${target.language}, level: ${target.level})")
                 onNavigateToBookshelf(target.language, target.level, target.wasSkipped, target.showLevelResultPopup)
             }
             null -> {
+                android.util.Log.d("SplashScreen", "⏳ Navigation target not yet determined")
                 // 아직 결정되지 않음
             }
         }

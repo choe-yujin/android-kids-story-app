@@ -2,6 +2,7 @@ package com.timor.kidsstory.domain.manager
 
 import android.util.Log
 import com.timor.kidsstory.domain.manager.questionbank.QuestionBankManager
+import com.timor.kidsstory.domain.model.UserPreference
 import com.timor.kidsstory.domain.repository.UserPreferenceRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -70,6 +71,10 @@ class FirstRunManager @Inject constructor(
         Log.d(TAG, "🎉 completeFirstRun() - language: $language, level: $level, testCompleted: $hasCompletedLevelTest")
         
         try {
+            // 현재 상태 로깅
+            val currentPrefs = userPreferenceRepository.getUserPreferences().first()
+            Log.d(TAG, "📍 BEFORE completeFirstRun - isFirstRun: ${currentPrefs.isFirstRun}, languageCode: '${currentPrefs.languageCode}', level: ${currentPrefs.selectedLevel}")
+            
             // 1. 질문 은행 초기화 (assets → 내부저장소)
             questionBankManager.initializeQuestionBanks()
             
@@ -79,6 +84,10 @@ class FirstRunManager @Inject constructor(
                 level = level,
                 hasCompletedLevelTest = hasCompletedLevelTest
             )
+            
+            // 저장 후 상태 확인
+            val updatedPrefs = userPreferenceRepository.getUserPreferences().first()
+            Log.d(TAG, "📍 AFTER completeFirstRun - isFirstRun: ${updatedPrefs.isFirstRun}, languageCode: '${updatedPrefs.languageCode}', level: ${updatedPrefs.selectedLevel}")
             
             Log.d(TAG, "✅ First run completed successfully")
             
@@ -125,6 +134,31 @@ class FirstRunManager @Inject constructor(
     suspend fun markFirstRunComplete() {
         userPreferenceRepository.markFirstRunComplete()
         Log.d(TAG, "✅ markFirstRunComplete() - Marked first run as complete")
+    }
+    
+    /**
+     * 디버깅용: SharedPreferences 초기화 
+     * (문제 해결 후 제거 예정)
+     */
+    suspend fun resetAllPreferences() {
+        Log.w(TAG, "🔄 resetAllPreferences() - DEBUGGING: Resetting all preferences")
+        try {
+            val defaultUserPreference = UserPreference(
+                languageCode = "",
+                selectedLevel = 3,
+                isFirstRun = true,
+                hasCompletedLevelTest = false,
+                isMusicOn = true,
+                isSoundEffectOn = true,
+                musicVolume = 0.1f,
+                soundEffectVolume = 0.7f
+            )
+            userPreferenceRepository.saveUserPreferences(defaultUserPreference)
+            Log.w(TAG, "🔄 All preferences reset to default values")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to reset preferences", e)
+            throw e
+        }
     }
     
     companion object {
