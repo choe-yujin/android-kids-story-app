@@ -1,13 +1,14 @@
 package com.timor.kidsstory.presentation.attendance
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -16,12 +17,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,16 +32,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.timor.kidsstory.R
+import com.timor.kidsstory.ui.components.LocalizedText
+import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 /**
- * 출석 축하 팝업 컴포넌트
- * - 첫 출석 시 축하 메시지와 연속 출석 일수 표시
- * - 사용자가 닫을 때까지 표시
- *
- * @param isVisible 팝업 표시 여부
- * @param streakCount 연속 출석 일수
- * @param onDismiss 팝업 닫기 콜백
+ * 출석 축하 팝업 컴포넌트 (수정됨)
+ * - 반응형 레이아웃 적용 (태블릿/휴대폰)
+ * - 다국어 처리 완료
+ * - 텍스트 중앙 정렬
  */
 @Composable
 fun AttendancePopup(
@@ -49,65 +52,63 @@ fun AttendancePopup(
     if (isVisible) {
         Dialog(
             onDismissRequest = onDismiss,
-            properties = DialogProperties(
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
-            )
+            properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
         ) {
+            val configuration = LocalConfiguration.current
+            val screenWidth = configuration.screenWidthDp
+            val isTablet = screenWidth >= 600
+
             Card(
-                modifier = Modifier
-                    .width(320.dp)
-                    .padding(16.dp),
+                modifier = if (isTablet) {
+                    Modifier
+                        .fillMaxWidth(0.6f)
+                        .padding(16.dp)
+                } else {
+                    Modifier
+                        .fillMaxWidth(0.9f) // 휴대폰에서 90% 너비 사용
+                        .padding(16.dp)
+                },
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                ),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(24.dp),
+                        .padding(24.dp)
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // 축하 이모지
                     Text(
                         text = "🎉",
                         fontSize = 48.sp,
                         textAlign = TextAlign.Center
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // 축하 메시지
-                    Text(
-                        text = if (streakCount == 1) {
-                            "첫 출석을 축하해요!"
-                        } else {
-                            "연속 ${streakCount}일째 출석!"
-                        },
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
+
+                    LocalizedText(
+                        resId = if (streakCount == 1) R.string.attendance_popup_title_first
+                                else R.string.attendance_popup_title_consecutive,
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center,
-                        color = Color(0xFF2E7D32)
+                        formatArgs = arrayOf(streakCount)
                     )
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // 격려 메시지
-                    Text(
-                        text = if (streakCount == 1) {
-                            "매일 책을 읽으며 성장해보세요!"
-                        } else {
-                            "꾸준한 독서 습관이 멋져요!"
-                        },
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
-                        color = Color.Gray
+
+                    LocalizedText(
+                        resId = if (streakCount == 1) R.string.attendance_popup_message_first
+                                else R.string.attendance_popup_message_consecutive,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center
                     )
-                    
+
                     Spacer(modifier = Modifier.height(24.dp))
-                    
-                    // 연속 출석 표시
+
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
@@ -117,31 +118,29 @@ fun AttendancePopup(
                             fontSize = 24.sp
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "${streakCount}일째 연속 출석",
+                        LocalizedText(
+                            resId = R.string.attendance_popup_streak_info,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFFE65100)
+                            color = MaterialTheme.colorScheme.primary,
+                            formatArgs = arrayOf(streakCount)
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.height(24.dp))
-                    
-                    // 확인 버튼
+
                     Button(
                         onClick = onDismiss,
                         modifier = Modifier
-                            .width(120.dp)
-                            .height(40.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4CAF50)
-                        ),
-                        shape = RoundedCornerShape(20.dp)
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        shape = RoundedCornerShape(26.dp)
                     ) {
-                        Text(
-                            text = "확인",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
+                        LocalizedText(
+                            resId = R.string.attendance_popup_button_ok,
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                            fontSize = 18.sp,
                             color = Color.White
                         )
                     }
@@ -151,40 +150,38 @@ fun AttendancePopup(
     }
 }
 
-@Preview
-@Composable
-private fun AttendancePopupPreview() {
-    KidsStoryTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.3f)),
-            contentAlignment = Alignment.Center
-        ) {
-            AttendancePopup(
-                isVisible = true,
-                streakCount = 7,
-                onDismiss = {}
-            )
-        }
-    }
-}
-
-@Preview
+@Preview(name = "Phone - First Day")
 @Composable
 private fun FirstAttendancePopupPreview() {
     KidsStoryTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.3f)),
-            contentAlignment = Alignment.Center
-        ) {
-            AttendancePopup(
-                isVisible = true,
-                streakCount = 1,
-                onDismiss = {}
-            )
-        }
+        AttendancePopup(
+            isVisible = true,
+            streakCount = 1,
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview(name = "Phone - Nth Day")
+@Composable
+private fun AttendancePopupPreview() {
+    KidsStoryTheme {
+        AttendancePopup(
+            isVisible = true,
+            streakCount = 7,
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview(name = "Tablet - Nth Day", widthDp = 1024, heightDp = 600)
+@Composable
+private fun TabletAttendancePopupPreview() {
+    KidsStoryTheme {
+        AttendancePopup(
+            isVisible = true,
+            streakCount = 15,
+            onDismiss = {}
+        )
     }
 }

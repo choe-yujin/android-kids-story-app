@@ -112,11 +112,6 @@ fun BookScreen(
         // 완독 축하 다이얼로그 표시
         CompletionDialog(
             isVisible = state.showCompletionScreen,
-            currentLanguageCode = if (state.pages.isNotEmpty()) {
-                state.pages[0].currentLanguageCode
-            } else {
-                "ko"
-            },
             onConfirm = {
                 onAction(BookAction.CompletionConfirmed)
                 onAction(BookAction.BackBookShelf) // 확인 후 책장으로 이동

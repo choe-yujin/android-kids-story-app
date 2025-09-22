@@ -54,6 +54,7 @@ class AttendanceViewModel @Inject constructor(
                 // UseCase를 통한 출석 체크
                 val isNewAttendance = checkTodayAttendanceUseCase()
                 
+                Log.d("AttendanceViewModel", "checkTodayAttendanceUseCase returned: $isNewAttendance")
                 if (isNewAttendance) {
                     _shouldShowAttendancePopup.value = true
                     Log.d("AttendanceViewModel", "New attendance detected - showing popup")
@@ -61,6 +62,7 @@ class AttendanceViewModel @Inject constructor(
                 
                 // 현재 출석 상태 조회
                 val attendanceStatus = getAttendanceStatusUseCase()
+                Log.d("AttendanceViewModel", "getAttendanceStatusUseCase returned: $attendanceStatus")
                 _attendanceState.update { currentState ->
                     currentState.copy(
                         currentStreak = attendanceStatus.currentStreak,
