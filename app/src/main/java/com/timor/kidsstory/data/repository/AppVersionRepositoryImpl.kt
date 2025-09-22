@@ -143,8 +143,13 @@ class AppVersionRepositoryImpl @Inject constructor(
             val languageManagerCode = LanguageManager.getCurrentLanguageCode()
             Log.d("AppVersionRepository", "🔍 LanguageManager code: '$languageManagerCode'")
             
-            // 4. 우선순위: 앱 로케일 > 시스템 로케일 > LanguageManager
+            // 4. 우선순위: LanguageManager > 앱 로케일 > 시스템 로케일
             val candidateCode = when {
+                // LanguageManager 사용 (최우선)
+                languageManagerCode.isNotEmpty() -> {
+                    Log.d("AppVersionRepository", "✅ Using LanguageManager (highest priority): $languageManagerCode")
+                    languageManagerCode
+                }
                 // 앱 로케일이 한국어면 한국어 우선
                 appLocaleCode == "ko" -> {
                     Log.d("AppVersionRepository", "✅ Using app locale (Korean): $appLocaleCode")
@@ -164,11 +169,6 @@ class AppVersionRepositoryImpl @Inject constructor(
                 systemLanguageCode.isNotEmpty() -> {
                     Log.d("AppVersionRepository", "✅ Using system locale: $systemLanguageCode")
                     systemLanguageCode
-                }
-                // LanguageManager 사용 (마지막 수단)
-                languageManagerCode.isNotEmpty() -> {
-                    Log.d("AppVersionRepository", "✅ Using LanguageManager: $languageManagerCode")
-                    languageManagerCode
                 }
                 else -> {
                     Log.w("AppVersionRepository", "⚠️ No valid locale found, using default Korean")

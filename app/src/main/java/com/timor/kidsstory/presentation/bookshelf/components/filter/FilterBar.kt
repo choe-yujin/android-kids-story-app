@@ -59,7 +59,7 @@ fun FilterBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 48.dp, end = 16.dp), // 책 그리드와 동일한 좌측 패딩
+            .padding(start = 48.dp, end = 16.dp), // 설정 아이콘 시작점에 맞춰서 고정
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
     ) {

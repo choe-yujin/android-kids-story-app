@@ -80,31 +80,7 @@ fun AboutCardContent(scaleFactor: Float) {
             }
         }
 
-        Spacer(modifier = Modifier.height((12 * scaleFactor).dp))
 
-        // 라이센스 정보
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            LocalizedText(
-                resId = R.string.info_license,
-                style = ResponsiveTextUtils.getSettingCardTitleStyle(),
-                color = AppColors.neutral800,
-                modifier = Modifier.padding(bottom = (6 * scaleFactor).dp)
-            )
-            Text(
-                text = "These books are licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
-                style = ResponsiveTextUtils.getLicenseTextStyle(),
-                color = AppColors.neutral600,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Text(
-                text = "ⓒ 2019 by Enuma, Inc. & The Foundation SeeArt for Book Culture",
-                style = ResponsiveTextUtils.getLicenseTextStyle(),
-                color = AppColors.neutral700,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
     }
 }
 
@@ -166,31 +142,7 @@ fun SmallAboutCardContent(scaleFactor: Float) {
             }
         }
 
-        Spacer(modifier = Modifier.height((8 * scaleFactor).dp))
 
-        // 라이센스 정보
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            LocalizedText(
-                resId = R.string.info_license,
-                style = ResponsiveTextUtils.getSettingCardTitleStyle(),
-                color = AppColors.neutral800,
-                modifier = Modifier.padding(bottom = (4 * scaleFactor).dp)
-            )
-            Text(
-                text = "These books are licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
-                style = ResponsiveTextUtils.getLicenseTextStyle(),
-                color = AppColors.neutral600,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Text(
-                text = "ⓒ 2019 by Enuma, Inc. & The Foundation SeeArt for Book Culture",
-                style = ResponsiveTextUtils.getLicenseTextStyle(),
-                color = AppColors.neutral700,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
     }
 }
 
@@ -252,30 +204,6 @@ fun VerySmallAboutCardContent(scaleFactor: Float) {
             }
         }
 
-        Spacer(modifier = Modifier.height((6 * scaleFactor).dp))
 
-        // 라이센스 정보
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            LocalizedText(
-                resId = R.string.info_license,
-                style = ResponsiveTextUtils.getSettingCardTitleStyle(),
-                color = AppColors.neutral800,
-                modifier = Modifier.padding(bottom = (3 * scaleFactor).dp)
-            )
-            Text(
-                text = "These books are licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.",
-                style = ResponsiveTextUtils.getLicenseTextStyle(),
-                color = AppColors.neutral600,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Text(
-                text = "ⓒ 2019 by Enuma, Inc. & The Foundation SeeArt for Book Culture",
-                style = ResponsiveTextUtils.getLicenseTextStyle(),
-                color = AppColors.neutral700,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
     }
 } 

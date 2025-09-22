@@ -52,7 +52,7 @@ fun LanguageDialog(
         ) {
             Card(
                 modifier = Modifier
-                    .fillMaxWidth(0.6f) // 태블릿에서 더 넓게
+                    .fillMaxWidth(0.8f) // 팝업 가로 길이 80%로 늘림
                     .wrapContentHeight(),
                 shape = RoundedCornerShape(24.dp), // 더 둥글게
                 colors = CardDefaults.cardColors(containerColor = Color.White),

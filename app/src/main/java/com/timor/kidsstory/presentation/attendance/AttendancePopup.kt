@@ -59,32 +59,26 @@ fun AttendancePopup(
             val isTablet = screenWidth >= 600
 
             Card(
-                modifier = if (isTablet) {
-                    Modifier
-                        .fillMaxWidth(0.6f)
-                        .padding(16.dp)
-                } else {
-                    Modifier
-                        .fillMaxWidth(0.9f) // 휴대폰에서 90% 너비 사용
-                        .padding(16.dp)
-                },
+                modifier = Modifier
+                    .fillMaxWidth(0.9f) // 가로 길이 90%로 늘림
+                    .padding(16.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(24.dp)
+                        .padding(32.dp) // 더 여유로운 패딩 (24dp -> 32dp)
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = "🎉",
-                        fontSize = 48.sp,
+                        fontSize = 56.sp, // 48sp -> 56sp로 증가
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp)) // 16dp -> 20dp
 
                     LocalizedText(
                         resId = if (streakCount == 1) R.string.attendance_popup_title_first

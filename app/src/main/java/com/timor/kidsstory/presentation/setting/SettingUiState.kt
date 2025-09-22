@@ -17,7 +17,7 @@ import com.timor.kidsstory.domain.util.LanguageConstants
 data class SettingUiState(
     val isMusicOn: Boolean = true,  // 기본값: 음악 켜짐
     val isSoundEffectOn: Boolean = true,  // 기본값: 효과음 켜짐
-    val musicVolume: Float = 0.7f,  // 기본값: 70% 음량
+    val musicVolume: Float = 0.1f,  // 기본값: 10% 음량
     val soundEffectVolume: Float = 0.7f,  // 기본값: 70% 음량
     val showEmailDialog: Boolean = false,  // 기본값: 이메일 다이얼로그 숨김
     val currentLanguage: Language = LanguageConstants.DEFAULT_LANGUAGE  // 기본값: 영어

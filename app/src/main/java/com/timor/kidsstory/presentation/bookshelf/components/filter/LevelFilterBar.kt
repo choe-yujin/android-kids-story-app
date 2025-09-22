@@ -1,5 +1,6 @@
 package com.timor.kidsstory.presentation.bookshelf.components.filter
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
@@ -52,22 +53,23 @@ fun LevelFilterBar(
             val configuration = LocalConfiguration.current
             val screenWidth = configuration.screenWidthDp
             val scaleFactor = ResponsiveTextUtils.getScreenScaleFactor()
-            
+
             // 태블릿에서는 크고 여유롭게, 휴대폰에서는 컴팩트하게
-            val isTablet = screenWidth >= 800
+            val isTablet = LocalConfiguration.current.smallestScreenWidthDp >= 600
 
             val iconSize = when {
                 isTablet -> (56 * scaleFactor).dp // 태블릿: 큰 아이콘
-                else -> 48.dp // 휴대폰: 기존 크기
+                else -> 40.dp // 휴대폰: 기존 크기보다 작게
             }
-            
+
             val spacing = when {
                 isTablet -> (4 * scaleFactor).dp // 태블릿: 여유로운 간격
                 else -> 4.dp // 휴대폰: 간격 없음
             }
 
-            val scrollModifier = if (!isTablet) Modifier.horizontalScroll(rememberScrollState()) else Modifier
-            
+            val scrollModifier =
+                if (!isTablet) Modifier.horizontalScroll(rememberScrollState()) else Modifier
+
             Row(
                 modifier = scrollModifier,
                 verticalAlignment = Alignment.Top,
@@ -81,7 +83,7 @@ fun LevelFilterBar(
                         showTextLabel = true,
                         currentLanguageCode = currentLanguageCode,
                         iconSize = iconSize,
-                        isTablet = screenWidth >= 800
+                        isTablet = isTablet
                     )
                 }
             }
@@ -101,7 +103,7 @@ fun LevelIcon(
     isTablet: Boolean = false
 ) {
     val scaleFactor = ResponsiveTextUtils.getScreenScaleFactor()
-    
+
     // 선택된 아이콘은 2dp 더 크게 (태블릿에서는 4dp)
     val selectionBoost = if (isTablet) 4.dp else 2.dp
     val actualIconSize = if (isSelected) iconSize + selectionBoost else iconSize
@@ -118,7 +120,7 @@ fun LevelIcon(
     }
 
     // 태블릿에서는 더 큰 텍스트 공간
-    val textAreaWidth = if (isTablet) iconSize + (8 * scaleFactor).dp else iconSize + 8.dp
+    val textAreaWidth = if (isTablet) iconSize + (16 * scaleFactor).dp else iconSize + 8.dp
 
     Column(
         modifier = modifier
@@ -128,21 +130,13 @@ fun LevelIcon(
         verticalArrangement = Arrangement.Top
     ) {
         // 경계 없이 아이콘만 표시
-        Icon(
-            imageVector = ImageVector.vectorResource(iconRes),
-            contentDescription = stringResource(level.ageRangeRes),
-            tint = Color.Unspecified, // 원본 색상 유지
-            modifier = Modifier.size(iconInnerSize)
-        )
-
+                    Icon(
+                        imageVector = ImageVector.vectorResource(iconRes),
+                        contentDescription = stringResource(level.levelNameRes),
+                        tint = Color.Unspecified, // 원본 색상 유지
+                        modifier = Modifier.size(iconInnerSize)
+                    )
         if (showTextLabel) {
-            // 언어별 폰트 적용
-            val fontFamily = when (currentLanguageCode) {
-                "ko" -> FontFamily(Font(R.font.cookierun_regular))
-                "en", "tet" -> FontFamily(Font(R.font.gummy_italic_variable))
-                else -> FontFamily(Font(R.font.cookierun_regular))
-            }
-
             // 태블릿에서는 더 큰 텍스트
             val textSize = when {
                 isTablet -> (14 * scaleFactor).sp // 🆕 태블릿 텍스트 더 크게
@@ -151,13 +145,21 @@ fun LevelIcon(
 
             val topPadding = if (isTablet) (6 * scaleFactor).dp else 3.dp
 
-            LocalizedText(
-                resId = level.ageRangeRes,
-                formatArgs = arrayOf(level.minAge, level.maxAge),
+            val levelTextResId = when (level.level) {
+                1 -> R.string.level_1
+                2 -> R.string.level_2
+                3 -> R.string.level_3
+                4 -> R.string.level_4
+                5 -> R.string.level_5
+                else -> R.string.level_1 // Fallback
+            }
+
+            LocalizedText( // Use LocalizedText for proper language handling
+                resId = levelTextResId,
+                formatArgs = null, // level_X strings do not use formatArgs
                 style = TextStyle(
                     fontSize = textSize,
                     lineHeight = (textSize.value + 2).sp,
-                    fontFamily = fontFamily,
                     fontWeight = FontWeight(400),
                     fontStyle = FontStyle.Italic,
                     color = if (isSelected) Color(0xFF000000) else Color(0xFF919191),

@@ -23,17 +23,11 @@
 
     <!-- Reading Levels -->
     <string name="level_1">Hahú</string>
-    <string name="level_2">Lee hahú</string>
-    <string name="level_3">Lee meius</string>
-    <string name="level_4">Lee di\'ak</string>
-    <string name="level_5">Lee máximu</string>
-    
-    <!-- Age Ranges -->
-    <string name="age_3_5">tinan 3-5</string>
-    <string name="age_5_7">tinan 5-7</string>
-    <string name="age_7_9">tinan 7-9</string>
-    <string name="age_9_11">tinan 9-11</string>
-    <string name="age_11_plus">tinan 11+</string>
+    <string name="level_2">hahú</string>
+    <string name="level_3">meius</string>
+    <string name="level_4">di\'ak</string>
+    <string name="level_5">máximu</string>
+
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">Livru la iha</string>
@@ -118,6 +112,9 @@
     <string name="level_test_start_reading_button">Mai ita bá ha\'u-nia estante livru rasik!</string>
     <string name="level_test_retry_button">Hakarak koko dala ida tan?</string>
     <string name="level_test_level_display">Nivel %d</string>
+    
+    <!-- AI Speaking Feature -->
+    <string name="ai_speaking_feature_update_message">Funsionamentu AI koalia sei aktualiza lalais.</string>
     
     <!-- Language Selection -->
     <string name="language_selection_title">Hili lian</string>

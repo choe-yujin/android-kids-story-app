@@ -39,7 +39,7 @@ fun BookCover(
 
     Card(
         modifier = Modifier
-            .width(if (isTablet) 160.dp else 180.dp)
+            .fillMaxWidth() // Grid 칸 전체 크기 채우고, 이미진 원본 비율로 세로 크기 자동 조정
             .clickable(enabled = book.isDownloaded, onClick = onClick),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -59,7 +59,7 @@ fun BookCover(
                     model = book.coverImage,
                     contentDescription = book.title,
                     modifier = imageModifier,
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.Fit // 원본 비율 유지
                 )
 
                 if (!book.isDownloaded || book.downloadProgress.status == DownloadStatus.DOWNLOADING) {
@@ -78,8 +78,7 @@ fun BookCover(
             } else {
                 Box(
                     modifier = Modifier
-                        .width(180.dp)
-                        .height(140.dp)
+                        .fillMaxSize() // 카드 전체 크기에 맞춤
                         .background(Color.Gray)
                 )
             }

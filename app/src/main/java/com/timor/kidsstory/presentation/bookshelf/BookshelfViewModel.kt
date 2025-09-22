@@ -680,8 +680,8 @@ class BookshelfViewModel @Inject constructor(
                 // TODO: 실제 GitHub 메타데이터 체크 로직
                 kotlinx.coroutines.delay(1000) // 네트워크 요청 시뮬레이션
                 
-                // 더미 데이터: 현재 책 목록에서 처음 2개를 다운로드 가능로 설정
-                val downloadableBooks = _state.value.books.take(2)
+                // 실제 다운로드 가능한 책 목록 필터링
+                val downloadableBooks = _state.value.books.filter { !it.isDownloaded }
                 
                 _state.update { 
                     it.copy(

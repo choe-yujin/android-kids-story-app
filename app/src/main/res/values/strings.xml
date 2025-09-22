@@ -22,14 +22,11 @@
     <string name="category_adventure_fantasy">Adventure</string>
 
     <!-- Reading Levels -->
-    <string name="level_1">First Steps</string>
-    <string name="level_2">Early Reader</string>
-    <string name="level_3">Growing Reader</string>
-    <string name="level_4">Confident Reader</string>
-    <string name="level_5">Advanced Reader</string>
-    
-    <!-- Age Ranges -->
-    <string name="age_range_format">%1$d-%2$d years</string>
+    <string name="level_1">First</string>
+    <string name="level_2">Early</string>
+    <string name="level_3">Growing</string>
+    <string name="level_4">Confident</string>
+    <string name="level_5">Advanced</string>
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">No books available</string>
@@ -136,5 +133,5 @@
     <string name="level_test_level_display">Level %d</string>
     <string name="level_test_reading_adventure_title">Let\'s start a reading adventure!</string>
     <string name="level_test_popup_message">Great job! You\'re a Level %1$d reader! Let\'s explore your new books!</string>
-    <string name="age_11_plus_format">11+ years</string>
+    <string name="ai_speaking_feature_update_message">AI speaking feature will be updated soon.</string>
 </resources>

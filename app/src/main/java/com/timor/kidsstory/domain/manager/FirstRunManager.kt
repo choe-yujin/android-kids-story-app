@@ -26,7 +26,7 @@ class FirstRunManager @Inject constructor(
     suspend fun isFirstRun(): Boolean {
         val prefs = userPreferenceRepository.getUserPreferences().first()
         val isFirstRun = prefs.isFirstRun
-        Log.d(TAG, "🔍 Checking first run status: $isFirstRun")
+        Log.d(TAG, "🔍 isFirstRun(): $isFirstRun")
         return isFirstRun
     }
     
@@ -36,6 +36,7 @@ class FirstRunManager @Inject constructor(
      */
     suspend fun getSelectedLanguageAndLevel(): Pair<String, Int>? {
         val prefs = userPreferenceRepository.getUserPreferences().first()
+        Log.d(TAG, "🔍 getSelectedLanguageAndLevel() - languageCode: ${prefs.languageCode}, isFirstRun: ${prefs.isFirstRun}")
         
         return if (prefs.languageCode.isNotEmpty()) {
             Pair(prefs.languageCode, prefs.selectedLevel)
@@ -66,7 +67,7 @@ class FirstRunManager @Inject constructor(
         level: Int, 
         hasCompletedLevelTest: Boolean = false
     ) {
-        Log.d(TAG, "🎉 Completing first run - language: $language, level: $level, testCompleted: $hasCompletedLevelTest")
+        Log.d(TAG, "🎉 completeFirstRun() - language: $language, level: $level, testCompleted: $hasCompletedLevelTest")
         
         try {
             // 1. 질문 은행 초기화 (assets → 내부저장소)
@@ -94,7 +95,7 @@ class FirstRunManager @Inject constructor(
      * @param language 선택된 언어
      */
     suspend fun skipLevelTest(language: String) {
-        Log.d(TAG, "⏭️ Skipping level test for language: $language")
+        Log.d(TAG, "⏭️ skipLevelTest() - language: $language")
         completeFirstRun(
             language = language,
             level = DEFAULT_LEVEL,
@@ -110,7 +111,7 @@ class FirstRunManager @Inject constructor(
      * @param measuredLevel 테스트를 통해 측정된 레벨
      */
     suspend fun completeLevelTest(language: String, measuredLevel: Int) {
-        Log.d(TAG, "🎯 Level test completed - language: $language, level: $measuredLevel")
+        Log.d(TAG, "🎯 completeLevelTest() - language: $language, level: $measuredLevel")
         completeFirstRun(
             language = language,
             level = measuredLevel,
@@ -123,7 +124,7 @@ class FirstRunManager @Inject constructor(
      */
     suspend fun markFirstRunComplete() {
         userPreferenceRepository.markFirstRunComplete()
-        Log.d(TAG, "✅ Marked first run as complete")
+        Log.d(TAG, "✅ markFirstRunComplete() - Marked first run as complete")
     }
     
     companion object {

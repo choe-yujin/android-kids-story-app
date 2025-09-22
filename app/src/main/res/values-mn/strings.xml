@@ -27,13 +27,6 @@
     <string name="level_3">Дунд шат</string>
     <string name="level_4">Итгэлтэй</string>
     <string name="level_5">Ахисан шат</string>
-    
-    <!-- Age Ranges -->
-    <string name="age_3_5">3-5 нас</string>
-    <string name="age_5_7">5-7 нас</string>
-    <string name="age_7_9">7-9 нас</string>
-    <string name="age_9_11">9-11 нас</string>
-    <string name="age_11_plus">11+ нас</string>
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">Ном байхгүй байна</string>

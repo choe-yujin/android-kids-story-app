@@ -1,11 +1,14 @@
 package com.timor.kidsstory.presentation.book.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,14 +21,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.book.model.PageTextSectionUiState
 import com.timor.kidsstory.presentation.book.model.PageUiState
+import com.timor.kidsstory.ui.components.LocalizedText
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -44,6 +50,7 @@ fun PageTextSection(
     val responsivePadding = ResponsiveTextUtils.getResponsivePadding().dp
     val scrollState = rememberScrollState(initial = textSectionState.scrollOffset)
     var containerHeight by remember { mutableStateOf(0) }
+    Log.d("PageTextSection", "Current Language: $currentLanguage")
 
     // 스크롤 상태 변경 감지
     LaunchedEffect(scrollState) {
@@ -206,25 +213,49 @@ fun PageTextSection(
         }
 
         // TTS 버튼
-        if (pageState.currentLanguageCode != "tetum") {
-            val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
-            val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+        val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+        val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .background(Color.Black.copy(alpha = 0.4f), CircleShape)
-                    .zIndex(2f)
-            ) {
-                IconButton(onClick = { onTextToSpeech(pageState.texts) }, modifier = Modifier.size(buttonSize)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_play),
-                        contentDescription = "Text to speech",
-                        tint = Color.White,
-                        modifier = Modifier.size(iconSize)
-                    )
+        var showAiUpdateAlert by remember { mutableStateOf(false) }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .background(Color.Black.copy(alpha = 0.4f), CircleShape)
+                .zIndex(2f)
+        ) {
+            IconButton(onClick = {
+                if (pageState.currentLanguageCode == "tet") {
+                    showAiUpdateAlert = true
+                } else {
+                    onTextToSpeech(pageState.texts)
                 }
+            }, modifier = Modifier.size(buttonSize)) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_play),
+                    contentDescription = "Text to speech",
+                    tint = Color.White,
+                    modifier = Modifier.size(iconSize)
+                )
             }
+        }
+
+        if (showAiUpdateAlert) {
+            AlertDialog(
+                onDismissRequest = { showAiUpdateAlert = false },
+                properties = DialogProperties(usePlatformDefaultWidth = false), // Attempt to fix system bar issue
+                title = {
+                    LocalizedText(
+                        resId = R.string.ai_speaking_feature_update_message,
+                        style = MaterialTheme.typography.titleLarge // Use an appropriate style
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = { showAiUpdateAlert = false }) {
+                        LocalizedText(resId = R.string.attendance_popup_button_ok, style = MaterialTheme.typography.bodyMedium) // Added style
+                    }
+                }
+            )
         }
 
         // Bottom Row for Copyright

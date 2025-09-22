@@ -177,7 +177,7 @@ class UserPreferenceRepositoryImpl @Inject constructor(
             hasCompletedLevelTest = false,
             isMusicOn = true,  // 음악 기본값: 켜짐 (UserPreference.kt 기본값과 일치)
             isSoundEffectOn = true,  // 효과음 기본값: 켜짐 (UserPreference.kt와 일치)
-            musicVolume = 0.7f,  // UserPreference.kt 기본값과 일치
+            musicVolume = 0.1f,  // UserPreference.kt 기본값과 일치 (10%로 변경)
             soundEffectVolume = 0.7f  // UserPreference.kt 기본값과 일치
         )
         

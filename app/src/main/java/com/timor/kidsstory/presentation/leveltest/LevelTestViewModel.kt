@@ -220,8 +220,8 @@ class LevelTestViewModel @Inject constructor(
     private fun finishLevelTest(recommendedLevel: Int) {
         viewModelScope.launch {
             try {
-                // 측정된 레벨로 FirstRun 완료 처리
                 firstRunManager.completeLevelTest(currentLanguage, recommendedLevel)
+                firstRunManager.markFirstRunComplete() // Explicitly mark first run as complete
                 
                 val summary = testAlgorithm.getTestSummary()
                 
@@ -244,10 +244,13 @@ class LevelTestViewModel @Inject constructor(
      * 독서 시작 (테스트 완료 후)
      */
     private fun startReading() {
-        val finalLevel = _uiState.value.finalLevel ?: 3
-        _uiState.value = _uiState.value.copy(
-            navigationTarget = LevelTestNavigationTarget.Bookshelf(currentLanguage, finalLevel, false, true)
-        )
+        viewModelScope.launch {
+            firstRunManager.markFirstRunComplete() // Explicitly mark first run as complete
+            val finalLevel = _uiState.value.finalLevel ?: 3
+            _uiState.value = _uiState.value.copy(
+                navigationTarget = LevelTestNavigationTarget.Bookshelf(currentLanguage, finalLevel, false, true)
+            )
+        }
     }
     
     /**

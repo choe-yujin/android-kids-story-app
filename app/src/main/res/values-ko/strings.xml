@@ -23,13 +23,11 @@
 
     <!-- Reading Levels -->
     <string name="level_1">첫걸음</string>
-    <string name="level_2">초급 독자</string>
-    <string name="level_3">성장 독자</string>
-    <string name="level_4">자신감 독자</string>
-    <string name="level_5">고급 독자</string>
-    
-    <!-- Age Ranges -->
-    <string name="age_range_format">%1$d-%2$d세</string>
+    <string name="level_2">새싹</string>
+    <string name="level_3">성장</string>
+    <string name="level_4">자신감</string>
+    <string name="level_5">고급</string>
+
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">책이 없습니다</string>
@@ -136,5 +134,4 @@
     <string name="level_test_level_display">레벨 %d</string>
     <string name="level_test_popup_message">정말 잘했어요! 당신은 레벨 %1$d 독서가! 새로운 책들을 탐험해 볼까요?</string>
     <string name="level_test_reading_adventure_title">독서 모험을 시작해 볼까요!</string>
-    <string name="age_11_plus_format">11세 이상</string>
 </resources>

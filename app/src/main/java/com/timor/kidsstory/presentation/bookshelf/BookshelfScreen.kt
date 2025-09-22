@@ -191,7 +191,7 @@ private fun BookshelfScreenContent(
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
-    val isTablet = screenWidth >= 600
+    val isTablet = LocalConfiguration.current.smallestScreenWidthDp >= 600
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -296,20 +296,21 @@ private fun BookshelfScreenContent(
                             isLoading = bookshelfState.isLoading
                         )
                     } else {
+                        // BookCover 간격을 더 줄이고, FilterBar와 정확히 수직 평행 정렬
                         LazyVerticalGrid(
-                            columns = if (isTablet) GridCells.Fixed(4) else GridCells.Fixed(3), // 태블릿은 4열, 폰은 3열
-                            horizontalArrangement = if (isTablet) Arrangement.spacedBy(48.dp) else Arrangement.spacedBy(8.dp), // 폰 간격 줄임
-                            verticalArrangement = if (isTablet) Arrangement.spacedBy(64.dp) else Arrangement.spacedBy(12.dp), // 폰 간격 줄임
+                            columns = GridCells.Fixed(4), // 태블릿, 폰 모두 4열
+                            horizontalArrangement = if (isTablet) Arrangement.spacedBy(48.dp) else Arrangement.spacedBy(24.dp), // 태블릿 간격 넓힘, 폰 간격 12dp
+                            verticalArrangement = if (isTablet) Arrangement.spacedBy(48.dp) else Arrangement.spacedBy(24.dp), // 태블릿 간격 넓힘, 폰 간격 12dp
                             contentPadding = if (isTablet) PaddingValues(
-                                start = 80.dp,
+                                start = 48.dp, // FilterBar 시작점과 정확히 수직 평행 정렬
                                 end = 40.dp,
                                 top = 24.dp,
                                 bottom = 40.dp
                             ) else PaddingValues(
-                                start = 16.dp, // 폰 패딩 조정
-                                end = 16.dp, // 폰 패딩 조정
-                                top = 12.dp, // 폰 패딩 조정
-                                bottom = 12.dp // 폰 패딩 조정
+                                start = 48.dp, // FilterBar 시작점과 정확히 수직 평행 정렬
+                                end = 16.dp, // 오른쪽은 좌우 비대칭으로 더 많은 공간 확보
+                                top = 12.dp,
+                                bottom = 12.dp
                             ),
                             modifier = Modifier.fillMaxSize()
                         ) {

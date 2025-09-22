@@ -31,16 +31,13 @@ enum class FilterLevel(
     val level: Int, 
     val readingLevel: ReadingLevel,
     val displayName: String,
-    @StringRes val levelNameRes: Int,
-    @StringRes val ageRangeRes: Int, // This will now be a format string
-    val minAge: Int, // New
-    val maxAge: Int // New
+    @StringRes val levelNameRes: Int
 ) {
-    ONE(1, ReadingLevel.FIRST_STEPS, "1", R.string.level_1, R.string.age_range_format, 3, 5),
-    TWO(2, ReadingLevel.EARLY_READER, "2", R.string.level_2, R.string.age_range_format, 5, 7),
-    THREE(3, ReadingLevel.GROWING_READER, "3", R.string.level_3, R.string.age_range_format, 7, 9),
-    FOUR(4, ReadingLevel.CONFIDENT_READER, "4", R.string.level_4, R.string.age_range_format, 9, 11),
-    FIVE(5, ReadingLevel.ADVANCED_READER, "5", R.string.level_5, R.string.age_11_plus_format, 11, 0) // maxAge can be 0 or ignored for this case
+    ONE(1, ReadingLevel.FIRST_STEPS, "1", R.string.level_1),
+    TWO(2, ReadingLevel.EARLY_READER, "2", R.string.level_2),
+    THREE(3, ReadingLevel.GROWING_READER, "3", R.string.level_3),
+    FOUR(4, ReadingLevel.CONFIDENT_READER, "4", R.string.level_4),
+    FIVE(5, ReadingLevel.ADVANCED_READER, "5", R.string.level_5)
 }
 
 /**

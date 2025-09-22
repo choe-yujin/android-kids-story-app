@@ -24,6 +24,6 @@ data class UserPreference(
     // 오디오 설정
     val isMusicOn: Boolean = true,  // 배경음악 기본적으로 켜짐
     val isSoundEffectOn: Boolean = true,
-    val musicVolume: Float = 0.7f,  // 더 크게 들리도록 기본 음량 상향
+    val musicVolume: Float = 0.1f,  // 배경음악 기본 음량 10%로 설정
     val soundEffectVolume: Float = 0.7f  // 더 크게 들리도록 기본 음량 상향
 )

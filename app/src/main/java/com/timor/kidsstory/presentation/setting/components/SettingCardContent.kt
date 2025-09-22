@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +28,8 @@ fun SettingCardContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding((16 * scaleFactor).dp),
+            .padding((16 * scaleFactor).dp)
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LocalizedText(
@@ -53,7 +56,7 @@ fun SettingCardContent(
             onVolumeChange = { onAction(SettingAction.MusicVolumeChange(it)) }
         )
 
-        Spacer(modifier = Modifier.height((8 * scaleFactor).dp))
+        Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
 
         // 효과음 설정
         SettingToggleRow(
@@ -82,7 +85,8 @@ fun SmallSettingCardContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding((12 * scaleFactor).dp),
+            .padding((12 * scaleFactor).dp)
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LocalizedText(
@@ -109,9 +113,7 @@ fun SmallSettingCardContent(
             onVolumeChange = { onAction(SettingAction.MusicVolumeChange(it)) }
         )
 
-        Spacer(modifier = Modifier.height((8 * scaleFactor).dp))
-
-        // 효과음 설정
+        Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
         SmallSettingToggleRow(
             titleResId = R.string.info_sound_effect,
             isChecked = state.isSoundEffectOn,
@@ -138,7 +140,8 @@ fun VerySmallSettingCardContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding((8 * scaleFactor).dp),
+            .padding((8 * scaleFactor).dp)
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LocalizedText(
@@ -165,7 +168,7 @@ fun VerySmallSettingCardContent(
             onVolumeChange = { onAction(SettingAction.MusicVolumeChange(it)) }
         )
 
-        Spacer(modifier = Modifier.height((6 * scaleFactor).dp))
+        Spacer(modifier = Modifier.height((12 * scaleFactor).dp))
 
         // 효과음 설정
         VerySmallSettingToggleRow(

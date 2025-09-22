@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,7 +44,7 @@ fun SelectableBookCover(
 ) {
     Box(
         modifier = modifier
-            .aspectRatio(0.75f)
+            .fillMaxWidth() // Grid 칸 전체 크기 채우고, 이미진 원본 비율로 세로 크기 자동 조정
             .clickable { 
                 // 🆕 책 전체 영역 클릭 시 체크박스 상태 변경
                 onSelectionChanged(!isSelected)
@@ -130,6 +131,7 @@ private fun BookCoverContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
+                .heightIn(min = 100.dp) // 최소 높이 보장
                 .clip(RoundedCornerShape(8.dp))
         )
         
