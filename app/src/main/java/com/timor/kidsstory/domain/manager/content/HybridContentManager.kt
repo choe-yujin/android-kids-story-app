@@ -4,6 +4,9 @@ import android.content.Context
 import android.util.Log
 import com.timor.kidsstory.data.dto.HybridBooksMetadata
 import com.timor.kidsstory.data.dto.UnifiedBookContent
+import com.timor.kidsstory.data.local.database.dao.HybridBooksDao
+import com.timor.kidsstory.data.local.database.entity.BookSource
+import com.timor.kidsstory.data.local.database.entity.HybridBookEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,14 +16,16 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * 하이브리드 콘텐츠 매니저
+ * 하이브리드 콘텐츠 매니저 (DB 통합 버전)
  * - 첫 실행 시 assets → 내부저장소 복사
+ * - 모든 책 정보를 Room DB로 관리 
  * - 버전 체크 및 업데이트 관리
  * - 항상 내부저장소에서 읽기
  */
 @Singleton
 class HybridContentManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val hybridBooksDao: HybridBooksDao
 ) {
     
     private val json = Json {
@@ -59,11 +64,12 @@ class HybridContentManager @Inject constructor(
     /**
      * 하이브리드 콘텐츠 초기화
      * - 첫 실행 시 assets에서 내부저장소로 복사
+     * - 모든 책 정보를 Room DB에 등록
      * - 버전 체크 및 필요 시 업데이트
      */
     suspend fun initializeHybridContent(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "🚀 Initializing hybrid content system...")
+            Log.d(TAG, "🚀 Initializing hybrid content system with DB integration...")
             
             // 1. 메타데이터 초기화/업데이트 체크
             val metadataInitResult = initializeMetadata()
@@ -71,23 +77,90 @@ class HybridContentManager @Inject constructor(
                 return@withContext metadataInitResult
             }
             
-            // 2. 콘텐츠 파일들 초기화
+            // 2. 내장 책들을 DB에 등록
+            val dbInitResult = initializeBooksInDatabase()
+            if (dbInitResult.isFailure) {
+                return@withContext dbInitResult
+            }
+            
+            // 3. 콘텐츠 파일들 초기화
             val contentInitResult = initializeContentFiles()
             if (contentInitResult.isFailure) {
                 return@withContext contentInitResult
             }
             
-            // 3. 이미지 파일들 초기화  
+            // 4. 이미지 파일들 초기화  
             val imagesInitResult = initializeImageFiles()
             if (imagesInitResult.isFailure) {
                 return@withContext imagesInitResult
             }
             
-            Log.d(TAG, "✅ Hybrid content initialization completed")
+            Log.d(TAG, "✅ Hybrid content initialization completed with DB integration")
             Result.success(Unit)
             
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to initialize hybrid content", e)
+            Result.failure(e)
+        }
+    }
+    
+    /**
+     * 내장 책들을 Room DB에 등록
+     */
+    private suspend fun initializeBooksInDatabase(): Result<Unit> {
+        return try {
+            val metadata = loadMetadataFromInternal().getOrThrow()
+            
+            for (book in metadata.books) {
+                for ((languageCode, languageContent) in book.languages) {
+                    if (languageContent.isBundled) {
+                        
+                        // 이미 DB에 등록된 책인지 확인
+                        val existsInDb = hybridBooksDao.isBookExists(book.id, languageCode)
+                        
+                        if (!existsInDb) {
+                            // 새로운 내장 책을 DB에 등록
+                            val hybridBookEntity = HybridBookEntity(
+                                id = book.id,
+                                language = languageCode,
+                                title = languageContent.title,
+                                level = book.level,
+                                category = book.category,
+                                countryOfOrigin = book.countryOfOrigin,
+                                
+                                // 파일 경로 (내부저장소 기준)
+                                contentPath = File(contentDir, "${book.id}_$languageCode.json").absolutePath,
+                                coverImagePath = File(imagesDir, "${book.id}/cover_${book.id}_$languageCode.jpg").absolutePath,
+                                imagesDirectoryPath = File(imagesDir, book.id.toString()).absolutePath,
+                                
+                                // 버전 정보
+                                contentVersion = languageContent.contentVersion,
+                                coverVersion = languageContent.coverVersion,
+                                imageAssetsVersion = book.imageAssetsVersion,
+                                
+                                // 내장 책으로 설정
+                                source = BookSource.BUNDLED,
+                                isAvailable = true,
+                                downloadDate = null,
+                                
+                                // AI 기능 및 태그
+                                aiFeatures = book.aiFeatures,
+                                tags = languageContent.tags
+                            )
+                            
+                            hybridBooksDao.insertBook(hybridBookEntity)
+                            Log.d(TAG, "📚 Registered bundled book: ${book.id}/$languageCode")
+                        } else {
+                            Log.d(TAG, "✅ Book already in DB: ${book.id}/$languageCode")
+                        }
+                    }
+                }
+            }
+            
+            Log.d(TAG, "✅ Books database initialization completed")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to initialize books database", e)
             Result.failure(e)
         }
     }
@@ -179,6 +252,70 @@ class HybridContentManager @Inject constructor(
     }
     
     /**
+     * Room DB에서 모든 책 조회 (언어별)
+     */
+    suspend fun getAllBooksFromDb(languageCode: String): Result<List<HybridBookEntity>> {
+        return try {
+            val books = hybridBooksDao.getAvailableBooksByLanguage(languageCode)
+            Log.d(TAG, "✅ Loaded ${books.size} books from DB for language: $languageCode")
+            Result.success(books)
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to load books from DB", e)
+            Result.failure(e)
+        }
+    }
+    
+    /**
+     * 다운로드한 책을 DB에 등록
+     */
+    suspend fun registerDownloadedBook(
+        bookId: Int,
+        languageCode: String,
+        title: String,
+        contentPath: String,
+        coverImagePath: String,
+        imagesDirectoryPath: String,
+        contentVersion: Int,
+        coverVersion: Int,
+        imageAssetsVersion: Int,
+        level: Int,
+        category: String,
+        countryOfOrigin: String,
+        aiFeatures: List<String> = emptyList(),
+        tags: List<String> = emptyList()
+    ): Result<Unit> {
+        return try {
+            val downloadedBook = HybridBookEntity(
+                id = bookId,
+                language = languageCode,
+                title = title,
+                level = level,
+                category = category,
+                countryOfOrigin = countryOfOrigin,
+                contentPath = contentPath,
+                coverImagePath = coverImagePath,
+                imagesDirectoryPath = imagesDirectoryPath,
+                contentVersion = contentVersion,
+                coverVersion = coverVersion,
+                imageAssetsVersion = imageAssetsVersion,
+                source = BookSource.DOWNLOADED,
+                isAvailable = true,
+                downloadDate = System.currentTimeMillis(),
+                aiFeatures = aiFeatures,
+                tags = tags
+            )
+            
+            hybridBooksDao.insertBook(downloadedBook)
+            Log.d(TAG, "✅ Registered downloaded book: $bookId/$languageCode")
+            
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to register downloaded book", e)
+            Result.failure(e)
+        }
+    }
+    
+    /**
      * 항상 내부저장소에서 메타데이터 로드
      */
     suspend fun loadMetadata(): Result<HybridBooksMetadata> {
@@ -219,12 +356,14 @@ class HybridContentManager @Inject constructor(
         return File(imagesDir, "$bookId/$imageName").absolutePath
     }
     
+    // ========== Private Helper Methods ==========
+    
     /**
      * Assets에서 메타데이터 로드
      */
     private suspend fun loadMetadataFromAssets(): HybridBooksMetadata {
         return withContext(Dispatchers.IO) {
-            context.assets.open("books_metadata.json").use { inputStream ->
+            context.assets.open("books_metadata_hybrid.json").use { inputStream ->
                 val jsonString = inputStream.bufferedReader().readText()
                 json.decodeFromString<HybridBooksMetadata>(jsonString)
             }
