@@ -1,0 +1,276 @@
+package com.timor.kidsstory.presentation.bookshelf.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.timor.kidsstory.R
+import com.timor.kidsstory.domain.model.Book
+import com.timor.kidsstory.ui.theme.AppColors
+import java.text.DecimalFormat
+
+/**
+ * 선택 가능한 책 커버 컴포넌트
+ * 체크박스와 함께 표시되며, 다중 선택을 지원합니다.
+ */
+@Composable
+fun SelectableBookCover(
+    book: Book,
+    isSelected: Boolean,
+    onSelectionChanged: (Boolean) -> Unit,
+    onBookClick: () -> Unit,
+    showUpdateBadge: Boolean = false,
+    showDownloadBadge: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .aspectRatio(0.75f)
+            .clickable { 
+                // 🆕 책 전체 영역 클릭 시 체크박스 상태 변경
+                onSelectionChanged(!isSelected)
+            }
+    ) {
+        // 메인 책 커버
+        BookCoverContent(
+            book = book,
+            isSelected = isSelected,
+            onClick = { /* 🆕 내부 클릭 비활성화 (상위 Box에서 처리) */ },
+            modifier = Modifier.fillMaxSize()
+        )
+        
+        // 선택 체크박스 (왼쪽 상단)
+        SelectionCheckbox(
+            isSelected = isSelected,
+            onSelectionChanged = onSelectionChanged,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(8.dp)
+        )
+        
+        // 업데이트/다운로드 뱃지 (오른쪽 상단)
+        if (showUpdateBadge || showDownloadBadge) {
+            ActionBadge(
+                isUpdate = showUpdateBadge,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            )
+        }
+        
+        // 파일 크기 정보 (하단)
+        if (book.totalSize > 0) {
+            FileSizeInfo(
+                size = book.totalSize,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun BookCoverContent(
+    book: Book,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = if (isSelected) 2.dp else 1.dp,
+                color = if (isSelected) {
+                    AppColors.primary500
+                } else {
+                    AppColors.neutral200
+                },
+                shape = RoundedCornerShape(12.dp)
+            )
+            .background(
+                color = if (isSelected) {
+                    AppColors.primary50
+                } else {
+                    AppColors.neutralWhite
+                }
+            )
+            // 🆕 내부 clickable 제거 (상위 Box에서 처리)
+            .padding(8.dp)
+    ) {
+        // 책 표지 이미지
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(book.coverImage)
+                .crossfade(true)
+                .build(),
+            contentDescription = "${book.title} 표지",
+            placeholder = painterResource(R.drawable.ic_book_placeholder),
+            error = painterResource(R.drawable.ic_book_placeholder),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .clip(RoundedCornerShape(8.dp))
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        // 책 제목
+        Text(
+            text = book.title,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            color = AppColors.neutral800,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth()
+        )
+        
+        // 레벨 표시
+        Text(
+            text = "Level ${book.level}",
+            fontSize = 10.sp,
+            color = AppColors.neutral500,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun SelectionCheckbox(
+    isSelected: Boolean,
+    onSelectionChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(24.dp)
+            .background(
+                color = if (isSelected) {
+                    AppColors.primary500
+                } else {
+                    AppColors.neutralWhite
+                },
+                shape = CircleShape
+            )
+            .border(
+                width = 2.dp,
+                color = if (isSelected) {
+                    AppColors.primary500
+                } else {
+                    AppColors.neutral300
+                },
+                shape = CircleShape
+            )
+            .clickable { onSelectionChanged(!isSelected) },
+        contentAlignment = Alignment.Center
+    ) {
+        if (isSelected) {
+            Icon(
+                painter = painterResource(R.drawable.ic_check),
+                contentDescription = "선택됨",
+                tint = AppColors.neutralWhite,
+                modifier = Modifier.size(14.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionBadge(
+    isUpdate: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = if (isUpdate) {
+                    AppColors.yellowRed500
+                } else {
+                    AppColors.blue500
+                },
+                shape = CircleShape
+            )
+            .padding(4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            painter = painterResource(
+                if (isUpdate) R.drawable.ic_update else R.drawable.ic_download
+            ),
+            contentDescription = if (isUpdate) "업데이트" else "다운로드",
+            tint = AppColors.neutralWhite,
+            modifier = Modifier.size(12.dp)
+        )
+    }
+}
+
+@Composable
+private fun FileSizeInfo(
+    size: Long,
+    modifier: Modifier = Modifier
+) {
+    val formattedSize = formatFileSize(size)
+    
+    Box(
+        modifier = modifier
+            .background(
+                color = AppColors.neutral800.copy(alpha = 0.8f),
+                shape = RoundedCornerShape(4.dp)
+            )
+            .padding(horizontal = 6.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = formattedSize,
+            fontSize = 9.sp,
+            color = AppColors.neutralWhite,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+/**
+ * 파일 크기를 사람이 읽기 쉬운 형태로 변환
+ */
+private fun formatFileSize(bytes: Long): String {
+    if (bytes == 0L) return "0 B"
+    
+    val units = arrayOf("B", "KB", "MB", "GB")
+    var size = bytes.toDouble()
+    var unitIndex = 0
+    
+    while (size >= 1024 && unitIndex < units.size - 1) {
+        size /= 1024
+        unitIndex++
+    }
+    
+    val format = if (size >= 100) {
+        DecimalFormat("#")
+    } else {
+        DecimalFormat("#.#")
+    }
+    
+    return "${format.format(size)} ${units[unitIndex]}"
+}

@@ -1,0 +1,138 @@
+package com.timor.kidsstory.presentation.bookshelf.components
+
+import androidx.compose.animation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.timor.kidsstory.R
+import com.timor.kidsstory.domain.model.Book
+import com.timor.kidsstory.ui.theme.AppColors
+import java.text.DecimalFormat
+
+/**
+ * 선택된 항목들에 대한 실행 버튼
+ * 하단에 고정되어 표시되며, 선택된 항목 수와 총 용량을 보여줍니다.
+ */
+@Composable
+fun SelectionFloatingActionButton(
+    selectedBooks: List<Book>,
+    actionType: ActionType,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = selectedBooks.isNotEmpty(),
+        enter = slideInVertically(
+            initialOffsetY = { it }
+        ) + fadeIn(),
+        exit = slideOutVertically(
+            targetOffsetY = { it }
+        ) + fadeOut(),
+        modifier = modifier
+    ) {
+        FloatingActionButtonContent(
+            selectedBooks = selectedBooks,
+            actionType = actionType,
+            onClick = onClick
+        )
+    }
+}
+
+@Composable
+private fun FloatingActionButtonContent(
+    selectedBooks: List<Book>,
+    actionType: ActionType,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val totalSize = selectedBooks.sumOf { it.totalSize }
+    val selectedCount = selectedBooks.size
+    
+    ExtendedFloatingActionButton(
+        onClick = onClick,
+        modifier = modifier
+            .padding(16.dp),
+        containerColor = when (actionType) {
+            ActionType.DOWNLOAD -> AppColors.blue500
+            ActionType.UPDATE -> AppColors.yellowRed500
+            ActionType.DELETE -> AppColors.red600
+        },
+        contentColor = AppColors.neutralWhite,
+        elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 6.dp,
+            pressedElevation = 8.dp
+        )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                painter = painterResource(
+                    when (actionType) {
+                        ActionType.DOWNLOAD -> R.drawable.ic_download
+                        ActionType.UPDATE -> R.drawable.ic_update
+                        ActionType.DELETE -> R.drawable.ic_delete
+                    }
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            
+            Column {
+                Text(
+                    text = "${selectedCount}개 ${
+                        when (actionType) {
+                            ActionType.DOWNLOAD -> "다운로드"
+                            ActionType.UPDATE -> "업데이트"
+                            ActionType.DELETE -> "삭제"
+                        }
+                    }",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                if (totalSize > 0) {
+                    Text(
+                        text = formatFileSize(totalSize),
+                        fontSize = 12.sp,
+                        color = AppColors.neutralWhite.copy(alpha = 0.9f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 파일 크기를 사람이 읽기 쉬운 형태로 변환
+ */
+private fun formatFileSize(bytes: Long): String {
+    if (bytes == 0L) return "0 B"
+    
+    val units = arrayOf("B", "KB", "MB", "GB")
+    var size = bytes.toDouble()
+    var unitIndex = 0
+    
+    while (size >= 1024 && unitIndex < units.size - 1) {
+        size /= 1024
+        unitIndex++
+    }
+    
+    val format = if (size >= 100) {
+        DecimalFormat("#")
+    } else {
+        DecimalFormat("#.#")
+    }
+    
+    return "${format.format(size)} ${units[unitIndex]}"
+}
