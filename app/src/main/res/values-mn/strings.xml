@@ -72,4 +72,14 @@
     <string name="update_dialog_button_later">Дараа</string>
     <string name="update_dialog_button_update">Шинэчлэх</string>
     <string name="update_dialog_button_update_now">Одоо шинэчлэх</string>
+
+    <!-- Level Test -->
+    <string name="level_test_introduction">Би зөвхөн танд зориулсан номын тавиурыг бий болгоно! Эхлээд унших түвшингээ тодорхойлъё.</string>
+    <string name="level_test_start_button">Миний унших түвшинг олоорой!</string>
+    <string name="level_test_skip_button">Алгасах</string>
+    <string name="level_test_complete_title">Би таны унших түвшинг оллоо!</string>
+    <string name="level_test_result_level">Та бол %d-р түвшний уншигч!</string>
+    <string name="level_test_start_reading_button">Миний номын тавиур руу явцгаая!</string>
+    <string name="level_test_retry_button">Дахин нэг удаа оролдоод үзэх үү?</string>
+    <string name="level_test_level_display">%d-р түвшин</string>
 </resources>

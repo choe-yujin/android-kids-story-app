@@ -29,11 +29,7 @@
     <string name="level_5">고급 독자</string>
     
     <!-- Age Ranges -->
-    <string name="age_3_5">3-5세</string>
-    <string name="age_5_7">5-7세</string>
-    <string name="age_7_9">7-9세</string>
-    <string name="age_9_11">9-11세</string>
-    <string name="age_11_plus">11세 이상</string>
+    <string name="age_range_format">%1$d-%2$d세</string>
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">책이 없습니다</string>
@@ -82,11 +78,20 @@
     <!-- Progress and Attendance -->
     <string name="attendance_day">일</string>
     <string name="attendance_days">일</string>
+    <string name="reading_progress_fraction">%1$d/%2$d</string>
     
     <!-- Book Completion -->
     <string name="completion_title">축하합니다!</string>
     <string name="completion_message">책을 다 읽었어요!</string>
     <string name="completion_button">책장으로 돌아가기</string>
+
+    <!-- Attendance Popup -->
+    <string name="attendance_popup_title_first">첫 출석을 축하해요!</string>
+    <string name="attendance_popup_title_consecutive">연속 %1$d일째 출석!</string>
+    <string name="attendance_popup_message_first">매일 책을 읽으며 성장해보세요!</string>
+    <string name="attendance_popup_message_consecutive">꾸준한 독서 습관이 멋져요!</string>
+    <string name="attendance_popup_streak_info">%1$d일째 연속 출석</string>
+    <string name="attendance_popup_button_ok">확인</string>
     
     <!-- Level Test -->
     <string name="level_test_title">읽기 레벨 테스트</string>
@@ -102,4 +107,34 @@
     
     <!-- Language Selection -->
     <string name="language_selection_title">언어 선택</string>
+    
+    <!-- Management Mode -->
+    <string name="management_mode_button">관리</string>
+    <string name="management_mode_done">완료</string>
+    <string name="management_tab_all">전체</string>
+    <string name="management_tab_download">다운로드</string>
+    <string name="management_tab_update">업데이트</string>
+    <string name="management_action_download">다운로드</string>
+    <string name="management_action_update">업데이트</string>
+    <string name="management_action_delete">삭제</string>
+    <string name="management_confirm_title_download">%d개 다운로드</string>
+    <string name="management_confirm_title_update">%d개 업데이트</string>
+    <string name="management_confirm_title_delete">%d개 삭제</string>
+    <string name="management_confirm_size">총 용량: %s</string>
+    <string name="management_confirm_warning">용량이 큽니다 (%s). Wi-Fi 연결을 권장합니다.</string>
+    <string name="management_confirm_cancel">취소</string>
+    <string name="management_confirm_proceed">진행</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_introduction">세상에 단 하나뿐인 너만의 책장을 만들어 줄게! 먼저 너의 독서 레벨을 알려줘.</string>
+    <string name="level_test_start_button">나의 독서 레벨 알아보기!</string>
+    <string name="level_test_skip_button">건너뛰기</string>
+    <string name="level_test_complete_title">너의 독서 레벨을 찾았어!</string>
+    <string name="level_test_result_level">너는 레벨 %d의 독서가야!</string>
+    <string name="level_test_start_reading_button">나만의 책장으로 출발!</string>
+    <string name="level_test_retry_button">한 번 더 해볼까?</string>
+    <string name="level_test_level_display">레벨 %d</string>
+    <string name="level_test_popup_message">정말 잘했어요! 당신은 레벨 %1$d 독서가! 새로운 책들을 탐험해 볼까요?</string>
+    <string name="level_test_reading_adventure_title">독서 모험을 시작해 볼까요!</string>
+    <string name="age_11_plus_format">11세 이상</string>
 </resources>

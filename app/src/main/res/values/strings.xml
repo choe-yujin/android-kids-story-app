@@ -29,11 +29,7 @@
     <string name="level_5">Advanced Reader</string>
     
     <!-- Age Ranges -->
-    <string name="age_3_5">3-5 years</string>
-    <string name="age_5_7">5-7 years</string>
-    <string name="age_7_9">7-9 years</string>
-    <string name="age_9_11">9-11 years</string>
-    <string name="age_11_plus">11+ years</string>
+    <string name="age_range_format">%1$d-%2$d years</string>
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">No books available</string>
@@ -82,11 +78,20 @@
     <!-- Progress and Attendance -->
     <string name="attendance_day">day</string>
     <string name="attendance_days">days</string>
+    <string name="reading_progress_fraction">%1$d/%2$d</string>
     
     <!-- Book Completion -->
     <string name="completion_title">Congratulations!</string>
     <string name="completion_message">You have completed reading this book!</string>
     <string name="completion_button">Back to Bookshelf</string>
+
+    <!-- Attendance Popup -->
+    <string name="attendance_popup_title_first">First Attendance!</string>
+    <string name="attendance_popup_title_consecutive">%1$d Days in a Row!</string>
+    <string name="attendance_popup_message_first">Grow by reading every day!</string>
+    <string name="attendance_popup_message_consecutive">Your reading habit is amazing!</string>
+    <string name="attendance_popup_streak_info">%1$d-day streak</string>
+    <string name="attendance_popup_button_ok">OK</string>
     
     <!-- Level Test -->
     <string name="level_test_title">Reading Level Test</string>
@@ -102,4 +107,34 @@
     
     <!-- Language Selection -->
     <string name="language_selection_title">Choose Language</string>
+    
+    <!-- Management Mode -->
+    <string name="management_mode_button">Manage</string>
+    <string name="management_mode_done">Done</string>
+    <string name="management_tab_all">All</string>
+    <string name="management_tab_download">Download</string>
+    <string name="management_tab_update">Update</string>
+    <string name="management_action_download">Download</string>
+    <string name="management_action_update">Update</string>
+    <string name="management_action_delete">Delete</string>
+    <string name="management_confirm_title_download">Download %d items</string>
+    <string name="management_confirm_title_update">Update %d items</string>
+    <string name="management_confirm_title_delete">Delete %d items</string>
+    <string name="management_confirm_size">Total size: %s</string>
+    <string name="management_confirm_warning">Large download (%s). Wi-Fi recommended.</string>
+    <string name="management_confirm_cancel">Cancel</string>
+    <string name="management_confirm_proceed">Proceed</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_introduction">I\'ll create a one-of-a-kind bookshelf just for you! First, let\'s find out your reading level.</string>
+    <string name="level_test_start_button">Find out my reading level!</string>
+    <string name="level_test_skip_button">Skip</string>
+    <string name="level_test_complete_title">I found your reading level!</string>
+    <string name="level_test_result_level">You are a level %d reader!</string>
+    <string name="level_test_start_reading_button">Let\'s go to my own bookshelf!</string>
+    <string name="level_test_retry_button">Shall we try one more time?</string>
+    <string name="level_test_level_display">Level %d</string>
+    <string name="level_test_reading_adventure_title">Let\'s start a reading adventure!</string>
+    <string name="level_test_popup_message">Great job! You\'re a Level %1$d reader! Let\'s explore your new books!</string>
+    <string name="age_11_plus_format">11+ years</string>
 </resources>

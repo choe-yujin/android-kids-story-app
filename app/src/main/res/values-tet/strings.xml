@@ -82,11 +82,20 @@
     <!-- Progress and Attendance -->
     <string name="attendance_day">loron</string>
     <string name="attendance_days">loron</string>
+    <string name="reading_progress_fraction">%1$d/%2$d</string>
     
     <!-- Book Completion -->
     <string name="completion_title">Parabéns!</string>
     <string name="completion_message">Ita lee ona livru tomak!</string>
     <string name="completion_button">Fila ba livru sira</string>
+
+    <!-- Attendance Popup -->
+    <string name="attendance_popup_title_first">Parabéns ba prezensa dahuluk!</string>
+    <string name="attendance_popup_title_consecutive">Prezensa loron %1$d tuir-tuir malu!</string>
+    <string name="attendance_popup_message_first">Lee loron-loron hodi dezenvolve an!</string>
+    <string name="attendance_popup_message_consecutive">Nia toman lee ne\'ebé konsistente furak tebes!</string>
+    <string name="attendance_popup_streak_info">Prezensa loron %1$d</string>
+    <string name="attendance_popup_button_ok">OK</string>
     
     <!-- Level Test -->
     <string name="level_test_title">Teste nivel lee nian</string>
@@ -99,6 +108,16 @@
     <string name="level_test_result_questions">Pergunta sira neebé responde: %d</string>
     <string name="level_test_start_reading">Hahú lee</string>
     <string name="level_test_retake">Halo teste fali</string>
+    
+    <!-- 🆕 Level Test New Strings -->
+    <string name="level_test_introduction">Ha\'u sei kria estante livru ida ne\'ebé úniku ba ó! Uluk, mai ita buka hatene ó-nia nivel lee nian.</string>
+    <string name="level_test_start_button">Buka hatene ha\'u-nia nivel lee!</string>
+    <string name="level_test_skip_button">Sae</string>
+    <string name="level_test_complete_title">Ha\'u hetan ona ó-nia nivel lee!</string>
+    <string name="level_test_result_level">Ó mak lee-na\'in nivel %d!</string>
+    <string name="level_test_start_reading_button">Mai ita bá ha\'u-nia estante livru rasik!</string>
+    <string name="level_test_retry_button">Hakarak koko dala ida tan?</string>
+    <string name="level_test_level_display">Nivel %d</string>
     
     <!-- Language Selection -->
     <string name="language_selection_title">Hili lian</string>
