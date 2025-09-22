@@ -5,6 +5,7 @@ import com.timor.kidsstory.presentation.bookshelf.components.ReadingStatusFilter
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
+import com.timor.kidsstory.presentation.bookshelf.model.ManagementTab
 
 /**
  * 책장 화면에서 발생하는 사용자 액션 정의
@@ -93,4 +94,52 @@ sealed interface BookShelfAction {
      * @property status 선택한 읽음 상태
      */
     data class SelectReadingStatus(val status: ReadingStatusFilter) : BookShelfAction
+
+    // 🆕 관리 모드 관련 액션들
+    /**
+     * 관리 모드 전환 액션
+     * - 헤더의 [관리] 버튼을 클릭했을 때 발생
+     */
+    data object ToggleManagementMode : BookShelfAction
+
+    /**
+     * 관리 탭 선택 액션
+     * - 관리 모드에서 전체/다운로드/업데이트 탭 선택
+     *
+     * @property tab 선택한 관리 탭
+     */
+    data class SelectManagementTab(val tab: ManagementTab) : BookShelfAction
+
+    /**
+     * 책 선택 상태 변경 액션 (관리 모드)
+     * - 체크박스로 책을 선택/해제할 때 발생
+     *
+     * @property bookId 책 ID
+     * @property isSelected 선택 여부
+     */
+    data class ToggleBookSelection(val bookId: String, val isSelected: Boolean) : BookShelfAction
+
+    /**
+     * 선택된 항목들 다운로드/업데이트 실행
+     * - FloatingActionButton 클릭 시 발생
+     */
+    data object ExecuteSelectedActions : BookShelfAction
+
+    /**
+     * 확인 팝업 표시/숨김
+     *
+     * @property show 팝업 표시 여부
+     */
+    data class ShowConfirmationPopup(val show: Boolean) : BookShelfAction
+
+    data object CheckForUpdate : BookShelfAction
+
+    data class ShowUpdateDialog(val show: Boolean) : BookShelfAction
+
+    data object PostponeUpdate : BookShelfAction
+
+    /**
+     * 레벨 테스트 결과 팝업 닫기 액션
+     */
+    data object DismissLevelResultPopup : BookShelfAction
 }

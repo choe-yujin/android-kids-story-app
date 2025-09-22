@@ -20,6 +20,10 @@ import com.timor.kidsstory.presentation.bookshelf.components.ReadingStatusFilter
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
+import com.timor.kidsstory.presentation.bookshelf.model.ManagementTab
+import com.timor.kidsstory.domain.model.UserPreference
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
+import com.timor.kidsstory.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +31,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.app.Application
 
 /**
  * 책장 화면 전용 ViewModel (슬림화됨)
@@ -43,6 +48,11 @@ import javax.inject.Inject
  * - 읽기 진도 관리 → ProgressViewModel
  * - 복잡한 다운로드 로직 → 향후 분리 예정
  */
+import com.timor.kidsstory.domain.usecase.CheckAppVersionUseCase
+import com.timor.kidsstory.domain.usecase.PostponeUpdateUseCase
+
+import androidx.lifecycle.SavedStateHandle
+
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
     private val getAllBooksUseCase: GetAllBooksUseCase,
@@ -52,7 +62,10 @@ class BookshelfViewModel @Inject constructor(
     private val readingProgressRepository: ReadingProgressRepository,
     private val musicSettingUseCase: MusicSettingUseCase,
     private val musicManager: MusicManager,
-    private val soundEffectManager: SoundEffectManager
+    private val soundEffectManager: SoundEffectManager,
+    private val checkAppVersionUseCase: CheckAppVersionUseCase,
+    private val postponeUpdateUseCase: PostponeUpdateUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     // 핵심 UI 상태만 관리
@@ -63,46 +76,49 @@ class BookshelfViewModel @Inject constructor(
     private val currentUserId = "default_user"
 
     init {
-        initializeBookshelf()
-        observeUserPreference()
-        loadMusicSetting()
+        viewModelScope.launch {
+            val initialLevel = savedStateHandle.get<Int>("level")
+            val wasSkipped = savedStateHandle.get<Boolean>("wasSkipped") ?: false
+            val showLevelResultPopup = savedStateHandle.get<Boolean>("showLevelResultPopup") ?: false
+
+            loadUserPreferences(initialLevel, wasSkipped, showLevelResultPopup)
+            loadBooks(_state.value.currentLanguage.code)
+            loadMusicSetting()
+        }
     }
 
-    /**
-     * 책장 초기화
-     */
-    private fun initializeBookshelf() {
-        viewModelScope.launch {
-            try {
-                val preference = getUserPreferenceUseCase().first()
-                
-                val languageCode = if (preference.languageCode.isBlank()) {
-                    LanguageConstants.DEFAULT_LANGUAGE.code
-                } else {
-                    preference.languageCode
-                }
+    private suspend fun loadUserPreferences(
+        initialLevel: Int?,
+        wasSkipped: Boolean,
+        showLevelResultPopup: Boolean
+    ) {
+        Log.d("BookshelfViewModel", "loadUserPreferences: initialLevel=$initialLevel, wasSkipped=$wasSkipped, showLevelResultPopup=$showLevelResultPopup")
+        val prefs = getUserPreferenceUseCase().first()
+        val currentLanguage = LanguageConstants.SUPPORTED_LANGUAGES.find { it.code == prefs.languageCode } ?: LanguageConstants.DEFAULT_LANGUAGE
 
-                val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
-                    it.code == languageCode
-                } ?: LanguageConstants.DEFAULT_LANGUAGE
-
-                LanguageManager.setCurrentLanguageCode(language.code)
-                _state.update { it.copy(currentLanguage = language) }
-                
-                loadBooks(language.code)
-                
-                Log.d("BookshelfViewModel", "Bookshelf initialized with language: ${language.code}")
-                
-            } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Error initializing bookshelf", e)
-                _state.update { 
-                    it.copy(
-                        isLoading = false,
-                        error = "책장을 초기화할 수 없습니다: ${e.message}"
-                    )
-                }
-            }
+        val initialFilterBarState = if (wasSkipped) {
+            FilterBarState(selectedFilter = FilterBarCategory.All)
+        } else if (initialLevel != null) {
+            FilterBarState(selectedFilter = FilterBarCategory.STAGE, selectedStage = initialLevel.toFilterLevel(), isStageFilterExpanded = true)
+        } else if (prefs.hasCompletedLevelTest) {
+            FilterBarState(selectedFilter = FilterBarCategory.STAGE, selectedStage = prefs.selectedLevel.toFilterLevel())
+        } else {
+            FilterBarState(selectedFilter = FilterBarCategory.All)
         }
+
+        val popupMessage = if (showLevelResultPopup && initialLevel != null) {
+            LocalizedMessage(R.string.level_test_popup_message, arrayOf(initialLevel))
+        } else {
+            null
+        }
+
+        _state.value = _state.value.copy(
+            currentLanguage = currentLanguage,
+            isMusicOn = prefs.isMusicOn,
+            filterBarState = initialFilterBarState,
+            showLevelResultPopup = showLevelResultPopup,
+            levelResultPopupMessage = popupMessage
+        )
     }
 
     /**
@@ -277,6 +293,66 @@ class BookshelfViewModel @Inject constructor(
             is BookShelfAction.SelectReadingStatus -> {
                 soundEffectManager.playButtonClick()
                 selectReadingStatus(action.status)
+            }
+            
+            // 🆕 관리 모드 관련 액션들
+            is BookShelfAction.ToggleManagementMode -> {
+                soundEffectManager.playButtonClick()
+                toggleManagementMode()
+            }
+            
+            is BookShelfAction.SelectManagementTab -> {
+                soundEffectManager.playButtonClick()
+                selectManagementTab(action.tab)
+            }
+            
+            is BookShelfAction.ToggleBookSelection -> {
+                soundEffectManager.playButtonClick()
+                toggleBookSelection(action.bookId, action.isSelected)
+            }
+            
+            is BookShelfAction.ExecuteSelectedActions -> {
+                soundEffectManager.playButtonClick()
+                executeSelectedActions()
+            }
+            
+            is BookShelfAction.ShowConfirmationPopup -> {
+                handleConfirmationPopup(action.show)
+            }
+
+            is BookShelfAction.CheckForUpdate -> {
+                checkForUpdate()
+            }
+
+            is BookShelfAction.ShowUpdateDialog -> {
+                _state.update { it.copy(showUpdateDialog = action.show) }
+            }
+
+            is BookShelfAction.PostponeUpdate -> {
+                viewModelScope.launch {
+                    _state.value.appVersionInfo?.let {
+                        postponeUpdateUseCase(it.latestVersionCode)
+                    }
+                    _state.update { it.copy(showUpdateDialog = false) }
+                }
+            }
+
+            is BookShelfAction.DismissLevelResultPopup -> {
+                _state.update { it.copy(showLevelResultPopup = false, levelResultPopupMessage = null) }
+            }
+        }
+    }
+
+    private fun checkForUpdate() {
+        viewModelScope.launch {
+            val result = checkAppVersionUseCase()
+            result.getOrNull()?.let { versionInfo ->
+                _state.update {
+                    it.copy(
+                        appVersionInfo = versionInfo,
+                        showUpdateDialog = true
+                    )
+                }
             }
         }
     }
@@ -514,6 +590,244 @@ class BookshelfViewModel @Inject constructor(
         
         Log.d("BookshelfViewModel", "Filtered books by $status: ${finalFilteredBooks.size}/${currentState.books.size}")
     }
+    
+    // 🆕 관리 모드 관련 메서드들
+    
+    /**
+     * 관리 모드 전환
+     */
+    private fun toggleManagementMode() {
+        val currentMode = _state.value.isManagementMode
+        
+        _state.update { currentState ->
+            currentState.copy(
+                isManagementMode = !currentMode,
+                // 관리 모드 종료 시 선택 내역 초기화
+                selectedBookIds = if (currentMode) emptySet() else currentState.selectedBookIds,
+                selectedManagementTab = if (currentMode) ManagementTab.ALL else currentState.selectedManagementTab,
+                showConfirmationPopup = false,
+                // 읽기 상태 필터도 초기화
+                selectedReadingStatus = if (currentMode) null else currentState.selectedReadingStatus,
+                // 🆕 관리 모드 진입 시 업데이트 확인 상태로 설정 (뱃지 숨김)
+                hasCheckedUpdates = if (!currentMode) true else currentState.hasCheckedUpdates
+            )
+        }
+        
+        // 관리 모드 진입 시 초기 데이터 로드
+        if (!currentMode) {
+            loadManagementData()
+        }
+        
+        Log.d("BookshelfViewModel", "Management mode toggled: ${!currentMode}")
+    }
+    
+    /**
+     * 관리 데이터 로드 (초기에는 전체 탭만 지원)
+     */
+    private fun loadManagementData() {
+        viewModelScope.launch {
+            try {
+                // TODO: 나중에 실제 GitHub 메타데이터 체크 로직 추가
+                // 현재는 더미 데이터로 설정
+                _state.update { 
+                    it.copy(
+                        downloadableItemsCount = 5, // 더미: 다운로드 3개 + 업데이트 2개
+                        downloadableBooks = emptyList(),
+                        updatableBooks = emptyList()
+                    )
+                }
+                
+                Log.d("BookshelfViewModel", "Management data loaded")
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error loading management data", e)
+            }
+        }
+    }
+    
+    /**
+     * 관리 탭 선택 처리
+     */
+    private fun selectManagementTab(tab: ManagementTab) {
+        _state.update { it.copy(selectedManagementTab = tab) }
+        
+        when (tab) {
+            ManagementTab.ALL -> {
+                // 전체 탭: 기존 FilterBar 동작과 동일
+                applyCurrentFilter()
+            }
+            ManagementTab.DOWNLOAD -> {
+                // 다운로드 탭: 네트워크 체크 후 다운로드 가능한 책 표시
+                loadDownloadableBooks()
+            }
+            ManagementTab.UPDATE -> {
+                // 업데이트 탭: 네트워크 체크 후 업데이트 가능한 책 표시
+                loadUpdatableBooks()
+            }
+        }
+        
+        Log.d("BookshelfViewModel", "Management tab selected: $tab")
+    }
+    
+    /**
+     * 다운로드 가능한 책 로드
+     */
+    private fun loadDownloadableBooks() {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isCheckingUpdates = true) }
+                
+                // TODO: 실제 GitHub 메타데이터 체크 로직
+                kotlinx.coroutines.delay(1000) // 네트워크 요청 시뮬레이션
+                
+                // 더미 데이터: 현재 책 목록에서 처음 2개를 다운로드 가능로 설정
+                val downloadableBooks = _state.value.books.take(2)
+                
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        downloadableBooks = downloadableBooks,
+                        filteredBooks = downloadableBooks
+                    )
+                }
+                
+                Log.d("BookshelfViewModel", "Downloadable books loaded: ${downloadableBooks.size}")
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error loading downloadable books", e)
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        error = "다운로드 가능한 책을 불러올 수 없습니다: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
+    
+    /**
+     * 업데이트 가능한 책 로드
+     */
+    private fun loadUpdatableBooks() {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isCheckingUpdates = true) }
+                
+                // TODO: 실제 GitHub 메타데이터 체크 로직
+                kotlinx.coroutines.delay(1500) // 네트워크 요청 시뮬레이션
+                
+                // 더미 데이터: 현재 책 목록에서 마지막 3개를 업데이트 가능로 설정
+                val currentBooks = _state.value.books
+                val updatableBooks = if (currentBooks.size >= 3) {
+                    currentBooks.drop(currentBooks.size - 3)
+                } else {
+                    currentBooks
+                }
+                
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        updatableBooks = updatableBooks,
+                        filteredBooks = updatableBooks
+                    )
+                }
+                
+                Log.d("BookshelfViewModel", "Updatable books loaded: ${updatableBooks.size}")
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error loading updatable books", e)
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        error = "업데이트 가능한 책을 불러올 수 없습니다: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
+    
+    /**
+     * 책 선택 상태 변경
+     */
+    private fun toggleBookSelection(bookId: String, isSelected: Boolean) {
+        _state.update { currentState ->
+            val newSelectedIds = if (isSelected) {
+                currentState.selectedBookIds + bookId
+            } else {
+                currentState.selectedBookIds - bookId
+            }
+            
+            // 선택된 책들의 총 용량 계산
+            val selectedBooks = currentState.filteredBooks.filter { it.storyId in newSelectedIds }
+            val totalSize = selectedBooks.sumOf { it.totalSize }
+            
+            currentState.copy(
+                selectedBookIds = newSelectedIds,
+                totalSelectedSize = totalSize
+            )
+        }
+        
+        Log.d("BookshelfViewModel", "Book selection toggled: $bookId -> $isSelected")
+    }
+    
+    /**
+     * 선택된 항목들 실행 (다운로드/업데이트)
+     */
+    private fun executeSelectedActions() {
+        val selectedCount = _state.value.selectedBookIds.size
+        if (selectedCount > 0) {
+            _state.update { it.copy(showConfirmationPopup = true) }
+        }
+        
+        Log.d("BookshelfViewModel", "Execute selected actions: $selectedCount items")
+    }
+    
+    /**
+     * 확인 팝업 표시/숨김 처리
+     */
+    private fun handleConfirmationPopup(show: Boolean) {
+        _state.update { it.copy(showConfirmationPopup = show) }
+        
+        if (!show) {
+            // 팝업이 닫힐 때 실제 다운로드/업데이트 실행
+            performSelectedActions()
+        }
+    }
+    
+    /**
+     * 실제 다운로드/업데이트 실행
+     */
+    private fun performSelectedActions() {
+        viewModelScope.launch {
+            try {
+                val selectedBooks = _state.value.filteredBooks.filter { 
+                    it.storyId in _state.value.selectedBookIds 
+                }
+                
+                // TODO: 실제 다운로드/업데이트 로직 구현
+                selectedBooks.forEach { book ->
+                    Log.d("BookshelfViewModel", "Performing action on: ${book.title}")
+                }
+                
+                // 성공 후 선택 초기화
+                _state.update {
+                    it.copy(
+                        selectedBookIds = emptySet(),
+                        totalSelectedSize = 0L
+                    )
+                }
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error performing selected actions", e)
+                _state.update {
+                    it.copy(
+                        error = "작업을 수행할 수 없습니다: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
+    
     fun clearError() {
         _state.update { it.copy(error = null) }
     }
@@ -531,5 +845,16 @@ class BookshelfViewModel @Inject constructor(
         musicManager.release()
         soundEffectManager.release()
         Log.d("BookshelfViewModel", "ViewModel cleared")
+    }
+}
+
+fun Int.toFilterLevel(): FilterLevel {
+    return when (this) {
+        1 -> FilterLevel.ONE
+        2 -> FilterLevel.TWO
+        3 -> FilterLevel.THREE
+        4 -> FilterLevel.FOUR
+        5 -> FilterLevel.FIVE
+        else -> FilterLevel.THREE // Default or error handling
     }
 }

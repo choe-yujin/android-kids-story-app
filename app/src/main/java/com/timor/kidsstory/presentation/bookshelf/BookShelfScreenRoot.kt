@@ -21,7 +21,11 @@ fun BookShelfScreenRoot(
     onBookSelect: (String) -> Unit,
     onChatbotClick: () -> Unit,
     onSettingClick: () -> Unit,
-    onMyPageClick: () -> Unit = {}
+    onMyPageClick: () -> Unit = {},
+    initialLanguage: String,
+    initialLevel: Int,
+    wasSkipped: Boolean,
+    showLevelResultPopup: Boolean
 ) {
     // 3개의 분리된 ViewModel 주입
     val bookshelfViewModel: BookshelfViewModel = hiltViewModel()
