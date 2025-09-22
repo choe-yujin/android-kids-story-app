@@ -85,7 +85,7 @@ sealed class LevelTestNavigationTarget {
     /**
      * 책장으로 (테스트 완료 또는 스킵)
      */
-    data class Bookshelf(val language: String, val level: Int) : LevelTestNavigationTarget()
+    data class Bookshelf(val language: String, val level: Int, val wasSkipped: Boolean, val showLevelResultPopup: Boolean = false) : LevelTestNavigationTarget()
 }
 
 /**

@@ -59,7 +59,7 @@ fun LanguageSelectionScreenRoot(
 }
 
 /**
- * 언어 선택 화면
+ * 언어 선택 화면 - 태블릿 국기 가운데 정렬 개선
  */
 @Composable
 fun LanguageSelectionScreen(
@@ -99,11 +99,11 @@ fun LanguageSelectionScreen(
             ) {
                 Spacer(modifier = Modifier.height(32.dp))
                 
-                // 언어 선택 카드들
+                // 언어 선택 카드들 - 🆕 태블릿에서 가운데 정렬 개선
                 if (isLandscape) {
-                    // 가로 모드: 한 줄로 배치
+                    // 가로 모드: 한 줄로 배치 - 가운데 정렬 추가
                     LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally), // 🆕 가운데 정렬 추가
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -118,7 +118,7 @@ fun LanguageSelectionScreen(
                         }
                     }
                 } else {
-                    // 세로 모드: 격자 배치
+                    // 세로 모드: 격자 배치 - 기존 유지
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally

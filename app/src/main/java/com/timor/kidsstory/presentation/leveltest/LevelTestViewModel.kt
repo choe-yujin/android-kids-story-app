@@ -3,7 +3,9 @@ package com.timor.kidsstory.presentation.leveltest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.timor.kidsstory.domain.manager.FirstRunManager
+import com.timor.kidsstory.domain.model.leveltest.AdaptiveTestAlgorithm
 import com.timor.kidsstory.domain.model.leveltest.LevelTestQuestion
+import com.timor.kidsstory.domain.model.leveltest.TestStepResult
 import com.timor.kidsstory.domain.repository.leveltest.LevelTestRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * 레벨 테스트 화면 ViewModel
+ * 레벨 테스트 화면 ViewModel (개선된 알고리즘 적용)
  */
 @HiltViewModel
 class LevelTestViewModel @Inject constructor(
@@ -26,6 +28,9 @@ class LevelTestViewModel @Inject constructor(
     
     // 현재 언어
     private var currentLanguage: String = ""
+    
+    // 개선된 적응형 알고리즘
+    private val testAlgorithm = AdaptiveTestAlgorithm()
     
     /**
      * 레벨 테스트 시작
@@ -68,9 +73,12 @@ class LevelTestViewModel @Inject constructor(
      * 실제 테스트 시작
      */
     private fun startActualTest() {
+        testAlgorithm.reset() // 알고리즘 초기화
+        
         _uiState.value = _uiState.value.copy(
             testState = TestState.InProgress,
-            currentLevel = 1
+            currentLevel = testAlgorithm.getCurrentLevel(),
+            currentQuestionNumber = 1
         )
         loadNextQuestion()
     }
@@ -87,18 +95,19 @@ class LevelTestViewModel @Inject constructor(
             )
             
             try {
-                val currentState = _uiState.value
-                val question = levelTestRepository.getRandomQuestion(currentLanguage, currentState.currentLevel)
+                val currentLevel = testAlgorithm.getCurrentLevel()
+                val question = levelTestRepository.getRandomQuestion(currentLanguage, currentLevel)
                 
                 if (question != null) {
                     _uiState.value = _uiState.value.copy(
                         currentQuestion = question,
+                        currentLevel = currentLevel,
                         isLoading = false,
                         errorMessage = null
                     )
                 } else {
-                    // 해당 레벨에 문제가 없음 -> 테스트 완료
-                    finishLevelTest()
+                    // 해당 레벨에 문제가 없음 -> 다른 레벨 시도 또는 테스트 완료
+                    handleNoQuestionAvailable()
                 }
                 
             } catch (e: Exception) {
@@ -111,35 +120,64 @@ class LevelTestViewModel @Inject constructor(
     }
     
     /**
-     * 답안 선택 처리
+     * 해당 레벨에 문제가 없을 때 처리
+     */
+    private fun handleNoQuestionAvailable() {
+        // 다른 레벨에서 문제 찾기 시도
+        val alternativeLevels = listOf(3, 2, 4, 1, 5) // 우선순위 순서
+        
+        viewModelScope.launch {
+            for (level in alternativeLevels) {
+                val question = levelTestRepository.getRandomQuestion(currentLanguage, level)
+                if (question != null) {
+                    // 대체 레벨 문제 발견
+                    _uiState.value = _uiState.value.copy(
+                        currentQuestion = question,
+                        currentLevel = level,
+                        isLoading = false,
+                        errorMessage = null
+                    )
+                    return@launch
+                }
+            }
+            
+            // 모든 레벨에서 문제를 찾을 수 없음 -> 테스트 완료
+            finishLevelTest(3) // 기본 레벨로 완료
+        }
+    }
+    
+    /**
+     * 답안 선택 처리 (개선된 알고리즘 사용)
      */
     private fun handleAnswerSelection(selectedIndex: Int) {
         val currentQuestion = _uiState.value.currentQuestion ?: return
         val isCorrect = currentQuestion.isCorrectAnswer(selectedIndex)
-        
+
         _uiState.value = _uiState.value.copy(
             selectedAnswerIndex = selectedIndex,
             isCorrect = isCorrect,
             showAnswerResult = true
         )
-        
-        // 1초 후 자동으로 다음 문제로 이동
+
         viewModelScope.launch {
-            kotlinx.coroutines.delay(1500)
-            
-            if (isCorrect) {
-                // 정답: 다음 레벨로
-                val nextLevel = _uiState.value.currentLevel + 1
-                if (nextLevel > 5) {
-                    // 모든 레벨 완료
-                    finishLevelTest()
-                } else {
-                    _uiState.value = _uiState.value.copy(currentLevel = nextLevel)
+            kotlinx.coroutines.delay(1500) // 결과 표시를 위한 지연
+
+            // 개선된 알고리즘으로 다음 단계 결정
+            when (val result = testAlgorithm.processAnswer(isCorrect)) {
+                is TestStepResult.Continue -> {
+                    // 테스트 계속 -> 다음 문제 로드
+                    val summary = testAlgorithm.getTestSummary()
+                    _uiState.value = _uiState.value.copy(
+                        currentQuestionNumber = summary.questionsAnswered + 1,
+                        currentLevel = result.nextLevel
+                    )
                     loadNextQuestion()
                 }
-            } else {
-                // 오답: 현재 레벨에서 완료
-                finishLevelTest()
+                
+                is TestStepResult.Finished -> {
+                    // 테스트 완료
+                    finishLevelTest(result.recommendedLevel)
+                }
             }
         }
     }
@@ -155,7 +193,7 @@ class LevelTestViewModel @Inject constructor(
                 
                 _uiState.value = _uiState.value.copy(
                     testState = TestState.Skipped,
-                    navigationTarget = LevelTestNavigationTarget.Bookshelf(currentLanguage, 3)
+                    navigationTarget = LevelTestNavigationTarget.Bookshelf(currentLanguage, 3, true)
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -169,6 +207,7 @@ class LevelTestViewModel @Inject constructor(
      * 테스트 재시작
      */
     private fun restartTest() {
+        testAlgorithm.reset()
         _uiState.value = LevelTestUiState(
             language = currentLanguage,
             testState = TestState.NotStarted
@@ -178,18 +217,20 @@ class LevelTestViewModel @Inject constructor(
     /**
      * 레벨 테스트 완료
      */
-    private fun finishLevelTest() {
+    private fun finishLevelTest(recommendedLevel: Int) {
         viewModelScope.launch {
             try {
-                val measuredLevel = _uiState.value.currentLevel
-                
                 // 측정된 레벨로 FirstRun 완료 처리
-                firstRunManager.completeLevelTest(currentLanguage, measuredLevel)
+                firstRunManager.completeLevelTest(currentLanguage, recommendedLevel)
+                
+                val summary = testAlgorithm.getTestSummary()
                 
                 _uiState.value = _uiState.value.copy(
                     testState = TestState.Completed,
                     isTestCompleted = true,
-                    finalLevel = measuredLevel
+                    finalLevel = recommendedLevel,
+                    // 테스트 결과 상세 정보 추가
+                    currentQuestionNumber = summary.questionsAnswered
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -205,7 +246,7 @@ class LevelTestViewModel @Inject constructor(
     private fun startReading() {
         val finalLevel = _uiState.value.finalLevel ?: 3
         _uiState.value = _uiState.value.copy(
-            navigationTarget = LevelTestNavigationTarget.Bookshelf(currentLanguage, finalLevel)
+            navigationTarget = LevelTestNavigationTarget.Bookshelf(currentLanguage, finalLevel, false, true)
         )
     }
     
@@ -217,4 +258,9 @@ class LevelTestViewModel @Inject constructor(
             navigationTarget = null
         )
     }
+    
+    /**
+     * 현재 테스트 진행 상황 가져오기 (디버깅용)
+     */
+    fun getTestSummary() = testAlgorithm.getTestSummary()
 }
