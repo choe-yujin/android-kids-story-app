@@ -39,7 +39,7 @@ fun BookCover(
 
     Card(
         modifier = Modifier
-            .width(180.dp)
+            .width(if (isTablet) 160.dp else 180.dp)
             .clickable(enabled = book.isDownloaded, onClick = onClick),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {

@@ -59,8 +59,7 @@ fun FilterBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 48.dp, end = 16.dp) // 책 그리드와 동일한 좌측 패딩
-            .height(58.dp),
+            .padding(start = 48.dp, end = 16.dp), // 책 그리드와 동일한 좌측 패딩
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
     ) {

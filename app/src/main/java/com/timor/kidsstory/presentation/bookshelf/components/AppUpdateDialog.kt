@@ -28,6 +28,10 @@ import com.timor.kidsstory.domain.model.AppVersionInfo
 import com.timor.kidsstory.domain.util.LanguageManager
 import com.timor.kidsstory.ui.theme.*
 
+import com.timor.kidsstory.ui.components.LocalizedText
+import com.timor.kidsstory.domain.model.Language
+import com.timor.kidsstory.ui.components.FontPolicy
+
 @Composable
 fun AppUpdateDialog(
     versionInfo: AppVersionInfo,
@@ -53,13 +57,13 @@ fun AppUpdateDialog(
         screenWidthDp >= 1000 -> 0.9f   // 대형 태블릿 - 90%
         screenWidthDp >= 800 -> 0.95f   // 중형 태블릿 - 95%
         screenWidthDp >= 600 -> 0.98f   // 소형 태블릿 - 98%
-        else -> 0.99f                   // 휴대폰 - 99% (최대한 넓게)
+        else -> 1f                   // 휴대폰 - 100% (최대한 넓게)
     }
     
     val dialogHeightFraction = when {
         screenHeightDp >= 800 -> 0.5f   // 높은 화면 - 50%
         screenHeightDp >= 600 -> 0.6f   // 중간 화면 - 60%
-        else -> 0.7f                    // 낮은 화면 - 70%
+        else -> 0.85f                    // 낮은 화면 - 85%
     }
 
     Dialog(
@@ -85,18 +89,18 @@ fun AppUpdateDialog(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // 상단: 제목만 (버전 정보 제거)
-                Text(
-                    text = if (versionInfo.isUpdateRequired) 
-                        stringResource(R.string.update_dialog_title_required)
-                        else stringResource(R.string.update_dialog_title_optional),
-                    style = Typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.neutral900,
-                        fontSize = 22.sp
-                    ),
-                    textAlign = TextAlign.Center
-                )
-
+                                    LocalizedText(
+                                        resId = if (versionInfo.isUpdateRequired) 
+                                            R.string.update_dialog_title_required
+                                            else R.string.update_dialog_title_optional,
+                                        style = Typography.headlineMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = AppColors.neutral900,
+                                            fontSize = 22.sp
+                                        ),
+                                        textAlign = TextAlign.Center,
+                                        fontPolicy = FontPolicy.DEFAULT
+                                    )
                 // 중앙: 메시지 카드 - 더 긴 공간 할당
                 Card(
                     modifier = Modifier
@@ -135,13 +139,14 @@ fun AppUpdateDialog(
                             Spacer(modifier = Modifier.height(18.dp))
                             
                             // "변경사항" 제목
-                            Text(
-                                text = stringResource(R.string.update_dialog_release_notes),
+                            LocalizedText(
+                                resId = R.string.update_dialog_release_notes,
                                 style = Typography.bodyLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     color = AppColors.neutral900,
                                     fontSize = 16.sp
-                                )
+                                ),
+                                fontPolicy = FontPolicy.DEFAULT
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(
@@ -185,13 +190,14 @@ fun AppUpdateDialog(
                             containerColor = AppColors.primary700
                         )
                     ) {
-                        Text(
-                            text = stringResource(R.string.update_dialog_button_update_now),
+                        LocalizedText(
+                            resId = R.string.update_dialog_button_update_now,
                             style = Typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White,
                                 fontSize = 16.sp
-                            )
+                            ),
+                            fontPolicy = FontPolicy.DEFAULT
                         )
                     }
                 } else {
@@ -226,13 +232,14 @@ fun AppUpdateDialog(
                                 containerColor = AppColors.primary700
                             )
                         ) {
-                            Text(
-                                text = stringResource(R.string.update_dialog_button_update),
+                            LocalizedText(
+                                resId = R.string.update_dialog_button_update,
                                 style = Typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White,
                                     fontSize = 16.sp
-                                )
+                                ),
+                                fontPolicy = FontPolicy.DEFAULT
                             )
                         }
 
@@ -254,12 +261,13 @@ fun AppUpdateDialog(
                                 width = 1.5.dp
                             )
                         ) {
-                            Text(
-                                text = stringResource(R.string.update_dialog_button_later),
+                            LocalizedText(
+                                resId = R.string.update_dialog_button_later,
                                 style = Typography.bodyMedium.copy(
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Medium
-                                )
+                                ),
+                                fontPolicy = FontPolicy.DEFAULT
                             )
                         }
                     }
