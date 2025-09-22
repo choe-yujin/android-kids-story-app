@@ -40,8 +40,15 @@ class FirstRunManager @Inject constructor(
         return if (prefs.languageCode.isNotEmpty()) {
             Pair(prefs.languageCode, prefs.selectedLevel)
         } else {
-            Log.d(TAG, "📝 No language/level settings found")
-            null
+            // If isFirstRun is false but languageCode is empty, it's an inconsistent state.
+            // Provide a default to prevent looping back to LanguageSelection.
+            if (!prefs.isFirstRun) {
+                Log.w(TAG, "⚠️ Inconsistent state: isFirstRun is false but languageCode is empty. Providing default.")
+                Pair(DEFAULT_LANGUAGE_CODE, DEFAULT_LEVEL) // Provide a default
+            } else {
+                Log.d(TAG, "📝 No language/level settings found (first run)")
+                null
+            }
         }
     }
     
@@ -52,14 +59,14 @@ class FirstRunManager @Inject constructor(
      * 
      * @param language 선택된 언어
      * @param level 측정된 또는 기본 레벨
-     * @param hasCompletedTest 레벨 테스트 완료 여부
+     * @param hasCompletedLevelTest 레벨 테스트 완료 여부
      */
     suspend fun completeFirstRun(
         language: String, 
         level: Int, 
-        hasCompletedTest: Boolean = false
+        hasCompletedLevelTest: Boolean = false
     ) {
-        Log.d(TAG, "🎉 Completing first run - language: $language, level: $level, testCompleted: $hasCompletedTest")
+        Log.d(TAG, "🎉 Completing first run - language: $language, level: $level, testCompleted: $hasCompletedLevelTest")
         
         try {
             // 1. 질문 은행 초기화 (assets → 내부저장소)
@@ -69,7 +76,7 @@ class FirstRunManager @Inject constructor(
             userPreferenceRepository.updateLanguageAndLevel(
                 languageCode = language,
                 level = level,
-                hasCompletedTest = hasCompletedTest
+                hasCompletedLevelTest = hasCompletedLevelTest
             )
             
             Log.d(TAG, "✅ First run completed successfully")
@@ -91,7 +98,7 @@ class FirstRunManager @Inject constructor(
         completeFirstRun(
             language = language,
             level = DEFAULT_LEVEL,
-            hasCompletedTest = false
+            hasCompletedLevelTest = false
         )
     }
     
@@ -107,7 +114,7 @@ class FirstRunManager @Inject constructor(
         completeFirstRun(
             language = language,
             level = measuredLevel,
-            hasCompletedTest = true
+            hasCompletedLevelTest = true
         )
     }
     
@@ -122,5 +129,6 @@ class FirstRunManager @Inject constructor(
     companion object {
         private const val TAG = "FirstRunManager"
         private const val DEFAULT_LEVEL = 3
+        private const val DEFAULT_LANGUAGE_CODE = "en" // 기본 언어를 en으로 원복
     }
 }

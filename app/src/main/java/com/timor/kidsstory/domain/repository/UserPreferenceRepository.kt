@@ -78,11 +78,11 @@ interface UserPreferenceRepository {
      *
      * @param languageCode 선택된 언어 코드
      * @param level 측정된 또는 선택된 레벨
-     * @param hasCompletedTest 레벨 테스트 완료 여부
+     * @param hasCompletedLevelTest 레벨 테스트 완료 여부
      */
     suspend fun updateLanguageAndLevel(
         languageCode: String, 
         level: Int, 
-        hasCompletedTest: Boolean = true
+        hasCompletedLevelTest: Boolean = true
     )
 }

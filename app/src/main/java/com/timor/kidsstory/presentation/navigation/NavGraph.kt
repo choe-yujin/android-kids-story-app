@@ -31,8 +31,9 @@ sealed class Screen(val route: String) {
     }
     
      // 책장 화면 - 메인 화면
-    data object Bookshelf : Screen("bookshelf/{language}/{level}") {
-        fun createRoute(language: String, level: Int) = "bookshelf/$language/$level"
+    data object Bookshelf : Screen("bookshelf/{language}/{level}?wasSkipped={wasSkipped}&showLevelResultPopup={showLevelResultPopup}") {
+        fun createRoute(language: String, level: Int, wasSkipped: Boolean = false, showLevelResultPopup: Boolean = false) =
+            "bookshelf/$language/$level?wasSkipped=$wasSkipped&showLevelResultPopup=$showLevelResultPopup"
         // 기본 경로 (호환성 유지)
         val defaultRoute = "bookshelf"
     }
@@ -69,8 +70,8 @@ fun NavGraph(
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 },
-                onNavigateToBookshelf = { language, level ->
-                    navController.navigate(Screen.Bookshelf.createRoute(language, level)) {
+                onNavigateToBookshelf = { language, level, wasSkipped, showLevelResultPopup ->
+                    navController.navigate(Screen.Bookshelf.createRoute(language, level, wasSkipped, showLevelResultPopup)) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 }
@@ -102,8 +103,8 @@ fun NavGraph(
             
             LevelTestScreenRoot(
                 language = language,
-                onNavigateToBookshelf = { lang, level ->
-                    navController.navigate(Screen.Bookshelf.createRoute(lang, level)) {
+                onNavigateToBookshelf = { lang, level, wasSkipped, showLevelResultPopup ->
+                    navController.navigate(Screen.Bookshelf.createRoute(lang, level, wasSkipped, showLevelResultPopup)) {
                         popUpTo(Screen.LanguageSelection.route) { inclusive = true }
                     }
                 }
@@ -124,6 +125,11 @@ fun NavGraph(
                     }
                 },
                 onChatbotClick = { navController.navigate(Screen.ChatBot.route) },
+                onMyPageClick = { /* TODO: Implement MyPage navigation */ },
+                initialLanguage = "en", // Default language
+                initialLevel = 3,       // Default level
+                wasSkipped = false,
+                showLevelResultPopup = false
             )
         }
         
@@ -132,12 +138,16 @@ fun NavGraph(
             route = Screen.Bookshelf.route,
             arguments = listOf(
                 navArgument("language") { type = NavType.StringType },
-                navArgument("level") { type = NavType.IntType }
+                navArgument("level") { type = NavType.IntType },
+                navArgument("wasSkipped") { type = NavType.BoolType; defaultValue = false },
+                navArgument("showLevelResultPopup") { type = NavType.BoolType; defaultValue = false }
             )
         ) { backStackEntry ->
             val language = backStackEntry.arguments?.getString("language") ?: "en"
             val level = backStackEntry.arguments?.getInt("level") ?: 3
-            
+            val wasSkipped = backStackEntry.arguments?.getBoolean("wasSkipped") ?: false
+            val showLevelResultPopup = backStackEntry.arguments?.getBoolean("showLevelResultPopup") ?: false
+
             BookShelfScreenRoot(
                 onBookSelect = { index ->
                     navController.navigate(Screen.Reader.createRoute(index)) {
@@ -150,7 +160,10 @@ fun NavGraph(
                     }
                 },
                 onChatbotClick = { navController.navigate(Screen.ChatBot.route) },
-                // TODO: 초기 언어와 레벨 설정을 BookShelfScreenRoot에 전달
+                initialLanguage = language,
+                initialLevel = level,
+                wasSkipped = wasSkipped,
+                showLevelResultPopup = showLevelResultPopup
             )
         }
 

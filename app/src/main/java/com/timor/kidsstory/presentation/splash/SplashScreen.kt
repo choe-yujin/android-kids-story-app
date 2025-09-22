@@ -17,7 +17,7 @@ import com.airbnb.lottie.compose.*
 @Composable
 fun SplashScreenRoot(
     onNavigateToLanguageSelection: () -> Unit,
-    onNavigateToBookshelf: (language: String, level: Int) -> Unit,
+    onNavigateToBookshelf: (language: String, level: Int, wasSkipped: Boolean, showLevelResultPopup: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
@@ -30,7 +30,7 @@ fun SplashScreenRoot(
                 onNavigateToLanguageSelection()
             }
             is SplashNavigationTarget.Bookshelf -> {
-                onNavigateToBookshelf(target.language, target.level)
+                onNavigateToBookshelf(target.language, target.level, target.wasSkipped, target.showLevelResultPopup)
             }
             null -> {
                 // 아직 결정되지 않음

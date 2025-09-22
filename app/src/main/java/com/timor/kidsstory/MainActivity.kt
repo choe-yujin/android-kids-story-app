@@ -24,6 +24,7 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 
 /**
  * 앱의 진입점 - 앱의 기본 설정을 담당
@@ -47,39 +48,11 @@ class MainActivity : ComponentActivity() {
         applyLanguageSetting {
             setContent {
                 KidsStoryTheme {
-                    var updateVersionInfo by remember { mutableStateOf<AppVersionInfo?>(null) }
-                    var showUpdateDialog by remember { mutableStateOf(false) }
-                    
-                    // 앱 시작 시 업데이트 체크
-                    LaunchedEffect(Unit) {
-                        checkForAppUpdates { versionInfo ->
-                            updateVersionInfo = versionInfo
-                            showUpdateDialog = versionInfo != null
-                        }
-                    }
-                    
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
                         NavGraph() // 내비게이션 그래프 설정
-                        
-                        // 업데이트 다이얼로그 표시
-                        if (showUpdateDialog && updateVersionInfo != null) {
-                            AppUpdateDialog(
-                                versionInfo = updateVersionInfo!!,
-                                onDismiss = {
-                                    showUpdateDialog = false
-                                    updateVersionInfo = null
-                                },
-                                onPostpone = {
-                                    // "나중에" 버튼 클릭 시 3일간 연기
-                                    handlePostponeUpdate(updateVersionInfo!!.latestVersionCode)
-                                    showUpdateDialog = false
-                                    updateVersionInfo = null
-                                }
-                            )
-                        }
                     }
                 }
             }
@@ -174,23 +147,21 @@ class MainActivity : ComponentActivity() {
         val loadLanguageUseCase = entryPoint.getUserPreferenceUseCase()
 
         lifecycleScope.launch {
-            loadLanguageUseCase().collect { userPref ->
-                Logger.e("사용자 설정 확인: $userPref")
-                
-                // 저장된 언어 코드 사용 (시스템 언어 무시)
-                // 빈 문자열이면 기본값 "en-ph" 사용
-                val languageCode = if (userPref.languageCode.isBlank()) {
-                    "en-ph" // 시스템 언어 대신 기본값 사용
-                } else {
-                    userPref.languageCode
-                }
-
-                Logger.e("적용할 언어: $languageCode")
-
-                // 언어 설정 적용
-                updateLanguage(languageCode)
-                onLanguageApplied()
+            // collect 대신 first() 사용하여 한 번만 실행
+            val userPref = loadLanguageUseCase().first()
+            Logger.e("사용자 설정 확인: $userPref")
+            
+            // 첫 실행이 아니고 언어가 설정되어 있을 때만 언어 적용
+            if (!userPref.isFirstRun && userPref.languageCode.isNotBlank()) {
+                Logger.e("저장된 언어 적용: ${userPref.languageCode}")
+                updateLanguage(userPref.languageCode)
+            } else {
+                // 첫 실행이거나 언어가 설정되지 않은 경우 기본 언어 사용
+                Logger.e("기본 언어 사용: en")
+                updateLanguage("en")
             }
+            
+            onLanguageApplied()
         }
     }
 }
