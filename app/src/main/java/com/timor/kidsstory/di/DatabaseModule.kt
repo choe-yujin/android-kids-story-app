@@ -4,6 +4,7 @@ import android.content.Context
 import com.timor.kidsstory.data.local.database.AppDatabase
 import com.timor.kidsstory.data.local.database.dao.AvailableBooksDao
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
+import com.timor.kidsstory.data.local.database.dao.HybridBooksDao
 import com.timor.kidsstory.data.local.database.dao.UserDao
 import com.timor.kidsstory.data.local.database.dao.UserBookInteractionDao
 import com.timor.kidsstory.data.local.database.dao.AttendanceDao
@@ -26,7 +27,7 @@ object DatabaseModule {
         return AppDatabase.getDatabase(context)
     }
 
-    // 기존 DAO들
+    // 기존 DAO들 (레거시 지원)
     @Provides
     fun provideDownloadedBooksDao(database: AppDatabase): DownloadedBooksDao {
         return database.downloadedBooksDao()
@@ -37,7 +38,13 @@ object DatabaseModule {
         return database.availableBooksDao()
     }
 
-    // 새로 추가되는 DAO들
+    // 새로운 하이브리드 DAO
+    @Provides
+    fun provideHybridBooksDao(database: AppDatabase): HybridBooksDao {
+        return database.hybridBooksDao()
+    }
+
+    // 사용자 관련 DAO들
     @Provides
     fun provideUserDao(database: AppDatabase): UserDao {
         return database.userDao()

@@ -7,6 +7,9 @@ import android.speech.SpeechRecognizer
 import com.google.ai.client.generativeai.GenerativeModel
 import com.timor.kidsstory.BuildConfig
 import com.timor.kidsstory.data.local.assets.UnifiedDataSource
+import com.timor.kidsstory.data.local.database.dao.HybridBooksDao
+import com.timor.kidsstory.domain.manager.content.HybridContentManager
+import com.timor.kidsstory.domain.service.ContentUpdateService
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
 import com.timor.kidsstory.domain.util.SoundEffectManager
 import dagger.Module
@@ -25,6 +28,25 @@ object AppModule {
     @Singleton
     fun provideUnifiedDataSource(@ApplicationContext context: Context): UnifiedDataSource {
         return UnifiedDataSource(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHybridContentManager(
+        @ApplicationContext context: Context,
+        hybridBooksDao: HybridBooksDao
+    ): HybridContentManager {
+        return HybridContentManager(context, hybridBooksDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideContentUpdateService(
+        @ApplicationContext context: Context,
+        hybridContentManager: HybridContentManager,
+        networkService: com.timor.kidsstory.data.remote.network.BookNetworkService
+    ): ContentUpdateService {
+        return ContentUpdateService(context, hybridContentManager, networkService)
     }
 
     @Provides

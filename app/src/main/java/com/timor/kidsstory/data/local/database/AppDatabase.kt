@@ -9,6 +9,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.timor.kidsstory.data.local.database.dao.AvailableBooksDao
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
+import com.timor.kidsstory.data.local.database.dao.HybridBooksDao
 import com.timor.kidsstory.data.local.database.dao.UserDao
 import com.timor.kidsstory.data.local.database.dao.UserBookInteractionDao
 import com.timor.kidsstory.data.local.database.dao.AttendanceDao
@@ -16,6 +17,7 @@ import com.timor.kidsstory.data.local.database.dao.ReadingProgressDao
 import com.timor.kidsstory.data.local.database.dao.UnlockProgressDao
 import com.timor.kidsstory.data.local.database.entity.AvailableBookEntity
 import com.timor.kidsstory.data.local.database.entity.DownloadedBookEntity
+import com.timor.kidsstory.data.local.database.entity.HybridBookEntity
 import com.timor.kidsstory.data.local.database.entity.UserEntity
 import com.timor.kidsstory.data.local.database.entity.UserBookInteractionEntity
 import com.timor.kidsstory.data.local.database.entity.AttendanceEntity
@@ -26,13 +28,14 @@ import com.timor.kidsstory.data.local.database.entity.UnlockProgressEntity
     entities = [
         DownloadedBookEntity::class, 
         AvailableBookEntity::class,
+        HybridBookEntity::class,      // 새로운 하이브리드 엔티티 추가
         UserEntity::class,
         UserBookInteractionEntity::class,
         AttendanceEntity::class,
-        ReadingProgressEntity::class,  // 새로 추가
+        ReadingProgressEntity::class,
         UnlockProgressEntity::class
     ],
-    version = 6,  // 버전 증가
+    version = 7,  // 버전 증가 (HybridBookEntity 추가)
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -40,10 +43,11 @@ abstract class AppDatabase : RoomDatabase() {
     
     abstract fun downloadedBooksDao(): DownloadedBooksDao
     abstract fun availableBooksDao(): AvailableBooksDao
+    abstract fun hybridBooksDao(): HybridBooksDao       // 새로운 하이브리드 DAO
     abstract fun userDao(): UserDao
     abstract fun userBookInteractionDao(): UserBookInteractionDao
     abstract fun attendanceDao(): AttendanceDao
-    abstract fun readingProgressDao(): ReadingProgressDao  // 새로 추가
+    abstract fun readingProgressDao(): ReadingProgressDao
     abstract fun unlockProgressDao(): UnlockProgressDao
 
     companion object {
@@ -129,7 +133,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        // 새로운 마이그레이션 5 -> 6 (ReadingProgressEntity 추가)
         private val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // reading_progress 테이블 생성
@@ -176,6 +179,54 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // 새로운 마이그레이션 6 -> 7 (HybridBookEntity 추가)
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // hybrid_books 테이블 생성
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS hybrid_books (
+                        id INTEGER NOT NULL,
+                        language TEXT NOT NULL,
+                        title TEXT NOT NULL,
+                        level INTEGER NOT NULL,
+                        category TEXT NOT NULL,
+                        countryOfOrigin TEXT NOT NULL,
+                        contentPath TEXT NOT NULL,
+                        coverImagePath TEXT NOT NULL,
+                        imagesDirectoryPath TEXT NOT NULL,
+                        contentVersion INTEGER NOT NULL,
+                        coverVersion INTEGER NOT NULL,
+                        imageAssetsVersion INTEGER NOT NULL,
+                        source TEXT NOT NULL,
+                        isAvailable INTEGER NOT NULL DEFAULT 1,
+                        lastUpdated INTEGER NOT NULL,
+                        downloadDate INTEGER,
+                        aiFeatures TEXT NOT NULL DEFAULT '[]',
+                        tags TEXT NOT NULL DEFAULT '[]',
+                        PRIMARY KEY(id, language)
+                    )
+                """)
+                
+                // 기존 downloaded_books 데이터를 hybrid_books로 마이그레이션
+                database.execSQL("""
+                    INSERT INTO hybrid_books (
+                        id, language, title, level, category, countryOfOrigin,
+                        contentPath, coverImagePath, imagesDirectoryPath,
+                        contentVersion, coverVersion, imageAssetsVersion,
+                        source, isAvailable, lastUpdated, downloadDate,
+                        aiFeatures, tags
+                    )
+                    SELECT 
+                        id, language, title, level, category, '' as countryOfOrigin,
+                        contentJsonPath as contentPath, coverImagePath, '' as imagesDirectoryPath,
+                        bookVersion as contentVersion, 100 as coverVersion, 100 as imageAssetsVersion,
+                        'DOWNLOADED' as source, 1 as isAvailable, downloadDate as lastUpdated, downloadDate,
+                        '[]' as aiFeatures, '[]' as tags
+                    FROM downloaded_books
+                """)
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -183,7 +234,13 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "storybook_database"
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(
+                        MIGRATION_2_3, 
+                        MIGRATION_3_4, 
+                        MIGRATION_4_5, 
+                        MIGRATION_5_6,
+                        MIGRATION_6_7  // 새로운 마이그레이션 추가
+                    )
                     // TODO: 프로덕션 출시 전 반드시 제거 필요
                     .fallbackToDestructiveMigration()
                     .build()

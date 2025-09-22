@@ -44,6 +44,7 @@ data class Book(
     val isDownloaded: Boolean = true,
     val downloadProgress: DownloadProgress = DownloadProgress(),
     val bookVersion: Int = 1,
+    val totalSize: Long = 0L, // 총 파일 크기 (바이트)
     
     // 사용자 상호작용 관련 필드들 (기본값 제공)
     val isBookmarked: Boolean = false,

@@ -3,12 +3,14 @@ package com.timor.kidsstory.data.mapper
 import android.util.Log
 import com.timor.kidsstory.data.dto.UnifiedBookMetadata
 import com.timor.kidsstory.data.dto.UnifiedBookContent
+import com.timor.kidsstory.data.local.database.entity.HybridBookEntity
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.model.Contributor
 
 /**
  * 통합 메타데이터 구조 전용 BookMapper
  * - UnifiedBookMetadata + UnifiedBookContent → Domain Book 변환
+ * - HybridBookEntity + UnifiedBookContent → Domain Book 변환
  * - 기존 구조 지원 안함 (완전 새로운 구조만 지원)
  */
 object BookMapper {
@@ -70,6 +72,65 @@ object BookMapper {
             isDownloaded = true,
             isBookmarked = false,
             bookVersion = languageContent.contentVersion
+        )
+    }
+
+    /**
+     * HybridBookEntity를 도메인 Book으로 변환
+     */
+    fun fromHybridEntity(
+        entity: HybridBookEntity,
+        content: UnifiedBookContent? = null
+    ): Book {
+        val storyId = "${entity.id}_${entity.language}"
+        val baseId = entity.id.toString()
+        
+        // 커버 이미지 경로 (내부저장소 or assets)
+        val coverImageUrl = if (entity.coverImagePath.startsWith("file://")) {
+            entity.coverImagePath
+        } else {
+            "file://${entity.coverImagePath}"
+        }
+        
+        // 페이지 매핑
+        val pages = content?.pages?.map { unifiedPage ->
+            PageMapper.fromUnified(
+                unifiedPage = unifiedPage,
+                storyBaseId = baseId,
+                isDownloaded = true,
+                imageFolderPath = entity.imagesDirectoryPath
+            )
+        }?.sortedBy { it.pageNumber } ?: emptyList()
+        
+        val totalPages = pages.size
+        val pagesWithTotalInfo = pages.map { it.copy(totalPages = totalPages) }
+        
+        // Contributors 변환
+        val contributors = content?.contributors?.flatMap { (role, names) ->
+            names.map { name -> 
+                Contributor(
+                    role = role, 
+                    name = name, 
+                    lang = entity.language
+                ) 
+            }
+        } ?: emptyList()
+
+        return Book(
+            storyId = storyId,
+            title = entity.title,
+            coverImage = coverImageUrl,
+            level = entity.level,
+            category = entity.category,
+            pageCount = totalPages,
+            contributors = contributors,
+            sponsors = emptyList(),
+            copyright = content?.copyright ?: "",
+            originalCopyright = null,
+            pages = pagesWithTotalInfo,
+            isDownloaded = true,
+            isBookmarked = false,
+            bookVersion = entity.contentVersion
         )
     }
 
