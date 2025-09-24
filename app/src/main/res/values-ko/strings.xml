@@ -22,11 +22,11 @@
     <string name="category_adventure_fantasy">모험/판타지</string>
 
     <!-- Reading Levels -->
-    <string name="level_1">첫걸음</string>
-    <string name="level_2">새싹</string>
-    <string name="level_3">성장</string>
-    <string name="level_4">자신감</string>
-    <string name="level_5">고급</string>
+    <string name="level_1">1단계</string>
+    <string name="level_2">2단계</string>
+    <string name="level_3">3단계</string>
+    <string name="level_4">4단계</string>
+    <string name="level_5">5단계</string>
 
 
     <!-- Empty State Messages -->
@@ -109,19 +109,30 @@
     <!-- Management Mode -->
     <string name="management_mode_button">관리</string>
     <string name="management_mode_done">완료</string>
-    <string name="management_tab_all">전체</string>
     <string name="management_tab_download">다운로드</string>
     <string name="management_tab_update">업데이트</string>
+    <string name="management_tab_delete">삭제</string>
     <string name="management_action_download">다운로드</string>
     <string name="management_action_update">업데이트</string>
     <string name="management_action_delete">삭제</string>
-    <string name="management_confirm_title_download">%d개 다운로드</string>
-    <string name="management_confirm_title_update">%d개 업데이트</string>
-    <string name="management_confirm_title_delete">%d개 삭제</string>
+    <string name="management_confirm_title_download">%d개 항목 다운로드</string>
+    <string name="management_confirm_title_update">%d개 항목 업데이트</string>
+    <string name="management_confirm_title_delete">%d개 항목 삭제</string>
     <string name="management_confirm_size">총 용량: %s</string>
     <string name="management_confirm_warning">용량이 큽니다 (%s). Wi-Fi 연결을 권장합니다.</string>
     <string name="management_confirm_cancel">취소</string>
     <string name="management_confirm_proceed">진행</string>
+    
+    <!-- Bookshelf Management Popup (New) -->
+    <string name="management_popup_download_title">%1$d개 항목 다운로드</string>
+    <string name="management_popup_update_title">%1$d개 항목 업데이트</string>
+    <string name="management_popup_delete_title">%1$d개 항목 삭제</string>
+    <string name="management_popup_total_size">총 용량: %1$s</string>
+    <string name="management_popup_cancel">취소</string>
+    <string name="management_popup_download">다운로드</string>
+    <string name="management_popup_update">업데이트</string>
+    <string name="management_popup_delete">삭제</string>
+    <string name="management_popup_warning_large_download">용량이 큽니다 (%1$s). Wi-Fi 연결을 권장합니다.</string>
     
     <!-- Level Test -->
     <string name="level_test_introduction">세상에 단 하나뿐인 너만의 책장을 만들어 줄게! 먼저 너의 독서 레벨을 알려줘.</string>
@@ -134,4 +145,49 @@
     <string name="level_test_level_display">레벨 %d</string>
     <string name="level_test_popup_message">정말 잘했어요! 당신은 레벨 %1$d 독서가! 새로운 책들을 탐험해 볼까요?</string>
     <string name="level_test_reading_adventure_title">독서 모험을 시작해 볼까요!</string>
+    <string name="ai_speaking_feature_update_message">AI 음성 기능이 곧 업데이트될 예정입니다.</string>
+    
+    <!-- Locked Book Dialog -->
+    <string name="locked_book_title">책이 잠겨있어요</string>
+    <string name="locked_book_message">지금 읽을 수 있는 책들을 다 읽으면 이 책들을 읽을 수 있어요!</string>
+    <string name="locked_book_button">확인</string>
+    
+    <!-- Admin Screen -->
+    <string name="admin_count_unit">개</string>
+    <string name="admin_selected">선택됨</string>
+    <string name="admin_download">다운로드</string>
+    <string name="admin_update">업데이트</string>
+    <string name="admin_delete">삭제</string>
+    
+    <!-- Story Info Dialog -->
+    <string name="story_info_dialog_title">동화 정보</string>
+    <string name="story_summary_label">줄거리:</string>
+    <string name="pre_questions_label">사전 질문:</string>
+    <string name="post_questions_label">사후 질문:</string>
+    <string name="close_button">닫기</string>
+    <string name="no_summary_available">줄거리 정보가 없습니다</string>
+    <string name="no_pre_questions_available">사전 질문이 없습니다</string>
+    <string name="no_post_questions_available">사후 질문이 없습니다</string>
+    
+    <!-- Management Mode - Plurals (한국어는 단복수 구분 없음) -->
+    <plurals name="management_confirm_title_download_plural">
+        <item quantity="other">%d개 항목 다운로드</item>
+    </plurals>
+    <plurals name="management_confirm_title_update_plural">
+        <item quantity="other">%d개 항목 업데이트</item>
+    </plurals>
+    <plurals name="management_confirm_title_delete_plural">
+        <item quantity="other">%d개 항목 삭제</item>
+    </plurals>
+    
+    <!-- Management Popup - Plurals -->
+    <plurals name="management_popup_download_title_plural">
+        <item quantity="other">%1$d개 항목 다운로드</item>
+    </plurals>
+    <plurals name="management_popup_update_title_plural">
+        <item quantity="other">%1$d개 항목 업데이트</item>
+    </plurals>
+    <plurals name="management_popup_delete_title_plural">
+        <item quantity="other">%1$d개 항목 삭제</item>
+    </plurals>
 </resources>

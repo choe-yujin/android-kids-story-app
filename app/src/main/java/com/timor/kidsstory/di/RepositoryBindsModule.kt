@@ -1,6 +1,6 @@
 package com.timor.kidsstory.di
 
-import com.timor.kidsstory.data.repository.BookRepositoryImpl
+import com.timor.kidsstory.data.repository.HybridBookRepositoryImpl  // 🆕 변경
 import com.timor.kidsstory.data.repository.UserPreferenceRepositoryImpl
 import com.timor.kidsstory.data.repository.AppVersionRepositoryImpl
 import com.timor.kidsstory.data.repository.UpdateCheckRepositoryImpl
@@ -27,7 +27,7 @@ interface RepositoryBindsModule {
     @Binds
     @Singleton
     fun bindBookRepository(
-        bookRepositoryImpl: BookRepositoryImpl
+        hybridBookRepositoryImpl: HybridBookRepositoryImpl  // 🆕 변경
     ): BookRepository
 
     @Binds

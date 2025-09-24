@@ -16,6 +16,28 @@ package com.timor.kidsstory.domain.model
  * @property copyright 저작권 정보
  * @property originalCopyright 원 저작권 정보
  * @property pages 책의 모든 페이지 정보
+ * @property missions 완독 시 표시할 미션 정보 리스트
+ * @property isDownloaded 다운로드 여부
+ * @property downloadProgress 다운로드 진행 상태
+ * @property bookVersion 책 버전
+ * 
+ * // 사용자 상호작용 관련 필드들 (Repository에서 UserBookInteraction과 조인하여 설정)
+ * @property isBookmarked 북마크 여부
+ * @property currentPage 현재 읽고 있는 페이지
+ * @property isCompleted 완독 여부
+ * @property readCount 읽은 횟수
+ * @property lastReadAt 마지막 읽은 날짜
+ * @property unlockStep 잠금 해제 단계 (메타데이터에서 가져옴)
+ * @property tags 태그 목록 (메타데이터에서 가져옴)
+ *
+ * @property level 난이도 레벨 (1-5)
+ * @property category 카테고리 (문자열 - 기존 호환성)
+ * @property pageCount 총 페이지 수
+ * @property contributors 제작 참여자 정보
+ * @property sponsors 후원사 정보
+ * @property copyright 저작권 정보
+ * @property originalCopyright 원 저작권 정보
+ * @property pages 책의 모든 페이지 정보
  * @property isDownloaded 다운로드 여부
  * @property downloadProgress 다운로드 진행 상태
  * @property bookVersion 책 버전
@@ -41,6 +63,7 @@ data class Book(
     val copyright: String,
     val originalCopyright: String? = null,
     val pages: List<Page>,
+    val missions: List<Mission> = emptyList(), // 미션 정보 리스트 추가
     val isDownloaded: Boolean = true,
     val downloadProgress: DownloadProgress = DownloadProgress(),
     val bookVersion: Int = 1,
@@ -52,7 +75,7 @@ data class Book(
     val isCompleted: Boolean = false,
     val readCount: Int = 0,
     val lastReadAt: Long? = null,
-    val unlockStep: Int = 1, // 메타데이터에서 가져옴
+    val unlockStep: Int = 0, // 기본값 0: 즐시 사용 가능
     val tags: List<String> = emptyList() // 메타데이터에서 가져옴
 ) {
     // TODO: 필요한 경우 FilterBookCategory와 매핑하는 로직 추가 가능

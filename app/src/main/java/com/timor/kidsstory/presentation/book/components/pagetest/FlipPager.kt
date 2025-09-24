@@ -50,6 +50,7 @@ fun FlipPager(
     state: PagerState,
     modifier: Modifier = Modifier,
     pageContent: @Composable (Int) -> Unit,
+    onOverScrolled: (Float) -> Unit = {}
 ) {
     // 오버스크롤 효과를 위한 상태 관리
     val overscrollAmount = remember { mutableFloatStateOf(0f) }

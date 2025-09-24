@@ -26,8 +26,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUnifiedDataSource(@ApplicationContext context: Context): UnifiedDataSource {
-        return UnifiedDataSource(context)
+    fun provideUnifiedDataSource(
+        @ApplicationContext context: Context,
+        httpClient: io.ktor.client.HttpClient
+    ): UnifiedDataSource {
+        return UnifiedDataSource(context, httpClient)
     }
 
     @Provides

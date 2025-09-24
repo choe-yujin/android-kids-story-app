@@ -315,6 +315,103 @@ class ContentUpdateService @Inject constructor(
         }
     }
     
+    /**
+     * 업데이트 가능한 책 목록 조회
+     * @return Pair<책ID, 업데이트 가능한 컴포넌트 목록>
+     */
+    suspend fun getUpdatableBooks(): Result<Map<String, List<UpdateType>>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                // 원격 메타데이터 가져오기
+                val remoteMetadataResult = fetchRemoteMetadata()
+                if (remoteMetadataResult.isFailure) {
+                    return@withContext Result.failure(remoteMetadataResult.exceptionOrNull()!!)
+                }
+                
+                val remoteMetadata = remoteMetadataResult.getOrThrow()
+                
+                // 로컬 메타데이터 가져오기
+                val localMetadataResult = hybridContentManager.loadMetadata()
+                if (localMetadataResult.isFailure) {
+                    return@withContext Result.success(emptyMap())
+                }
+                
+                val localMetadata = localMetadataResult.getOrThrow()
+                val updatableBooks = mutableMapOf<String, List<UpdateType>>()
+                
+                // 책별 업데이트 체크
+                for (remoteBook in remoteMetadata.books) {
+                    val localBook = localMetadata.books.find { it.id == remoteBook.id } ?: continue
+                    val updateTypes = mutableListOf<UpdateType>()
+                    
+                    // 언어별 콘텐츠/커버 체크
+                    for ((languageCode, remoteLanguageContent) in remoteBook.languages) {
+                        val localLanguageContent = localBook.languages[languageCode] ?: continue
+                        
+                        if (remoteLanguageContent.contentVersion > localLanguageContent.contentVersion) {
+                            updateTypes.add(UpdateType.Content(languageCode))
+                        }
+                        
+                        if (remoteLanguageContent.coverVersion > localLanguageContent.coverVersion) {
+                            updateTypes.add(UpdateType.Cover(languageCode))
+                        }
+                    }
+                    
+                    // 이미지 에셋 체크
+                    if (remoteBook.imageAssetsVersion > localBook.imageAssetsVersion) {
+                        updateTypes.add(UpdateType.ImageAssets)
+                    }
+                    
+                    if (updateTypes.isNotEmpty()) {
+                        updatableBooks["${remoteBook.id}"] = updateTypes
+                    }
+                }
+                
+                Log.d(TAG, "📊 Updatable books: ${updatableBooks.size}")
+                Result.success(updatableBooks)
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Failed to get updatable books", e)
+                Result.failure(e)
+            }
+        }
+    }
+    
+    /**
+     * 다운로드 가능한 새로운 책 목록 조회
+     */
+    suspend fun getDownloadableBooks(existingBookIds: Set<Int>): Result<List<HybridBookMetadata>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val remoteMetadataResult = fetchRemoteMetadata()
+                if (remoteMetadataResult.isFailure) {
+                    return@withContext Result.failure(remoteMetadataResult.exceptionOrNull()!!)
+                }
+                
+                val remoteMetadata = remoteMetadataResult.getOrThrow()
+                
+                // 로컬에 없는 새로운 책들 필터링
+                val newBooks = remoteMetadata.books.filter { it.id !in existingBookIds }
+                
+                Log.d(TAG, "📦 Downloadable books: ${newBooks.size}")
+                Result.success(newBooks)
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Failed to get downloadable books", e)
+                Result.failure(e)
+            }
+        }
+    }
+    
+    /**
+     * 업데이트 타입
+     */
+    sealed class UpdateType {
+        data class Content(val languageCode: String) : UpdateType()
+        data class Cover(val languageCode: String) : UpdateType()
+        data object ImageAssets : UpdateType()
+    }
+    
     companion object {
         private const val TAG = "ContentUpdateService"
         private const val GITHUB_RAW_BASE_URL = "https://raw.githubusercontent.com/choe-yujin/android-kids-story-app/main"

@@ -63,7 +63,7 @@ class HybridContentManager @Inject constructor(
     
     /**
      * 하이브리드 콘텐츠 초기화
-     * - 첫 실행 시 assets에서 내부저장소로 복사
+     * - 첫 실행 시에만 assets에서 내부저장소로 복사
      * - 모든 책 정보를 Room DB에 등록
      * - 버전 체크 및 필요 시 업데이트
      */
@@ -71,28 +71,59 @@ class HybridContentManager @Inject constructor(
         try {
             Log.d(TAG, "🚀 Initializing hybrid content system with DB integration...")
             
+            // SharedPreferences로 첫 실행 체크
+            val prefs = context.getSharedPreferences("hybrid_content_prefs", Context.MODE_PRIVATE)
+            val isFirstRun = !prefs.getBoolean("content_initialized", false)
+            val storedVersion = prefs.getInt("content_version", 0)
+            
+            Log.d(TAG, "🔍 First run: $isFirstRun, Stored version: $storedVersion")
+            
             // 1. 메타데이터 초기화/업데이트 체크
-            val metadataInitResult = initializeMetadata()
+            val metadataInitResult = initializeMetadata(isFirstRun, storedVersion)
             if (metadataInitResult.isFailure) {
                 return@withContext metadataInitResult
             }
             
-            // 2. 내장 책들을 DB에 등록
-            val dbInitResult = initializeBooksInDatabase()
-            if (dbInitResult.isFailure) {
-                return@withContext dbInitResult
-            }
-            
-            // 3. 콘텐츠 파일들 초기화
-            val contentInitResult = initializeContentFiles()
-            if (contentInitResult.isFailure) {
-                return@withContext contentInitResult
-            }
-            
-            // 4. 이미지 파일들 초기화  
-            val imagesInitResult = initializeImageFiles()
-            if (imagesInitResult.isFailure) {
-                return@withContext imagesInitResult
+            // 2. 내장 책들을 DB에 등록 (첫 실행시에만)
+            if (isFirstRun) {
+                val dbInitResult = initializeBooksInDatabase()
+                if (dbInitResult.isFailure) {
+                    return@withContext dbInitResult
+                }
+                
+                // 3. 콘텐츠 파일들 초기화 (첫 실행시에만)
+                val contentInitResult = initializeContentFiles(true)
+                if (contentInitResult.isFailure) {
+                    return@withContext contentInitResult
+                }
+                
+                // 4. 이미지 파일들 초기화 (첫 실행시에만)
+                val imagesInitResult = initializeImageFiles(true)
+                if (imagesInitResult.isFailure) {
+                    return@withContext imagesInitResult
+                }
+                
+                // 첫 실행 완료 표시
+                val currentMetadata = loadMetadataFromInternal().getOrThrow()
+                prefs.edit()
+                    .putBoolean("content_initialized", true)
+                    .putInt("content_version", currentMetadata.version)
+                    .apply()
+                    
+                Log.d(TAG, "✅ First run initialization completed")
+            } else {
+                // 첫 실행이 아닌 경우, 삭제된 파일만 복원 (DB에 있는데 파일이 없는 경우)
+                val contentInitResult = initializeContentFiles(false)
+                if (contentInitResult.isFailure) {
+                    return@withContext contentInitResult
+                }
+                
+                val imagesInitResult = initializeImageFiles(false)
+                if (imagesInitResult.isFailure) {
+                    return@withContext imagesInitResult
+                }
+                
+                Log.d(TAG, "✅ Subsequent run - only restored missing files")
             }
             
             Log.d(TAG, "✅ Hybrid content initialization completed with DB integration")
@@ -168,7 +199,7 @@ class HybridContentManager @Inject constructor(
     /**
      * 메타데이터 초기화 및 버전 체크
      */
-    private suspend fun initializeMetadata(): Result<Unit> {
+    private suspend fun initializeMetadata(isFirstRun: Boolean, storedVersion: Int): Result<Unit> {
         return try {
             val assetsMetadata = loadMetadataFromAssets()
             val localMetadata = if (metadataFile.exists()) {
@@ -176,8 +207,9 @@ class HybridContentManager @Inject constructor(
             } else null
             
             // 버전 비교 및 업데이트 결정
-            val needsUpdate = localMetadata == null || 
-                            assetsMetadata.version > localMetadata.version
+            val needsUpdate = isFirstRun || localMetadata == null || 
+                            assetsMetadata.version > (localMetadata?.version ?: 0) ||
+                            assetsMetadata.version > storedVersion
             
             if (needsUpdate) {
                 Log.d(TAG, "📥 Updating metadata: ${localMetadata?.version ?: 0} → ${assetsMetadata.version}")
@@ -186,7 +218,7 @@ class HybridContentManager @Inject constructor(
                 copyMetadataToInternal(assetsMetadata)
                 Log.d(TAG, "✅ Metadata updated successfully")
             } else {
-                Log.d(TAG, "✅ Metadata is up to date (v${localMetadata.version})")
+                Log.d(TAG, "✅ Metadata is up to date (v${localMetadata?.version ?: 0})")
             }
             
             Result.success(Unit)
@@ -199,7 +231,7 @@ class HybridContentManager @Inject constructor(
     /**
      * 콘텐츠 파일들 초기화
      */
-    private suspend fun initializeContentFiles(): Result<Unit> {
+    private suspend fun initializeContentFiles(isFirstRun: Boolean): Result<Unit> {
         return try {
             val metadata = loadMetadataFromInternal().getOrThrow()
             
@@ -209,16 +241,26 @@ class HybridContentManager @Inject constructor(
                         val contentFileName = "${book.id}_$languageCode.json"
                         val localContentFile = File(contentDir, contentFileName)
                         
-                        // 버전 체크 (간단화: 파일 존재 여부로 판단)
-                        if (!localContentFile.exists()) {
-                            Log.d(TAG, "📥 Copying content: $contentFileName")
-                            copyContentFileFromAssets(contentFileName, localContentFile)
+                        if (isFirstRun) {
+                            // 첫 실행시: 모든 내장 콘텐츠 복사
+                            if (!localContentFile.exists()) {
+                                Log.d(TAG, "📥 Copying initial content: $contentFileName")
+                                copyContentFileFromAssets(contentFileName, localContentFile)
+                            }
+                        } else {
+                            // 재실행시: DB에 있는데 파일이 없는 경우만 복원
+                            val bookExistsInDb = hybridBooksDao.isBookExists(book.id, languageCode)
+                            
+                            if (!localContentFile.exists() && bookExistsInDb) {
+                                Log.d(TAG, "📥 Restoring missing content: $contentFileName")
+                                copyContentFileFromAssets(contentFileName, localContentFile)
+                            }
                         }
                     }
                 }
             }
             
-            Log.d(TAG, "✅ Content files initialization completed")
+            Log.d(TAG, "✅ Content files initialization completed (firstRun: $isFirstRun)")
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to initialize content files", e)
@@ -229,21 +271,40 @@ class HybridContentManager @Inject constructor(
     /**
      * 이미지 파일들 초기화
      */
-    private suspend fun initializeImageFiles(): Result<Unit> {
+    private suspend fun initializeImageFiles(isFirstRun: Boolean): Result<Unit> {
         return try {
             val metadata = loadMetadataFromInternal().getOrThrow()
             
             for (book in metadata.books) {
                 val bookImagesDir = File(imagesDir, book.id.toString()).apply { mkdirs() }
                 
-                // 이미지 디렉토리가 비어있으면 assets에서 복사
-                if (bookImagesDir.listFiles()?.isEmpty() != false) {
-                    Log.d(TAG, "📥 Copying images for book ${book.id}")
-                    copyBookImagesFromAssets(book.id, bookImagesDir)
+                if (isFirstRun) {
+                    // 첫 실행시: 모든 내장 이미지 복사
+                    val hasNoImages = bookImagesDir.listFiles()?.isEmpty() != false
+                    if (hasNoImages) {
+                        Log.d(TAG, "📥 Copying initial images for book ${book.id}")
+                        copyBookImagesFromAssets(book.id, bookImagesDir)
+                    }
+                } else {
+                    // 재실행시: DB에 있는데 이미지가 없는 경우만 복원
+                    val bookExistsInDb = hybridBooksDao.getBooksByStoryId(book.id).isNotEmpty()
+                    val hasNoImages = bookImagesDir.listFiles()?.isEmpty() != false
+                    val needsCoverImage = !File(bookImagesDir, "cover_${book.id}_ko.jpg").exists() && 
+                                        !File(bookImagesDir, "cover_${book.id}_en.jpg").exists() &&
+                                        !File(bookImagesDir, "cover_${book.id}_tet.jpg").exists()
+                    
+                    if (hasNoImages && bookExistsInDb && needsCoverImage) {
+                        Log.d(TAG, "📥 Restoring missing images for book ${book.id}")
+                        copyBookImagesFromAssets(book.id, bookImagesDir)
+                    } else if (bookExistsInDb) {
+                        Log.d(TAG, "✅ Images already exist for book ${book.id}")
+                    } else {
+                        Log.d(TAG, "⚠️ Book ${book.id} not in DB, skipping image restoration")
+                    }
                 }
             }
             
-            Log.d(TAG, "✅ Image files initialization completed")
+            Log.d(TAG, "✅ Image files initialization completed (firstRun: $isFirstRun)")
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to initialize image files", e)
@@ -350,6 +411,13 @@ class HybridContentManager @Inject constructor(
     }
     
     /**
+     * 콘텐츠 파일 경로 반환 (내부저장소 기준)
+     */
+    fun getContentPath(bookId: Int, languageCode: String): String {
+        return File(contentDir, "${bookId}_$languageCode.json").absolutePath
+    }
+    
+    /**
      * 이미지 파일 경로 반환 (내부저장소 기준)
      */
     fun getImagePath(bookId: Int, imageName: String): String {
@@ -357,14 +425,16 @@ class HybridContentManager @Inject constructor(
     }
     
     /**
-     * 이미지 URL 반환 (내부저장소 우선, assets fallback)
+     * 이미지 URL 반환 (내부저장소 전용)
+     * - 내부저장소에 파일이 없으면 null 반환
+     * - DB에 없는 책은 표시되지 않아야 함
      */
-    fun getImageUrl(bookId: Int, imageName: String): String {
+    fun getImageUrl(bookId: Int, imageName: String): String? {
         val internalImageFile = File(imagesDir, "$bookId/$imageName")
         return if (internalImageFile.exists()) {
-            "file://${internalImageFile.absolutePath}"  // 내부저장소 우선
+            "file://${internalImageFile.absolutePath}"  // 내부저장소
         } else {
-            "file:///android_asset/images/$bookId/$imageName"  // assets fallback
+            null  // 🆕 assets fallback 제거
         }
     }
     

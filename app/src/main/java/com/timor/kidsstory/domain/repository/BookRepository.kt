@@ -1,6 +1,7 @@
 package com.timor.kidsstory.domain.repository
 
 import com.timor.kidsstory.domain.model.Book
+import com.timor.kidsstory.domain.model.StoryInfo
 import com.timor.kidsstory.data.dto.PageContentResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -50,4 +51,9 @@ interface BookRepository {
      * 외부 파일에서 책 콘텐츠 로드 (BookshelfViewModel의 loadExternalBookContent 로직 이동)
      */
     suspend fun loadExternalBookContent(contentPath: String): Result<PageContentResponse>
+    
+    /**
+     * 특정 책의 상세 정보 (줄거리, 사전/사후 질문) 조회
+     */
+    suspend fun getStoryInfo(storyId: String, languageCode: String): Result<StoryInfo>
 }

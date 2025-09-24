@@ -22,11 +22,11 @@
     <string name="category_adventure_fantasy">Aventura</string>
 
     <!-- Reading Levels -->
-    <string name="level_1">Hahú</string>
-    <string name="level_2">hahú</string>
-    <string name="level_3">meius</string>
-    <string name="level_4">di\'ak</string>
-    <string name="level_5">máximu</string>
+    <string name="level_1">Nivel 1</string>
+    <string name="level_2">Nivel 2</string>
+    <string name="level_3">Nivel 3</string>
+    <string name="level_4">Nivel 4</string>
+    <string name="level_5">Nivel 5</string>
 
 
     <!-- Empty State Messages -->
@@ -103,7 +103,7 @@
     <string name="level_test_start_reading">Hahú lee</string>
     <string name="level_test_retake">Halo teste fali</string>
     
-    <!-- 🆕 Level Test New Strings -->
+    <!-- Level Test New Strings -->
     <string name="level_test_introduction">Ha\'u sei kria estante livru ida ne\'ebé úniku ba ó! Uluk, mai ita buka hatene ó-nia nivel lee nian.</string>
     <string name="level_test_start_button">Buka hatene ha\'u-nia nivel lee!</string>
     <string name="level_test_skip_button">Sae</string>
@@ -112,10 +112,84 @@
     <string name="level_test_start_reading_button">Mai ita bá ha\'u-nia estante livru rasik!</string>
     <string name="level_test_retry_button">Hakarak koko dala ida tan?</string>
     <string name="level_test_level_display">Nivel %d</string>
+    <string name="level_test_reading_adventure_title">Mai ita hahú aventura lee nian!</string>
+    <string name="level_test_popup_message">Diak tebes! Ó mak lee-na\'in Nivel %1$d! Mai ita esplora livru foun sira!</string>
     
     <!-- AI Speaking Feature -->
     <string name="ai_speaking_feature_update_message">Funsionamentu AI koalia sei aktualiza lalais.</string>
     
     <!-- Language Selection -->
     <string name="language_selection_title">Hili lian</string>
+    
+    <!-- Management Mode -->
+    <string name="management_mode_button">Jere</string>
+    <string name="management_mode_done">Remata</string>
+    <string name="management_tab_download">Download</string>
+    <string name="management_tab_update">Update</string>
+    <string name="management_tab_delete">Hamos</string>
+    <string name="management_action_download">Download</string>
+    <string name="management_action_update">Update</string>
+    <string name="management_action_delete">Hamos</string>
+    <string name="management_confirm_title_download">Download %d item sira</string>
+    <string name="management_confirm_title_update">Update %d item sira</string>
+    <string name="management_confirm_title_delete">Hamos %d item sira</string>
+    <string name="management_confirm_size">Tamañu tomak: %s</string>
+    <string name="management_confirm_warning">Download boot (%s). Rekomenda Wi-Fi.</string>
+    <string name="management_confirm_cancel">Kansela</string>
+    <string name="management_confirm_proceed">Kontinua</string>
+    
+    <!-- Bookshelf Management Popup (New) -->
+    <string name="management_popup_download_title">Download %1$d item sira</string>
+    <string name="management_popup_update_title">Update %1$d item sira</string>
+    <string name="management_popup_delete_title">Hamos %1$d item sira</string>
+    <string name="management_popup_total_size">Tamañu tomak: %1$s</string>
+    <string name="management_popup_cancel">Kansela</string>
+    <string name="management_popup_download">Download</string>
+    <string name="management_popup_update">Update</string>
+    <string name="management_popup_delete">Hamos</string>
+    <string name="management_popup_warning_large_download">Download boot (%1$s). Rekomenda Wi-Fi.</string>
+    
+    <!-- Locked Book Dialog -->
+    <string name="locked_book_title">Livru taka hela</string>
+    <string name="locked_book_message">Lee ona livru sira ne\'ebé disponível atu loke livru ida ne\'e!</string>
+    <string name="locked_book_button">OK</string>
+    
+    <!-- Admin Screen -->
+    <string name="admin_count_unit">item</string>
+    <string name="admin_selected">hili ona</string>
+    <string name="admin_download">Download</string>
+    <string name="admin_update">Update</string>
+    <string name="admin_delete">Hamos</string>
+    
+    <!-- Story Info Dialog -->
+    <string name="story_info_dialog_title">Informasaun istória</string>
+    <string name="story_summary_label">Rezumu:</string>
+    <string name="pre_questions_label">Pergunta molok lee:</string>
+    <string name="post_questions_label">Pergunta depois lee:</string>
+    <string name="close_button">Taka</string>
+    <string name="no_summary_available">La iha rezumu</string>
+    <string name="no_pre_questions_available">La iha pergunta molok lee</string>
+    <string name="no_post_questions_available">La iha pergunta depois lee</string>
+    
+    <!-- Management Mode - Plurals (테퐸어는 sira로 복수 표현) -->
+    <plurals name="management_confirm_title_download_plural">
+        <item quantity="other">Download %d item sira</item>
+    </plurals>
+    <plurals name="management_confirm_title_update_plural">
+        <item quantity="other">Update %d item sira</item>
+    </plurals>
+    <plurals name="management_confirm_title_delete_plural">
+        <item quantity="other">Hamos %d item sira</item>
+    </plurals>
+    
+    <!-- Management Popup - Plurals -->
+    <plurals name="management_popup_download_title_plural">
+        <item quantity="other">Download %1$d item sira</item>
+    </plurals>
+    <plurals name="management_popup_update_title_plural">
+        <item quantity="other">Update %1$d item sira</item>
+    </plurals>
+    <plurals name="management_popup_delete_title_plural">
+        <item quantity="other">Hamos %1$d item sira</item>
+    </plurals>
 </resources>

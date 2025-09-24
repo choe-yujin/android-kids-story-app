@@ -14,12 +14,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.ui.components.LocalizedText
 import java.text.DecimalFormat
 
 /**
@@ -120,23 +122,31 @@ private fun PopupHeader(
         
         Spacer(modifier = Modifier.height(12.dp))
         
-        Text(
-            text = when (actionType) {
-                ActionType.DOWNLOAD -> "${selectedCount}개 항목 다운로드"
-                ActionType.UPDATE -> "${selectedCount}개 항목 업데이트"
-                ActionType.DELETE -> "${selectedCount}개 항목 삭제"
+        // 🆕 다국어 처리
+        LocalizedText(
+            resId = when (actionType) {
+                ActionType.DOWNLOAD -> R.string.management_popup_download_title
+                ActionType.UPDATE -> R.string.management_popup_update_title
+                ActionType.DELETE -> R.string.management_popup_delete_title
             },
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = AppColors.neutral800,
-            textAlign = TextAlign.Center
+            formatArgs = arrayOf(selectedCount),
+            style = TextStyle(
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = AppColors.neutral800,
+                textAlign = TextAlign.Center
+            )
         )
         
-        Text(
-            text = "총 용량: ${formatFileSize(totalSize)}",
-            fontSize = 14.sp,
-            color = AppColors.neutral600,
-            textAlign = TextAlign.Center
+        // 🆕 다국어 처리
+        LocalizedText(
+            resId = R.string.management_popup_total_size,
+            formatArgs = arrayOf(formatFileSize(totalSize)),
+            style = TextStyle(
+                fontSize = 14.sp,
+                color = AppColors.neutral600,
+                textAlign = TextAlign.Center
+            )
         )
     }
 }
@@ -220,11 +230,14 @@ private fun WarningMessage(
             modifier = Modifier.size(20.dp)
         )
         
-        Text(
-            text = "용량이 큽니다 (${String.format("%.1f", totalSizeGB)}GB). " +
-                    "Wi-Fi 연결을 권장합니다.",
-            fontSize = 12.sp,
-            color = AppColors.yellowRed700,
+        // 🆕 다국어 처리
+        LocalizedText(
+            resId = R.string.management_popup_warning_large_download,
+            formatArgs = arrayOf(String.format("%.1f", totalSizeGB) + "GB"),
+            style = TextStyle(
+                fontSize = 12.sp,
+                color = AppColors.yellowRed700
+            ),
             modifier = Modifier.weight(1f)
         )
     }
@@ -252,10 +265,13 @@ private fun ActionButtons(
                 brush = androidx.compose.ui.graphics.SolidColor(AppColors.neutral300)
             )
         ) {
-            Text(
-                text = "취소",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+            // 🆕 다국어 처리
+            LocalizedText(
+                resId = R.string.management_popup_cancel,
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
             )
         }
         
@@ -271,15 +287,18 @@ private fun ActionButtons(
                 }
             )
         ) {
-            Text(
-                text = when (actionType) {
-                    ActionType.DOWNLOAD -> "다운로드"
-                    ActionType.UPDATE -> "업데이트"
-                    ActionType.DELETE -> "삭제"
+            // 🆕 다국어 처리
+            LocalizedText(
+                resId = when (actionType) {
+                    ActionType.DOWNLOAD -> R.string.management_popup_download
+                    ActionType.UPDATE -> R.string.management_popup_update
+                    ActionType.DELETE -> R.string.management_popup_delete
                 },
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = AppColors.neutralWhite
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = AppColors.neutralWhite
+                )
             )
         }
     }

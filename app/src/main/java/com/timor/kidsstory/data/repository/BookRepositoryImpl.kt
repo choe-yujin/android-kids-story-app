@@ -8,6 +8,7 @@ import com.timor.kidsstory.data.mapper.BookMapper
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.domain.model.DownloadProgress
 import com.timor.kidsstory.domain.model.DownloadStatus
+import com.timor.kidsstory.domain.model.StoryInfo
 import com.timor.kidsstory.domain.repository.BookRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -158,6 +159,54 @@ class BookRepositoryImpl @Inject constructor(
     override suspend fun loadExternalBookContent(contentPath: String): Result<PageContentResponse> {
         // TODO: 향후 다운로드 기능에서 필요시 구현
         return Result.failure(UnsupportedOperationException("Legacy external content not supported"))
+    }
+
+    /**
+     * 특정 책의 상세 정보 (줄거리, 사전/사후 질문) 조회
+     */
+    override suspend fun getStoryInfo(storyId: String, languageCode: String): Result<StoryInfo> {
+        return try {
+            Log.d("BookRepositoryImpl", "Getting story info for: $storyId, language: $languageCode")
+
+            // storyId에서 bookId 추출 (예: "801_ko" -> 801)
+            val parts = storyId.split("_")
+            if (parts.size != 2) {
+                return Result.failure(IllegalArgumentException("Invalid storyId format: $storyId"))
+            }
+
+            val bookId = parts[0].toIntOrNull()
+                ?: return Result.failure(IllegalArgumentException("Invalid bookId in storyId: $storyId"))
+            
+            val normalizedLanguageCode = normalizeLanguageCode(languageCode)
+
+            // 콘텐츠 로드
+            val contentResult = unifiedDataSource.loadBookContent(bookId, normalizedLanguageCode)
+            if (contentResult.isFailure) {
+                return Result.failure(contentResult.exceptionOrNull()!!)
+            }
+
+            val content = contentResult.getOrNull()!!
+            
+            // summary 추출
+            val summary = content.summary
+            
+            // comprehensionChecks에서 질문들 추출
+            val preQuestions = content.comprehensionChecks?.preQuestions?.map { it.question } ?: emptyList()
+            val postQuestions = content.comprehensionChecks?.postQuestions?.map { it.question } ?: emptyList()
+            
+            val storyInfo = StoryInfo(
+                storyId = storyId,
+                summary = summary,
+                preQuestions = preQuestions,
+                postQuestions = postQuestions
+            )
+            
+            Result.success(storyInfo)
+            
+        } catch (e: Exception) {
+            Log.e("BookRepositoryImpl", "Error getting story info", e)
+            Result.failure(e)
+        }
     }
 
     /**

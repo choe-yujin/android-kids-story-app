@@ -64,6 +64,12 @@ interface HybridBooksDao {
     suspend fun getBook(bookId: Int, language: String): HybridBookEntity?
     
     /**
+     * 특정 storyId의 모든 언어 버전 조회
+     */
+    @Query("SELECT * FROM hybrid_books WHERE id = :bookId")
+    suspend fun getBooksByStoryId(bookId: Int): List<HybridBookEntity>
+    
+    /**
      * 특정 레벨의 책들 조회
      */
     @Query("SELECT * FROM hybrid_books WHERE language = :language AND level = :level AND isAvailable = 1 ORDER BY id ASC")

@@ -96,67 +96,40 @@ private fun BookCoverContent(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    val isTablet = screenWidth >= 600
+    
+    Card(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
+            .fillMaxWidth()
             .border(
-                width = if (isSelected) 2.dp else 1.dp,
-                color = if (isSelected) {
-                    AppColors.primary500
-                } else {
-                    AppColors.neutral200
-                },
+                width = if (isSelected) 3.dp else 0.dp,
+                color = if (isSelected) AppColors.primary500 else Color.Transparent,
                 shape = RoundedCornerShape(12.dp)
-            )
-            .background(
-                color = if (isSelected) {
-                    AppColors.primary50
-                } else {
-                    AppColors.neutralWhite
-                }
-            )
-            // 🆕 내부 clickable 제거 (상위 Box에서 처리)
-            .padding(8.dp)
+            ),
+        elevation = CardDefaults.cardElevation(if (isSelected) 8.dp else 4.dp),
+        shape = RoundedCornerShape(12.dp)
     ) {
-        // 책 표지 이미지
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(book.coverImage)
-                .crossfade(true)
-                .build(),
-            contentDescription = "${book.title} 표지",
-            placeholder = painterResource(R.drawable.ic_book_placeholder),
-            error = painterResource(R.drawable.ic_book_placeholder),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .heightIn(min = 100.dp) // 최소 높이 보장
-                .clip(RoundedCornerShape(8.dp))
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        // 책 제목
-        Text(
-            text = book.title,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-            color = AppColors.neutral800,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        // 레벨 표시
-        Text(
-            text = "Level ${book.level}",
-            fontSize = 10.sp,
-            color = AppColors.neutral500,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            // 책 커버 이미지 (일반 모드와 동일한 방식)
+            if (book.coverImage.isNotEmpty()) {
+                AsyncImage(
+                    model = book.coverImage,
+                    contentDescription = book.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit,
+                    placeholder = painterResource(R.drawable.ic_book_placeholder),
+                    error = painterResource(R.drawable.ic_book_placeholder)
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Gray)
+                )
+            }
+        }
     }
 }
 

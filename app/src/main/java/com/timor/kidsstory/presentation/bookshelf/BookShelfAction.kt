@@ -57,13 +57,7 @@ sealed interface BookShelfAction {
      */
     data class ShowLanguageDialog(val isShow: Boolean) : BookShelfAction
 
-    /**
-     * 책 다운로드 액션
-     * - 사용자가 다운로드 버튼을 클릭했을 때 발생
-     *
-     * @property index 다운로드할 책의 인덱스
-     */
-    data class DownloadBook(val index: Int) : BookShelfAction
+    // DownloadBook 액션 제거 - 관리 모드에서만 다운로드 처리
 
     /**
      * 책 리스트 필터링 액션
@@ -142,4 +136,29 @@ sealed interface BookShelfAction {
      * 레벨 테스트 결과 팝업 닫기 액션
      */
     data object DismissLevelResultPopup : BookShelfAction
+    
+    /**
+     * 잠긴 책 클릭 시 팝업 표시/숨김
+     */
+    data class ShowLockedBookPopup(val show: Boolean) : BookShelfAction
+    
+    /**
+     * 선택 취소 액션 (관리 모드)
+     * - 팝업에서 취소 버튼 클릭 시 발생
+     * - 선택 내역 초기화 + 팝업 닫기
+     */
+    data object CancelSelection : BookShelfAction
+    
+    /**
+     * 동화 정보 팝업 표시 액션
+     * - BookCover 더블클릭 시 발생
+     * 
+     * @property storyId 동화 ID
+     */
+    data class ShowStoryInfoDialog(val storyId: String) : BookShelfAction
+    
+    /**
+     * 동화 정보 팝업 닫기 액션
+     */
+    data object DismissStoryInfoDialog : BookShelfAction
 }

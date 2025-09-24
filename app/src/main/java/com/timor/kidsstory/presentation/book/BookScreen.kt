@@ -11,6 +11,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import android.util.Log
 import com.timor.kidsstory.presentation.book.components.CompletionDialog
 import com.timor.kidsstory.presentation.book.components.PageContent
 import com.timor.kidsstory.presentation.book.components.pagetest.FlipPager
@@ -54,18 +55,49 @@ fun BookScreen(
 
         // 페이지 변경 감지 및 처리
         LaunchedEffect(pagerState.currentPage) {
-            onAction(BookAction.PageChange(pagerState.currentPage))
+            Log.d("BookScreen", "[PageChangeEffect] Current page: ${pagerState.currentPage}, Total pages: ${state.pages.size}")
+            if (pagerState.currentPage < state.pages.size) {
+                Log.d("BookScreen", "[PageChangeEffect] Dispatching BookAction.PageChange(${pagerState.currentPage})")
+                onAction(BookAction.PageChange(pagerState.currentPage))
+            }
         }
         
-        // 마지막 페이지에서 스와이프 감지 (오버스크롤 방식)
-        LaunchedEffect(Unit) {
+        // 마지막 페이지에서 오버스크롤 감지
+        LaunchedEffect(pagerState) {
+            var hasTriggeredCompletion = false
+            var wasOverSwiping = false // Track if we were in an over-swiping state
             snapshotFlow { 
-                pagerState.currentPageOffsetFraction
-            }.collect { offset ->
-                // 마지막 페이지에서 오른쪽으로 스와이프 시도 감지
-                if (pagerState.currentPage == state.pages.size - 1 && offset < -0.3f) {
-                    // 마지막 페이지에서 오른쪽으로 30% 이상 드래그하면 완독 처리
-                    onAction(BookAction.PageChange(state.pages.size))
+                Triple(
+                    pagerState.currentPage,
+                    pagerState.currentPageOffsetFraction,
+                    pagerState.isScrollInProgress
+                )
+            }.collect { (currentPage, offsetFraction, isScrollInProgress) ->
+                Log.d("BookScreen", "[OverScrollEffect] CurrentPage: $currentPage, Offset: $offsetFraction, IsScrollInProgress: $isScrollInProgress, Total: ${state.pages.size}")
+                
+                // Check if we are on the last page
+                if (currentPage == state.pages.size - 1) {
+                    // If a right swipe (negative offset) is detected, set wasOverSwiping
+                    if (offsetFraction < 0) {
+                        wasOverSwiping = true
+                    } else {
+                        // If offset becomes positive or zero, reset wasOverSwiping
+                        wasOverSwiping = false
+                    }
+
+                    // If an over-swipe was detected (wasOverSwiping was true) AND scroll has just ended AND completion not yet triggered
+                    if (wasOverSwiping && !isScrollInProgress && !hasTriggeredCompletion) {
+                        Log.d("BookScreen", "[OverScrollEffect] Over-swipe detected on last page and scroll ended! Dispatching completion action...")
+                        onAction(BookAction.PageChange(state.pages.size)) // totalPages를 넘는 인덱스로 액션 전달
+                        hasTriggeredCompletion = true // Set flag after triggering
+                    } else if (isScrollInProgress) {
+                        // If scroll is in progress, reset hasTriggeredCompletion to allow re-triggering on next over-swipe
+                        hasTriggeredCompletion = false
+                    }
+                } else {
+                    // Not on the last page, reset all flags
+                    hasTriggeredCompletion = false
+                    wasOverSwiping = false
                 }
             }
         }
@@ -112,6 +144,7 @@ fun BookScreen(
         // 완독 축하 다이얼로그 표시
         CompletionDialog(
             isVisible = state.showCompletionScreen,
+            mission = state.mission,
             onConfirm = {
                 onAction(BookAction.CompletionConfirmed)
                 onAction(BookAction.BackBookShelf) // 확인 후 책장으로 이동

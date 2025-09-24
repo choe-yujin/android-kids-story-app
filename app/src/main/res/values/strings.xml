@@ -22,11 +22,11 @@
     <string name="category_adventure_fantasy">Adventure</string>
 
     <!-- Reading Levels -->
-    <string name="level_1">First</string>
-    <string name="level_2">Early</string>
-    <string name="level_3">Growing</string>
-    <string name="level_4">Confident</string>
-    <string name="level_5">Advanced</string>
+    <string name="level_1">Level 1</string>
+    <string name="level_2">Level 2</string>
+    <string name="level_3">Level 3</string>
+    <string name="level_4">Level 4</string>
+    <string name="level_5">Level 5</string>
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">No books available</string>
@@ -108,9 +108,9 @@
     <!-- Management Mode -->
     <string name="management_mode_button">Manage</string>
     <string name="management_mode_done">Done</string>
-    <string name="management_tab_all">All</string>
     <string name="management_tab_download">Download</string>
     <string name="management_tab_update">Update</string>
+    <string name="management_tab_delete">Delete</string>
     <string name="management_action_download">Download</string>
     <string name="management_action_update">Update</string>
     <string name="management_action_delete">Delete</string>
@@ -121,6 +121,17 @@
     <string name="management_confirm_warning">Large download (%s). Wi-Fi recommended.</string>
     <string name="management_confirm_cancel">Cancel</string>
     <string name="management_confirm_proceed">Proceed</string>
+    
+    <!-- Bookshelf Management Popup (New) -->
+    <string name="management_popup_download_title">Download %1$d items</string>
+    <string name="management_popup_update_title">Update %1$d items</string>
+    <string name="management_popup_delete_title">Delete %1$d items</string>
+    <string name="management_popup_total_size">Total size: %1$s</string>
+    <string name="management_popup_cancel">Cancel</string>
+    <string name="management_popup_download">Download</string>
+    <string name="management_popup_update">Update</string>
+    <string name="management_popup_delete">Delete</string>
+    <string name="management_popup_warning_large_download">Large download (%1$s). Wi-Fi recommended.</string>
     
     <!-- Level Test -->
     <string name="level_test_introduction">I\'ll create a one-of-a-kind bookshelf just for you! First, let\'s find out your reading level.</string>
@@ -134,4 +145,54 @@
     <string name="level_test_reading_adventure_title">Let\'s start a reading adventure!</string>
     <string name="level_test_popup_message">Great job! You\'re a Level %1$d reader! Let\'s explore your new books!</string>
     <string name="ai_speaking_feature_update_message">AI speaking feature will be updated soon.</string>
+    
+    <!-- Locked Book Dialog -->
+    <string name="locked_book_title">Book is locked</string>
+    <string name="locked_book_message">Read all available books to unlock this one!</string>
+    <string name="locked_book_button">OK</string>
+    
+    <!-- Admin Screen -->
+    <string name="admin_count_unit">items</string>
+    <string name="admin_selected">selected</string>
+    <string name="admin_download">Download</string>
+    <string name="admin_update">Update</string>
+    <string name="admin_delete">Delete</string>
+    
+    <!-- Story Info Dialog -->
+    <string name="story_info_dialog_title">Story Information</string>
+    <string name="story_summary_label">Summary:</string>
+    <string name="pre_questions_label">Pre-reading questions:</string>
+    <string name="post_questions_label">Post-reading questions:</string>
+    <string name="close_button">Close</string>
+    <string name="no_summary_available">No summary available</string>
+    <string name="no_pre_questions_available">No pre-reading questions</string>
+    <string name="no_post_questions_available">No post-reading questions</string>
+    
+    <!-- Management Mode - Plurals -->
+    <plurals name="management_confirm_title_download_plural">
+        <item quantity="one">Download %d item</item>
+        <item quantity="other">Download %d items</item>
+    </plurals>
+    <plurals name="management_confirm_title_update_plural">
+        <item quantity="one">Update %d item</item>
+        <item quantity="other">Update %d items</item>
+    </plurals>
+    <plurals name="management_confirm_title_delete_plural">
+        <item quantity="one">Delete %d item</item>
+        <item quantity="other">Delete %d items</item>
+    </plurals>
+    
+    <!-- Management Popup - Plurals -->
+    <plurals name="management_popup_download_title_plural">
+        <item quantity="one">Download %1$d item</item>
+        <item quantity="other">Download %1$d items</item>
+    </plurals>
+    <plurals name="management_popup_update_title_plural">
+        <item quantity="one">Update %1$d item</item>
+        <item quantity="other">Update %1$d items</item>
+    </plurals>
+    <plurals name="management_popup_delete_title_plural">
+        <item quantity="one">Delete %1$d item</item>
+        <item quantity="other">Delete %1$d items</item>
+    </plurals>
 </resources>

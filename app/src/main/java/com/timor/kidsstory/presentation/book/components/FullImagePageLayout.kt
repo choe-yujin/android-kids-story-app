@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -52,6 +53,10 @@ fun FullImagePageLayout(
     onTextToSpeech: (List<String>) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    val isTablet = screenWidth >= 600 // Heuristic for tablet
+
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -64,8 +69,8 @@ fun FullImagePageLayout(
                     .build()
             ),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop // 이미지를 화면에 꽉 채우도록
+            modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+            contentScale = ContentScale.FillWidth // 이미지를 가로 기준으로 꽉 채우도록
         )
         
         // 텍스트가 있는 경우에만 하단 오버레이 표시
@@ -120,7 +125,7 @@ fun FullImagePageLayout(
         
         // 상단 컨트롤 버튼들 (SPLIT 화면과 동일한 스타일)
         // 뒤로가기 버튼 (왼쪽 상단)
-        if (pageState.pageNumber == 1) { // 첫 페이지에만 표시
+        if (isTablet) { // 태블릿의 모든 페이지에 표시
             val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
             val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
             val padding = (16 * ResponsiveTextUtils.getScreenScaleFactor()).dp

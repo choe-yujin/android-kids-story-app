@@ -10,6 +10,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.timor.kidsstory.R
+import com.timor.kidsstory.domain.model.Mission
 import com.timor.kidsstory.ui.components.LocalizedText
 import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
@@ -30,11 +32,13 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
  * 책 완독 축하 다이얼로그 컴포넌트
  *
  * @param isVisible 다이얼로그 표시 여부
+ * @param mission 미션 정보 (null일 경우 기본 축하 메시지 사용)
  * @param onConfirm 확인 버튼 클릭 콜백
  */
 @Composable
 fun CompletionDialog(
     isVisible: Boolean,
+    mission: Mission? = null,
     onConfirm: () -> Unit
 ) {
     if (isVisible) {
@@ -57,23 +61,54 @@ fun CompletionDialog(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    LocalizedText(
-                        resId = R.string.completion_title,
-                        style = AppTextStyles.gummyLgSemiboldItalic.copy(
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = Color(0xFF4CAF50),
-                        textAlign = TextAlign.Center
-                    )
+                    // 미션 제목 또는 기본 축하 제목
+                    if (mission != null) {
+                        // 미션 데이터가 있을 때 - 크고 굵게 가운데 정렬
+                        Text(
+                            text = mission.title,
+                            style = AppTextStyles.gummyLgSemiboldItalic.copy(
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = Color(0xFF4CAF50),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    } else {
+                        // 기본 축하 제목
+                        LocalizedText(
+                            resId = R.string.completion_title,
+                            style = AppTextStyles.gummyLgSemiboldItalic.copy(
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = Color(0xFF4CAF50),
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
-                    LocalizedText(
-                        resId = R.string.completion_message,
-                        style = AppTextStyles.gummyMedium.copy(fontSize = 18.sp),
-                        color = Color(0xFF424242),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                    // 미션 설명 또는 기본 축하 메시지
+                    if (mission != null) {
+                        // 미션 데이터가 있을 때 - 일반 크기로 왼쪽 정렬
+                        Text(
+                            text = mission.description,
+                            style = AppTextStyles.gummyMedium.copy(fontSize = 16.sp),
+                            color = Color(0xFF424242),
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        )
+                    } else {
+                        // 기본 축하 메시지
+                        LocalizedText(
+                            resId = R.string.completion_message,
+                            style = AppTextStyles.gummyMedium.copy(fontSize = 18.sp),
+                            color = Color(0xFF424242),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
 
                     Button(
                         onClick = onConfirm,
@@ -98,12 +133,27 @@ fun CompletionDialog(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Default Completion Dialog")
 @Composable
 private fun CompletionDialogPreview() {
     KidsStoryTheme {
         CompletionDialog(
             isVisible = true,
+            onConfirm = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Mission Completion Dialog")
+@Composable
+private fun CompletionDialogWithMissionPreview() {
+    KidsStoryTheme {
+        CompletionDialog(
+            isVisible = true,
+            mission = Mission(
+                title = "축하합니다!",
+                description = "미래의 동티모르 지도자가 되기 위해 학습을 계속하고 책을 많이 읽어보세요. 여러분의 노력이 반드시 도움이 될 것입니다."
+            ),
             onConfirm = {}
         )
     }

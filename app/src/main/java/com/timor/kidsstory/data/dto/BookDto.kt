@@ -3,36 +3,6 @@ package com.timor.kidsstory.data.dto
 import kotlinx.serialization.Serializable
 
 /**
- * 통합 메타데이터 구조 - 내장/원격 동일
- * 파일: books_metadata.json
- */
-@Serializable
-data class UnifiedBooksMetadata(
-    val version: Int,
-    val lastUpdated: String,
-    val books: List<UnifiedBookMetadata>
-)
-
-@Serializable
-data class UnifiedBookMetadata(
-    val id: Int,
-    val level: Int,
-    val category: String,
-    val countryOfOrigin: String,
-    val aiFeatures: List<String> = emptyList(),
-    val imageAssetsVersion: Int = 100,
-    val languages: Map<String, LanguageContent>
-)
-
-@Serializable
-data class LanguageContent(
-    val title: String,
-    val contentVersion: Int,
-    val isBundled: Boolean = true,
-    val tags: List<String> = emptyList()
-)
-
-/**
  * 개별 동화책 콘텐츠 구조 - 내장/원격 동일
  * 파일: content/{bookId}_{language}.json
  */

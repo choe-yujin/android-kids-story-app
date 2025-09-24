@@ -46,16 +46,26 @@ class TaleTailApplication : Application(), Configuration.Provider {
         super.onCreate()
         initLogger()
         initializeUserSystem()
+        initializeLanguage() // 🆕 언어 초기화 추가
+    }
+    
+    /**
+     * 언어 초기화
+     * - 저장된 사용자 언어 설정을 LanguageManager에 반영
+     */
+    private fun initializeLanguage() {
+        val entryPoint = EntryPointAccessors.fromApplication(this, UseCaseEntryPoint::class.java)
+        val getUserPreferenceUseCase = entryPoint.getUserPreferenceUseCase()
 
-//        val entryPoint = EntryPointAccessors.fromApplication(this, UseCaseEntryPoint::class.java)
-//        val loadLanguageUseCase = entryPoint.getUserPreferenceUseCase()
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//            loadLanguageUseCase().collect { userPref ->
-//                Logger.e("저장된 언어 확인: $userPref")
-//                updateLanguage(userPref.languageCode)
-//            }
-//        }
+        CoroutineScope(Dispatchers.Main).launch { // 🆕 Main 디스패처로 변경
+            getUserPreferenceUseCase().collect { userPref ->
+                val langCode = userPref.languageCode.ifBlank { "en" }
+                Logger.d("저장된 언어 확인: $langCode")
+                // 🆕 LanguageManager 업데이트
+                com.timor.kidsstory.domain.util.LanguageManager.setCurrentLanguageCode(langCode)
+                updateLanguage(langCode)
+            }
+        }
     }
 
     /**

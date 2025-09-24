@@ -9,6 +9,7 @@ import com.timor.kidsstory.domain.model.Page
  * 통합 메타데이터 구조 전용 PageMapper
  * - UnifiedPageDto → Domain Page 변환만 지원
  * - HybridContentManager를 통한 올바른 이미지 경로 결정
+ * - 이미지 파일명 자동 생성 규칙 적용
  */
 object PageMapper {
 
@@ -20,25 +21,34 @@ object PageMapper {
     fun fromUnified(
         unifiedPage: UnifiedPageDto,
         storyBaseId: String,
+        languageCode: String,
         hybridContentManager: HybridContentManager? = null
     ): Page {
-        // 이미지 파일명 처리
+        val bookId = storyBaseId.toIntOrNull() ?: 0
+        
+        // 🆕 이미지 파일명 자동 생성 규칙
         val imageFileName = if (unifiedPage.image.isNotEmpty()) {
+            // JSON에 명시된 경우 (레거시 지원)
             unifiedPage.image
         } else {
-            "book_${storyBaseId}_page_${unifiedPage.pageNumber}.jpg"
+            // 🆕 규칙 기반 자동 생성
+            generateImageFileName(bookId, languageCode, unifiedPage.pageNumber)
         }
 
         // 이미지 경로 - HybridContentManager를 통해 올바른 경로 결정
         val imageUrl = if (hybridContentManager != null) {
-            val bookId = storyBaseId.toIntOrNull() ?: 0
             val url = hybridContentManager.getImageUrl(bookId, imageFileName)
-            Log.d(TAG, "Using hybrid path for image: $url")
-            url
+            if (url != null) {
+                Log.d(TAG, "📷 Using hybrid path for image: $url")
+                url
+            } else {
+                Log.w(TAG, "📷 Image not found in hybrid storage: $imageFileName")
+                ""  // 🆕 null 대신 빈 문자연
+            }
         } else {
             // Fallback: assets 경로 (하위 호환성)
             val fallbackUrl = "file:///android_asset/images/${storyBaseId}/${imageFileName}"
-            Log.d(TAG, "Using fallback assets path for image: $fallbackUrl")
+            Log.d(TAG, "📷 Using fallback assets path for image: $fallbackUrl")
             fallbackUrl
         }
 
@@ -48,5 +58,25 @@ object PageMapper {
             texts = unifiedPage.texts,
             pageType = unifiedPage.pageType
         )
+    }
+    
+    /**
+     * 이미지 파일명 자동 생성 규칙
+     * 
+     * - pageNumber 0: cover_{bookId}_{lang}.jpg (커버 이미지)
+     * - pageNumber 1+: book_{bookId}_page_{pageNumber}.jpg (본문 페이지)
+     */
+    private fun generateImageFileName(
+        bookId: Int,
+        languageCode: String,
+        pageNumber: Int
+    ): String {
+        return if (pageNumber == 0) {
+            // 커버 이미지
+            "cover_${bookId}_${languageCode}.jpg"
+        } else {
+            // 본문 페이지 이미지
+            "book_${bookId}_page_${pageNumber}.jpg"
+        }
     }
 }

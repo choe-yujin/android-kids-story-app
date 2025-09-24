@@ -49,9 +49,12 @@ import com.timor.kidsstory.presentation.bookshelf.components.SelectionFloatingAc
 import com.timor.kidsstory.presentation.bookshelf.components.ActionType
 import com.timor.kidsstory.presentation.bookshelf.components.AppUpdateDialog
 import com.timor.kidsstory.presentation.bookshelf.components.ReadingStatusFilter
+import com.timor.kidsstory.presentation.bookshelf.components.StoryInfoDialog
 import com.timor.kidsstory.presentation.bookshelf.components.filter.FilterBar
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
+import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
+import com.timor.kidsstory.presentation.bookshelf.model.ManagementTab
 import com.timor.kidsstory.presentation.progress.ProgressViewModel
 import com.timor.kidsstory.ui.theme.AppColors
 import androidx.compose.material3.AlertDialog
@@ -259,7 +262,9 @@ private fun BookshelfScreenContent(
                         // 관리 모드: ManagementTabBar
                         ManagementTabBar(
                             selectedTab = bookshelfState.selectedManagementTab,
+                            downloadCount = bookshelfState.downloadableBooks.size,
                             updateCount = bookshelfState.updatableBooks.size,
+                            deleteCount = bookshelfState.books.count { it.isDownloaded }, // 🆕 로컬 책 수
                             onTabSelected = { tab ->
                                 onBookshelfAction(BookShelfAction.SelectManagementTab(tab))
                             }
@@ -328,24 +333,39 @@ private fun BookshelfScreenContent(
                                         },
                                         onBookClick = {
                                             // 관리 모드에서는 책 읽기 비활성화 (체크박스 우선)
-                                        }
+                                        },
+                                        showDownloadBadge = !book.isDownloaded, // 다운로드 안 된 책은 다운로드 뱃지
+                                        showUpdateBadge = book.storyId in bookshelfState.updatableBooks.map { it.storyId } // 업데이트 가능한 책은 업데이트 뱃지
                                     )
                                 } else {
-                                    // 일반 모드: 기존 BookCover
+                                    // 일반 모드: CheckUnlockStatusUseCase 로직 사용
+                                    val groupKey = when (book.level) {
+                                        1 -> "level_1"
+                                        in 2..3 -> "level_2_3"
+                                        in 4..5 -> "level_4_5"
+                                        else -> "level_1"
+                                    }
+                                    
+                                    val currentUnlockedStep = bookshelfState.unlockedSteps[groupKey] ?: 0
+                                    val isLocked = book.unlockStep > 0 && currentUnlockedStep < book.unlockStep
+                                    
+                                    // 🆕 디버깅 로그 추가
+                                    Log.d("BookshelfScreen", "🔓 Book: ${book.title}, ID: ${book.storyId}, Level: ${book.level}, UnlockStep: ${book.unlockStep}, GroupKey: $groupKey, CurrentUnlockedStep: $currentUnlockedStep, IsLocked: $isLocked")
+                                    
                                     BookCover(
                                         book = book,
+                                        isLocked = isLocked,
                                         onClick = { 
                                             onBookshelfAction(
                                                 BookShelfAction.BookSelect(bookshelfState.books.indexOf(book))
-                                            ) 
+                                            )
                                         },
-                                        onDownloadClick = if (!book.isDownloaded) {
-                                            { 
-                                                onBookshelfAction(
-                                                    BookShelfAction.DownloadBook(bookshelfState.books.indexOf(book))
-                                                ) 
-                                            }
-                                        } else null
+                                        onLockedClick = {
+                                            onBookshelfAction(BookShelfAction.ShowLockedBookPopup(true))
+                                        },
+                                        onDoubleClick = {
+                                            onBookshelfAction(BookShelfAction.ShowStoryInfoDialog(book.storyId))
+                                        }
                                     )
                                 }
                             }
@@ -378,9 +398,9 @@ private fun BookshelfScreenContent(
         // 🆕 플로팅 액션 버튼 (관리 모드에서 선택된 항목이 있을 때)
         if (bookshelfState.isManagementMode && bookshelfState.selectedBookIds.isNotEmpty()) {
             val actionType = when (bookshelfState.selectedManagementTab) {
-                com.timor.kidsstory.presentation.bookshelf.model.ManagementTab.DOWNLOAD -> ActionType.DOWNLOAD
-                com.timor.kidsstory.presentation.bookshelf.model.ManagementTab.UPDATE -> ActionType.UPDATE
-                else -> ActionType.DOWNLOAD // ALL 탭에서는 기본적으로 다운로드
+                ManagementTab.DOWNLOAD -> ActionType.DOWNLOAD
+                ManagementTab.UPDATE -> ActionType.UPDATE
+                ManagementTab.DELETE -> ActionType.DELETE
             }
             
             SelectionFloatingActionButton(
@@ -401,19 +421,21 @@ private fun BookshelfScreenContent(
                 it.storyId in bookshelfState.selectedBookIds 
             }
             val actionType = when (bookshelfState.selectedManagementTab) {
-                com.timor.kidsstory.presentation.bookshelf.model.ManagementTab.DOWNLOAD -> ActionType.DOWNLOAD
-                com.timor.kidsstory.presentation.bookshelf.model.ManagementTab.UPDATE -> ActionType.UPDATE
-                else -> ActionType.DOWNLOAD
+                ManagementTab.DOWNLOAD -> ActionType.DOWNLOAD
+                ManagementTab.UPDATE -> ActionType.UPDATE
+                ManagementTab.DELETE -> ActionType.DELETE
             }
             
             SelectionConfirmationPopup(
                 selectedBooks = selectedBooks,
                 actionType = actionType,
                 onConfirm = {
+                    // 🆕 팝업을 먼저 닫고 실행
                     onBookshelfAction(BookShelfAction.ShowConfirmationPopup(false))
                 },
                 onCancel = {
-                    onBookshelfAction(BookShelfAction.ShowConfirmationPopup(false))
+                    // 취소: 선택 초기화 + 팝업 닫기
+                    onBookshelfAction(BookShelfAction.CancelSelection)
                 }
             )
         }
@@ -462,6 +484,43 @@ private fun BookshelfScreenContent(
                     Button(onClick = { onBookshelfAction(BookShelfAction.DismissLevelResultPopup) }) {
                         LocalizedText(resId = R.string.attendance_popup_button_ok, style = MaterialTheme.typography.bodyMedium)
                     }
+                }
+            )
+        }
+        
+        // 🆕 잠긴 책 클릭 시 팝업
+        if (bookshelfState.showLockedBookPopup) {
+            AlertDialog(
+                onDismissRequest = { onBookshelfAction(BookShelfAction.ShowLockedBookPopup(false)) },
+                title = { 
+                    LocalizedText(
+                        resId = R.string.locked_book_title,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                text = {
+                    LocalizedText(
+                        resId = R.string.locked_book_message,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = { onBookshelfAction(BookShelfAction.ShowLockedBookPopup(false)) }) {
+                        LocalizedText(
+                            resId = R.string.locked_book_button,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            )
+        }
+        
+        // StoryInfo Dialog (동화 정보 팝업)
+        if (bookshelfState.showStoryInfoDialog && bookshelfState.currentStoryInfo != null) {
+            StoryInfoDialog(
+                storyInfo = bookshelfState.currentStoryInfo,
+                onDismiss = {
+                    onBookshelfAction(BookShelfAction.DismissStoryInfoDialog)
                 }
             )
         }

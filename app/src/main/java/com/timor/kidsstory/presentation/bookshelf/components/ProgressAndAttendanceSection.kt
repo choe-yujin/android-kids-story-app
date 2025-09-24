@@ -68,9 +68,9 @@ fun ProgressAndAttendanceSection(
         else -> FontFamily(Font(R.font.gummy_italic_variable))
     }
 
-    val iconSize = if (isTablet) 20.sp else 18.sp
-    val dayTextSize = if (isTablet) 16.sp else 14.sp
-    val progressTextSize = if (isTablet) 11.sp else 10.sp
+    val iconSize = if (isTablet) 24.sp else 22.sp  // 🔥 아이콘 크기 증가
+    val dayTextSize = if (isTablet) 18.sp else 16.sp  // 출석일 텍스트 크기 증가
+    val progressTextSize = if (isTablet) 13.sp else 12.sp  // 진행률 텍스트 크기 증가
     val progressSize = if (isTablet) 36.dp else 32.dp
     val itemSpacing = if (isTablet) 12.dp else 10.dp
 
@@ -118,6 +118,9 @@ fun ProgressAndAttendanceSection(
                 color = Color.Black
             )
         }
+        
+        // 🆕 progressbar와 1일 사이에 4dp 간격 추가
+        androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(4.dp))
 
         Box(
             contentAlignment = Alignment.Center
@@ -126,7 +129,7 @@ fun ProgressAndAttendanceSection(
                 completedBooks = completedBooks,
                 totalBooks = totalBooks,
                 size = progressSize,
-                strokeWidth = if (isTablet) 4.dp else 3.dp
+                strokeWidth = if (isTablet) 5.dp else 4.dp  // 🆕 원형 progressbar 굵기 증가
             )
             Text(
                 text = progressText,

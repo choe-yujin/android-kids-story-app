@@ -2,7 +2,7 @@ package com.timor.kidsstory.domain.usecase.book
 
 import android.util.Log
 import com.timor.kidsstory.data.local.assets.UnifiedDataSource
-import com.timor.kidsstory.data.dto.UnifiedBookMetadata
+import com.timor.kidsstory.data.dto.HybridBookMetadata
 import javax.inject.Inject
 
 /**
@@ -19,7 +19,7 @@ class GetRemoteBooksUseCase @Inject constructor(
      * @param languageCode 언어 코드 (예: "ko", "en", "tet")
      * @return 해당 언어를 지원하는 책 메타데이터 목록
      */
-    suspend operator fun invoke(languageCode: String): Result<List<UnifiedBookMetadata>> {
+    suspend operator fun invoke(languageCode: String): Result<List<HybridBookMetadata>> {
         return try {
             Log.d("GetRemoteBooksUseCase", "Getting remote books for language: $languageCode")
             

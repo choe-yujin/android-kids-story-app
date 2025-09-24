@@ -11,11 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.ui.components.LocalizedPluralText
+import com.timor.kidsstory.ui.components.FontPolicy
 import java.text.DecimalFormat
 
 /**
@@ -89,16 +92,20 @@ private fun FloatingActionButtonContent(
             )
             
             Column {
-                Text(
-                    text = "${selectedCount}개 ${
-                        when (actionType) {
-                            ActionType.DOWNLOAD -> "다운로드"
-                            ActionType.UPDATE -> "업데이트"
-                            ActionType.DELETE -> "삭제"
-                        }
-                    }",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
+                // 🆕 LocalizedPluralText로 변경하여 복수형 처리
+                LocalizedPluralText(
+                    pluralsResId = when (actionType) {
+                        ActionType.DOWNLOAD -> R.plurals.management_confirm_title_download_plural
+                        ActionType.UPDATE -> R.plurals.management_confirm_title_update_plural
+                        ActionType.DELETE -> R.plurals.management_confirm_title_delete_plural
+                    },
+                    quantity = selectedCount,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = AppColors.neutralWhite
+                    ),
+                    fontPolicy = FontPolicy.DEFAULT
                 )
                 
                 if (totalSize > 0) {

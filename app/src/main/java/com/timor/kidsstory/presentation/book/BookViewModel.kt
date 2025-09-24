@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
+import com.timor.kidsstory.domain.model.Mission
 import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.usecase.book.GetBookDetailUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
@@ -66,6 +67,7 @@ class BookViewModel @Inject constructor(
     private var currentBookId: String = ""
     private var currentLanguageCode: String = ""
     private var currentUserId: String = "default_user" // 기본 사용자 ID
+    private var bookMissions: List<Mission> = emptyList() // 책의 미션 정보
 
     /**
      * 초기화 - 책 데이터 로드 및 TTS 초기화
@@ -117,12 +119,15 @@ class BookViewModel @Inject constructor(
                             return@fold
                         }
 
-                        // 책 메타데이터 저장
-                        currentBookId = storyId
-                        // storyId에서 직접 언어 코드 추출 (단순화된 형태: ko, en, tet)
-                        currentLanguageCode = storyId.split("_").getOrNull(1) ?: "ko"
+// 책 메타데이터 저장
+currentBookId = storyId
+// storyId에서 직접 언어 코드 추출 (단순화된 형태: ko, en, tet)
+currentLanguageCode = storyId.split("_").getOrNull(1) ?: "ko"
+
+// 미션 정보 저장
+                        bookMissions = book.missions
                         
-                        Log.d("BookViewModel", "Book metadata: storyId=$storyId, extractedLanguageCode=$currentLanguageCode, book.languageCode=${book.languageCode}")
+                        Log.d("BookViewModel", "Book metadata: storyId=$storyId, extractedLanguageCode=$currentLanguageCode, book.languageCode=${book.languageCode}, missions=${book.missions.size}")
                         
                         // 책 언어에 맞춰 TTS 언어 설정
                         settingTTSLanguageForBook(currentLanguageCode)
@@ -183,11 +188,24 @@ class BookViewModel @Inject constructor(
      * @param newPageIndex 새 페이지 인덱스
      */
     private fun onPageChanged(newPageIndex: Int) {
+        Log.d("BookViewModel", "[onPageChanged] newPageIndex: $newPageIndex, pages.size: ${pages.size}")
         // 마지막 페이지에서 한 번 더 스와이프할 때 완독 팝업 표시
         if (newPageIndex >= pages.size) {
             Log.d("BookViewModel", "Reached end of book, showing completion screen")
+            
+            // 미션 정보 확인 및 처리
+            val firstMission = bookMissions.firstOrNull()
+            if (firstMission != null) {
+                Log.d("BookViewModel", "Showing completion with mission: ${firstMission.title}")
+            } else {
+                Log.d("BookViewModel", "No missions available, showing default completion message")
+            }
+            
             _state.update {
-                it.copy(showCompletionScreen = true)
+                it.copy(
+                    showCompletionScreen = true,
+                    mission = firstMission // null이면 기본 축하 메시지 표시
+                )
             }
             
             // 마지막 페이지를 완독으로 처리
@@ -354,7 +372,10 @@ class BookViewModel @Inject constructor(
      */
     private fun onCompletionConfirmed() {
         _state.update {
-            it.copy(showCompletionScreen = false)
+            it.copy(
+                showCompletionScreen = false,
+                mission = null // 미션 정보 정리
+            )
         }
         // 여기서 책장으로 돌아가는 로직은 상위 컴포너트에서 처리됨
     }
