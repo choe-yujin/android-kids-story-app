@@ -6,13 +6,11 @@
   "pages": [
     {
       "pageNumber": 0,
-      "image": "book_816_page_0.jpg",
       "texts": ["So iha Filipina de'it : Ita-boot hatene ka lae ?"],
       "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
-      "image": "book_816_page_1.jpg",
       "texts": [
         "Ha'u mak Kaloy,karabau ida(karau bee)! ",
         "Karabau ,ne'ebé hanaran kalabaw iha lian filipinu ,maka animál nasionál iha Filipina.",
@@ -24,7 +22,6 @@
     },
     {
       "pageNumber": 2,
-      "image": "book_816_page_2.jpg",
       "texts": [
         "1.Filipina mak arkipélagu ida",
         "Filipina mak sai nu'udar arkipélagu ne'ebé naruk liu iha Mundu.",
@@ -37,7 +34,6 @@
     },
     {
       "pageNumber": 3,
-      "image": "book_816_page_3.jpg",
       "texts": [
         "2.Bandeira Filipina nian bele hatudu katak nasaun ne'e iha funu ka lae.",
         "Bandeira Filipina nia sorin karuk hatudu loro-matan nia raiu walu,no fitun tolu iha triágulu mutin ida nia laran. iha sorin loos ,nia iha listra (riska) ida ho koor mean no azul.",
@@ -49,7 +45,6 @@
     },
     {
       "pageNumber": 4,
-      "image": "book_816_page_4.jpg",
       "texts": [
         "3. Ema Filipina sira maioria bele ko'alia lian rua ka tolu.",
         "Arkipélagu Filipina iha ilha rihun ba rihun ,nune'e la'os surpreza katak liu lian 180 maka uza iha nasaun ne'e.",
@@ -59,7 +54,6 @@
     },
     {
       "pageNumber": 5,
-      "image": "book_816_page_5.jpg",
       "texts": [
         "4. Filipinu sira gosta hamnasa.",
         "Filipinu sira konhesidu nu'udar ema ne'ebé amigavel ,laran -di'ak no akolhidu ,maski ba ema estranjeiru sira.",
@@ -70,7 +64,6 @@
     },
     {
       "pageNumber": 6,
-      "image": "book_816_page_6.jpg",
       "texts": [
         "Ema estranjeiru sira bele hakfodak atu haree ema filipina sira hamnasa maski iha situasaun difisil sira ,hanesan hafoin tufaun ka rai-nakdoko",
         "Maibé hamnasa iha situasaun difisil signifika agradese ba saida maka ita iha nafatin.",
@@ -80,7 +73,6 @@
     },
     {
       "pageNumber": 7,
-      "image": "book_816_page_7.jpg",
       "texts": [
         "5.Filipina iha époka natál ne'ebé naruk liu iha mundu.",
         "Filipina mak nu'udar ema kristaun boot liu iha Ásia no maioria ema katólika.",
@@ -92,7 +84,6 @@
     },
     {
       "pageNumber": 8,
-      "image": "book_816_page_8.jpg",
       "texts": [
         "6 .Véspera tinan foun nian iha filipina nakonu ho superstisaun sira.",
         "Iha Véspera tinan foun nian ,labarik filipina sira uza ropa polka dot ne'ebé dezenha uza buat ruma ne'ebé redonda.",
@@ -103,7 +94,6 @@
     },
     {
       "pageNumber": 9,
-      "image": "book_816_page_9.jpg",
       "texts": [
         "7.Jeepney maka meiu transporte públiku ne'ebé komún liu iha filipina.",
         "Jeepney ne'e nia orijinál husi militar Amerika sira ne'ebé halo Jeep no husik hela ba sira depois de segunda guerra mundiál.",
@@ -114,7 +104,6 @@
     },
     {
       "pageNumber": 10,
-      "image": "book_816_page_10.jpg",
       "texts": [
         "8.Ilha Bohol Famozu ho nia foho sira.",
         "Iha Ilha Bohol ,iha foho ho forma kone liu rihun ida.",
@@ -126,7 +115,6 @@
     },
     {
       "pageNumber": 11,
-      "image": "book_816_page_11.jpg",
       "texts": [
         "Bazeia ba lenda kona-ba foho sira ne'e,uluk moris jigante ida ne'ebé hadomi feto ida.",
         "Bainhira feto ne'e mate,Jigante(raksasa) nee tanis loos hodi nune'e foho ne'e mosu bainhira jigante nia matanbeen monu ba rai.",
@@ -136,7 +124,6 @@
     },
     {
       "pageNumber": 12,
-      "image": "book_816_page_12.jpg",
       "texts": [
         "9.Halo-Halo maka merenda refreshing ida iha loron manas bailoro nian iha filipina.",
         "Halo-Halo maka sobremesa ida ne'ebé rasta,ho susubeen kondezadu no ai-fuan sira ne'ebé aumenta tan bá.",

@@ -6,13 +6,11 @@
   "pages": [
     {
       "pageNumber": 0,
-      "image": "book_802_page_0.jpg",
       "texts": ["Loron ida ho Huang Nian"],
       "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
-      "image": "book_802_page_1.jpg",
       "texts": [
         "Ha'u Huang Nian ne'ebé hela iha Vietname.",
         "Ha'u hela iha sidade boot liu iha Vietname maka Chi Minh, hamutuk ho ha'u nia inan-aman no ha'u nia alin-feto, An Truong."
@@ -21,7 +19,6 @@
     },
     {
       "pageNumber": 2,
-      "image": "book_802_page_2.jpg",
       "texts": [
         "Ha'u hadeer bainhira alarme lian iha tuku 5:45 dadeer, hafoin ha'u dobrada manta no hadi'a travesseiru sira.",
         "Depois ida-ne'e ha'u kose ha'u nia nehan, fase ha'u nia oin, hafoin lori ha'u nia saku no bá eskola hamutuk ho ha'u nia aman."
@@ -30,7 +27,6 @@
     },
     {
       "pageNumber": 3,
-      "image": "book_802_page_3.jpg",
       "texts": [
         "Ha'u nia aman lori ha'u ba eskola ho motor.",
         "Kada vez ha'u sa'e motor, ha'u nia aman sempre prepara kapasete ida ba ha'u.",
@@ -41,7 +37,6 @@
     },
     {
       "pageNumber": 4,
-      "image": "book_802_page_4.jpg",
       "texts": [
         "Ha'u han meudia ho ha'u nia aman iha loja hahán nian ida besik eskola.",
         "Ba almosu ha'u baibain han ‘cơm sườn’, ne'ebé maka foos ho ikan tunu, paun Vietname ida ne'ebé hanaran ‘bánh mì’, foos ne'ebé kole ho na'an, ka phở (sopa noodle foos nian).",
@@ -52,7 +47,6 @@
     },
     {
       "pageNumber": 5,
-      "image": "book_802_page_5.jpg",
       "texts": [
         "Depois almosu, ha'u to'o iha eskola iha tuku 6.50 dadeer.",
         "Hafoin entrega kapasete ba ha’u-nia aman no fó kumprimentus, ha’u tama ba eskola laran.",
@@ -62,7 +56,6 @@
     },
     {
       "pageNumber": 6,
-      "image": "book_802_page_6.jpg",
       "texts": [
         "Ha'u estuda ho belun na'in 40 iha klase ida.",
         "Husi klase 1 to'o klase 5, ha'u nia klase hanesan nafatin no la muda.",
@@ -74,7 +67,6 @@
     },
     {
       "pageNumber": 7,
-      "image": "book_802_page_7.jpg",
       "texts": [
         "Pelajaran pagi selesai pada pukul 11",
         "Ba almosu, ha'u hadi'a ha'u nia tuur-fatin no bá fase ha'u nia liman.",
@@ -86,7 +78,6 @@
     },
     {
       "pageNumber": 8,
-      "image": "book_802_page_8.jpg",
       "texts": [
         "Depois almosu, ha'u eskova ha'u nia nehan, fase ha'u nia oin, no hafoin fila fali ba klase.",
         "Ami dudu meza ba sorin ida, loke manta ida, no toba meudia.”",
@@ -96,7 +87,6 @@
     },
     {
       "pageNumber": 9,
-      "image": "book_802_page_9.jpg",
       "texts": [
         "Alarme lian iha tuku 1:15 lokraik.",
         "Ita hadeer no han susu-been ka ai-fuan hanesan merenda.",
@@ -107,7 +97,6 @@
     },
     {
       "pageNumber": 10,
-      "image": "book_802_page_10.jpg",
       "texts": [
         "Entre lisaun loraik nian, ha’u gosta liu desportu.",
         "Tanba aleinde halo ezersísiu, ha'u mós bele halimar ho kolega sira.",
@@ -119,7 +108,6 @@
     },
     {
       "pageNumber": 11,
-      "image": "book_802_page_11.jpg",
       "texts": [
         "Hafoin lisaun sira loraik nian ne'ebé di'ak remata, ha'u fila ba uma iha tuku 5:30.",
         "Bainhira ha'u to'o iha uma, ha'u bá halimar iha apartamentu nia fatin halimar nian ho ha'u nia alin no belun sira husi uma sorin, ",
@@ -129,7 +117,6 @@
     },
     {
       "pageNumber": 12,
-      "image": "book_802_page_12.jpg",
       "texts": [
         "Tuku 7, família tomak halibur hamutuk iha meza han nian no han kalan hamutuk.",
         "Ami han na'an fahi ne'ebé tunu, ai-horis ne'ebé tunu, sopa, no mantolun lulun.",
@@ -140,7 +127,6 @@
     },
     {
       "pageNumber": 13,
-      "image": "book_802_page_13.jpg",
       "texts": [
         "Iha tuku 8, ha'u halo revizaun ba lisaun matemátika no lisaun Vietname ne'ebé ha'u estuda iha dadeer ho ha'u nia inan, no halo ha'u nia serbisu uma nian.",
         "Ha'u mós prepara sasán sira ba eskola iha loron tuirmai ho ha'u nia inan."
@@ -149,7 +135,6 @@
     },
     {
       "pageNumber": 14,
-      "image": "book_802_page_14.jpg",
       "texts": [
         "Depois prepara sasán eskola nian, ha'u haree dezeñu animadu sira iha televizaun ho ha'u nia alin-feto ki'ik.",
         "Hafoin haree dezeñu animadu, ami fila fali ba ami nia kuartu ida-idak no toba.",

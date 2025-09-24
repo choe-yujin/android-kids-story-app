@@ -6,13 +6,11 @@
   "pages": [
     {
       "pageNumber": 0,
-      "image": "book_810_page_0.jpg",
       "texts": ["Houyi and Chang’e"],
       "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
-      "image": "book_810_page_1.jpg",
       "texts": [
         "A long time ago, the Jade Emperor fell in love with goddess Xihe who lived in the east sea.",
         "The Jade Emperor and Xihe had ten sons, all of whom were suns.",
@@ -23,7 +21,6 @@
     },
     {
       "pageNumber": 2,
-      "image": "book_810_page_2.jpg",
       "texts": [
         "One thousand years passed.",
         "All ten sons grew up, and they did not listen to their mother.",
@@ -34,7 +31,6 @@
     },
     {
       "pageNumber": 3,
-      "image": "book_810_page_3.jpg",
       "texts": [
         "Queen Mother of the West, who lived on Kunlun Mountain, found out and became furious.",
         "She advised the Jade Emperor to get rid of all ten suns.",
@@ -45,7 +41,6 @@
     },
     {
       "pageNumber": 4,
-      "image": "book_810_page_4.jpg",
       "texts": [
         "Houyi climbed to the top of Kunlun Mountain and shot down nine suns with his bow.",
         "Believing that humans needed at least one sun, however, Houyi said to the last sun,",
@@ -57,7 +52,6 @@
     },
     {
       "pageNumber": 5,
-      "image": "book_810_page_5.jpg",
       "texts": [
         "The tenth sun, frightened by Houyi’s words, promised he would obey.",
         "Thanks to Houyi, peace was restored on Earth.",
@@ -69,7 +63,6 @@
     },
     {
       "pageNumber": 6,
-      "image": "book_810_page_6.jpg",
       "texts": [
         "Then one day, Houyi was hiking Kunlun Mountain when he encountered Queen Mother of the West.",
         "She gave him a precious gift after learning that he was the archer who shot down the nine suns.",
@@ -79,7 +72,6 @@
     },
     {
       "pageNumber": 7,
-      "image": "book_810_page_7.jpg",
       "texts": [
         "Back at home, Houyi told Chang’e about the immortality potion.",
         "The couple did not want to leave the human world yet.",
@@ -91,7 +83,6 @@
     },
     {
       "pageNumber": 8,
-      "image": "book_810_page_8.jpg",
       "texts": [
         "A few days later, Houyi went on a hunting trip far away with his apprentices.",
         "Feng Meng stayed behind and snuck into Houyi’s house.",
@@ -101,7 +92,6 @@
     },
     {
       "pageNumber": 9,
-      "image": "book_810_page_9.jpg",
       "texts": [
         "Chang’e wanted to keep the elixir of immortality hidden, but Feng Meng was too strong.",
         "\"I must keep an evil man like Feng Meng from becoming a god!\" she thought.",
@@ -113,7 +103,6 @@
     },
     {
       "pageNumber": 10,
-      "image": "book_810_page_10.jpg",
       "texts": [
         "Upon returning from the hunt, Houyi learned what had happened to Chang’e.",
         "He was furious, but Feng Meng had already run away.",
@@ -124,7 +113,6 @@
     },
     {
       "pageNumber": 11,
-      "image": "book_810_page_11.jpg",
       "texts": [
         "In the sky hung a bright, round moon.",
         "The shadow in the moon was blurry, but Houyi knew it was Chang’e.",
@@ -134,7 +122,6 @@
     },
     {
       "pageNumber": 12,
-      "image": "book_810_page_12.jpg",
       "texts": [
         "Others followed.",
         "People prayed to Chang’e for good fortune while offering up round snacks and fruits.",

@@ -6,13 +6,11 @@
   "pages": [
     {
       "pageNumber": 0,
-      "image": "book_810_page_0.jpg",
       "texts": ["Desendente sira no Pan sira"],
       "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
-      "image": "book_810_page_1.jpg",
       "texts": [
         "Tempu uluk liubá, Imperadór Jade hadomin ho karikatura deusa ne'ebé moris iha tasi leste.",
         "Imperadór Jade no Imperadór Jade iha oan-mane sanulu, sira hotu maka loro-matan.",
@@ -23,7 +21,6 @@
     },
     {
       "pageNumber": 2,
-      "image": "book_810_page_2.jpg",
       "texts": [
         "Liutiha tinan rihun ida,",
         "oan-mane na'in sanulu sai boot no la rona sira nia inan ho di'ak.",
@@ -34,7 +31,6 @@
     },
     {
       "pageNumber": 3,
-      "image": "book_810_page_3.jpg",
       "texts": [
         "Seo Wang-mo, deusa ida ne'ebé hela iha foho Gonryunsan, sai hirus tebes bainhira nia hatene no hateten ba Imperadór Jade katak loro-matan sanulu tenke hasai.",
         "Iha tempu ne'ebá, Liurai Yao hosi mundu umanu rekomenda mane ida naran Houyi, ne'ebé matenek tebes iha tiru arku.",
@@ -44,7 +40,6 @@
     },
     {
       "pageNumber": 4,
-      "image": "book_810_page_4.jpg",
       "texts": [
         "Houyi sa'e ba foho Kunlun nia tutun no ho nia rama nia tiru monu loro-matan neen.",
         "Houyi hanoin katak mundu umanu tenke iha nafatin loro-matan ida, nune'e nia ko'alia ba loro-matan ikus.",
@@ -54,7 +49,6 @@
     },
     {
       "pageNumber": 5,
-      "image": "book_810_page_5.jpg",
       "texts": [
         "Rona Houyi nia liafuan sira, loro-matan sanulu ne'ebé tauk promete atu halo tuir nia.",
         "Tamba Houyi, mundu umanu hetan fali dame, nune'e ema respeita nia.",
@@ -65,7 +59,6 @@
     },
     {
       "pageNumber": 6,
-      "image": "book_810_page_6.jpg",
       "texts": [
         "Loron ida, Houyi ba foho Kunlun no hasoru Xi Wangmu.",
         "Xi Wangmu hatene katak Houyi maka ida ne'ebé maka tiru monu loro-matan sia, no depois fó prezente folin-boot ida ba nia.",
@@ -75,7 +68,6 @@
     },
     {
       "pageNumber": 7,
-      "image": "book_810_page_7.jpg",
       "texts": [
         "Hafoin fila ba uma, Houyi konta ba Chang'e kona-ba elixir ba imortalidade.",
         "Sira na'in-rua lakohi husik kedas mundu umanu, nune'e sira deside atu sai imortal (maromak) hamutuk bainhira tempu to'o ona.",
@@ -86,7 +78,6 @@
     },
     {
       "pageNumber": 8,
-      "image": "book_810_page_8.jpg",
       "texts": [
         "Tempu balun liutiha, Houyi halo viajen naruk ida ba kasa ho nia dixípulu sira.",
         "Feng Meng la hamutuk ho kasa, nafatin hela, hafoin subar-subar ba Houyi nia uma.",
@@ -96,7 +87,6 @@
     },
     {
       "pageNumber": 9,
-      "image": "book_810_page_9.jpg",
       "texts": [
         "Chang'e hakarak atu mantein elixir imortalidade nian, maibé nia labele halakon Feng Meng ho nia forsa fíziku.",
         "Ha'u tenke prevene ema aat hanesan Feng Meng atu labele sai imortal!",
@@ -108,7 +98,6 @@
     },
     {
       "pageNumber": 10,
-      "image": "book_810_page_10.jpg",
       "texts": [
         "Hafoin fila hosi kazamentu, Houyi rona saida maka akontese ba Chang'e, nia sai hirus tebes no buka Feng Meng, maibé Feng Meng halai sai tiha ona.",
         "Houyi sente hirus no triste, hafoin hakilar ba lalehan.",
@@ -118,7 +107,6 @@
     },
     {
       "pageNumber": 11,
-      "image": "book_810_page_11.jpg",
       "texts": [
         "Iha lalehan ne’ebé Houyi haree, iha fulan ne’ebé nabilan no redonda.",
         "Lalatak iha fulan ne'e fraku, maibé Houyi bele rekoñese katak ida-ne'e maka Chang'e.",
@@ -128,7 +116,6 @@
     },
     {
       "pageNumber": 12,
-      "image": "book_810_page_12.jpg",
       "texts": [
         "Hahú husi ne'ebá, ema seluk mós prepara ona bolo redonda no ai-fuan redonda, no halo oferta ba Chang'e enkuantu husu bensaun.",
         "Hateten katak tradisaun atu halo oferta ba fulan iha loron 15 fulan lunár nian, ne'ebé maka hanesan Festivál Outubru-Mean iha Xina, hahú iha tempu ne'ebá."

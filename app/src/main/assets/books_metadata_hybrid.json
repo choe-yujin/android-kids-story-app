@@ -1,43 +1,166 @@
 {
-  "version": 301,
-  "lastUpdated": "2025-01-27T10:00:00Z",
+  "version": 303,
+  "lastUpdated": "2025-09-25T12:00:00Z",
   "books": [
     {
-      "id": 801,
-      "level": 2,
+      "id": 104,
+      "level": 1,
       "unlockStep": 0,
-      "category": "FOLKTALES_HISTORY",
-      "countryOfOrigin": "Vietnam",
-      "aiFeatures": ["FEEDBACK"],
-      "imageAssetsUrl": "assets:///images/801/",
+      "category": "SOCIAL_EMOTIONAL",
+      "countryOfOrigin": "Unknown",
+      "aiFeatures": [
+        "VOCABULARY",
+        "MISSIONS"
+      ],
+      "imageAssetsUrl": "images/104/",
       "imageAssetsVersion": 100,
       "languages": {
         "ko": {
-          "title": "락롱꽌과 아우꺼",
-          "coverImageUrl": "assets:///images/801/cover_801_ko.jpg",
-          "contentUrl": "assets:///content/801_ko.json",
+          "title": "내 기분은",
+          "coverImageUrl": "cover_104_ko.jpg",
+          "contentUrl": "104_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["전설", "베트남", "용"]
+          "tags": [
+            "감정",
+            "기분",
+            "표현"
+          ]
         },
         "en": {
-          "title": "The Legend of Lac Long Quan and Au Co",
-          "coverImageUrl": "assets:///images/801/cover_801_en.jpg",
-          "contentUrl": "assets:///content/801_en.json",
+          "title": "I Feel…",
+          "coverImageUrl": "cover_104_en.jpg",
+          "contentUrl": "104_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["legend", "vietnam", "dragon"]
+          "tags": [
+            "feelings",
+            "emotions",
+            "expression"
+          ]
         },
         "tet": {
-          "title": "Lenda kona-ba Lac Long Quan no Au Co",
-          "coverImageUrl": "assets:///images/801/cover_801_tet.jpg",
-          "contentUrl": "assets:///content/801_tet.json",
+          "title": "Ha'u nia Sentimentu",
+          "coverImageUrl": "cover_104_tet.jpg",
+          "contentUrl": "104_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["lenda", "vietnam", "dragaun"]
+          "tags": [
+            "sentimentu",
+            "emosaun",
+            "espresaun"
+          ]
+        }
+      }
+    },
+    {
+      "id": 105,
+      "level": 1,
+      "unlockStep": 0,
+      "category": "SCIENCE_NATURE",
+      "countryOfOrigin": "Unknown",
+      "aiFeatures": [
+        "VOCABULARY",
+        "MISSIONS"
+      ],
+      "imageAssetsUrl": "images/105/",
+      "imageAssetsVersion": 100,
+      "languages": {
+        "ko": {
+          "title": "세는 말",
+          "coverImageUrl": "cover_105_ko.jpg",
+          "contentUrl": "105_ko.json",
+          "coverVersion": 100,
+          "contentVersion": 101,
+          "isBundled": true,
+          "tags": [
+            "숫자",
+            "개념",
+            "단위"
+          ]
+        },
+        "en": {
+          "title": "Counting Words",
+          "coverImageUrl": "cover_105_en.jpg",
+          "contentUrl": "105_en.json",
+          "coverVersion": 100,
+          "contentVersion": 101,
+          "isBundled": true,
+          "tags": [
+            "numbers",
+            "concepts",
+            "units"
+          ]
+        },
+        "tet": {
+          "title": "Liafuan ida ne'ebe sura",
+          "coverImageUrl": "cover_105_tet.jpg",
+          "contentUrl": "105_tet.json",
+          "coverVersion": 100,
+          "contentVersion": 101,
+          "isBundled": true,
+          "tags": [
+            "numeru",
+            "konseitu",
+            "unidade"
+          ]
+        }
+      }
+    },
+    {
+      "id": 403,
+      "level": 2,
+      "unlockStep": 0,
+      "category": "SOCIAL_EMOTIONAL",
+      "countryOfOrigin": "Global",
+      "aiFeatures": [
+        "VOCABULARY",
+        "MISSIONS"
+      ],
+      "imageAssetsUrl": "images/403/",
+      "imageAssetsVersion": 100,
+      "languages": {
+        "ko": {
+          "title": "생쥐와 사자",
+          "coverImageUrl": "cover_403_ko.jpg",
+          "contentUrl": "403_ko.json",
+          "coverVersion": 100,
+          "contentVersion": 101,
+          "isBundled": true,
+          "tags": [
+            "우화",
+            "우정",
+            "겸손"
+          ]
+        },
+        "en": {
+          "title": "The Mouse and the Lion",
+          "coverImageUrl": "cover_403_en.jpg",
+          "contentUrl": "403_en.json",
+          "coverVersion": 100,
+          "contentVersion": 101,
+          "isBundled": true,
+          "tags": [
+            "fable",
+            "friendship",
+            "kindness"
+          ]
+        },
+        "tet": {
+          "title": "Laho-kiik no Leão",
+          "coverImageUrl": "cover_403_tet.jpg",
+          "contentUrl": "403_tet.json",
+          "coverVersion": 100,
+          "contentVersion": 101,
+          "isBundled": true,
+          "tags": [
+            "fabula",
+            "amizade",
+            "bondade"
+          ]
         }
       }
     },
@@ -45,272 +168,323 @@
       "id": 802,
       "level": 3,
       "unlockStep": 0,
-      "category": "DAILY_LIFE",
+      "category": "CULTURE_WORLD",
       "countryOfOrigin": "Vietnam",
-      "aiFeatures": ["VOCABULARY"],
-      "imageAssetsUrl": "assets:///images/802/images.zip",
+      "aiFeatures": [
+        "VOCABULARY",
+        "MISSIONS"
+      ],
+      "imageAssetsUrl": "images/802/",
       "imageAssetsVersion": 100,
       "languages": {
         "ko": {
           "title": "황냔의 하루",
-          "coverImageUrl": "assets:///images/802/cover_802_ko.jpg",
-          "contentUrl": "assets:///content/802_ko.json",
+          "coverImageUrl": "cover_802_ko.jpg",
+          "contentUrl": "802_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["일상", "베트남", "학교"]
+          "tags": [
+            "문화",
+            "베트남",
+            "일상"
+          ]
         },
         "en": {
-          "title": "Hoang Nhan's Day",
-          "coverImageUrl": "assets:///images/802/cover_802_en.jpg",
-          "contentUrl": "assets:///content/802_en.json",
+          "title": "Hoang Nhan’s Day",
+          "coverImageUrl": "cover_802_en.jpg",
+          "contentUrl": "802_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["daily", "vietnam", "school"]
+          "tags": [
+            "culture",
+            "vietnam",
+            "daily life"
+          ]
         },
         "tet": {
           "title": "Loron ida ho Huang Nian",
-          "coverImageUrl": "assets:///images/802/cover_802_tet.jpg",
-          "contentUrl": "assets:///content/802_tet.json",
+          "coverImageUrl": "cover_802_tet.jpg",
+          "contentUrl": "802_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["loron-loron", "vietnam", "eskola"]
-        }
-      }
-    },
-    {
-      "id": 806,
-      "level": 2,
-      "unlockStep": 0,
-      "category": "FOLKTALES_HISTORY",
-      "countryOfOrigin": "China",
-      "aiFeatures": ["MISSIONS"],
-      "imageAssetsUrl": "assets:///images/806/images.zip",
-      "imageAssetsVersion": 100,
-      "languages": {
-        "ko": {
-          "title": "중국 만두 이야기",
-          "coverImageUrl": "assets:///images/806/cover_806_ko.jpg",
-          "contentUrl": "assets:///content/806_ko.json",
-          "coverVersion": 100,
-          "contentVersion": 101,
-          "isBundled": true,
-          "tags": ["음식", "중국", "문화"]
-        },
-        "en": {
-          "title": "Chinese Dumpling Story",
-          "coverImageUrl": "assets:///images/806/cover_806_en.jpg",
-          "contentUrl": "assets:///content/806_en.json",
-          "coverVersion": 100,
-          "contentVersion": 101,
-          "isBundled": true,
-          "tags": ["food", "china", "culture"]
-        },
-        "tet": {
-          "title": "Istória kona-ba bolu Xinés",
-          "coverImageUrl": "assets:///images/806/cover_806_tet.jpg",
-          "contentUrl": "assets:///content/806_tet.json",
-          "coverVersion": 100,
-          "contentVersion": 101,
-          "isBundled": true,
-          "tags": ["hahan", "xina", "kultura"]
+          "tags": [
+            "kultura",
+            "vietname",
+            "rutina"
+          ]
         }
       }
     },
     {
       "id": 807,
-      "level": 3,
+      "level": 4,
       "unlockStep": 0,
       "category": "FOLKTALES_HISTORY",
       "countryOfOrigin": "China",
-      "aiFeatures": ["FEEDBACK", "VOCABULARY"],
-      "imageAssetsUrl": "assets:///images/807/images.zip",
+      "aiFeatures": [
+        "VOCABULARY",
+        "MISSIONS"
+      ],
+      "imageAssetsUrl": "images/807/",
       "imageAssetsVersion": 100,
       "languages": {
         "ko": {
           "title": "백사전: 중국의 하얀 뱀 전설",
-          "coverImageUrl": "assets:///images/807/cover_807_ko.jpg",
-          "contentUrl": "assets:///content/807_ko.json",
+          "coverImageUrl": "cover_807_ko.jpg",
+          "contentUrl": "807_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["전설", "중국", "사랑"]
+          "tags": [
+            "전설",
+            "중국",
+            "사랑"
+          ]
         },
         "en": {
           "title": "The Legend of the White Snake",
-          "coverImageUrl": "assets:///images/807/cover_807_en.jpg",
-          "contentUrl": "assets:///content/807_en.json",
+          "coverImageUrl": "cover_807_en.jpg",
+          "contentUrl": "807_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["legend", "china", "love"]
+          "tags": [
+            "legend",
+            "china",
+            "love"
+          ]
         },
         "tet": {
           "title": "Lenda Kona-ba Samea Mutin",
-          "coverImageUrl": "assets:///images/807/cover_807_tet.jpg",
-          "contentUrl": "assets:///content/807_tet.json",
+          "coverImageUrl": "cover_807_tet.jpg",
+          "contentUrl": "807_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["lenda", "xina", "hadomi"]
+          "tags": [
+            "lenda",
+            "sina",
+            "domin"
+          ]
         }
       }
     },
     {
       "id": 810,
-      "level": 2,
+      "level": 5,
       "unlockStep": 0,
-      "category": "FOLKTALES_HISTORY",
+      "category": "ADVENTURE_FANTASY",
       "countryOfOrigin": "China",
-      "aiFeatures": ["MISSIONS"],
-      "imageAssetsUrl": "assets:///images/810/images.zip",
+      "aiFeatures": [
+        "VOCABULARY",
+        "MISSIONS"
+      ],
+      "imageAssetsUrl": "images/810/",
       "imageAssetsVersion": 100,
       "languages": {
         "ko": {
           "title": "후예와 항아",
-          "coverImageUrl": "assets:///images/810/cover_810_ko.jpg",
-          "contentUrl": "assets:///content/810_ko.json",
+          "coverImageUrl": "cover_810_ko.jpg",
+          "contentUrl": "810_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["전설", "중국", "달"]
+          "tags": [
+            "신화",
+            "중국",
+            "전설"
+          ]
         },
         "en": {
-          "title": "Houyi and Chang'e",
-          "coverImageUrl": "assets:///images/810/cover_810_en.jpg",
-          "contentUrl": "assets:///content/810_en.json",
+          "title": "Houyi and Chang’e",
+          "coverImageUrl": "cover_810_en.jpg",
+          "contentUrl": "810_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["legend", "china", "moon"]
+          "tags": [
+            "mythology",
+            "china",
+            "legend"
+          ]
         },
         "tet": {
           "title": "Desendente sira no Pan sira",
-          "coverImageUrl": "assets:///images/810/cover_810_tet.jpg",
-          "contentUrl": "assets:///content/810_tet.json",
+          "coverImageUrl": "cover_810_tet.jpg",
+          "contentUrl": "810_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["lenda", "xina", "fulan"]
+          "tags": [
+            "mitolojia",
+            "sina",
+            "lenda"
+          ]
         }
       }
     },
     {
       "id": 816,
-      "level": 2,
+      "level": 4,
       "unlockStep": 0,
       "category": "CULTURE_WORLD",
       "countryOfOrigin": "Philippines",
-      "aiFeatures": ["VOCABULARY"],
-      "imageAssetsUrl": "assets:///images/816/images.zip",
+      "aiFeatures": [
+        "VOCABULARY",
+        "MISSIONS"
+      ],
+      "imageAssetsUrl": "images/816/",
       "imageAssetsVersion": 100,
       "languages": {
         "ko": {
           "title": "필리핀에 대한 아홉 가지 사실",
-          "coverImageUrl": "assets:///images/816/cover_816_ko.jpg",
-          "contentUrl": "assets:///content/816_ko.json",
+          "coverImageUrl": "cover_816_ko.jpg",
+          "contentUrl": "816_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["문화", "필리핀", "지식"]
+          "tags": [
+            "지식",
+            "필리핀",
+            "문화"
+          ]
         },
         "en": {
           "title": "Only in the Philippines: Did you know?",
-          "coverImageUrl": "assets:///images/816/cover_816_en.jpg",
-          "contentUrl": "assets:///content/816_en.json",
+          "coverImageUrl": "cover_816_en.jpg",
+          "contentUrl": "816_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["culture", "philippines", "facts"]
+          "tags": [
+            "knowledge",
+            "philippines",
+            "culture"
+          ]
         },
         "tet": {
-          "title": "So iha Filipina de'it : Ita-boot hatene ka lae?",
-          "coverImageUrl": "assets:///images/816/cover_816_tet.jpg",
-          "contentUrl": "assets:///content/816_tet.json",
+          "title": "So iha Filipina de'it : Ita-boot hatene ka lae ?",
+          "coverImageUrl": "cover_816_tet.jpg",
+          "contentUrl": "816_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["kultura", "filipina", "koñesimentu"]
+          "tags": [
+            "koñesimentu",
+            "filipina",
+            "kultura"
+          ]
         }
       }
     },
     {
-      "id": 817,
+      "id": 821,
       "level": 3,
       "unlockStep": 0,
       "category": "FOLKTALES_HISTORY",
       "countryOfOrigin": "Thailand",
-      "aiFeatures": ["FEEDBACK", "MISSIONS"],
-      "imageAssetsUrl": "assets:///images/817/images.zip",
+      "aiFeatures": [
+        "VOCABULARY",
+        "MISSIONS"
+      ],
+      "imageAssetsUrl": "images/821/",
       "imageAssetsVersion": 100,
       "languages": {
         "ko": {
-          "title": "금빛 물고기 이야기",
-          "coverImageUrl": "assets:///images/817/cover_817_ko.jpg",
-          "contentUrl": "assets:///content/817_ko.json",
+          "title": "병아리 별",
+          "coverImageUrl": "cover_821_ko.jpg",
+          "contentUrl": "821_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["전설", "태국", "가족"]
+          "tags": [
+            "민담",
+            "태국",
+            "가족"
+          ]
         },
         "en": {
-          "title": "The Story of the Golden Goby Fish",
-          "coverImageUrl": "assets:///images/817/cover_817_en.jpg",
-          "contentUrl": "assets:///content/817_en.json",
+          "title": "The Chick Stars",
+          "coverImageUrl": "cover_821_en.jpg",
+          "contentUrl": "821_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["folktale", "thailand", "family"]
+          "tags": [
+            "folktale",
+            "thailand",
+            "family"
+          ]
         },
         "tet": {
-          "title": "Istória kona-ba ikan osan-mean",
-          "coverImageUrl": "assets:///images/817/cover_817_tet.jpg",
-          "contentUrl": "assets:///content/817_tet.json",
+          "title": "Fitun Manu-Oan",
+          "coverImageUrl": "cover_821_tet.jpg",
+          "contentUrl": "821_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["istoria", "tailandia", "familia"]
+          "tags": [
+            "kontu",
+            "tailandia",
+            "familia"
+          ]
         }
       }
     },
     {
-      "id": 819,
-      "level": 2,
+      "id": 904,
+      "level": 1,
       "unlockStep": 0,
-      "category": "CULTURE_WORLD",
-      "countryOfOrigin": "Thailand",
-      "aiFeatures": ["VOCABULARY", "MISSIONS"],
-      "imageAssetsUrl": "assets:///images/819/images.zip",
+      "category": "ENVIRONMENT",
+      "countryOfOrigin": "East Timor",
+      "aiFeatures": [
+        "VOCABULARY",
+        "MISSIONS"
+      ],
+      "imageAssetsUrl": "images/904/",
       "imageAssetsVersion": 100,
       "languages": {
         "ko": {
-          "title": "빛의 축제 러이끄라통",
-          "coverImageUrl": "assets:///images/819/cover_819_ko.jpg",
-          "contentUrl": "assets:///content/819_ko.json",
+          "title": "햇님의 하루",
+          "coverImageUrl": "cover_904_ko.jpg",
+          "contentUrl": "904_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["축제", "태국", "문화"]
+          "tags": [
+            "자연",
+            "과학",
+            "환경"
+          ]
         },
         "en": {
-          "title": "Loi Krathong, the Festival of Lights",
-          "coverImageUrl": "assets:///images/819/cover_819_en.jpg",
-          "contentUrl": "assets:///content/819_en.json",
+          "title": "A Day of the Sun",
+          "coverImageUrl": "cover_904_en.jpg",
+          "contentUrl": "904_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["festival", "thailand", "culture"]
+          "tags": [
+            "nature",
+            "science",
+            "environment"
+          ]
         },
         "tet": {
-          "title": "Loi Krathong, Festivál Naroman",
-          "coverImageUrl": "assets:///images/819/cover_819_tet.jpg",
-          "contentUrl": "assets:///content/819_tet.json",
+          "title": "Loron Loro nian",
+          "coverImageUrl": "cover_904_tet.jpg",
+          "contentUrl": "904_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
           "isBundled": true,
-          "tags": ["festa", "tailandia", "kultura"]
+          "tags": [
+            "natureza",
+            "siensia",
+            "ambiente"
+          ]
         }
       }
     }

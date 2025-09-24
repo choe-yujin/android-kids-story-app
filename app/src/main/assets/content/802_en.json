@@ -6,13 +6,11 @@
   "pages": [
     {
       "pageNumber": 0,
-      "image": "book_802_page_0.jpg",
       "texts": ["Hoang Nhan’s Day"],
       "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
-      "image": "book_802_page_1.jpg",
       "texts": [
         "My name is Hoang Nhan, and I live in Vietnam.",
         "I live in Ho Chi Minh City, the largest city in Vietnam, with my parents and little sister, Anh Duong."
@@ -21,7 +19,6 @@
     },
     {
       "pageNumber": 2,
-      "image": "book_802_page_2.jpg",
       "texts": [
         "When the alarm rings at 5:45 in the morning, I get up and make my bed.",
         "I brush my teeth and wash my face, then pack my bag and go to school with my dad."
@@ -30,7 +27,6 @@
     },
     {
       "pageNumber": 3,
-      "image": "book_802_page_3.jpg",
       "texts": [
         "My dad takes me to school on his motorbike.",
         "Every time we need to ride a motorbike, he gives me a helmet.",
@@ -41,7 +37,6 @@
     },
     {
       "pageNumber": 4,
-      "image": "book_802_page_4.jpg",
       "texts": [
         "I have breakfast with my dad at a restaurant near my school.",
         "For breakfast, lots of people here eat “com suon”, which is rice with grilled pork, a Vietnamese sandwich called “banh mi”, or beef on sticky rice or rice noodles.",
@@ -52,7 +47,6 @@
     },
     {
       "pageNumber": 5,
-      "image": "book_802_page_5.jpg",
       "texts": [
         "After we finish breakfast, we get to school at 6:50.",
         "Then, I give the helmet back to my dad, say goodbye to him, and walk into school.",
@@ -62,7 +56,6 @@
     },
     {
       "pageNumber": 6,
-      "image": "book_802_page_6.jpg",
       "texts": [
         "I study with 40 friends in one classroom.",
         "The whole class stays together all the way from 1st to 5th grade.",
@@ -74,7 +67,6 @@
     },
     {
       "pageNumber": 7,
-      "image": "book_802_page_7.jpg",
       "texts": [
         "At 11:00, the morning classes are over.",
         "I clean up my place and wash my hands to have lunch.",
@@ -86,7 +78,6 @@
     },
     {
       "pageNumber": 8,
-      "image": "book_802_page_8.jpg",
       "texts": [
         "After lunch, I brush my teeth, wash my face, and go back to the classroom.",
         "We put our desks to one side, spread out our blankets, and take a nap.",
@@ -96,7 +87,6 @@
     },
     {
       "pageNumber": 9,
-      "image": "book_802_page_9.jpg",
       "texts": [
         "The school bell rings at 1:15.",
         "We get up and have milk or fruit as a snack.",
@@ -107,7 +97,6 @@
     },
     {
       "pageNumber": 10,
-      "image": "book_802_page_10.jpg",
       "texts": [
         "Physical education is my favorite afternoon class.",
         "I can exercise and play with my friends.",
@@ -119,7 +108,6 @@
     },
     {
       "pageNumber": 11,
-      "image": "book_802_page_11.jpg",
       "texts": [
         "At 5:30, when all the fun afternoon classes are over, I go home.",
         "When I get home, I play with my sister and friends from next door at the playground.",
@@ -129,7 +117,6 @@
     },
     {
       "pageNumber": 12,
-      "image": "book_802_page_12.jpg",
       "texts": [
         "At 7:00, my whole family sits together at the table to eat dinner.",
         "We eat boiled pork, stir-fried vegetables, soup, and egg rolls.",
@@ -140,7 +127,6 @@
     },
     {
       "pageNumber": 13,
-      "image": "book_802_page_13.jpg",
       "texts": [
         "At 8:00 in the evening, I go over the math and Vietnamese that I learned in the morning classes with Mom and do my homework.",
         "Mom also helps me get ready for school the next day."
@@ -149,7 +135,6 @@
     },
     {
       "pageNumber": 14,
-      "image": "book_802_page_14.jpg",
       "texts": [
         "After I pack my school bag, I watch cartoons on TV with my sister.",
         "Then my sister and I go to bed.",

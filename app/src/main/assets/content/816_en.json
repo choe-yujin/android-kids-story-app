@@ -6,13 +6,11 @@
   "pages": [
     {
       "pageNumber": 0,
-      "image": "book_816_page_0.jpg",
       "texts": ["Only in the Philippines: Did you know?"],
       "pageType": "SPLIT"
     },
     {
       "pageNumber": 1,
-      "image": "book_816_page_1.jpg",
       "texts": [
         "I am Kaloy, a carabao (water buffalo)!",
         "Carabao, which is called kalabaw in the Filipino language, is the national animal in the Philippines.",
@@ -24,7 +22,6 @@
     },
     {
       "pageNumber": 2,
-      "image": "book_816_page_2.jpg",
       "texts": [
         "1. The Philippines is an archipelago.",
         "The Philippines is one of the largest archipelago nations in the world.",
@@ -37,7 +34,6 @@
     },
     {
       "pageNumber": 3,
-      "image": "book_816_page_3.jpg",
       "texts": [
         "2. The Philippine flag can show whether the country is at war or not.",
         "The left side of the Philippine flag features eight rays of the sun and three stars inside a white triangle.",
@@ -51,7 +47,6 @@
     },
     {
       "pageNumber": 4,
-      "image": "book_816_page_4.jpg",
       "texts": [
         "3. The majority of the Filipinos can speak two or three languages.",
         "The Philippine archipelago has thousands of islands, so it’s not surprising that more than 180 languages are used in the country.",
@@ -61,7 +56,6 @@
     },
     {
       "pageNumber": 5,
-      "image": "book_816_page_5.jpg",
       "texts": [
         "4. Filipinos love to smile.",
         "Filipinos are well known as friendly people who are warm and welcoming, even to strangers.",
@@ -72,7 +66,6 @@
     },
     {
       "pageNumber": 6,
-      "image": "book_816_page_6.jpg",
       "texts": [
         "Foreigners may be surprised to see Filipinos smiling even during difficult situations, like after typhoons or earthquakes.",
         "But smiling in a difficult situation means being thankful for what you still have.",
@@ -82,7 +75,6 @@
     },
     {
       "pageNumber": 7,
-      "image": "book_816_page_7.jpg",
       "texts": [
         "5. The Philippines has the longest Christmas season in the world.",
         "The Philippines has the largest number of Christians in Asia, and the majority of Filipinos are Catholics.",
@@ -95,7 +87,6 @@
     },
     {
       "pageNumber": 8,
-      "image": "book_816_page_8.jpg",
       "texts": [
         "6. New Year’s Eve in the Philippines is full of superstitions.",
         "On New Year’s Eve, Filipino children wear polka dot clothing designed using anything round.",
@@ -106,7 +97,6 @@
     },
     {
       "pageNumber": 9,
-      "image": "book_816_page_9.jpg",
       "texts": [
         "7. The jeepney is the most common means of public transportation in the Philippines.",
         "Jeepneys were originally made from the US military jeeps left in the Philippines after the Second World War.",
@@ -118,7 +108,6 @@
     },
     {
       "pageNumber": 10,
-      "image": "book_816_page_10.jpg",
       "texts": [
         "8. Bohol Island is famous for its hills.",
         "In Bohol island, there are more than one thousand cone-shaped hills.",
@@ -130,7 +119,6 @@
     },
     {
       "pageNumber": 11,
-      "image": "book_816_page_11.jpg",
       "texts": [
         "Based on one legend about the hills, there once lived a giant who loved a human woman.",
         "When the woman died, the giant cried many tears, and the hills appeared where his tears fell.",
@@ -140,7 +128,6 @@
     },
     {
       "pageNumber": 12,
-      "image": "book_816_page_12.jpg",
       "texts": [
         "\"Halo-halo\" is a refreshing snack on a hot summer day in the Philippines.",
         "Halo-halo is a shaved-ice dessert, with sweetened, condensed milk and fruits added to it.",
