@@ -1,0 +1,138 @@
+{
+  "bookId": 904,
+  "language": "en",
+  "title": "A Day of the Sun",
+  "summary": "This story shows children the importance of nature and life through the Sun's journey during the day.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["A Day of the Sun"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": [
+        "[Illustrators]",
+        "Children from Wini Bruma Kindergarten, East Timor",
+        "Patrocino, Joel, Noel, Bernadete, Jenildo, Narlia, Monica Cessy, Berta Pinto, Teodoru, Vidal, Lindalva, Odilton",
+        "",
+        "And Teacher Yuni"
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["Hello, I am the Sun."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["I start the day by rising over the sea."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["I stand above the trees, beyond the sea."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["Thanks to me, the seeds grow."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["They grow and sometimes become flowers."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 7,
+      "texts": ["And sometimes they grow into trees."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 8,
+      "texts": ["Thus, there are many trees and flowers because of me."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 9,
+      "texts": ["I can also rise above mountains."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 10,
+      "texts": ["I shine on parks where people are."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 11,
+      "texts": ["Fish in the water also need me."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 12,
+      "texts": ["At the end of the day, I return to the sea, goodbye."],
+      "pageType": "SPLIT"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "Who is speaking in this story?",
+        "keyConcepts": ["Sun", "nature", "life"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "How does the Sun help nature and children throughout the day?",
+        "keyConcepts": ["seeds", "flowers", "trees", "parks", "fish"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "Observe the Sun's Day",
+      "description": "Think about the Sun's journey during the day. Write or draw your own experience or imagination about the Sun, nature, and children.",
+      "type": "TEXT_RESPONSE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "seeds",
+      "definition": "Small parts of plants that grow into new plants.",
+      "pageNumber": 5
+    },
+    {
+      "word": "flowers",
+      "definition": "Parts of plants that bloom and grow colorful.",
+      "pageNumber": 6
+    },
+    {
+      "word": "trees",
+      "definition": "Large plants that grow from seeds and provide shade and oxygen.",
+      "pageNumber": 7
+    },
+    {
+      "word": "parks",
+      "definition": "Areas where people can relax and enjoy nature.",
+      "pageNumber": 10
+    },
+    {
+      "word": "fish",
+      "definition": "Animals that live in water.",
+      "pageNumber": 11
+    }
+  ],
+  "contributors": {
+    "Writer": ["Teacher Yuni"],
+    "Illustrator": [
+      "Children from Wini Bruma Kindergarten",
+      "Patrocino, Joel, Noel, Bernadete, Jenildo, Narlia, Monica Cessy, Berta Pinto, Teodoru, Vidal, Lindalva, Odilton"
+    ]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Wini Bruma & Teacher Yuni",
+  "copyright": "is licensed under CC BY 4.0 by Wini Bruma & Teacher Yuni"
+}

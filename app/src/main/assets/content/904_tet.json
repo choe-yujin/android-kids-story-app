@@ -1,0 +1,138 @@
+{
+  "bookId": 904,
+  "language": "tet",
+  "title": "Loron Loro nian",
+  "summary": "Keta livru-ne'e hetan hakerek kona-ba loron hotu nian Loro, hodi hala'o labarik sira senti foin di'ak kona-ba natureza no vida.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["Loron Loro nian"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": [
+        "[Pinta nain]",
+        "Labarik sira iha Wini Bruma",
+        "Patrocino, Joel, Noel, Bernadete, Jenildo, Narlia, Monica Cessy, Berta Pinto, Teodoru, Vidal, Lindalva, Odilton",
+        "",
+        "No Mestra Yuni"
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["Bondia, hau mak Loro."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["Hau hahú loron liuhusi tasi."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["Hau hamriik iha ai leten, liuhusi tasi."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["Tanba hau, fini sira moris."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["Sira moris no dala ruma sai ai-funan."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 7,
+      "texts": ["No dala ruma sai ai-hun."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 8,
+      "texts": ["Nunee, ai-hun no ai-funan barak tanba hau."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 9,
+      "texts": ["Hau mós bele liu foho."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 10,
+      "texts": ["Hau fó naroman ba parke sira neebé ema iha."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 11,
+      "texts": ["Ikan sira neebé hela iha bee mós presiza hau."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 12,
+      "texts": ["Wainhira loron hotu hanesan nee, hau fila fali ba tasi okos, ate aban."],
+      "pageType": "SPLIT"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "Hau mak Loro, sira hanoin katak hau iha sa?",
+        "keyConcepts": ["Loro", "loron", "start"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "Loron hotu nian, saida mak Loro halo hodi ajuda natureza no labarik sira?",
+        "keyConcepts": ["fini sira", "ai-funan", "ai-hun", "naroman", "ikan"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "Observar loron Loro",
+      "description": "Observa loron hotu nian ne'ebé Loro halo no halo desenha ka hakerek kona-ba ona loron ho natura no labarik sira.",
+      "type": "TEXT_RESPONSE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "fini",
+      "definition": "Semente ne'ebé mak cresce hodi sai planta.",
+      "pageNumber": 5
+    },
+    {
+      "word": "ai-funan",
+      "definition": "Flor ne'ebé mak buka durante planta sai bonita.",
+      "pageNumber": 6
+    },
+    {
+      "word": "ai-hun",
+      "definition": "Ai ida ne'ebé mak kmanek no sai grande.",
+      "pageNumber": 7
+    },
+    {
+      "word": "parke",
+      "definition": "Lugár ne'ebé ema bele relaxa no disfruta natureza.",
+      "pageNumber": 10
+    },
+    {
+      "word": "ikan",
+      "definition": "Moris iha bee.",
+      "pageNumber": 11
+    }
+  ],
+  "contributors": {
+    "Writer": ["Mestra Yuni"],
+    "Illustrator": [
+      "Labarik sira iha Wini Bruma",
+      "Patrocino, Joel, Noel, Bernadete, Jenildo, Narlia, Monica Cessy, Berta Pinto, Teodoru, Vidal, Lindalva, Odilton"
+    ]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Wini Bruma & Mestra Yuni",
+  "copyright": "is licensed under CC BY 4.0 by Wini Bruma & Mestra Yuni"
+}

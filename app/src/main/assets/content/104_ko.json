@@ -1,0 +1,105 @@
+{
+  "bookId": 104,
+  "language": "ko",
+  "title": "내 기분은",
+  "summary": "이 책은 어린이들이 다양한 감정을 인식하고 표현할 수 있도록 도와줍니다. 각 페이지마다 다른 감정이 소개되어 아이들이 자신의 기분을 쉽게 이해하고 표현하는 데 도움을 줍니다.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["내 기분은"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": ["나는 지금 기뻐요."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["나는 지금 슬퍼요."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["나는 지금 화나요."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["나는 지금 무서워요."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["나는 지금 놀랐어요."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["나는 지금 부끄러워요."],
+      "pageType": "FULL_IMAGE"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "기분을 어떻게 표현할 수 있나요?",
+        "keyConcepts": ["기쁨", "슬픔", "화남", "무서움"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "자신이 느끼는 감정을 말해보세요.",
+        "keyConcepts": ["기분", "감정", "표현"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "내 감정 표현하기",
+      "description": "책에 나온 감정 중 지금 느끼는 감정을 그림이나 글로 표현해 보세요.",
+      "type": "CREATIVE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "기쁘다",
+      "definition": "행복하거나 즐거운 마음이다.",
+      "pageNumber": 1
+    },
+    {
+      "word": "슬프다",
+      "definition": "마음이 아프거나 안타까운 상태이다.",
+      "pageNumber": 2
+    },
+    {
+      "word": "화나다",
+      "definition": "화가 나서 마음이 불쾌한 상태이다.",
+      "pageNumber": 3
+    },
+    {
+      "word": "무섭다",
+      "definition": "두려움이나 겁이 나는 상태이다.",
+      "pageNumber": 4
+    },
+    {
+      "word": "놀라다",
+      "definition": "뜻밖의 일로 깜짝 놀라는 상태이다.",
+      "pageNumber": 5
+    },
+    {
+      "word": "부끄럽다",
+      "definition": "쑥스럽거나 자신이 없어 하는 상태이다.",
+      "pageNumber": 6
+    }
+  ],
+  "contributors": {
+    "원작자": ["마이크 재피", "토리 디오리언"],
+    "글": ["김은파"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "originalCopyright": "is a derivative of 'I Feel…' by Mike Jaffe and Tory DeOrian, used under CC BY 4.0.",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}

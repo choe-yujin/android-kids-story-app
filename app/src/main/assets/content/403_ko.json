@@ -1,0 +1,105 @@
+{
+  "bookId": 403,
+  "language": "ko",
+  "title": "생쥐와 사자",
+  "summary": "이 책은 작은 생쥐와 강한 사자의 우정 이야기를 다룹니다. 서로 도우며 친구가 되는 따뜻한 내용을 어린이들이 쉽게 이해할 수 있도록 표현했습니다.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["생쥐와 사자"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": ["배고픈 생쥐가 숲속에서 먹을 것을 찾고 있었어요."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["그런데 생쥐가 마주친 것은 먹을 것이 아니라 사자였어요!", "마침 사자도 조금 배가 고팠어요."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["사자가 무섭게 으르렁거렸어요.", "생쥐는 벌벌 떨며 말했어요."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["\"사자야, 제발 나를 잡아먹지마.", "나를 보내줘.", "언젠가 내가 너를 도와줄게.\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["사자가 말했어요.", "\"너처럼 작은 생쥐가 나를 돕는다고?", "바보같은 소리야.", "그렇지만 배가 많이 고프지는 않으니 너를 놓아주겠어.\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["며칠 후에는 사자는 다리에 철사가 감겨 꼼짝도 못하게 되었어요."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 7,
+      "texts": ["\"도와줘요!\"", "하고 사자는 엉엉 울며 말했어요.", "\"움직일 수가 없어요!\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 8,
+      "texts": ["그때 생쥐가 달려와서 말했어요.", "\"사자야, 내가 이빨로 철사를 끊어 줄게.\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 9,
+      "texts": ["사자가 말했어요.", "\"정말 고마워, 생쥐야.", "그리고 너를 무시해서 미안해.\""],
+      "pageType": "SPLIT"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "생쥐와 사자는 어떤 관계인가요?",
+        "keyConcepts": ["생쥐", "사자", "우정", "도움"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "생쥐가 사자를 어떻게 도왔나요?",
+        "keyConcepts": ["철사", "끊기", "도움", "감사"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "나누는 우정 이야기 쓰기",
+      "description": "책 속에서 배운 우정과 도움에 대해 생각하고, 자신의 경험이나 느낌을 글로 적어 보세요.",
+      "type": "TEXT_RESPONSE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "사자",
+      "definition": "숲 속의 큰 강한 고양이과 동물입니다.",
+      "pageNumber": 2
+    },
+    {
+      "word": "으르렁거리다",
+      "definition": "짖거나 소리 내어 위협하는 행동입니다.",
+      "pageNumber": 3
+    },
+    {
+      "word": "감사",
+      "definition": "고마워하는 마음을 뜻합니다.",
+      "pageNumber": 9
+    }
+  ],
+  "contributors": {
+    "원작자": ["메리 말호트라", "케이티 클라인바움"],
+    "글": ["김은파"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "originalCopyright": "is a derivative of 'The Mouse and the Lion' by Mary Malhotra and Katie Kleinbaum, used under CC BY 4.0.",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}

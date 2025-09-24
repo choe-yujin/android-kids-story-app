@@ -1,0 +1,141 @@
+{
+  "bookId": 821,
+  "language": "tet",
+  "title": "Fitun Manu-Oan",
+  "summary": "Iha tempu uluk, iha uma-tali ki'ik iha ai-laran, avó-mane, avó-feto, manu-inan ida no depois manu-oan hitu moris. Istória ida-ne'e hatudu oinsá manu-oan sira-nia domin boot sai fitun nabilan iha kalan lalehan.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["Fitun Manu-Oan"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": [
+        "Iha tempu uluk, avó-mane ho avó-feto ida hela iha uma-tali ida iha ai-laran.",
+        "Sira nain rua laiha oan no mos bei-oan, iha de'it manu-inan ida.",
+        "Dader-dadeer, avó-mane no avó-feto kari manu-nia hahan iha jardim laran ba manu-inan, no manu-inan sempre agradese ba sira."
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 2,
+      "texts": [
+        "Tempu liu dadaun, manu-inan tolun no lakleur tan manu-oan hitu ne'ebé fofo ne'e moris.",
+        "Manu-inan ne'e sempre ko'alia ba nia oan na'in hitu:",
+        "“Oan sira, avó-mane no avó-feto ne'e ema di'ak ne'ebé sempre tau matan ba ita. Favor tenki hanoin ida-ne'e.”"
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 3,
+      "texts": [
+        "Maibé loron ida, monje ida mai halo meditasaun iha ai-laran ne'ebé uma-tali iha ba.",
+        "Avó-mane no avó-feto preokupa tanba sira laiha hahán atu fó ba monje ne’e.",
+        "“Saida maka ha'u tenke halo ho ida-ne'e? Se ha'u la fó hahán, monje sei hamlaha…”"
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 4,
+      "texts": [
+        "Hafoin hanoin barak, sira deside atu kaer manu-inan ne'ebé sira hakiak no fó ba monje.",
+        "Sira nain rua laran-moras, tanba sira tau matan no hadomi manu-inan ne'e."
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 5,
+      "texts": [
+        "Manu-inan ne’e rona avó-mane no avó-feto nia liafuan hotu ne’ebé sira ko’alia.",
+        "Manu-inan hanoin hetan nia oan sira halo nia fuan kanek, maibé manu-inan deside atu halo tuir ninia hakarak hodi selu fali avó nain rua nia laran-di'ak ne'ebé kuidadu sira.",
+        "Manu-inan bolu nia oan sira hodi dehan adeus, no manu-oan sira tanis ho triste iha manu-inan nia liman."
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 6,
+      "texts": [
+        "Aban madrugada, avó-mane no avó-feto sunu ahi hodi tunu manu-inan.",
+        "Iha momentu ne'e kedas, manu-oan na'in hitu hahú halai ba ahi laran.",
+        "Ha'u la hakotu relasaun ho ha'u-nia inan ne'ebé hadomi, no ami haksoit ba ahi laran atu hamutuk ho ami-nia inan."
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 7,
+      "texts": [
+        "Ho hakfodak, avó-mane no avó-feto tanis ho matan-been sulin ba manu-oan sira-nia domin ba sira-nia inan.",
+        "Anju iha lalehan mós sente kona laran ho domin husi manu-inan no nia oan ne'ebé hatene grasa domin.",
+        "Tanba ne'e, anju halo manu-oan hitu sira ne'e sai fitun ne'ebé nabilan."
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 8,
+      "texts": [
+        "Se ita-boot hateke ba lalehan iha kalan, ita-boot bele hetan fitun hitu ne'ebé nabilan besik fitun Taurus.",
+        "Ema Tailándia bolu fitun sira-ne'e 'fitun manu-oan'."
+      ],
+      "pageType": "SPLIT"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "Sema maka hela iha uma-tali iha ai-laran iha tempu uluk?",
+        "keyConcepts": ["avó-mane", "avó-feto", "manu-inan"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "Tanba saa manu-oan sira halai ba ahi laran?",
+        "keyConcepts": ["manu-inan", "domín", "hamutuk", "sacrifísiu"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "Istória kona-ba Fitun",
+      "description": "Hanoin kona-ba istória ‘Fitun Manu-Oan’. Ita bele hakerek ka desenha hanesan ita-nia memóri kona-ba lalehan kalan ka liafuan kona-ba fitun.",
+      "type": "TEXT_RESPONSE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "uma-tali",
+      "definition": "Uma ki'ik, simples, frequente iha rai-laran.",
+      "pageNumber": 1
+    },
+    {
+      "word": "foer",
+      "definition": "Hahan atu fó ba manu sira ka animál seluk.",
+      "pageNumber": 1
+    },
+    {
+      "word": "adeus",
+      "definition": "Liafuan atu dehan fila-fali ka sai-bainhira sei husik malu.",
+      "pageNumber": 5
+    },
+    {
+      "word": "sacrifísiu",
+      "definition": "Hatudu atu husik buat ida ne'ebé presiu liu hodi ajuda ema seluk.",
+      "pageNumber": 6
+    },
+    {
+      "word": "konstelasaun",
+      "definition": "Grupu fitun ne'ebé halo modelo ida ne'ebé ita bele hatene iha lalehan kalan.",
+      "pageNumber": 8
+    }
+  ],
+  "contributors": {
+    "Writer": ["Juyeong Kim"],
+    "Illustrator": ["Vasuphon Sanpanich"],
+    "Translator": ["Rosarina"],
+    "Proofreader": ["Jisu An"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}

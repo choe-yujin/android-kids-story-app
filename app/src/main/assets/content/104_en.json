@@ -1,0 +1,105 @@
+{
+  "bookId": 104,
+  "language": "en",
+  "title": "I Feel…",
+  "summary": "This book helps children understand and express different feelings. Every page introduces a new emotion and encourages kids to talk about how they feel.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["How I Feel"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": ["I feel happy."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["I feel sad."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["I feel angry."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["I feel scared."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["I feel surprised."],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["I feel shy."],
+      "pageType": "FULL_IMAGE"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "How can you show your feelings?",
+        "keyConcepts": ["happiness", "sadness", "anger", "fear"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "Can you say how you feel right now?",
+        "keyConcepts": ["feeling", "emotion", "expression"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "Show Your Feelings",
+      "description": "Draw or write about how you feel right now.",
+      "type": "CREATIVE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "happy",
+      "definition": "To feel joy or delight.",
+      "pageNumber": 1
+    },
+    {
+      "word": "sad",
+      "definition": "To feel unhappy or sorrowful.",
+      "pageNumber": 2
+    },
+    {
+      "word": "angry",
+      "definition": "To feel mad or upset.",
+      "pageNumber": 3
+    },
+    {
+      "word": "scared",
+      "definition": "To feel afraid or fearful.",
+      "pageNumber": 4
+    },
+    {
+      "word": "surprised",
+      "definition": "To feel startled or amazed.",
+      "pageNumber": 5
+    },
+    {
+      "word": "shy",
+      "definition": "To feel timid or unsure of yourself.",
+      "pageNumber": 6
+    }
+  ],
+  "contributors": {
+    "Writer": ["Mike Jaffe"],
+    "Illustrator": ["Tory DeOrian"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "originalCopyright": "is a derivative of 'I Feel…' by Mike Jaffe and Tory DeOrian, used under CC BY 4.0.",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}

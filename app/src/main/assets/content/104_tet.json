@@ -1,0 +1,107 @@
+{
+  "bookId": 104,
+  "language": "tet",
+  "title": "Ha'u nia Sentimentu",
+  "summary": "Livro ida ne'ebe ajuda kmanek sira aprende no ekspresa sentimentu sira. Page kada-nia hatudu sentimentu ne'ebe diferente, ne'ebé ajuda kmanek sira hetan kompreensaun kona-ba dala sentimentu no halo ita-nia sentimentu kaben.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["Ha'u nia sentimentu"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": ["Agora ha'u haksolok"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["Agora ha'u triste hela"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["Agora ha'u nervoju"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["Agora dadaun ha'u ta'uk hela"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["Ha'u hakfodak"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["Agora dadaun ha'u moe hela"],
+      "pageType": "FULL_IMAGE"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "Kahak ita bele expresadu sentimentu?",
+        "keyConcepts": ["haksolok", "triste", "nervoju", "medu"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "Kahak sentimentu ne'ebé mak ita sente agora?",
+        "keyConcepts": ["sentimentu", "expresaun", "ema", "komunikasaun"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "Expresa sentimentu",
+      "description": "Desenha ka escribe sentimentu ne'ebé mak ita sente agora, hanesan mak iha livru.",
+      "type": "CREATIVE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "Haksolok",
+      "definition": "Sentimentu ne'ebé laran di'ak no kontenti.",
+      "pageNumber": 1
+    },
+    {
+      "word": "Triste",
+      "definition": "Sentimentu ne'ebé laran ha'u sai haksolok.",
+      "pageNumber": 2
+    },
+    {
+      "word": "Nervoju",
+      "definition": "Sentimentu ne'ebé laran mak halo ita sira nain-rua.",
+      "pageNumber": 3
+    },
+    {
+      "word": "Medu",
+      "definition": "Sentimentu ne'ebé halo ita hatene katak buat sai maluk.",
+      "pageNumber": 4
+    },
+    {
+      "word": "Hakfodak",
+      "definition": "Sentimentu ne'ebé laran ne'ebé kontenti no mai hikas.",
+      "pageNumber": 5
+    },
+    {
+      "word": "Moe",
+      "definition": "Sentimentu ne'ebé laran mak ita tauk fatin ka sai feira.",
+      "pageNumber": 6
+    }
+  ],
+  "contributors": {
+    "Writer": ["Mike Jaffe"],
+    "Illustrator": ["Tory DeOrian"],
+    "Translator": ["Helia"],
+    "Proofreader": ["Jisu An"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "originalCopyright": "is a derivative of 'I Feel…' by Mike Jaffe and Tory DeOrian, used under CC BY 4.0.",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}
