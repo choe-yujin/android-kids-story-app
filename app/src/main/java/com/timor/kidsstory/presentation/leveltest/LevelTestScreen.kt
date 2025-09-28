@@ -1,5 +1,6 @@
 package com.timor.kidsstory.presentation.leveltest
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,9 +20,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.res.painterResource
 import com.timor.kidsstory.R
 import com.timor.kidsstory.ui.components.FontPolicy
 import com.timor.kidsstory.ui.components.LocalizedText
+import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.ui.theme.AppTextStyles
 
 /**
  * 레벨 테스트 화면 Root
@@ -44,7 +50,12 @@ fun LevelTestScreenRoot(
     LaunchedEffect(uiState.navigationTarget) {
         when (val target = uiState.navigationTarget) {
             is LevelTestNavigationTarget.Bookshelf -> {
-                onNavigateToBookshelf(target.language, target.level, target.wasSkipped, target.showLevelResultPopup)
+                onNavigateToBookshelf(
+                    target.language,
+                    target.level,
+                    target.wasSkipped,
+                    target.showLevelResultPopup
+                )
                 viewModel.onNavigationCompleted()
             }
 
@@ -62,7 +73,7 @@ fun LevelTestScreenRoot(
 }
 
 /**
- * 레벨 테스트 화면
+ * 레벨 테스트 화면 - 앱 톤앤매너에 맞게 리디자인
  */
 @Composable
 fun LevelTestScreen(
@@ -77,14 +88,7 @@ fun LevelTestScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFF8F9FA),
-                        Color(0xFFE9ECEF)
-                    )
-                )
-            )
+            .background(AppColors.primary50) // 🎨 앱의 기본 배경 색상 사용
     ) {
         when (uiState.testState) {
             is TestState.NotStarted -> {
@@ -102,7 +106,7 @@ fun LevelTestScreen(
                     uiState = uiState,
                     onAction = onAction,
                     isLandscape = isLandscape,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.fillMaxSize() // 🔧 전체 화면 사용하도록 변경
                 )
             }
 
@@ -128,11 +132,11 @@ fun LevelTestScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f)),
+                    .background(AppColors.neutralBlack.copy(alpha = 0.3f)),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary
+                    color = AppColors.unknown500 // 🎨 앱의 노란색 사용
                 )
             }
         }
@@ -144,15 +148,17 @@ fun LevelTestScreen(
                     .align(Alignment.TopCenter)
                     .padding(16.dp)
                     .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
+                    containerColor = AppColors.red600.copy(alpha = 0.1f)
                 )
             ) {
                 Text(
                     text = error,
                     modifier = Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                    textAlign = TextAlign.Center
+                    color = AppColors.red600,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
@@ -160,7 +166,7 @@ fun LevelTestScreen(
 }
 
 /**
- * 레벨 테스트 시작 화면
+ * 레벨 테스트 시작 화면 - 앱 스타일에 맞게 리디자인
  */
 @Composable
 private fun LevelTestIntroContent(
@@ -172,78 +178,102 @@ private fun LevelTestIntroContent(
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
-    val contentWidth = if (screenWidth >= 800) 0.6f else 1f
+    val contentWidth = when {
+        screenWidth >= 800 -> 0.6f // Tablet
+        isLandscape -> 0.8f // Phone landscape
+        else -> 1f // Phone portrait
+    }
 
-    Column(
+    Box(
         modifier = modifier
-            .fillMaxWidth(contentWidth)
-            .padding(
-                horizontal = if (isLandscape) 64.dp else 24.dp,
-                vertical = if (isLandscape) 24.dp else 32.dp
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(AppColors.primary50, AppColors.primary100)
+                )
             ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
-        LocalizedText(
-            resId = R.string.level_test_title,
-            style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-            fontSize = 32.sp,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontPolicy = FontPolicy.PRETENDA_ALL
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LocalizedText(
-            resId = R.string.level_test_introduction,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-            textAlign = TextAlign.Center,
-            fontPolicy = FontPolicy.PRETENDA_ALL
-        )
-
-        Spacer(modifier = Modifier.height(48.dp))
-
-        Button(
-            onClick = onStartTest,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            ),
-            shape = RoundedCornerShape(26.dp)
+                .fillMaxWidth(contentWidth)
+                .padding(
+                    horizontal = if (isLandscape) 32.dp else 24.dp, // 🎨 가로 패딩 감소
+                    vertical = if (isLandscape) 16.dp else 32.dp // 🎨 세로 패딩 감소
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            LocalizedText(
-                resId = R.string.level_test_start_button,
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
-                fontSize = 18.sp,
-                fontPolicy = FontPolicy.PRETENDA_ALL
+            Image(
+                painter = painterResource(id = R.drawable.ic_logo),
+                contentDescription = "App Logo",
+                modifier = Modifier.size(120.dp) // 🎨 로고 크기 감소 (가로 모드 고려)
             )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedButton(
-            onClick = onSkipTest,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            shape = RoundedCornerShape(26.dp)
-        ) {
+            Spacer(modifier = Modifier.height(if (isLandscape) 16.dp else 32.dp)) // 🎨 스페이서 감소
             LocalizedText(
-                resId = R.string.level_test_skip_button,
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
-                fontSize = 18.sp,
-                fontPolicy = FontPolicy.PRETENDA_ALL
+                resId = R.string.level_test_title,
+                style = AppTextStyles.cookieRunBlackRegular.copy(fontSize = if (isLandscape) 28.sp else 36.sp), // 🎨 폰트 크기 감소
+                color = AppColors.neutral800,
+                fontPolicy = FontPolicy.DEFAULT
             )
+
+            Spacer(modifier = Modifier.height(if (isLandscape) 8.dp else 16.dp)) // 🎨 스페이서 감소
+
+            LocalizedText(
+                resId = R.string.level_test_introduction,
+                style = AppTextStyles.cookieRunRegular.copy(fontSize = if (isLandscape) 16.sp else 18.sp), // 🎨 폰트 크기 감소
+                color = AppColors.neutral600,
+                textAlign = TextAlign.Center,
+                fontPolicy = FontPolicy.DEFAULT
+            )
+
+            Spacer(modifier = Modifier.height(if (isLandscape) 24.dp else 48.dp)) // 🎨 스페이서 감소
+
+            Button(
+                onClick = onStartTest,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp), // 🎨 버튼 높이 감소 (가로 모드 고려)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.primary500 // 🎨 파란색으로 변경
+                ),
+                shape = RoundedCornerShape(16.dp),
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                LocalizedText(
+                    resId = R.string.level_test_start_button,
+                    style = AppTextStyles.cookieRunBold.copy(fontSize = if (isLandscape) 18.sp else 20.sp), // 🎨 폰트 크기 감소
+                    color = AppColors.neutralWhite, // 🎨 흰색으로 변경
+                    fontPolicy = FontPolicy.DEFAULT
+                )
+            }
+
+            Spacer(modifier = Modifier.height(if (isLandscape) 8.dp else 16.dp)) // 🎨 스페이서 감소
+
+            Button(
+                onClick = onSkipTest,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp), // 🎨 버튼 높이 감소 (가로 모드 고려)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.neutralWhite // 🎨 흰색으로 변경
+                ),
+                shape = RoundedCornerShape(16.dp),
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                LocalizedText(
+                    resId = R.string.level_test_skip_button,
+                    style = AppTextStyles.cookieRunBold.copy(fontSize = if (isLandscape) 18.sp else 20.sp), // 🎨 폰트 크기 감소
+                    color = AppColors.neutral700,
+                    fontPolicy = FontPolicy.DEFAULT
+                )
+            }
         }
     }
 }
 
 /**
- * 레벨 테스트 문제 콘텐츠
+ * 레벨 테스트 문제 콘텐츠 - 화면 크기에 맞게 반응형으로 개선
  */
 @Composable
 private fun LevelTestQuestionContent(
@@ -253,47 +283,134 @@ private fun LevelTestQuestionContent(
     modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
     val screenWidth = configuration.screenWidthDp
-    val contentWidth = if (screenWidth >= 800) 0.6f else 1f
-    val verticalPadding = if (screenWidth < 600) 0.dp else 32.dp
-    val horizontalPadding = if (isLandscape) 64.dp else 24.dp
 
-    Column(
+    // 🔧 화면 크기별 동적 조정
+    val isSmallScreen = screenHeight < 700 // Pixel 5 등 작은 화면
+    val isVerySmallScreen = screenHeight < 600 // 매우 작은 화면
+
+    // 🔧 화면 크기에 따른 패딩 조정
+    val horizontalPadding = when {
+        isLandscape -> 32.dp
+        screenWidth < 400 -> 16.dp
+        else -> 24.dp
+    }
+
+    val verticalPadding = when {
+        isVerySmallScreen -> 8.dp
+        isSmallScreen -> 12.dp
+        else -> 20.dp
+    }
+
+    Box(
         modifier = modifier
-            .fillMaxWidth(contentWidth)
-            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+            .fillMaxSize()
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding)
     ) {
-
-
-        // Question area
         uiState.currentQuestion?.let { question ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+            // 🔧 전체 화면을 문제 영역과 선택지 영역으로 나누기
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        modifier = Modifier.padding(
-                            if (screenWidth < 600) 16.dp else 24.dp
-                        )
-                    ) {
-                        Text(
-                            text = question.question,
-                            fontSize = if (screenWidth < 600) 18.sp else 20.sp,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.Start,
+                // 🎨 문제 영역 - 상단 고정 (전체 높이의 30-40% 사용)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.35f), // 전체 높이의 35% 사용
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = AppColors.neutralWhite
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        // 문제 텍스트
+                        Card(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 48.dp)
-                                .padding(end = 48.dp) // Make more space for skip button
-                        )
+                                .fillMaxSize()
+                                .padding(
+                                    if (isSmallScreen) 12.dp else 16.dp
+                                ),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = AppColors.neutral100
+                            )
+                        ) {
+                            Text(
+                                text = question.question,
+                                fontSize = when {
+                                    isVerySmallScreen -> 16.sp
+                                    isSmallScreen -> 17.sp
+                                    else -> 18.sp
+                                },
+                                fontWeight = FontWeight.Medium,
+                                color = AppColors.neutral800,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(
+                                        if (isSmallScreen) 14.dp else 18.dp
+                                    )
+                                    .wrapContentHeight(Alignment.CenterVertically)
+                            )
+                        }
 
-                        Spacer(modifier = Modifier.height(if (screenWidth < 600) 16.dp else 24.dp))
+                        // 🎨 Skip 버튼 - 위치 조정
+                        Card(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) { onAction(LevelTestAction.SkipTest) },
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = AppColors.neutral200.copy(alpha = 0.9f)
+                            )
+                        ) {
+                            LocalizedText(
+                                resId = R.string.level_test_skip_button,
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+                                fontSize = if (isSmallScreen) 12.sp else 14.sp,
+                                color = AppColors.neutral600,
+                                fontPolicy = FontPolicy.PRETENDA_ALL,
+                                modifier = Modifier.padding(
+                                    horizontal = if (isSmallScreen) 8.dp else 12.dp,
+                                    vertical = if (isSmallScreen) 4.dp else 6.dp
+                                )
+                            )
+                        }
+                    }
+                }
 
-                        // Options
+                Spacer(
+                    modifier = Modifier.height(
+                        if (isSmallScreen) 8.dp else 12.dp
+                    )
+                )
+
+                // 🎨 선택지 영역 - 하단 (전체 높이의 60-65% 사용)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.6f), // 전체 높이의 60% 사용
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = AppColors.neutralWhite
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(
+                                if (isSmallScreen) 12.dp else 16.dp
+                            ),
+                        verticalArrangement = Arrangement.spacedBy(if (isSmallScreen) 8.dp else 12.dp) // 🔧 선택지 간격 추가
+                    ) {
                         question.options.forEachIndexed { index, option ->
                             val isSelected = uiState.selectedAnswerIndex == index
                             val isCorrect = question.isCorrectAnswer(index)
@@ -302,62 +419,60 @@ private fun LevelTestQuestionContent(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = if (screenWidth < 600) 3.dp else 4.dp)
-                                    .padding(start = 48.dp) // Balance with skip button
-                                    .padding(end = 48.dp), // Align with question text
-                                onClick = {
-                                    if (!showResult) {
-                                        onAction(LevelTestAction.SelectAnswer(index))
-                                    }
-                                },
+                                    .weight(1f) // 🔧 각 선택지가 균등한 높이 사용
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+                                        if (!showResult) {
+                                            onAction(LevelTestAction.SelectAnswer(index))
+                                        }
+                                    },
+                                shape = RoundedCornerShape(12.dp),
                                 colors = CardDefaults.cardColors(
                                     containerColor = when {
-                                        showResult && isCorrect -> Color(0xFF4CAF50) // Correct: Green
-                                        showResult && isSelected && !isCorrect -> Color(0xFFF44336) // Selected wrong: Red
-                                        isSelected && !showResult -> MaterialTheme.colorScheme.primaryContainer // Selected
-                                        else -> MaterialTheme.colorScheme.surface // Default
+                                        showResult && isCorrect -> AppColors.green600
+                                        showResult && isSelected && !isCorrect -> AppColors.red600
+                                        isSelected && !showResult -> AppColors.primary100 // 🎨 선택 시 연한 파란색
+                                        else -> AppColors.neutralWhite // 🎨 기본 배경 흰색
                                     }
+                                ),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = if (isSelected) 4.dp else 2.dp
                                 )
                             ) {
-                                Text(
-                                    text = option,
-                                    modifier = Modifier.padding(
-                                        if (screenWidth < 600) 12.dp else 16.dp
-                                    ),
-                                    fontSize = if (screenWidth < 600) 14.sp else 16.sp,
-                                    color = when {
-                                        showResult && (isCorrect || (isSelected && !isCorrect)) -> Color.White
-                                        isSelected && !showResult -> MaterialTheme.colorScheme.onPrimaryContainer
-                                        else -> MaterialTheme.colorScheme.onSurface
-                                    }
-                                )
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = option,
+                                        fontSize = when {
+                                            isVerySmallScreen -> 14.sp
+                                            isSmallScreen -> 15.sp
+                                            else -> 16.sp
+                                        },
+                                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                        color = when {
+                                            showResult && (isCorrect || (isSelected && !isCorrect)) -> AppColors.neutralWhite
+                                            isSelected && !showResult -> AppColors.primary500 // 🎨 선택 시 진한 파란색
+                                            else -> AppColors.neutral800 // 🎨 기본 텍스트 색상
+                                        },
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(
+                                            horizontal = if (isSmallScreen) 8.dp else 12.dp,
+                                            vertical = if (isSmallScreen) 4.dp else 8.dp
+                                        )
+                                    )
+                                }
                             }
                         }
-                    }
-
-                    TextButton(
-                        onClick = { onAction(LevelTestAction.SkipTest) },
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(end = 8.dp, top = 8.dp)
-                    ) {
-                        LocalizedText(
-                            resId = R.string.level_test_skip_button,
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            fontPolicy = FontPolicy.PRETENDA_ALL
-                        )
                     }
                 }
             }
         }
     }
 }
-
-/**
- * 레벨 테스트 완료 화면
- */
 @Composable
 private fun LevelTestCompletedContent(
     finalLevel: Int,
@@ -369,73 +484,105 @@ private fun LevelTestCompletedContent(
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
-    val contentWidth = if (screenWidth >= 800) 0.6f else 1f
+    val contentWidth = when {
+        screenWidth >= 800 -> 0.6f // Tablet
+        isLandscape -> 0.8f // Phone landscape
+        else -> 1f // Phone portrait
+    }
 
-    Column(
+    Box(
         modifier = modifier
-            .fillMaxWidth(contentWidth)
-            .padding(
-                horizontal = if (isLandscape) 64.dp else 24.dp,
-                vertical = if (isLandscape) 24.dp else 32.dp
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(AppColors.primary50, AppColors.primary100)
+                )
             ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
-        LocalizedText(
-            resId = R.string.level_test_complete_title,
-            style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-            fontSize = 32.sp,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontPolicy = FontPolicy.PRETENDA_ALL
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LocalizedText(
-            resId = R.string.level_test_result_level,
-            formatArgs = arrayOf(finalLevel),
-            style = MaterialTheme.typography.headlineSmall,
-            fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-            textAlign = TextAlign.Center,
-            fontPolicy = FontPolicy.PRETENDA_ALL
-        )
-
-        Spacer(modifier = Modifier.height(48.dp))
-
-        Button(
-            onClick = onStartReading,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            ),
-            shape = RoundedCornerShape(26.dp)
+                .fillMaxWidth(contentWidth)
+                .padding(
+                    horizontal = if (isLandscape) 32.dp else 24.dp,
+                    vertical = if (isLandscape) 16.dp else 32.dp
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            LocalizedText(
-                resId = R.string.level_test_start_reading_button,
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
-                fontSize = 18.sp,
-                fontPolicy = FontPolicy.PRETENDA_ALL
+            // 🎨 완료 아이콘 → 로고 유지
+            Image(
+                painter = painterResource(id = R.drawable.ic_logo),
+                contentDescription = "App Logo",
+                modifier = Modifier.size(120.dp)
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(if (isLandscape) 16.dp else 32.dp))
 
-        OutlinedButton(
-            onClick = onRetakeTest,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            shape = RoundedCornerShape(26.dp)
-        ) {
+            // 🎨 큰 제목 (완료)
             LocalizedText(
-                resId = R.string.level_test_retry_button,
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
-                fontSize = 18.sp,
-                fontPolicy = FontPolicy.PRETENDA_ALL
+                resId = R.string.level_test_complete_title,
+                style = AppTextStyles.cookieRunBlackRegular.copy(fontSize = if (isLandscape) 28.sp else 36.sp),
+                color = AppColors.neutral800,
+                fontPolicy = FontPolicy.DEFAULT,
+                textAlign = TextAlign.Center
             )
+
+            Spacer(modifier = Modifier.height(if (isLandscape) 8.dp else 16.dp))
+
+            // 🎨 작은 부제 (레벨 결과 안내)
+            LocalizedText(
+                resId = R.string.level_test_result_level,
+                formatArgs = arrayOf(finalLevel),
+                style = AppTextStyles.cookieRunRegular.copy(fontSize = if (isLandscape) 16.sp else 18.sp),
+                color = AppColors.neutral600,
+                fontPolicy = FontPolicy.DEFAULT,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(if (isLandscape) 24.dp else 48.dp))
+
+            // 🎨 Start Reading 버튼
+            Button(
+                onClick = onStartReading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.primary500
+                ),
+                shape = RoundedCornerShape(16.dp),
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                LocalizedText(
+                    resId = R.string.level_test_start_reading_button,
+                    style = AppTextStyles.cookieRunBold.copy(fontSize = if (isLandscape) 18.sp else 20.sp),
+                    color = AppColors.neutralWhite,
+                    fontPolicy = FontPolicy.DEFAULT
+                )
+            }
+
+            Spacer(modifier = Modifier.height(if (isLandscape) 8.dp else 16.dp))
+
+            // 🎨 Retry 버튼
+            Button(
+                onClick = onRetakeTest,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.neutralWhite
+                ),
+                shape = RoundedCornerShape(16.dp),
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                LocalizedText(
+                    resId = R.string.level_test_retry_button,
+                    style = AppTextStyles.cookieRunBold.copy(fontSize = if (isLandscape) 18.sp else 20.sp),
+                    color = AppColors.neutral700,
+                    fontPolicy = FontPolicy.DEFAULT
+                )
+            }
         }
     }
 }

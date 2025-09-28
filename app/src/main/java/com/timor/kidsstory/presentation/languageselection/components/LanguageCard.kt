@@ -9,6 +9,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.Language
+// 🆕 ripple effect 제거를 위한 import 추가
+import androidx.compose.foundation.interaction.MutableInteractionSource
 
 /**
  * 언어 선택 카드 컴포넌트
@@ -42,7 +45,10 @@ fun LanguageCard(
     Card(
         modifier = modifier
             .size(180.dp, 200.dp)
-            .clickable { onClick() },
+            .clickable(
+                indication = null, // 🔧 Ripple effect 제거
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isSelected) 8.dp else 4.dp

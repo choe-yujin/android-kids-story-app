@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -14,6 +15,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.domain.model.leveltest.LevelTestResult
+// 🆕 ripple effect 제거를 위한 import 추가
+import androidx.compose.foundation.interaction.MutableInteractionSource
 
 /**
  * 레벨 테스트 결과 화면
@@ -128,7 +131,7 @@ fun LevelTestResultScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // 독서 시작 버튼 (주요 액션)
+                // 🔧 독서 시작 버튼 (주요 액션) - Ripple effect 제거
                 Button(
                     onClick = onStartReading,
                     modifier = Modifier
@@ -137,7 +140,8 @@ fun LevelTestResultScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     ),
-                    shape = RoundedCornerShape(26.dp)
+                    shape = RoundedCornerShape(26.dp),
+                    interactionSource = remember { MutableInteractionSource() }
                 ) {
                     Text(
                         text = "책 읽기 시작하기",
@@ -146,13 +150,14 @@ fun LevelTestResultScreen(
                     )
                 }
                 
-                // 재시도 버튼 (보조 액션)
+                // 🔧 재시도 버튼 (보조 액션) - Ripple effect 제거
                 OutlinedButton(
                     onClick = onRetakeTest,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                    shape = RoundedCornerShape(24.dp)
+                    shape = RoundedCornerShape(24.dp),
+                    interactionSource = remember { MutableInteractionSource() }
                 ) {
                     Text(
                         text = "다시 테스트하기",

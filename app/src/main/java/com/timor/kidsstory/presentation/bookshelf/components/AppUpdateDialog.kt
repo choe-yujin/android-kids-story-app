@@ -52,18 +52,18 @@ fun AppUpdateDialog(
     val screenWidthDp = configuration.screenWidthDp
     val screenHeightDp = configuration.screenHeightDp
     
-    // 요청대로 가로 길게, 세로 짧게
+    // 🆕 가로 더 길게, 세로 더 높게 수정
     val dialogWidthFraction = when {
-        screenWidthDp >= 1000 -> 0.9f   // 대형 태블릿 - 90%
-        screenWidthDp >= 800 -> 0.95f   // 중형 태블릿 - 95%
-        screenWidthDp >= 600 -> 0.98f   // 소형 태블릿 - 98%
-        else -> 1f                   // 휴대폰 - 100% (최대한 넓게)
+        screenWidthDp >= 1000 -> 0.95f   // 대형 태블릿 - 95% (기존 90%)
+        screenWidthDp >= 800 -> 0.98f   // 중형 태블릿 - 98% (기존 95%)
+        screenWidthDp >= 600 -> 1f   // 소형 태블릿 - 100% (기존 98%)
+        else -> 1f                   // 휴대폰 - 100% (동일)
     }
     
     val dialogHeightFraction = when {
-        screenHeightDp >= 800 -> 0.5f   // 높은 화면 - 50%
-        screenHeightDp >= 600 -> 0.6f   // 중간 화면 - 60%
-        else -> 0.85f                    // 낮은 화면 - 85%
+        screenHeightDp >= 800 -> 0.7f   // 높은 화면 - 70% (기존 50%)
+        screenHeightDp >= 600 -> 0.8f   // 중간 화면 - 80% (기존 60%)
+        else -> 0.9f                    // 낮은 화면 - 90% (기존 85%)
     }
 
     Dialog(

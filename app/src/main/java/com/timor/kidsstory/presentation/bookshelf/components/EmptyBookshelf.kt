@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,8 +29,7 @@ import com.timor.kidsstory.ui.components.FontPolicy
 fun EmptyBookshelf(
     modifier: Modifier = Modifier,
     isFiltered: Boolean = false,
-    isLoading: Boolean = false,
-    currentLanguageCode: String = "ko" // 언어 코드 추가
+    isLoading: Boolean = false
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -39,7 +40,15 @@ fun EmptyBookshelf(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(32.dp)
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            // 로딩 중일 때 스피너 표시
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = Color(0xFF6B442B),
+                    strokeWidth = 4.dp
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
             
             // 제목
             LocalizedText(
@@ -55,7 +64,7 @@ fun EmptyBookshelf(
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            // 설명 메시지
+            // 설명 메시지 (로딩 중이 아닐 때만)
             if (!isLoading) {
                 LocalizedText(
                     resId = if (isFiltered) {

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,6 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
+// 🆕 ripple effect 제거를 위한 import 추가
+import androidx.compose.foundation.interaction.MutableInteractionSource
 
 /**
  * 레벨 테스트 선택지 컴포넌트
@@ -54,7 +57,11 @@ fun AnswerOption(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .clickable(enabled = !showResult) { onClick() }
+            .clickable(
+                enabled = !showResult,
+                indication = null, // 🔧 null을 사용하여 Ripple effect 제거
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() }
             .border(
                 width = 2.dp,
                 color = borderColor,

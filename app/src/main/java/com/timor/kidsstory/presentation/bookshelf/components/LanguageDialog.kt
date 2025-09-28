@@ -52,7 +52,7 @@ fun LanguageDialog(
         ) {
             Card(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f) // 팝업 가로 길이 80%로 늘림
+                    .fillMaxWidth(0.9f) // 🆕 팝업 가로 길이 90%로 더 늘림 (80% -> 90%)
                     .wrapContentHeight(),
                 shape = RoundedCornerShape(24.dp), // 더 둥글게
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -97,26 +97,32 @@ private fun LanguageItem(
                 if (isSelected) Color(0xFFE0E0E0).copy(alpha = 0.3f) 
                 else Color.Transparent
             )
-            .padding(vertical = 16.dp, horizontal = 12.dp), // 더 큰 패딩
-        horizontalArrangement = Arrangement.Center,
+            .padding(vertical = 16.dp, horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 국기 이미지 - 더 크게
-        Image(
-            painter = painterResource(id = language.flagResId),
-            contentDescription = language.displayName,
-            modifier = Modifier.size(32.dp) // 24dp에서 32dp로 크게
-        )
-                
-        // 간격 추가
-        Spacer(modifier = Modifier.width(20.dp)) // 16dp에서 20dp로 크게
-
-        // 언어 이름 - 더 크게
-        Text(
-            text = language.displayName,
-            style = AppTextStyles.pretendardXLargeSemiBold.copy(fontSize = 20.sp), // 크기 증가
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-        )
+        // 🆕 국기 이미지 - 크기 통일 및 고정 너비 적용
+        Box(
+            modifier = Modifier.width(56.dp), // 고정 너비로 국기 영역 확보
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = language.flagResId),
+                contentDescription = language.displayName,
+                modifier = Modifier.size(36.dp) // 🆕 모든 국기 크기 36dp로 통일
+            )
+        }
+        
+        // 🆕 언어 이름 - 가운데 정렬
+        Box(
+            modifier = Modifier.weight(1f), // 남은 공간 모두 차지
+            contentAlignment = Alignment.Center // 가운데 정렬
+        ) {
+            Text(
+                text = language.displayName,
+                style = AppTextStyles.pretendardXLargeSemiBold.copy(fontSize = 20.sp),
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+            )
+        }
     }
 }
 

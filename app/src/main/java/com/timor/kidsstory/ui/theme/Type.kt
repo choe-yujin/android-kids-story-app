@@ -23,6 +23,12 @@ val pretendard = FontFamily(
     Font(R.font.pretendard_variable, FontWeight.Medium),
 )
 
+val cookierun = FontFamily(
+    Font(R.font.cookierun_regular, FontWeight.Normal),
+    Font(R.font.cookierun_bold, FontWeight.Bold),
+    Font(R.font.cookierun_black, FontWeight.Black)
+)
+
 /**
  * Material Design 기반 타이포그래피 정의
  * 
