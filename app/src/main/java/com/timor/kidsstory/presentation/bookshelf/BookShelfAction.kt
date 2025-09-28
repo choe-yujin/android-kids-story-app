@@ -161,4 +161,15 @@ sealed interface BookShelfAction {
      * 동화 정보 팝업 닫기 액션
      */
     data object DismissStoryInfoDialog : BookShelfAction
+    
+    /**
+     * 작업 완료 다이얼로그 닫기 액션
+     * - 다운로드/업데이트/삭제 완료 후 표시되는 다이얼로그를 닫을 때 발생
+     */
+    data object DismissActionCompletionDialog : BookShelfAction
+
+    /**
+     * Unlock 축하 팝업 닫기 액션
+     */
+    data object DismissUnlockPopup : BookShelfAction
 }

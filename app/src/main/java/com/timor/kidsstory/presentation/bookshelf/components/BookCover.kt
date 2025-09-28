@@ -1,5 +1,7 @@
 package com.timor.kidsstory.presentation.bookshelf.components
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -68,6 +70,7 @@ fun BookCover(
                                     kotlinx.coroutines.delay(300)
                                     if (clickCount == 1) {
                                         // 단일클릭 처리
+                                        Log.d("BookCover", "📱 Single click on book: ${book.title} (${book.storyId})")
                                         if (isLocked && onLockedClick != null) {
                                             onLockedClick()
                                         } else {
@@ -78,6 +81,7 @@ fun BookCover(
                                 }
                             } else if (clickCount == 2) {
                                 // 더블클릭 처리
+                                Log.d("BookCover", "📱📱 Double click on book: ${book.title} (${book.storyId})")
                                 onDoubleClick()
                                 clickCount = 0
                             }
@@ -102,50 +106,65 @@ fun BookCover(
             // 책 커버 이미지
             if (book.coverImage.isNotEmpty()) {
                 val imageModifier = when {
-                    isLocked -> Modifier.fillMaxSize().blur(if (isTablet) 8.dp else 6.dp)
+                    isLocked -> Modifier.fillMaxSize().blur(if (isTablet) 6.dp else 4.dp) // 🆕 블러 효과 약하게 (12->6, 10->4)
                     else -> Modifier.fillMaxSize()
+                }
+
+                // 🆕 이미지 로딩 디버그 로그 추가
+                LaunchedEffect(book.coverImage) {
+                    Log.d("BookCover", "📷 Loading image for ${book.title}: ${book.coverImage}")
                 }
 
                 AsyncImage(
                     model = book.coverImage,
                     contentDescription = book.title,
                     modifier = imageModifier,
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.Fit,
+                    placeholder = painterResource(R.drawable.ic_book_placeholder), // 🆕 플레이스홀더 추가
+                    error = painterResource(R.drawable.ic_book_placeholder), // 🆕 에러 시 플레이스홀더
+                    onSuccess = { // 🆕 성공 로그
+                        Log.d("BookCover", "✅ Image loaded successfully for ${book.title}")
+                    },
+                    onError = { error -> // 🆕 에러 로그
+                        Log.e("BookCover", "❌ Failed to load image for ${book.title}: $error")
+                    }
                 )
-
-                // 오버레이 배경
-                if (isLocked) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.6f))
-                    )
-                }
             } else {
+                // 🆕 이미지 경로가 비어있을 때 기본 플레이스홀더 표시
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Gray)
-                )
-            }
-
-            // 🆕 잠금 아이콘 (일반 모드에서 unlock 안 된 책)
-            if (isLocked) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(if (isTablet) 64.dp else 48.dp)
-                        .background(
-                            color = AppColors.neutral800.copy(alpha = 0.9f),
-                            shape = CircleShape
-                        ),
+                        .background(AppColors.neutral100),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
+                        painter = painterResource(R.drawable.ic_book_placeholder),
+                        contentDescription = book.title,
+                        tint = AppColors.neutral400,
+                        modifier = Modifier.size(if (isTablet) 64.dp else 48.dp)
+                    )
+                }
+            }
+
+            // 오버레이 배경 (잠김 상태에서만)
+            if (isLocked) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.2f)) // 🆕 오버레이 약하게 (0.4f->0.2f)
+                )
+            }
+
+            // 🆕 잠금 아이콘 (일반 모드에서 unlock 안 된 책) - 동그란 배경 제거
+            if (isLocked) {
+                Box(
+                    modifier = Modifier.align(Alignment.Center),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
                         painter = painterResource(id = R.drawable.ic_lock),
                         contentDescription = "Locked",
-                        tint = AppColors.neutralWhite,
-                        modifier = Modifier.size(if (isTablet) 36.dp else 28.dp)
+                        modifier = Modifier.size(if (isTablet) 48.dp else 40.dp)
                     )
                 }
             }
@@ -177,7 +196,7 @@ private fun ManagementModeOverlay(
                     CheckboxIcon(isTablet = isTablet)
                 } else {
                     StatusIcon(
-                        iconRes = R.drawable.ic_delete,
+                        iconRes = R.drawable.ic_trash,
                         backgroundColor = AppColors.yellowRed500,
                         isTablet = isTablet
                     )

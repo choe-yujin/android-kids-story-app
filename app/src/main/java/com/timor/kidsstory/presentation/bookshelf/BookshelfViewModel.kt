@@ -56,9 +56,12 @@ import com.timor.kidsstory.domain.usecase.book.CheckUnlockStatusUseCase
 import com.timor.kidsstory.domain.usecase.book.GetManagementBooksUseCase
 import com.timor.kidsstory.domain.usecase.book.ExecuteBookDownloadUseCase
 import com.timor.kidsstory.domain.usecase.book.DeleteBookUseCase
+import com.timor.kidsstory.data.remote.BookDownloader // 🆕 BookDownloader import 추가
 import com.timor.kidsstory.presentation.bookshelf.model.ManagementActionType
+import com.timor.kidsstory.domain.event.UnlockEventManager
 
 import androidx.lifecycle.SavedStateHandle
+import com.timor.kidsstory.domain.model.Book
 
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
@@ -77,6 +80,7 @@ class BookshelfViewModel @Inject constructor(
     private val getManagementBooksUseCase: GetManagementBooksUseCase,
     private val executeBookDownloadUseCase: ExecuteBookDownloadUseCase,
     private val deleteBookUseCase: DeleteBookUseCase,
+    private val bookDownloader: BookDownloader, // 🆕 BookDownloader 추가
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -96,6 +100,13 @@ class BookshelfViewModel @Inject constructor(
             loadUserPreferences(initialLevel, wasSkipped, showLevelResultPopup)
             loadBooks(_state.value.currentLanguage.code)
             loadMusicSetting()
+
+            // 🆕 Unlock 이벤트 수신
+            UnlockEventManager.unlockEvent.collect { levelGroup ->
+                Log.d("BookshelfViewModel", "🎉 Unlock event received for level group: $levelGroup")
+                _state.update { it.copy(showUnlockPopup = true, unlockedLevelGroup = levelGroup) }
+                loadBooks(_state.value.currentLanguage.code) // 🆕 Refresh books to update unlockedSteps
+            }
         }
     }
 
@@ -196,7 +207,7 @@ class BookshelfViewModel @Inject constructor(
     /**
      * 책 목록 로드 (UseCase 사용)
      */
-    private fun loadBooks(languageCode: String) {
+    private fun loadBooks(languageCode: String, updateFilteredBooks: Boolean = true) {
         viewModelScope.launch {
             try {
                 _state.update { it.copy(isLoading = true, error = null) }
@@ -217,7 +228,7 @@ class BookshelfViewModel @Inject constructor(
                         _state.update { currentState ->
                             currentState.copy(
                                 books = books,
-                                filteredBooks = books, // 초기에는 필터링 없이 전체 표시
+                                filteredBooks = if (updateFilteredBooks) books else currentState.filteredBooks,
                                 unlockedSteps = unlockedStepsMap, // 🆕 unlock 상태 설정
                                 isLoading = false,
                                 error = null
@@ -382,6 +393,13 @@ class BookshelfViewModel @Inject constructor(
             is BookShelfAction.DismissStoryInfoDialog -> {
                 dismissStoryInfoDialog()
             }
+            
+            is BookShelfAction.DismissActionCompletionDialog -> {
+                dismissActionCompletionDialog()
+            }
+            is BookShelfAction.DismissUnlockPopup -> {
+                dismissUnlockPopup()
+            }
         }
     }
 
@@ -428,7 +446,18 @@ class BookshelfViewModel @Inject constructor(
                                 isStageFilterExpanded = false,
                                 isCategoryFilterExpanded = false
                             ),
-                            selectedReadingStatus = ReadingStatusFilter.ALL // ReadingStatus도 전체로 초기화
+                            selectedReadingStatus = ReadingStatusFilter.ALL, // ReadingStatus도 전체로 초기화
+                            // 🆕 관리 모드 상태 초기화
+                            selectedBookIds = emptySet(),
+                            totalSelectedSize = 0L,
+                            showConfirmationPopup = false,
+                            pendingActionType = null,
+                            // 🆕 관리 데이터 초기화 (새 언어로 다시 로드해야 함)
+                            downloadableBooks = emptyList(),
+                            updatableBooks = emptyList(),
+                            hasCheckedUpdates = false,
+                            downloadableItemsCount = 0,
+                            filteredBooks = emptyList() // 🆕 버그 수정을 위해 추가
                         )
                     }
 
@@ -439,7 +468,33 @@ class BookshelfViewModel @Inject constructor(
                     LanguageManager.setCurrentLanguageCode(language.code)
 
                     kotlinx.coroutines.delay(100)
-                    loadBooks(language.code)
+                    loadBooks(language.code, updateFilteredBooks = !_state.value.isManagementMode)
+                    
+                    // 🆕 관리 모드인 경우 새 언어로 관리 데이터 다시 로드
+                    if (_state.value.isManagementMode) {
+                        // 언어 변경 후 지연을 두어 books 업데이트 완료 후 실행
+                        kotlinx.coroutines.delay(200)
+                        
+                        Log.d("BookshelfViewModel", "💼 Language changed in management mode - reloading management data")
+                        loadManagementData()
+                        
+                        // 추가 지연 후 현재 선택된 탭에 맞는 책 목록 로드
+                        kotlinx.coroutines.delay(100)
+                        when (_state.value.selectedManagementTab) {
+                            ManagementTab.DOWNLOAD -> {
+                                Log.d("BookshelfViewModel", "💼 Reloading DOWNLOAD tab for new language: ${language.code}")
+                                loadDownloadableBooks(_state.value.books)
+                            }
+                            ManagementTab.UPDATE -> {
+                                Log.d("BookshelfViewModel", "💼 Reloading UPDATE tab for new language: ${language.code}")
+                                loadUpdatableBooks(_state.value.books)
+                            }
+                            ManagementTab.DELETE -> {
+                                Log.d("BookshelfViewModel", "💼 Reloading DELETE tab for new language: ${language.code}")
+                                loadDeletableBooks(_state.value.books)
+                            }
+                        }
+                    }
                     
                     Log.d("BookshelfViewModel", "Language changed successfully to: ${language.code}")
                     
@@ -542,16 +597,21 @@ class BookshelfViewModel @Inject constructor(
                 // 관리 모드: 모든 책 표시
                 if (!currentState.isManagementMode) {
                     filteredBooks = filteredBooks.filter { it.isDownloaded }
+                    Log.d("BookshelfViewModel", "👁️ Normal mode filter applied: ${filteredBooks.size} downloaded books")
+                } else {
+                    // 🆕 관리 모드에서는 여기서 전체 책 목록을 바로 설정하지 말고
+                    // 탭별 별도 로드 메서드가 처리하도록 함
+                    Log.d("BookshelfViewModel", "💼 Management mode: filteredBooks will be set by tab-specific methods")
                 }
                 
                 _state.update { 
                     it.copy(
-                        filteredBooks = filteredBooks,
+                        filteredBooks = if (currentState.isManagementMode) it.filteredBooks else filteredBooks,
                         selectedReadingStatus = null // 필터 변경 시 ReadingStatus 리셋
                     ) 
                 }
                 
-                Log.d("BookshelfViewModel", "Filtered books: ${filteredBooks.size}/${currentState.books.size} (isManagementMode=${currentState.isManagementMode})")
+                Log.d("BookshelfViewModel", "Filtered books: ${if (currentState.isManagementMode) currentState.filteredBooks.size else filteredBooks.size}/${currentState.books.size} (isManagementMode=${currentState.isManagementMode})")
                 
             } catch (e: Exception) {
                 Log.e("BookshelfViewModel", "Error applying filter", e)
@@ -659,7 +719,9 @@ class BookshelfViewModel @Inject constructor(
                 // 읽기 상태 필터도 초기화
                 selectedReadingStatus = if (currentMode) null else currentState.selectedReadingStatus,
                 // 🆕 관리 모드 진입 시 업데이트 확인 상태로 설정 (뱃지 숨김)
-                hasCheckedUpdates = if (!currentMode) true else currentState.hasCheckedUpdates
+                hasCheckedUpdates = if (!currentMode) true else currentState.hasCheckedUpdates,
+                // 🆕 관리 모드 진입 시 filteredBooks를 빈 리스트로 초기화 (버퍼링 효과)
+                filteredBooks = if (!currentMode) emptyList() else currentState.filteredBooks
             )
         }
         
@@ -667,11 +729,11 @@ class BookshelfViewModel @Inject constructor(
         if (!currentMode) {
             loadManagementData()
             // 🆕 기본 탭(다운로드)의 책 목록 로드
-            loadDownloadableBooks()
+            loadDownloadableBooks(_state.value.books)
+        } else {
+            // 🆕 관리 모드 종료 시 필터 재적용 (일반 모드는 isDownloaded=true만)
+            applyCurrentFilter()
         }
-        
-        // 🆕 필터 재적용 (일반 모드는 isDownloaded=true만, 관리 모드는 전체)
-        applyCurrentFilter()
         
         Log.d("BookshelfViewModel", "Management mode toggled: ${!currentMode}")
     }
@@ -733,15 +795,24 @@ class BookshelfViewModel @Inject constructor(
     }
     
     /**
-     * 관리 탭 선택 처리
+     * 선택된 탭에 맞는 책 목록 로드
      */
     private fun selectManagementTab(tab: ManagementTab) {
-        _state.update { it.copy(selectedManagementTab = tab) }
+        _state.update { 
+            it.copy(
+                selectedManagementTab = tab,
+                // 🆕 탭 변경 시 filteredBooks를 빈 리스트로 초기화 (버퍼링 효과)
+                filteredBooks = emptyList(),
+                // 🆕 선택 내역도 초기화
+                selectedBookIds = emptySet(),
+                totalSelectedSize = 0L
+            )
+        }
 
         when (tab) {
             ManagementTab.DOWNLOAD -> {
                 // 다운로드 탭: 다운로드 가능한 책만 표시
-                loadDownloadableBooks()
+                loadDownloadableBooks(_state.value.books)
             }
             ManagementTab.UPDATE -> {
                 // 업데이트 탭: 업데이트 가능한 책만 표시
@@ -759,19 +830,29 @@ class BookshelfViewModel @Inject constructor(
     /**
      * 다운로드 가능한 책 로드
      */
-    private fun loadDownloadableBooks() {
+    private fun loadDownloadableBooks(allLocalBooks: List<Book>? = null) {
         viewModelScope.launch {
             try {
                 _state.update { it.copy(isCheckingUpdates = true) }
                 
                 val currentLanguage = _state.value.currentLanguage.code
+                Log.d("BookshelfViewModel", "🔍 Loading downloadable books for language: $currentLanguage")
                 
                 // GetManagementBooksUseCase를 통한 다운로드 가능한 책 조회
                 val downloadableResult = getManagementBooksUseCase.getDownloadableBooks(
                     userId = currentUserId,
-                    languageCode = currentLanguage
+                    languageCode = currentLanguage,
+                    allLocalBooks = allLocalBooks
                 )
-                val downloadableBooks = downloadableResult.getOrElse { emptyList() }
+                val downloadableBooks = downloadableResult.getOrElse { 
+                    Log.e("BookshelfViewModel", "❌ Failed to get downloadable books: ${downloadableResult.exceptionOrNull()?.message}")
+                    emptyList() 
+                }
+                
+                Log.d("BookshelfViewModel", "📚 Downloadable books found: ${downloadableBooks.size}")
+                downloadableBooks.take(3).forEach { book ->
+                    Log.d("BookshelfViewModel", "  - ${book.storyId}: ${book.title} (downloaded: ${book.isDownloaded})")
+                }
                 
                 _state.update { 
                     it.copy(
@@ -781,13 +862,14 @@ class BookshelfViewModel @Inject constructor(
                     )
                 }
                 
-                Log.d("BookshelfViewModel", "Downloadable books loaded: ${downloadableBooks.size}")
+                Log.d("BookshelfViewModel", "✅ Downloadable books loaded: ${downloadableBooks.size}")
                 
             } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Error loading downloadable books", e)
+                Log.e("BookshelfViewModel", "❌ Error loading downloadable books", e)
                 _state.update { 
                     it.copy(
                         isCheckingUpdates = false,
+                        filteredBooks = emptyList(), // 🆕 오류 시에도 빈 리스트로 설정
                         error = "다운로드 가능한 책을 불러올 수 없습니다: ${e.message}"
                     )
                 }
@@ -803,8 +885,22 @@ class BookshelfViewModel @Inject constructor(
             try {
                 _state.update { it.copy(isCheckingUpdates = true) }
 
-                // 🆕 로컬에 저장된 책만 필터링 (내장 책 + 다운로드 책 모두 포함)
-                val deletableBooks = books.filter { it.isDownloaded }
+                val currentLanguage = _state.value.currentLanguage.code
+                Log.d("BookshelfViewModel", "🔍 Loading deletable books for language: $currentLanguage")
+                
+                // 🆕 GetManagementBooksUseCase.getDeletableBooks 사용 (실제 삭제 용량 포함)
+                val deletableResult = getManagementBooksUseCase.getDeletableBooks(
+                    languageCode = currentLanguage
+                )
+                val deletableBooks = deletableResult.getOrElse {
+                    Log.e("BookshelfViewModel", "❌ Failed to get deletable books: ${deletableResult.exceptionOrNull()?.message}")
+                    emptyList()
+                }
+                
+                Log.d("BookshelfViewModel", "📚 Deletable books found: ${deletableBooks.size}")
+                deletableBooks.take(3).forEach { book ->
+                    Log.d("BookshelfViewModel", "  - ${book.storyId}: ${book.title} (delete size: ${book.totalSize / 1024}KB)")
+                }
 
                 _state.update { 
                     it.copy(
@@ -814,13 +910,13 @@ class BookshelfViewModel @Inject constructor(
                 }
 
                 Log.d("BookshelfViewModel", "🗑️ Deletable books loaded: ${deletableBooks.size}")
-                Log.d("BookshelfViewModel", "🖼️ Sample cover paths: ${deletableBooks.take(3).map { it.coverImage }}")
 
             } catch (e: Exception) {
                 Log.e("BookshelfViewModel", "Error loading deletable books", e)
                 _state.update { 
                     it.copy(
                         isCheckingUpdates = false,
+                        filteredBooks = emptyList(), // 🆕 오류 시에도 빈 리스트로 설정
                         error = "삭제 가능한 책을 불러올 수 없습니다: ${e.message}"
                     )
                 }
@@ -859,6 +955,7 @@ class BookshelfViewModel @Inject constructor(
                 _state.update { 
                     it.copy(
                         isCheckingUpdates = false,
+                        filteredBooks = emptyList(), // 🆕 오류 시에도 빈 리스트로 설정
                         error = "업데이트 가능한 책을 불러올 수 없습니다: ${e.message}"
                     )
                 }
@@ -870,24 +967,107 @@ class BookshelfViewModel @Inject constructor(
      * 책 선택 상태 변경
      */
     private fun toggleBookSelection(bookId: String, isSelected: Boolean) {
-        _state.update { currentState ->
-            val newSelectedIds = if (isSelected) {
-                currentState.selectedBookIds + bookId
-            } else {
-                currentState.selectedBookIds - bookId
+        viewModelScope.launch {
+            _state.update { currentState ->
+                val newSelectedIds = if (isSelected) {
+                    currentState.selectedBookIds + bookId
+                } else {
+                    currentState.selectedBookIds - bookId
+                }
+                
+                currentState.copy(
+                    selectedBookIds = newSelectedIds,
+                    totalSelectedSize = 0L // 임시로 0으로 설정
+                )
             }
             
-            // 선택된 책들의 총 용량 계산
-            val selectedBooks = currentState.filteredBooks.filter { it.storyId in newSelectedIds }
-            val totalSize = selectedBooks.sumOf { it.totalSize }
+            // 🆕 선택된 책들의 실제 용량 계산 (다운로드 vs 삭제)
+            val currentState = _state.value
+            val selectedBooks = currentState.filteredBooks.filter { it.storyId in currentState.selectedBookIds }
             
-            currentState.copy(
-                selectedBookIds = newSelectedIds,
-                totalSelectedSize = totalSize
-            )
+            val actualTotalSize = when (currentState.selectedManagementTab) {
+                ManagementTab.DELETE -> {
+                    // 삭제 탭: 실제 삭제될 파일 크기 계산
+                    calculateTotalDeleteSize(selectedBooks, currentState.currentLanguage.code)
+                }
+                ManagementTab.DOWNLOAD, ManagementTab.UPDATE -> {
+                    // 다운로드/업데이트 탭: 다운로드될 파일 크기 계산
+                    calculateTotalDownloadSize(selectedBooks, currentState.currentLanguage.code)
+                }
+            }
+            
+            // 계산된 용량으로 업데이트
+            _state.update { it.copy(totalSelectedSize = actualTotalSize) }
+            
+            val actionName = when (currentState.selectedManagementTab) {
+                ManagementTab.DELETE -> "delete"
+                ManagementTab.DOWNLOAD -> "download"
+                ManagementTab.UPDATE -> "update"
+            }
+            
+            Log.d("BookshelfViewModel", "Book selection toggled: $bookId -> $isSelected, actual $actionName size: ${actualTotalSize / 1024}KB")
         }
-        
-        Log.d("BookshelfViewModel", "Book selection toggled: $bookId -> $isSelected")
+    }
+    
+    /**
+     * 🆕 선택된 책들의 실제 다운로드 용량 계산
+     */
+    private suspend fun calculateTotalDownloadSize(
+        selectedBooks: List<Book>,
+        languageCode: String
+    ): Long {
+        return try {
+            var totalSize = 0L
+            
+            selectedBooks.forEach { book ->
+                val bookId = book.storyId.split("_")[0].toIntOrNull()
+                if (bookId != null) {
+                    val size = bookDownloader.calculateDownloadSize(bookId, languageCode)
+                    totalSize += size
+                    Log.d("BookshelfViewModel", "📊 Book ${book.title}: ${size / 1024}KB")
+                }
+            }
+            
+            Log.d("BookshelfViewModel", "📊 Total download size: ${totalSize / 1024}KB (${selectedBooks.size} books)")
+            totalSize
+            
+        } catch (e: Exception) {
+            Log.e("BookshelfViewModel", "Failed to calculate total download size", e)
+            // 🆕 오류 시 기본 예상 크기 반환
+            selectedBooks.size * 3L * 1024 * 1024 // 책당 3MB 예상
+        }
+    }
+    
+    /**
+     * 🆕 선택된 책들의 실제 삭제 용량 계산
+     */
+    private suspend fun calculateTotalDeleteSize(
+        selectedBooks: List<Book>, 
+        languageCode: String
+    ): Long {
+        return try {
+            var totalSize = 0L
+            
+            selectedBooks.forEach { book ->
+                val bookId = book.storyId.split("_")[0].toIntOrNull()
+                if (bookId != null) {
+                    // 현재 상태의 전체 책 목록에서 이 책의 다른 버전이 있는지 확인
+                    val versionCount = _state.value.books.count { it.storyId.startsWith("${bookId}_") }
+                    
+                    val size = bookDownloader.calculateDeleteSize(bookId, languageCode, versionCount)
+                    totalSize += size
+                    Log.d("BookshelfViewModel", "🗑️ Book ${book.title}: ${size / 1024}KB (delete), versions: $versionCount")
+                }
+            }
+            
+            Log.d("BookshelfViewModel", "🗑️ Total delete size: ${totalSize / 1024}KB (${selectedBooks.size} books)")
+            totalSize
+            
+        } catch (e: Exception) {
+            Log.e("BookshelfViewModel", "Failed to calculate total delete size", e)
+            // 🆕 오류 시 기본 예상 크기 반환
+            selectedBooks.size * 250L * 1024 // 책당 250KB 예상
+        }
     }
     
     /**
@@ -961,6 +1141,14 @@ class BookshelfViewModel @Inject constructor(
                 Log.d("BookshelfViewModel", "🛠️ Performing action: $actionType for ${selectedBooks.size} books")
                 Log.d("BookshelfViewModel", "📚 Selected book IDs: ${selectedBooks.map { it.storyId }}")
                 
+                // 🆕 다운로드 진행 상태 시작
+                _state.update { 
+                    it.copy(
+                        isDownloading = true,
+                        downloadingBookIds = selectedBooks.map { book -> book.storyId }.toSet()
+                    )
+                }
+                
                 when (actionType) {
                     ManagementActionType.DOWNLOAD -> {
                         // 다운로드 실행
@@ -969,6 +1157,7 @@ class BookshelfViewModel @Inject constructor(
                             languageCode = currentLanguage
                         ).onSuccess {
                             Log.d("BookshelfViewModel", "✅ Download completed for ${selectedBooks.size} books")
+                            showActionCompletionDialog(ManagementActionType.DOWNLOAD, selectedBooks.size)
                             resetSelection()
                         }.onFailure { error ->
                             handleActionError("다운로드", error)
@@ -982,6 +1171,7 @@ class BookshelfViewModel @Inject constructor(
                             languageCode = currentLanguage
                         ).onSuccess {
                             Log.d("BookshelfViewModel", "✅ Update completed for ${selectedBooks.size} books")
+                            showActionCompletionDialog(ManagementActionType.UPDATE, selectedBooks.size)
                             resetSelection()
                         }.onFailure { error ->
                             handleActionError("업데이트", error)
@@ -997,6 +1187,7 @@ class BookshelfViewModel @Inject constructor(
                             languageCode = currentLanguage
                         ).onSuccess {
                             Log.d("BookshelfViewModel", "🗑️ Delete completed for ${selectedBooks.size} books")
+                            showActionCompletionDialog(ManagementActionType.DELETE, selectedBooks.size)
                             resetSelection()
                         }.onFailure { error ->
                             Log.e("BookshelfViewModel", "❌ Delete failed", error)
@@ -1006,13 +1197,23 @@ class BookshelfViewModel @Inject constructor(
                     
                     null -> {
                         Log.w("BookshelfViewModel", "⚠️ No action type specified")
+                        // 🆕 작업 타입이 없으면 로딩 상태 즉시 해제
+                        _state.update { 
+                            it.copy(
+                                isDownloading = false,
+                                downloadingBookIds = emptySet()
+                            )
+                        }
                     }
                 }
                 
             } catch (e: Exception) {
                 Log.e("BookshelfViewModel", "❌ Exception in performSelectedActions", e)
+                // 🆕 예외 발생 시 로딩 상태 해제
                 _state.update {
                     it.copy(
+                        isDownloading = false,
+                        downloadingBookIds = emptySet(),
                         error = "오류가 발생했습니다: ${e.message}"
                     )
                 }
@@ -1024,8 +1225,11 @@ class BookshelfViewModel @Inject constructor(
      * 선택 초기화 및 책 목록 새로고침
      */
     private suspend fun resetSelection() {
+        // 🆕 다운로드 진행 상태 해제
         _state.update {
             it.copy(
+                isDownloading = false,
+                downloadingBookIds = emptySet(),
                 selectedBookIds = emptySet(),
                 totalSelectedSize = 0L,
                 pendingActionType = null
@@ -1040,11 +1244,11 @@ class BookshelfViewModel @Inject constructor(
             _state.update { it.copy(books = freshBooks) }
 
             // 3. 현재 활성화된 탭에 따라 UI 새로고침
-            when (_state.value.selectedManagementTab) {
-                ManagementTab.DOWNLOAD -> loadDownloadableBooks()
-                ManagementTab.UPDATE -> loadUpdatableBooks(freshBooks)
-                ManagementTab.DELETE -> loadDeletableBooks(freshBooks)
-            }
+        when (_state.value.selectedManagementTab) {
+            ManagementTab.DOWNLOAD -> loadDownloadableBooks(freshBooks)
+            ManagementTab.UPDATE -> loadUpdatableBooks(freshBooks)
+            ManagementTab.DELETE -> loadDeletableBooks(freshBooks)
+        }
         } else {
             handleActionError("책 목록 새로고침", freshBooksResult.exceptionOrNull() ?: Exception("Unknown error"))
         }
@@ -1059,6 +1263,8 @@ class BookshelfViewModel @Inject constructor(
         Log.e("BookshelfViewModel", "❌ Error in $actionName", error)
         _state.update {
             it.copy(
+                isDownloading = false, // 🆕 오류 시 다운로드 상태 해제
+                downloadingBookIds = emptySet(), // 🆕 다운로드 중인 책 ID 목록 초기화
                 error = "${actionName} 작업을 수행할 수 없습니다: ${error.message}"
             )
         }
@@ -1092,22 +1298,41 @@ class BookshelfViewModel @Inject constructor(
                 _state.update { it.copy(isLoadingStoryInfo = true, showStoryInfoDialog = true) }
                 
                 val currentLanguage = _state.value.currentLanguage.code
-                Log.d("BookshelfViewModel", "Loading story info for: $storyId, language: $currentLanguage")
+                Log.d("BookshelfViewModel", "🔍 Loading story info for: $storyId, language: $currentLanguage")
+                
+                // 🔍 현재 책 목록에서 해당 책 찾기
+                val book = _state.value.books.find { it.storyId == storyId }
+                if (book != null) {
+                    Log.d("BookshelfViewModel", "📚 Found book in current list: ${book.title} (isDownloaded: ${book.isDownloaded})")
+                } else {
+                    Log.w("BookshelfViewModel", "⚠️ Book not found in current list: $storyId")
+                    Log.d("BookshelfViewModel", "📚 Available books: ${_state.value.books.map { it.storyId }}")
+                }
+                
+                // 🔍 filteredBooks에서도 확인
+                val filteredBook = _state.value.filteredBooks.find { it.storyId == storyId }
+                if (filteredBook != null) {
+                    Log.d("BookshelfViewModel", "📚 Found book in filtered list: ${filteredBook.title}")
+                } else {
+                    Log.w("BookshelfViewModel", "⚠️ Book not found in filtered list: $storyId")
+                    Log.d("BookshelfViewModel", "📚 Filtered books: ${_state.value.filteredBooks.map { it.storyId }}")
+                }
                 
                 val result = getStoryInfoUseCase(storyId, currentLanguage)
                 
                 result.fold(
                     onSuccess = { storyInfo ->
+                        Log.d("BookshelfViewModel", "✅ Story info loaded successfully")
+                        Log.d("BookshelfViewModel", "📖 StoryInfo - ID: ${storyInfo.storyId}, Summary: ${storyInfo.summary?.take(100)}...")
                         _state.update { 
                             it.copy(
                                 currentStoryInfo = storyInfo,
                                 isLoadingStoryInfo = false
                             )
                         }
-                        Log.d("BookshelfViewModel", "Story info loaded successfully: ${storyInfo.summary?.take(50)}...")
                     },
                     onFailure = { error ->
-                        Log.e("BookshelfViewModel", "Error loading story info", error)
+                        Log.e("BookshelfViewModel", "❌ Error loading story info for $storyId", error)
                         _state.update {
                             it.copy(
                                 isLoadingStoryInfo = false,
@@ -1119,7 +1344,7 @@ class BookshelfViewModel @Inject constructor(
                 )
                 
             } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Exception in loadStoryInfo", e)
+                Log.e("BookshelfViewModel", "❌ Exception in loadStoryInfo for $storyId", e)
                 _state.update {
                     it.copy(
                         isLoadingStoryInfo = false,
@@ -1140,6 +1365,44 @@ class BookshelfViewModel @Inject constructor(
                 showStoryInfoDialog = false,
                 currentStoryInfo = null,
                 isLoadingStoryInfo = false
+            )
+        }
+    }
+    
+    /**
+     * 작업 완료 다이얼로그 닫기
+     */
+    private fun dismissActionCompletionDialog() {
+        _state.update {
+            it.copy(
+                showActionCompletionDialog = false,
+                completionActionType = null,
+                completedItemsCount = 0
+            )
+        }
+    }
+    
+    /**
+     * 작업 완료 다이얼로그 표시
+     */
+    private fun showActionCompletionDialog(actionType: ManagementActionType, completedCount: Int) {
+        _state.update {
+            it.copy(
+                showActionCompletionDialog = true,
+                completionActionType = actionType,
+                completedItemsCount = completedCount
+            )
+        }
+    }
+    
+    /**
+     * Unlock 팝업 닫기
+     */
+    private fun dismissUnlockPopup() {
+        _state.update {
+            it.copy(
+                showUnlockPopup = false,
+                unlockedLevelGroup = null
             )
         }
     }

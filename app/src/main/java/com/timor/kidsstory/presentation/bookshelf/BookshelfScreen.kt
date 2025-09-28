@@ -47,14 +47,17 @@ import com.timor.kidsstory.presentation.bookshelf.components.SelectableBookCover
 import com.timor.kidsstory.presentation.bookshelf.components.SelectionConfirmationPopup
 import com.timor.kidsstory.presentation.bookshelf.components.SelectionFloatingActionButton
 import com.timor.kidsstory.presentation.bookshelf.components.ActionType
+import com.timor.kidsstory.presentation.bookshelf.components.ActionCompletionDialog
 import com.timor.kidsstory.presentation.bookshelf.components.AppUpdateDialog
 import com.timor.kidsstory.presentation.bookshelf.components.ReadingStatusFilter
+import com.timor.kidsstory.presentation.bookshelf.components.DownloadProgressDialog
 import com.timor.kidsstory.presentation.bookshelf.components.StoryInfoDialog
 import com.timor.kidsstory.presentation.bookshelf.components.filter.FilterBar
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
 import com.timor.kidsstory.presentation.bookshelf.model.ManagementTab
+import com.timor.kidsstory.presentation.bookshelf.model.ManagementActionType
 import com.timor.kidsstory.presentation.progress.ProgressViewModel
 import com.timor.kidsstory.ui.theme.AppColors
 import androidx.compose.material3.AlertDialog
@@ -298,7 +301,8 @@ private fun BookshelfScreenContent(
                     if (bookshelfState.filteredBooks.isEmpty()) {
                         EmptyBookshelf(
                             isFiltered = bookshelfState.filterBarState.selectedFilter != FilterBarCategory.All,
-                            isLoading = bookshelfState.isLoading
+                            // 🆕 관리 모드에서는 isCheckingUpdates도 고려
+                            isLoading = bookshelfState.isLoading || bookshelfState.isCheckingUpdates
                         )
                     } else {
                         // BookCover 간격을 더 줄이고, FilterBar와 정확히 수직 평행 정렬
@@ -308,18 +312,21 @@ private fun BookshelfScreenContent(
                             verticalArrangement = if (isTablet) Arrangement.spacedBy(48.dp) else Arrangement.spacedBy(24.dp), // 태블릿 간격 넓힘, 폰 간격 12dp
                             contentPadding = if (isTablet) PaddingValues(
                                 start = 48.dp, // FilterBar 시작점과 정확히 수직 평행 정렬
-                                end = 40.dp,
+                                end = if (bookshelfState.isManagementMode) 48.dp else 40.dp, // 🆕 관리 모드에서는 왼쪽과 동일하게
                                 top = 24.dp,
                                 bottom = 40.dp
                             ) else PaddingValues(
                                 start = 48.dp, // FilterBar 시작점과 정확히 수직 평행 정렬
-                                end = 16.dp, // 오른쪽은 좌우 비대칭으로 더 많은 공간 확보
+                                end = if (bookshelfState.isManagementMode) 48.dp else 16.dp, // 🆕 관리 모드에서는 왼쪽과 동일하게
                                 top = 12.dp,
                                 bottom = 12.dp
                             ),
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            items(bookshelfState.filteredBooks) { book ->
+                            items(
+                                items = bookshelfState.filteredBooks,
+                                key = { book -> book.storyId } // 🔄 각 책의 고유 ID로 key 지정
+                            ) { book ->
                                 // 🆕 관리 모드에 따른 BookCover 전환
                                 if (bookshelfState.isManagementMode) {
                                     // 관리 모드: SelectableBookCover (체크박스 지원)
@@ -347,23 +354,26 @@ private fun BookshelfScreenContent(
                                     }
                                     
                                     val currentUnlockedStep = bookshelfState.unlockedSteps[groupKey] ?: 0
-                                    val isLocked = book.unlockStep > 0 && currentUnlockedStep < book.unlockStep
+                                    val isLocked = book.isDownloaded && book.unlockStep > 0 && currentUnlockedStep < book.unlockStep
                                     
                                     // 🆕 디버깅 로그 추가
-                                    Log.d("BookshelfScreen", "🔓 Book: ${book.title}, ID: ${book.storyId}, Level: ${book.level}, UnlockStep: ${book.unlockStep}, GroupKey: $groupKey, CurrentUnlockedStep: $currentUnlockedStep, IsLocked: $isLocked")
+                                    Log.d("BookshelfScreen", "🔓 Book: ${book.title}, ID: ${book.storyId}, Level: ${book.level}, UnlockStep: ${book.unlockStep}, IsDownloaded: ${book.isDownloaded}, GroupKey: $groupKey, CurrentUnlockedStep: $currentUnlockedStep, IsLocked: $isLocked")
                                     
                                     BookCover(
                                         book = book,
                                         isLocked = isLocked,
                                         onClick = { 
-                                            onBookshelfAction(
-                                                BookShelfAction.BookSelect(bookshelfState.books.indexOf(book))
-                                            )
+                                            // 📝 전체 책 리스트에서 올바른 인덱스 찾기
+                                            val bookIndex = bookshelfState.books.indexOfFirst { it.storyId == book.storyId }
+                                            if (bookIndex >= 0) {
+                                                onBookshelfAction(BookShelfAction.BookSelect(bookIndex))
+                                            }
                                         },
                                         onLockedClick = {
                                             onBookshelfAction(BookShelfAction.ShowLockedBookPopup(true))
                                         },
                                         onDoubleClick = {
+                                            // 📝 올바른 storyId 전달 - 이 부분은 이미 정확함
                                             onBookshelfAction(BookShelfAction.ShowStoryInfoDialog(book.storyId))
                                         }
                                     )
@@ -515,12 +525,62 @@ private fun BookshelfScreenContent(
             )
         }
         
+        // 🆕 Unlock 축하 팝업
+        if (bookshelfState.showUnlockPopup && bookshelfState.unlockedLevelGroup != null) {
+            AlertDialog(
+                onDismissRequest = { onBookshelfAction(BookShelfAction.DismissUnlockPopup) },
+                title = {
+                    LocalizedText(
+                        resId = R.string.unlock_popup_title,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                text = {
+                    LocalizedText(
+                        resId = R.string.unlock_popup_message,
+                        formatArgs = arrayOf(bookshelfState.unlockedLevelGroup),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = { onBookshelfAction(BookShelfAction.DismissUnlockPopup) }) {
+                        LocalizedText(
+                            resId = R.string.unlock_popup_button,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            )
+        }
+        
         // StoryInfo Dialog (동화 정보 팝업)
         if (bookshelfState.showStoryInfoDialog && bookshelfState.currentStoryInfo != null) {
             StoryInfoDialog(
                 storyInfo = bookshelfState.currentStoryInfo,
                 onDismiss = {
                     onBookshelfAction(BookShelfAction.DismissStoryInfoDialog)
+                }
+            )
+        }
+        
+        // 🆕 Download Progress Dialog (다운로드 진행 중 표시)
+        DownloadProgressDialog(
+            isVisible = bookshelfState.isDownloading,
+            actionType = bookshelfState.pendingActionType,
+            downloadingCount = bookshelfState.downloadingBookIds.size
+        )
+        
+        // 🆕 Action Completion Dialog (작업 완료 다이얼로그)
+        if (bookshelfState.showActionCompletionDialog && bookshelfState.completionActionType != null) {
+            ActionCompletionDialog(
+                actionType = when (bookshelfState.completionActionType) {
+                    ManagementActionType.DOWNLOAD -> ActionType.DOWNLOAD
+                    ManagementActionType.UPDATE -> ActionType.UPDATE
+                    ManagementActionType.DELETE -> ActionType.DELETE
+                },
+                completedCount = bookshelfState.completedItemsCount,
+                onDismiss = {
+                    onBookshelfAction(BookShelfAction.DismissActionCompletionDialog)
                 }
             )
         }
