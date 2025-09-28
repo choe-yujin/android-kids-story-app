@@ -16,9 +16,9 @@ object PageMapper {
     private const val TAG = "PageMapper"
 
     /**
-     * UnifiedPageDto를 도메인 Page 객체로 변환
+     * 🆕 리팩토링된 UnifiedPageDto를 도메인 Page 객체로 변환 (비동기)
      */
-    fun fromUnified(
+    suspend fun fromUnified(
         unifiedPage: UnifiedPageDto,
         storyBaseId: String,
         languageCode: String,
@@ -34,8 +34,9 @@ object PageMapper {
             // 🆕 규칙 기반 자동 생성
             generateImageFileName(bookId, languageCode, unifiedPage.pageNumber)
         }
+        Log.d(TAG, "Generated image file name: $imageFileName for page ${unifiedPage.pageNumber}")
 
-        // 이미지 경로 - HybridContentManager를 통해 올바른 경로 결정
+        // 🆕 이미지 경로 - HybridContentManager를 통해 DB 기반으로 결정
         val imageUrl = if (hybridContentManager != null) {
             val url = hybridContentManager.getImageUrl(bookId, imageFileName)
             if (url != null) {
@@ -43,7 +44,7 @@ object PageMapper {
                 url
             } else {
                 Log.w(TAG, "📷 Image not found in hybrid storage: $imageFileName")
-                ""  // 🆕 null 대신 빈 문자연
+                ""  // null 대신 빈 문자열
             }
         } else {
             // Fallback: assets 경로 (하위 호환성)
@@ -63,20 +64,13 @@ object PageMapper {
     /**
      * 이미지 파일명 자동 생성 규칙
      * 
-     * - pageNumber 0: cover_{bookId}_{lang}.jpg (커버 이미지)
-     * - pageNumber 1+: book_{bookId}_page_{pageNumber}.jpg (본문 페이지)
+     * - book_{bookId}_page_{pageNumber}.jpg (본문 페이지)
      */
     private fun generateImageFileName(
         bookId: Int,
         languageCode: String,
         pageNumber: Int
     ): String {
-        return if (pageNumber == 0) {
-            // 커버 이미지
-            "cover_${bookId}_${languageCode}.jpg"
-        } else {
-            // 본문 페이지 이미지
-            "book_${bookId}_page_${pageNumber}.jpg"
-        }
+        return "book_${bookId}_page_${pageNumber}.jpg"
     }
 }

@@ -2,8 +2,10 @@ package com.timor.kidsstory.data.repository
 
 import android.util.Log
 import com.timor.kidsstory.data.dto.PageContentResponse
+import com.timor.kidsstory.data.dto.UnifiedBookContent
 import com.timor.kidsstory.data.local.database.dao.HybridBooksDao
 import com.timor.kidsstory.data.local.database.entity.BookSource
+import com.timor.kidsstory.data.local.database.entity.HybridBookEntity
 import com.timor.kidsstory.data.mapper.BookMapper
 import com.timor.kidsstory.domain.manager.content.HybridContentManager
 import com.timor.kidsstory.domain.model.Book
@@ -13,6 +15,7 @@ import com.timor.kidsstory.domain.repository.BookRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -91,16 +94,9 @@ class HybridBookRepositoryImpl @Inject constructor(
         return try {
             Log.d(TAG, "Getting book detail for: $storyId")
 
-            // storyId에서 bookId 추출 (예: "801_ko" -> 801)
-            val parts = storyId.split("_")
-            if (parts.size != 2) {
-                return Result.failure(IllegalArgumentException("Invalid storyId format: $storyId"))
-            }
-
-            val bookId = parts[0].toIntOrNull()
-                ?: return Result.failure(IllegalArgumentException("Invalid bookId in storyId: $storyId"))
-            
-            val normalizedLanguageCode = normalizeLanguageCode(languageCode)
+            // 🔧 통일된 storyId 파싱 사용
+            val (bookId, extractedLanguageCode) = parseStoryId(storyId)
+            val normalizedLanguageCode = normalizeLanguageCode(extractedLanguageCode)
             
             // 🆕 메타데이터 로드
             val metadataResult = hybridContentManager.loadMetadata()
@@ -111,8 +107,11 @@ class HybridBookRepositoryImpl @Inject constructor(
             val bookEntity = hybridBooksDao.getBook(bookId, normalizedLanguageCode)
                 ?: return Result.success(null)
 
-            // 2. 콘텐츠 로드
-            val contentResult = hybridContentManager.loadBookContent(bookId, normalizedLanguageCode)
+            // 2. 통일된 콘텐츠 로딩 로직 사용
+            val contentResult = loadBookContentForEntity(bookEntity)
+            if (contentResult.isFailure) {
+                Log.e(TAG, "Failed to load book content for ${storyId}: ${contentResult.exceptionOrNull()?.message}")
+            }
             val content = contentResult.getOrNull()
 
             // 3. Book 객체로 변환 (🆕 메타데이터 마지막에 전달)
@@ -341,37 +340,107 @@ class HybridBookRepositoryImpl @Inject constructor(
 
     override suspend fun getStoryInfo(storyId: String, languageCode: String): Result<com.timor.kidsstory.domain.model.StoryInfo> {
         return try {
-            val parts = storyId.split("_")
-            if (parts.size != 2) {
-                return Result.failure(IllegalArgumentException("Invalid storyId format: $storyId"))
+            Log.d(TAG, "🔍 Getting story info for: $storyId, language: $languageCode")
+            
+            // 🔧 통일된 storyId 파싱 사용
+            val (bookId, extractedLanguageCode) = parseStoryId(storyId)
+            val normalizedLanguageCode = normalizeLanguageCode(extractedLanguageCode)
+            
+            Log.d(TAG, "🔍 Parsed - bookId: $bookId, language: $normalizedLanguageCode")
+
+            // 🔍 디버깅: DB에 어떤 책들이 있는지 확인
+            val allBooksInLanguage = hybridBooksDao.getAvailableBooksByLanguage(normalizedLanguageCode)
+            Log.d(TAG, "📚 Available books in $normalizedLanguageCode: ${allBooksInLanguage.map { "${it.id} (${it.source})" }}")
+
+            val entity = hybridBooksDao.getBook(bookId, normalizedLanguageCode)
+            if (entity == null) {
+                Log.e(TAG, "❌ Book not found in DB: bookId=$bookId, language=$normalizedLanguageCode")
+                return Result.failure(NoSuchElementException("Book not found in DB"))
             }
 
-            val bookId = parts[0].toIntOrNull()
-                ?: return Result.failure(IllegalArgumentException("Invalid bookId in storyId: $storyId"))
-            
-            val normalizedLanguageCode = normalizeLanguageCode(languageCode)
+            Log.d(TAG, "✅ Found book entity: ${entity.id}, source: ${entity.source}, available: ${entity.isAvailable}")
 
-            val contentResult = hybridContentManager.loadBookContent(bookId, normalizedLanguageCode)
+            // 🔧 통일된 콘텐츠 로딩 로직 사용
+            val contentResult = loadBookContentForEntity(entity)
+            
             if (contentResult.isFailure) {
+                Log.e(TAG, "❌ Failed to load book content for story info", contentResult.exceptionOrNull())
                 return Result.failure(contentResult.exceptionOrNull()!!)
             }
+            
             val unifiedBookContent = contentResult.getOrNull()
-
             if (unifiedBookContent == null) {
+                Log.e(TAG, "❌ Content for storyId $storyId is null")
                 return Result.failure(NoSuchElementException("Content for storyId $storyId not found."))
             }
+
+            Log.d(TAG, "✅ Loaded book content successfully for story info")
 
             val preQuestions = unifiedBookContent.comprehensionChecks?.preQuestions?.map { it.question } ?: emptyList()
             val postQuestions = unifiedBookContent.comprehensionChecks?.postQuestions?.map { it.question } ?: emptyList()
 
-            Result.success(com.timor.kidsstory.domain.model.StoryInfo(
+            val storyInfo = com.timor.kidsstory.domain.model.StoryInfo(
                 storyId = storyId,
                 summary = unifiedBookContent.summary,
                 preQuestions = preQuestions,
                 postQuestions = postQuestions
-            ))
+            )
+            
+            Log.d(TAG, "✅ Story info created successfully for $storyId")
+            Result.success(storyInfo)
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting story info for $storyId", e)
+            Log.d(TAG, "❌ Error getting story info for $storyId", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * storyId 파싱: "103_ko" -> Pair(103, "ko")
+     */
+    private fun parseStoryId(storyId: String): Pair<Int, String> {
+        val parts = storyId.split("_")
+        if (parts.size != 2) {
+            throw IllegalArgumentException("Invalid storyId format: $storyId")
+        }
+        val bookId = parts[0].toIntOrNull()
+            ?: throw IllegalArgumentException("Invalid bookId in storyId: $storyId")
+        return Pair(bookId, parts[1])
+    }
+    
+    /**
+     * 통일된 콘텐츠 로딩 로직
+     */
+    private suspend fun loadBookContentForEntity(entity: HybridBookEntity): Result<UnifiedBookContent> {
+        return try {
+            when (entity.source) {
+                BookSource.BUNDLED -> {
+                    Log.d(TAG, "📚 Loading BUNDLED book content: ${entity.id}")
+                    hybridContentManager.loadBookContent(entity.id, entity.language)
+                }
+                BookSource.DOWNLOADED -> {
+                    Log.d(TAG, "📱 Loading DOWNLOADED book content: ${entity.id}")
+                    Log.d(TAG, "📁 Content path: ${entity.contentPath}")
+                    
+                    // 파일 존재 여부 확인
+                    if (!File(entity.contentPath).exists()) {
+                        Log.e(TAG, "❌ Content file does not exist: ${entity.contentPath}")
+                        // 누락된 파일이 있는 책을 비활성화
+                        try {
+                            hybridBooksDao.updateBookAvailability(entity.id, entity.language, false)
+                            Log.w(TAG, "⚠️ Marked book as unavailable: ${entity.id}/${entity.language}")
+                        } catch (e: Exception) {
+                            Log.e(TAG, "❌ Failed to update book availability", e)
+                        }
+                        return Result.failure(IllegalStateException("Downloaded content file not found: ${entity.contentPath}"))
+                    }
+                    
+                    val contentBasePath = File(entity.contentPath).parent
+                    Log.d(TAG, "📁 Content base path: $contentBasePath")
+                    hybridContentManager.loadBookContent(entity.id, entity.language, contentBasePath)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error loading book content for entity ${entity.id}/${entity.language}", e)
             Result.failure(e)
         }
     }

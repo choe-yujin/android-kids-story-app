@@ -19,6 +19,7 @@ data class HybridBookEntity(
     val title: String,                    // 책 제목
     val level: Int,                       // 읽기 레벨 (1-5)
     val category: String,                 // 카테고리
+    val unlockStep: Int = 0,              // 🆕 잠금 해제 단계
     val countryOfOrigin: String,          // 원산지
     
     // 파일 경로 정보

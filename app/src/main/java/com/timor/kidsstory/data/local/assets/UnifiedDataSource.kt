@@ -27,7 +27,7 @@ class UnifiedDataSource @Inject constructor(
     }
 
     companion object {
-        private const val REMOTE_METADATA_URL = "https://raw.githubusercontent.com/choe-yujin/android-kids-story-app/main/app/src/main/assets/books_metadata_hybrid.json"
+        private const val REMOTE_METADATA_URL = "https://raw.githubusercontent.com/choe-yujin/storybook-assets/master/books_metadata_hybrid.json"
     }
 
     suspend fun loadRemoteBooksMetadata(): Result<HybridBooksMetadata> = withContext(Dispatchers.IO) {

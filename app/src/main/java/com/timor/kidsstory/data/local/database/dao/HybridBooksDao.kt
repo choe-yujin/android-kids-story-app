@@ -48,13 +48,13 @@ interface HybridBooksDao {
     /**
      * 모든 책 조회 (언어별)
      */
-    @Query("SELECT * FROM hybrid_books WHERE language = :language ORDER BY level ASC, id ASC")
+    @Query("SELECT * FROM hybrid_books WHERE language = :language ORDER BY level ASC, unlockStep ASC, id ASC")
     suspend fun getAllBooksByLanguage(language: String): List<HybridBookEntity>
     
     /**
      * 사용 가능한 책만 조회 (언어별)
      */
-    @Query("SELECT * FROM hybrid_books WHERE language = :language AND isAvailable = 1 ORDER BY level ASC, id ASC")
+    @Query("SELECT * FROM hybrid_books WHERE language = :language AND isAvailable = 1 ORDER BY level ASC, unlockStep ASC, id ASC")
     suspend fun getAvailableBooksByLanguage(language: String): List<HybridBookEntity>
     
     /**
@@ -127,12 +127,18 @@ interface HybridBooksDao {
     @Query("UPDATE hybrid_books SET imageAssetsVersion = :newVersion, lastUpdated = :timestamp WHERE id = :bookId AND language = :language")
     suspend fun updateImageAssetsVersion(bookId: Int, language: String, newVersion: Int, timestamp: Long = System.currentTimeMillis())
     
+    /**
+     * 책 가용성 상태 업데이트
+     */
+    @Query("UPDATE hybrid_books SET isAvailable = :isAvailable, lastUpdated = :timestamp WHERE id = :bookId AND language = :language")
+    suspend fun updateBookAvailability(bookId: Int, language: String, isAvailable: Boolean, timestamp: Long = System.currentTimeMillis())
+    
     // ========== 실시간 관찰 ==========
     
     /**
      * 언어별 책 목록 실시간 관찰
      */
-    @Query("SELECT * FROM hybrid_books WHERE language = :language AND isAvailable = 1 ORDER BY level ASC, id ASC")
+    @Query("SELECT * FROM hybrid_books WHERE language = :language AND isAvailable = 1 ORDER BY level ASC, unlockStep ASC, id ASC")
     fun observeBooksByLanguage(language: String): Flow<List<HybridBookEntity>>
     
     /**

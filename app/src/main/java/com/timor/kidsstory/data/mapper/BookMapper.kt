@@ -20,7 +20,7 @@ object BookMapper {
     /**
      * 통합 메타데이터 구조를 도메인 Book으로 변환
      */
-    fun fromUnified(
+    suspend fun fromUnified(
         metadata: HybridBookMetadata,
         languageCode: String,
         content: UnifiedBookContent? = null,
@@ -41,15 +41,19 @@ object BookMapper {
             "file:///android_asset/images/$baseId/cover_${metadata.id}_$normalizedLang.jpg"
         }
         
-        // 페이지 매핑
-        val pages = content?.pages?.map { unifiedPage ->
-            PageMapper.fromUnified(
-                unifiedPage = unifiedPage,
-                storyBaseId = baseId,
-                languageCode = normalizedLang,
-                hybridContentManager = hybridContentManager
-            )
-        }?.sortedBy { it.pageNumber } ?: emptyList()
+        // 🆕 페이지 매핑 (비동기)
+        val pages = if (content?.pages != null) {
+            content.pages.map { unifiedPage ->
+                PageMapper.fromUnified(
+                    unifiedPage = unifiedPage,
+                    storyBaseId = baseId,
+                    languageCode = normalizedLang,
+                    hybridContentManager = hybridContentManager
+                )
+            }.sortedBy { it.pageNumber }
+        } else {
+            emptyList()
+        }
         
         val totalPages = pages.size
         val pagesWithTotalInfo = pages.map { it.copy(totalPages = totalPages) }
@@ -79,7 +83,7 @@ object BookMapper {
             coverImage = coverImageUrl,
             level = metadata.level,
             category = metadata.category,
-            unlockStep = metadata.unlockStep,
+            unlockStep = metadata.unlockStep, // 🆕 메타데이터에서 unlockStep 매핑
             pageCount = totalPages,
             contributors = contributors,
             sponsors = emptyList(),
@@ -94,30 +98,39 @@ object BookMapper {
     }
 
     /**
-     * HybridBookEntity를 도메인 Book으로 변환
+     * 🆕 리팩토링된 HybridBookEntity를 도메인 Book으로 변환 (비동기)
      */
-    fun fromHybridEntity(
+    suspend fun fromHybridEntity(
         entity: HybridBookEntity,
         content: UnifiedBookContent? = null,
         hybridContentManager: HybridContentManager? = null,
         metadata: HybridBookMetadata? = null // 🆕 메타데이터 마지막에 추가
     ): Book {
+        Log.d("BookMapper", "Mapping from HybridEntity for ${entity.id}_${entity.language}, content is null: ${content == null}")
         val storyId = "${entity.id}_${entity.language}"
         val baseId = entity.id.toString()
         
-        // 커버 이미지 경로 - HybridContentManager를 통해 결정
+        // 🆕 커버 이미지 경로 - HybridContentManager를 통해 DB 기반으로 결정
         val coverImageUrl = if (hybridContentManager != null) {
             val coverFileName = "cover_${entity.id}_${entity.language}.jpg"
             hybridContentManager.getImageUrl(entity.id, coverFileName)
-                ?: ""  // 🆕 null일 경우 빈 문자열
+                ?: run {
+                    // HybridContentManager에서 찾지 못하면 entity 경로 직접 사용
+                    Log.w("BookMapper", "Image not found via HybridContentManager, using entity path: ${entity.coverImagePath}")
+                    if (entity.coverImagePath.startsWith("file://")) {
+                        entity.coverImagePath
+                    } else {
+                        "file://${entity.coverImagePath}"
+                    }
+                }
         } else if (entity.coverImagePath.startsWith("file://")) {
             entity.coverImagePath
         } else {
-            "file://${entity.coverImagePath}"
+            "file://${entity.coverImagePath}"  // 직접 entity에서 경로 사용
         }
         
-        // 🆕 unlockStep 설정: 메타데이터 우선, 없으면 0
-        val unlockStep = metadata?.unlockStep ?: 0
+        // 🆕 unlockStep 설정: entity에서 우선, 메타데이터로 백업
+        val unlockStep = entity.unlockStep.takeIf { it > 0 } ?: metadata?.unlockStep ?: 0
         
         // 🆕 총 용량 계산 (JSON 콘텐츠 + 이미지 파일들)
         val totalSize = if (hybridContentManager != null) {
@@ -129,15 +142,19 @@ object BookMapper {
         // 🆕 tags 설정: 메타데이터에서 가져오거나 entity에서 가져오기
         val tags = metadata?.languages?.get(entity.language)?.tags ?: entity.tags
         
-        // 페이지 매핑
-        val pages = content?.pages?.map { unifiedPage ->
-            PageMapper.fromUnified(
-                unifiedPage = unifiedPage,
-                storyBaseId = baseId,
-                languageCode = entity.language,
-                hybridContentManager = hybridContentManager
-            )
-        }?.sortedBy { it.pageNumber } ?: emptyList()
+        // 🆕 페이지 매핑 (비동기)
+        val pages = if (content?.pages != null) {
+            content.pages.map { unifiedPage ->
+                PageMapper.fromUnified(
+                    unifiedPage = unifiedPage,
+                    storyBaseId = baseId,
+                    languageCode = entity.language,
+                    hybridContentManager = hybridContentManager
+                )
+            }.sortedBy { it.pageNumber }
+        } else {
+            emptyList()
+        }
         
         val totalPages = pages.size
         val pagesWithTotalInfo = pages.map { it.copy(totalPages = totalPages) }

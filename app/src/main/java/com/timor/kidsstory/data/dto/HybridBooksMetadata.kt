@@ -22,16 +22,20 @@ data class HybridBookMetadata(
     val aiFeatures: List<String> = emptyList(),
     val imageAssetsUrl: String,
     val imageAssetsVersion: Int,
+    val imageAssetsSize: Long = 0,
     val languages: Map<String, HybridLanguageContent>
 )
 
 @Serializable 
 data class HybridLanguageContent(
     val title: String,
+    val summary: String = "",
     val coverImageUrl: String,
     val contentUrl: String,
     val coverVersion: Int,
     val contentVersion: Int,
+    val coverImageSize: Long = 0,
+    val contentSize: Long = 0,
     val isBundled: Boolean = true,
     val tags: List<String> = emptyList()
 )
