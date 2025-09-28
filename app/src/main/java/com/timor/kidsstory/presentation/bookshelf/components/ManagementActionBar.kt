@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.presentation.bookshelf.model.ManagementActionType
+import com.timor.kidsstory.presentation.util.formatFileSize
 
 /**
  * 관리 모드 하단 작업 바
@@ -99,7 +100,7 @@ fun ManagementActionBar(
                 if (deleteCount > 0) {
                     ActionButton(
                         text = "선택 삭제 ($deleteCount)",
-                        icon = R.drawable.ic_delete,
+                        icon = R.drawable.ic_trash,
                         backgroundColor = AppColors.yellowRed500,
                         onClick = onDeleteClick,
                         modifier = Modifier.weight(1f)
@@ -140,17 +141,5 @@ private fun ActionButton(
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
         )
-    }
-}
-
-/**
- * 파일 크기를 읽기 쉬운 형식으로 변환
- */
-private fun formatFileSize(bytes: Long): String {
-    return when {
-        bytes < 1024 -> "$bytes B"
-        bytes < 1024 * 1024 -> "${bytes / 1024} KB"
-        bytes < 1024 * 1024 * 1024 -> "${bytes / (1024 * 1024)} MB"
-        else -> String.format("%.1f GB", bytes / (1024.0 * 1024.0 * 1024.0))
     }
 }

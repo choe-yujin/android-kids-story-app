@@ -22,7 +22,24 @@ import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.components.LocalizedText
+import com.timor.kidsstory.presentation.util.formatFileSize
 import java.text.DecimalFormat
+
+/**
+ * 카테고리 이름을 사람이 읽기 쉬운 형태로 변환
+ */
+private fun getCategoryDisplayName(category: String): String {
+    return when (category.lowercase()) {
+        "environment", "nature" -> "Nature"
+        "science", "math" -> "Science"
+        "culture", "world" -> "Culture"
+        "social", "emotional", "emotion" -> "Emotion"
+        "folktales", "history", "stories" -> "Stories"
+        "daily", "life", "daily_life" -> "Daily Life"
+        "adventure", "fantasy" -> "Adventure"
+        else -> category.replaceFirstChar { it.uppercase() }
+    }
+}
 
 /**
  * 선택된 항목들에 대한 최종 확인 팝업
@@ -45,7 +62,8 @@ fun SelectionConfirmationPopup(
     Dialog(onDismissRequest = onCancel) {
         Card(
             modifier = modifier
-                .fillMaxWidth()
+                .fillMaxWidth(0.95f) // 🆕 가로 폭을 더 넓게 확장 (85% -> 95%)
+                .fillMaxHeight(0.85f) // 🆕 세로 높이를 더 높게 확장 (70% -> 85%)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
@@ -53,39 +71,45 @@ fun SelectionConfirmationPopup(
             )
         ) {
             Column(
-                modifier = Modifier.padding(20.dp)
+                modifier = Modifier.fillMaxSize()
             ) {
-                // 헤더
+                // 헤더 (고정)
                 PopupHeader(
                     actionType = actionType,
                     selectedCount = selectedBooks.size,
-                    totalSize = totalSize
+                    totalSize = totalSize,
+                    modifier = Modifier.padding(20.dp)
                 )
                 
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                // 선택된 항목 목록
-                SelectedItemsList(
-                    books = selectedBooks,
+                // 스크롤 가능한 콘텐츠 영역
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 200.dp)
-                )
-                
-                Spacer(modifier = Modifier.height(20.dp))
-                
-                // 용량 경고 (1GB 이상일 때)
-                if (isLargeDownload) {
-                    WarningMessage(totalSizeGB = totalSizeGB)
-                    Spacer(modifier = Modifier.height(16.dp))
+                        .weight(1f)
+                        .padding(horizontal = 20.dp)
+                ) {
+                    // 선택된 항목 목록 (스크롤 가능)
+                    SelectedItemsList(
+                        books = selectedBooks,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f) // 🆕 남은 공간을 모두 차지하되 스크롤 가능
+                    )
+                    
+                    // 용량 경고 (1GB 이상일 때)
+                    if (isLargeDownload) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        WarningMessage(totalSizeGB = totalSizeGB)
+                    }
                 }
                 
-                // 버튼들
+                // 버튼들 (하단 고정)
                 ActionButtons(
                     actionType = actionType,
                     onConfirm = onConfirm,
                     onCancel = onCancel,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
                 )
             }
         }
@@ -103,24 +127,7 @@ private fun PopupHeader(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            painter = painterResource(
-                when (actionType) {
-                    ActionType.DOWNLOAD -> R.drawable.ic_download
-                    ActionType.UPDATE -> R.drawable.ic_update
-                    ActionType.DELETE -> R.drawable.ic_delete
-                }
-            ),
-            contentDescription = null,
-            tint = when (actionType) {
-                ActionType.DOWNLOAD -> AppColors.blue500
-                ActionType.UPDATE -> AppColors.yellowRed500
-                ActionType.DELETE -> AppColors.red600
-            },
-            modifier = Modifier.size(32.dp)
-        )
-        
-        Spacer(modifier = Modifier.height(12.dp))
+        // 🆕 아이콘 제거
         
         // 🆕 다국어 처리
         LocalizedText(
@@ -131,12 +138,14 @@ private fun PopupHeader(
             },
             formatArgs = arrayOf(selectedCount),
             style = TextStyle(
-                fontSize = 18.sp,
+                fontSize = 20.sp, // 🆕 아이콘 제거로 인해 제목 크기 증가
                 fontWeight = FontWeight.Bold,
                 color = AppColors.neutral800,
                 textAlign = TextAlign.Center
             )
         )
+        
+        Spacer(modifier = Modifier.height(8.dp))
         
         // 🆕 다국어 처리
         LocalizedText(
@@ -191,11 +200,31 @@ private fun SelectedBookItem(
                 color = AppColors.neutral800,
                 maxLines = 1
             )
-            Text(
-                text = "Level ${book.level}",
-                fontSize = 12.sp,
-                color = AppColors.neutral500
-            )
+            
+            // 🆕 레벨과 카테고리 정보 추가
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Level ${book.level}",
+                    fontSize = 12.sp,
+                    color = AppColors.neutral500
+                )
+                
+                Text(
+                    text = "•", // 분리 도트
+                    fontSize = 12.sp,
+                    color = AppColors.neutral400
+                )
+                
+                Text(
+                    text = getCategoryDisplayName(book.category),
+                    fontSize = 12.sp,
+                    color = AppColors.neutral500,
+                    maxLines = 1
+                )
+            }
         }
         
         Text(
@@ -311,30 +340,6 @@ enum class ActionType {
     DOWNLOAD,
     UPDATE,
     DELETE
-}
-
-/**
- * 파일 크기를 사람이 읽기 쉬운 형태로 변환
- */
-private fun formatFileSize(bytes: Long): String {
-    if (bytes == 0L) return "0 B"
-    
-    val units = arrayOf("B", "KB", "MB", "GB")
-    var size = bytes.toDouble()
-    var unitIndex = 0
-    
-    while (size >= 1024 && unitIndex < units.size - 1) {
-        size /= 1024
-        unitIndex++
-    }
-    
-    val format = if (size >= 100) {
-        DecimalFormat("#")
-    } else {
-        DecimalFormat("#.#")
-    }
-    
-    return "${format.format(size)} ${units[unitIndex]}"
 }
 
 // 추가 확장 속성들 (AppColors에 없는 색상들을 위한 임시 해결책)

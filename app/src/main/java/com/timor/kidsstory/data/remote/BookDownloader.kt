@@ -2,8 +2,9 @@ package com.timor.kidsstory.data.remote
 
 import android.content.Context
 import android.util.Log
-import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
-import com.timor.kidsstory.data.local.database.entity.DownloadedBookEntity
+import com.timor.kidsstory.data.local.database.dao.HybridBooksDao
+import com.timor.kidsstory.data.local.database.entity.BookSource
+import com.timor.kidsstory.data.local.database.entity.HybridBookEntity
 import com.timor.kidsstory.data.local.assets.UnifiedDataSource
 import com.timor.kidsstory.data.mapper.BookMapper
 import com.timor.kidsstory.data.remote.network.BookNetworkService
@@ -21,15 +22,20 @@ import javax.inject.Singleton
 private const val TAG = "BookDownloader"
 
 /**
- * 통합 구조 전용 책 다운로드 관리 클래스
- * - 새로운 통합 메타데이터 구조만 지원
- * - GitHub에서 책 콘텐츠 다운로드
+ * 📂 새로운 폴더 구조:
+ * downloaded_books/{bookId}/
+ * ├── cover_{bookId}_{lang}.jpg    ← 북커버 (언어별, bookDir 직하위)
+ * ├── {bookId}_{lang}.json         ← JSON 콘텐츠 (언어별, bookDir 직하위)
+ * └── images/                      ← 페이지 이미지들 (공통, 하위 폴더)
+ *     ├── book_{bookId}_page_0.jpg
+ *     ├── book_{bookId}_page_1.jpg
+ *     └── ...
  */
 @Singleton
 class BookDownloader @Inject constructor(
     private val context: Context,
     private val networkService: BookNetworkService,
-    private val downloadedBooksDao: DownloadedBooksDao,
+    private val hybridBooksDao: HybridBooksDao,
     private val unifiedDataSource: UnifiedDataSource
 ) {
     /**
@@ -48,7 +54,7 @@ class BookDownloader @Inject constructor(
 
     /**
      * GitHub에서 책 다운로드
-     * 
+     *
      * @param bookId 책 ID (예: 801)
      * @param languageCode 언어 코드 (예: "ko", "en", "tet")
      * @return 다운로드된 Book 객체
@@ -56,11 +62,11 @@ class BookDownloader @Inject constructor(
     suspend fun downloadBook(bookId: Int, languageCode: String): Result<Book> {
         return try {
             Log.d(TAG, "Starting download for book $bookId in $languageCode")
-            
+
             val normalizedLang = normalizeLanguageCode(languageCode)
-            
+
             // 1. 이미 다운로드된 책인지 확인
-            val isAlreadyDownloaded = downloadedBooksDao.isBookDownloaded(bookId, normalizedLang)
+            val isAlreadyDownloaded = hybridBooksDao.isBookExists(bookId, normalizedLang)
             if (isAlreadyDownloaded) {
                 Log.d(TAG, "Book $bookId already downloaded, loading from local storage")
                 val existingBook = loadDownloadedBook(bookId, normalizedLang)
@@ -69,8 +75,7 @@ class BookDownloader @Inject constructor(
                 }
             }
 
-            // 2. GitHub에서 메타데이터 확인
-            val metadataResult = unifiedDataSource.loadBooksMetadata()
+            val metadataResult = unifiedDataSource.loadRemoteBooksMetadata()
             if (metadataResult.isFailure) {
                 return Result.failure(metadataResult.exceptionOrNull()!!)
             }
@@ -82,59 +87,120 @@ class BookDownloader @Inject constructor(
             val languageContent = bookMeta.languages[normalizedLang]
                 ?: return Result.failure(IllegalArgumentException("Language $normalizedLang not supported for book $bookId"))
 
-            // 3. 다운로드 URL 구성 (GitHub Raw URL)
-            val baseUrl = "https://raw.githubusercontent.com/your-repo/android-kids-story-app/main"
-            val contentUrl = "$baseUrl/app/src/main/assets/content/${bookId}_${normalizedLang}.json"
-            val imagesZipUrl = "$baseUrl/app/src/main/assets/images/${bookId}_images.zip"
-            
-            // 4. 다운로드 디렉토리 생성
+            // 3. Get URLs from metadata
+            val contentUrl = languageContent.contentUrl
+            val imagesZipUrl = bookMeta.imageAssetsUrl
+
+            // 4. 📂 새로운 디렉토리 구조 생성
             val bookDir = File(downloadedBooksDir, bookId.toString()).apply { mkdirs() }
-            val contentDir = File(bookDir, "content").apply { mkdirs() }
             val imagesDir = File(bookDir, "images").apply { mkdirs() }
 
-            // 5. 콘텐츠 JSON 다운로드
-            val contentFile = File(contentDir, "${bookId}_${normalizedLang}.json")
+            // 5. 📝 콘텐츠 JSON 다운로드 (bookDir 직하위)
+            val contentFile = File(bookDir, "${bookId}_${normalizedLang}.json")
             val contentDownloaded = networkService.downloadFile(contentUrl, contentFile)
             if (!contentDownloaded) {
                 return Result.failure(Exception("Failed to download content JSON"))
             }
 
-            // 6. 이미지 ZIP 다운로드 (다른 언어 버전이 없는 경우에만)
-            val existingVersions = downloadedBooksDao.getDownloadedBooksByStoryId(bookId.toString())
-            val hasOtherLanguage = existingVersions.isNotEmpty()
-            val imagesExist = imagesDir.exists() && imagesDir.listFiles()?.isNotEmpty() == true
-
-            if (!hasOtherLanguage && !imagesExist) {
-                val zipFile = File(bookDir, "images.zip")
-                val imagesDownloaded = networkService.downloadFile(imagesZipUrl, zipFile)
-                
-                if (imagesDownloaded) {
-                    withContext(Dispatchers.IO) {
-                        extractZipFile(zipFile, imagesDir)
-                    }
-                    zipFile.delete()
-                    Log.d(TAG, "Images extracted for book $bookId")
+            // 6. 🖼️ 커버 이미지 개별 다운로드 (bookDir 직하위)
+            val coverFileName = "cover_${bookId}_${normalizedLang}.jpg"
+            val coverFile = File(bookDir, coverFileName)
+            if (!coverFile.exists()) {
+                val coverDownloaded = networkService.downloadFile(languageContent.coverImageUrl, coverFile)
+                if (coverDownloaded) {
+                    Log.d(TAG, "📸 Cover image downloaded: ${coverFile.absolutePath}")
+                } else {
+                    Log.w(TAG, "⚠️ Failed to download cover image, will try from ZIP")
                 }
             }
 
-            // 7. 다운로드 정보를 데이터베이스에 저장
-            val downloadEntity = DownloadedBookEntity(
+            // 7. 📦 이미지 ZIP 다운로드 조건 수정
+            val existingVersions = hybridBooksDao.getBooksByStoryId(bookId)
+            val hasOtherLanguage = existingVersions.isNotEmpty()
+
+            // 🔧 수정: images 폴더에 페이지 이미지가 있는지만 확인
+            val pageImagePattern = "book_${bookId}_page_"
+            val hasPageImages = imagesDir.listFiles()?.any {
+                it.name.startsWith(pageImagePattern)
+            } == true
+
+            Log.d(TAG, "📋 Images download check for book $bookId:")
+            Log.d(TAG, "  - Existing versions in DB: ${existingVersions.size}")
+            existingVersions.forEach { version ->
+                Log.d(TAG, "    * ${version.language} (${version.source})")
+            }
+            Log.d(TAG, "  - Has other language: $hasOtherLanguage")
+            Log.d(TAG, "  - Images dir exists: ${imagesDir.exists()}")
+            if (imagesDir.exists()) {
+                val imageFiles = imagesDir.listFiles() ?: emptyArray()
+                Log.d(TAG, "  - Images dir file count: ${imageFiles.size}")
+                imageFiles.take(5).forEach { file ->
+                    Log.d(TAG, "    * ${file.name}")
+                }
+            }
+            Log.d(TAG, "  - Has page images: $hasPageImages")
+            Log.d(TAG, "  - Will download ZIP: ${!hasPageImages}")
+
+            // 🔧 수정: 페이지 이미지가 없으면 ZIP 다운로드
+            if (!hasPageImages) {
+                val zipFile = File(bookDir, "images.zip")
+                val imagesDownloaded = networkService.downloadFile(imagesZipUrl, zipFile)
+
+                if (imagesDownloaded) {
+                    Log.d(TAG, "📦 Starting ZIP extraction for book $bookId")
+                    withContext(Dispatchers.IO) {
+                        // 🔧 수정: images 디렉토리로 직접 압축 해제
+                        extractZipFile(zipFile, imagesDir)
+                    }
+
+                    // 🗑️ ZIP 파일 삭제
+                    if (zipFile.exists()) {
+                        zipFile.delete()
+                        Log.d(TAG, "🗑️ ZIP file deleted: ${zipFile.absolutePath}")
+                    }
+
+                    // ✅ 압축 해제 결과 확인
+                    val imageFiles = imagesDir.listFiles()
+                    Log.d(TAG, "✅ Images extracted for book $bookId: ${imageFiles?.size ?: 0} files")
+                    imageFiles?.take(10)?.forEach { file ->
+                        Log.d(TAG, "  - ${file.name}")
+                    }
+                } else {
+                    Log.e(TAG, "❌ Failed to download images ZIP for book $bookId")
+                }
+            } else {
+                Log.d(TAG, "⏭️ Skipping ZIP download for book $bookId (page images already exist)")
+            }
+
+            // 8. 📚 다운로드 정보를 데이터베이스에 저장
+            val hybridBookEntity = HybridBookEntity(
                 id = bookId,
-                storyId = "${bookId}_${normalizedLang}",
                 language = normalizedLang,
                 title = languageContent.title,
-                coverImagePath = "file:///android_asset/images/${bookId}/cover_${bookId}_${normalizedLang}.jpg",
-                contentJsonPath = contentFile.absolutePath,
-                hasImages = true,
-                downloadDate = System.currentTimeMillis(),
+                level = bookMeta.level,
                 category = bookMeta.category,
-                level = bookMeta.level
+                unlockStep = bookMeta.unlockStep,
+                countryOfOrigin = bookMeta.countryOfOrigin,
+
+                // 🔧 수정: 새로운 경로 구조
+                contentPath = contentFile.absolutePath,                    // bookDir 직하위
+                coverImagePath = coverFile.absolutePath,                   // bookDir 직하위
+                imagesDirectoryPath = imagesDir.absolutePath,              // bookDir/images/
+
+                contentVersion = languageContent.contentVersion,
+                coverVersion = languageContent.coverVersion,
+                imageAssetsVersion = bookMeta.imageAssetsVersion,
+                source = BookSource.DOWNLOADED,
+                isAvailable = true,
+                downloadDate = System.currentTimeMillis(),
+                aiFeatures = bookMeta.aiFeatures,
+                tags = languageContent.tags
             )
 
-            downloadedBooksDao.insertDownloadedBook(downloadEntity)
+            hybridBooksDao.insertBook(hybridBookEntity)
             Log.d(TAG, "Book $bookId download completed and saved to database")
 
-            // 8. Book 객체로 변환하여 반환
+            // 9. Book 객체로 변환하여 반환
             loadDownloadedBook(bookId, normalizedLang)
 
         } catch (e: Exception) {
@@ -148,14 +214,14 @@ class BookDownloader @Inject constructor(
      */
     private suspend fun loadDownloadedBook(bookId: Int, languageCode: String): Result<Book> {
         return try {
-            val bookEntity = downloadedBooksDao.getDownloadedBook(bookId, languageCode)
+            val bookEntity = hybridBooksDao.getBook(bookId, languageCode)
                 ?: return Result.failure(IllegalStateException("Downloaded book not found in database"))
 
-            // 외부 콘텐츠 파일에서 로드
+            // 🔧 수정: 새로운 경로에서 콘텐츠 로드
             val contentResult = unifiedDataSource.loadBookContent(
                 bookId = bookId,
                 language = languageCode,
-                contentBasePath = File(bookEntity.contentJsonPath).parent
+                contentBasePath = File(bookEntity.contentPath).parent
             )
 
             if (contentResult.isFailure) {
@@ -163,7 +229,7 @@ class BookDownloader @Inject constructor(
             }
 
             // 메타데이터도 필요
-            val metadataResult = unifiedDataSource.loadBooksMetadata()
+            val metadataResult = unifiedDataSource.loadRemoteBooksMetadata()
             if (metadataResult.isFailure) {
                 return Result.failure(metadataResult.exceptionOrNull()!!)
             }
@@ -198,27 +264,37 @@ class BookDownloader @Inject constructor(
 
             val bookId = parts[0].toIntOrNull()
                 ?: return Result.failure(IllegalArgumentException("Invalid bookId in storyId: $storyId"))
-            
+
             val languageCode = parts[1]
+            val normalizedLang = normalizeLanguageCode(languageCode)
 
             // 데이터베이스에서 삭제
-            val deletedCount = downloadedBooksDao.deleteDownloadedBook(bookId, languageCode)
-            
-            // 해당 언어 파일만 삭제 (다른 언어 버전이 있을 수 있으므로)
+            val deletedCount = hybridBooksDao.deleteBook(bookId, normalizedLang)
+
+            // 🔧 수정: 해당 언어의 파일들만 삭제
             val bookDir = File(downloadedBooksDir, bookId.toString())
-            val contentDir = File(bookDir, "content")
-            val contentFile = File(contentDir, "${bookId}_${languageCode}.json")
-            
+
+            // 콘텐츠 JSON 삭제
+            val contentFile = File(bookDir, "${bookId}_${normalizedLang}.json")
             if (contentFile.exists()) {
                 contentFile.delete()
-                Log.d(TAG, "Content file deleted: ${contentFile.absolutePath}")
+                Log.d(TAG, "📝 Content file deleted: ${contentFile.absolutePath}")
             }
 
-            // 다른 언어 버전이 없으면 전체 폴더 삭제
-            val remainingVersions = downloadedBooksDao.getDownloadedBooksByStoryId(bookId.toString())
+            // 커버 이미지 삭제
+            val coverFile = File(bookDir, "cover_${bookId}_${normalizedLang}.jpg")
+            if (coverFile.exists()) {
+                coverFile.delete()
+                Log.d(TAG, "🖼️ Cover file deleted: ${coverFile.absolutePath}")
+            }
+
+            // 다른 언어 버전이 없으면 images 폴더와 전체 폴더 삭제
+            val remainingVersions = hybridBooksDao.getBooksByStoryId(bookId)
             if (remainingVersions.isEmpty() && bookDir.exists()) {
                 bookDir.deleteRecursively()
-                Log.d(TAG, "Book directory deleted: ${bookDir.absolutePath}")
+                Log.d(TAG, "📂 Book directory deleted: ${bookDir.absolutePath}")
+            } else {
+                Log.d(TAG, "📚 Other language versions exist, keeping images folder")
             }
 
             Log.d(TAG, "Downloaded book deleted: $storyId (rows affected: $deletedCount)")
@@ -252,39 +328,140 @@ class BookDownloader @Inject constructor(
     }
 
     /**
-     * ZIP 파일 압축 해제
+     * ZIP 파일 압축 해제 (images 폴더에 평면적으로 추출)
      */
     private fun extractZipFile(zipFile: File, destinationDir: File) {
         try {
-            Log.d(TAG, "Extracting ZIP file: ${zipFile.path} to ${destinationDir.path}")
+            Log.d(TAG, "📦 Extracting ZIP file: ${zipFile.path} to ${destinationDir.path}")
             ZipInputStream(zipFile.inputStream()).use { zipIn ->
                 var entry = zipIn.nextEntry
                 var entriesExtracted = 0
 
                 while (entry != null) {
-                    val entryFile = File(destinationDir, entry.name)
-                    Log.d(TAG, "Extracting entry: ${entry.name}")
+                    if (!entry.isDirectory) {
+                        // ZIP 내부 경로 구조를 무시하고 파일명만 사용
+                        val fileName = entry.name.substringAfterLast("/")
+                        val outputFile = File(destinationDir, fileName)
 
-                    if (entry.isDirectory) {
-                        entryFile.mkdirs()
-                    } else {
-                        entryFile.parentFile?.mkdirs()
+                        Log.d(TAG, "📄 Extracting: ${entry.name} -> ${outputFile.name}")
 
-                        FileOutputStream(entryFile).use { output ->
+                        outputFile.parentFile?.mkdirs()
+                        FileOutputStream(outputFile).use { output ->
                             zipIn.copyTo(output)
                             entriesExtracted++
                         }
+
+                        Log.d(TAG, "✅ Extracted: ${outputFile.absolutePath}")
                     }
 
                     zipIn.closeEntry()
                     entry = zipIn.nextEntry
                 }
 
-                Log.d(TAG, "ZIP extraction completed. Total entries extracted: $entriesExtracted")
+                Log.d(TAG, "✅ ZIP extraction completed. Total files extracted: $entriesExtracted")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error extracting ZIP file", e)
+            Log.e(TAG, "❌ Error extracting ZIP file", e)
             throw e
+        }
+    }
+
+    /**
+     * 실제 삭제될 용량 계산
+     */
+    suspend fun calculateDeleteSize(
+        bookId: Int,
+        languageCode: String,
+        versionCount: Int? = null
+    ): Long {
+        return try {
+            val normalizedLang = normalizeLanguageCode(languageCode)
+
+            Log.d(TAG, "🗑️ Calculating DELETE size for book $bookId in $normalizedLang")
+
+            val existingVersions = hybridBooksDao.getBooksByStoryId(bookId)
+            val currentLanguageBook = existingVersions.find { it.language == normalizedLang }
+
+            if (currentLanguageBook == null) {
+                Log.d(TAG, "🗑️ Book $bookId ($normalizedLang) not found in database")
+                return 0L
+            }
+
+            var totalSize = 0L
+
+            // 🔧 수정: 새로운 경로 구조에 따른 크기 계산
+
+            // 1. 커버 이미지 크기
+            val coverFile = File(currentLanguageBook.coverImagePath ?: "")
+            if (coverFile.exists()) {
+                totalSize += coverFile.length()
+                Log.d(TAG, "🖼️ Cover file: ${coverFile.name} - ${coverFile.length() / 1024}KB")
+            }
+
+            // 2. 콘텐츠 JSON 크기
+            val contentFile = File(currentLanguageBook.contentPath)
+            if (contentFile.exists()) {
+                totalSize += contentFile.length()
+                Log.d(TAG, "📝 Content file: ${contentFile.name} - ${contentFile.length() / 1024}KB")
+            }
+
+            // 3. 다른 언어 버전 확인
+            val otherLanguageVersions = existingVersions.filter { it.language != normalizedLang }
+            val isLastVersion = versionCount?.let { it <= 1 } ?: otherLanguageVersions.isEmpty()
+
+            Log.d(TAG, "📚 Other language versions: ${otherLanguageVersions.size}, Is last version: $isLastVersion")
+
+            // 4. 마지막 언어 버전이면 images 폴더 전체 크기 포함
+            if (isLastVersion) {
+                val imagesDir = File(currentLanguageBook.imagesDirectoryPath ?: "")
+                if (imagesDir.exists()) {
+                    val imagesFolderSize = calculateDirectorySize(imagesDir)
+                    totalSize += imagesFolderSize
+                    Log.d(TAG, "📁 Images folder size: ${imagesFolderSize / 1024}KB")
+                }
+            }
+
+            Log.d(TAG, "🗑️ Total DELETE size for book $bookId ($normalizedLang): ${totalSize / 1024}KB")
+            totalSize
+
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to calculate delete size for book $bookId in $languageCode", e)
+            // 기본값 반환
+            try {
+                val existingVersions = hybridBooksDao.getBooksByStoryId(bookId)
+                val otherLanguageVersions = existingVersions.filter { it.language != normalizeLanguageCode(languageCode) }
+                val isLastVersion = otherLanguageVersions.isEmpty()
+
+                if (isLastVersion) {
+                    3 * 1024 * 1024L + 250 * 1024L // 3.25MB (전체 삭제)
+                } else {
+                    250 * 1024L // 250KB (언어별 파일만)
+                }
+            } catch (dbError: Exception) {
+                250 * 1024L // 기본값: 250KB
+            }
+        }
+    }
+
+    /**
+     * 디렉토리의 전체 크기 계산
+     */
+    private fun calculateDirectorySize(directory: File): Long {
+        return try {
+            var size = 0L
+
+            directory.listFiles()?.forEach { file ->
+                size += if (file.isDirectory) {
+                    calculateDirectorySize(file)
+                } else {
+                    file.length()
+                }
+            }
+
+            size
+        } catch (e: Exception) {
+            Log.e(TAG, "Error calculating directory size: ${directory.absolutePath}", e)
+            0L
         }
     }
 
@@ -298,6 +475,94 @@ class BookDownloader @Inject constructor(
             language.startsWith("en") -> "en"
             language.startsWith("mn") -> "mn"
             else -> "en"
+        }
+    }
+
+    /**
+     * 실제 다운로드할 용량 계산
+     */
+    suspend fun calculateDownloadSize(bookId: Int, languageCode: String): Long {
+        return try {
+            val normalizedLang = normalizeLanguageCode(languageCode)
+
+            Log.d(TAG, "🔍 Calculating download size for book $bookId in $normalizedLang from metadata")
+
+            // 1. 다른 언어 버전이 이미 있는지 확인
+            val existingVersions = hybridBooksDao.getBooksByStoryId(bookId)
+            val hasOtherLanguage = existingVersions.isNotEmpty()
+
+            Log.d(TAG, "📚 Existing versions for book $bookId: ${existingVersions.size}, Has other language: $hasOtherLanguage")
+
+            // 2. 메타데이터에서 파일 크기 정보 가져오기
+            val metadataResult = unifiedDataSource.loadRemoteBooksMetadata()
+            if (metadataResult.isFailure) {
+                Log.w(TAG, "Failed to load metadata for size calculation")
+                return 0L
+            }
+
+            val metadata = metadataResult.getOrNull()!!
+            val bookMeta = metadata.books.find { it.id == bookId }
+                ?: return 0L
+
+            val languageContent = bookMeta.languages[normalizedLang]
+                ?: return 0L
+
+            var totalSize = 0L
+
+            // 3. 메타데이터에서 직접 크기 정보 사용 (단위: KB -> Bytes)
+            val coverSize = languageContent.coverImageSize * 1024L
+            val contentSize = languageContent.contentSize * 1024L
+
+            totalSize += coverSize
+            totalSize += contentSize
+
+            var imagesSize = 0L
+            // 🔧 수정: 페이지 이미지가 없을 때만 ZIP 다운로드 크기 포함
+            val bookDir = File(downloadedBooksDir, bookId.toString())
+            val imagesDir = File(bookDir, "images")
+            val pageImagePattern = "book_${bookId}_page_"
+            val hasPageImages = imagesDir.exists() && imagesDir.listFiles()?.any {
+                it.name.startsWith(pageImagePattern)
+            } == true
+
+            if (!hasPageImages) {
+                imagesSize = bookMeta.imageAssetsSize * 1024L
+                totalSize += imagesSize
+            }
+
+            if (totalSize == 0L) {
+                Log.w(TAG, "Calculated download size is 0 for book $bookId. Metadata might be missing size information.")
+            }
+
+            Log.d(TAG, "📊 Total download size for book $bookId ($normalizedLang): ${totalSize / 1024}KB")
+            Log.d(TAG, "  - Cover: ${coverSize / 1024}KB")
+            Log.d(TAG, "  - Content: ${contentSize / 1024}KB")
+            if (!hasPageImages) {
+                Log.d(TAG, "  - Images: ${imagesSize / 1024}KB")
+            }
+
+            totalSize
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to calculate download size for book $bookId", e)
+            // 기본값 반환
+            try {
+                val existingVersions = hybridBooksDao.getBooksByStoryId(bookId)
+                val bookDir = File(downloadedBooksDir, bookId.toString())
+                val imagesDir = File(bookDir, "images")
+                val pageImagePattern = "book_${bookId}_page_"
+                val hasPageImages = imagesDir.exists() && imagesDir.listFiles()?.any {
+                    it.name.startsWith(pageImagePattern)
+                } == true
+
+                if (hasPageImages) {
+                    250 * 1024L // 250KB (커버 + 콘텐츠만)
+                } else {
+                    3 * 1024 * 1024L + 250 * 1024L // 3.25MB (커버 + 콘텐츠 + 이미지)
+                }
+            } catch (dbError: Exception) {
+                3 * 1024 * 1024L + 250 * 1024L // 기본값: 3.25MB
+            }
         }
     }
 }

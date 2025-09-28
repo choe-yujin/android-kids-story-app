@@ -17,6 +17,7 @@ import com.timor.kidsstory.ui.components.FontPolicy
 import com.timor.kidsstory.ui.components.LocalizedText
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.AppTextStyles
+import com.timor.kidsstory.presentation.util.formatFileSize
 
 /**
  * 관리 모드 작업 확인 다이얼로그
@@ -31,16 +32,20 @@ fun ManagementConfirmationDialog(
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Surface(
+            modifier = Modifier
+                .fillMaxWidth(1f) // 🔧 가로 폭 확장: 85% → 92%
+                .fillMaxHeight(1f) // 🆕 세로 높이 고정: 화면의 40%
+                .padding(16.dp),
             shape = RoundedCornerShape(20.dp),
             color = AppColors.neutralWhite,
             tonalElevation = 8.dp
         ) {
             Column(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
+                    .padding(20.dp) // 🔧 패딩 증가: 32dp → 40dp
+                    .fillMaxSize(), // 🆕 전체 공간 활용
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp) // 🔧 간격 증가: 20dp → 24dp
             ) {
                 // 제목
                 LocalizedText(
@@ -51,7 +56,7 @@ fun ManagementConfirmationDialog(
                     },
                     formatArgs = arrayOf(count),
                     style = AppTextStyles.pretendardMedium.copy(
-                        fontSize = 20.sp,
+                        fontSize = 24.sp, // 🔧 폰트 크기 증가: 24sp → 26sp
                         fontWeight = FontWeight.Bold
                     ),
                     color = AppColors.neutral900,
@@ -62,23 +67,29 @@ fun ManagementConfirmationDialog(
                 LocalizedText(
                     resId = R.string.management_confirm_size,
                     formatArgs = arrayOf(formatFileSize(totalSize)),
-                    style = AppTextStyles.pretendardMedium.copy(fontSize = 16.sp),
+                    style = AppTextStyles.pretendardMedium.copy(
+                        fontSize = 18.sp, // 🔧 폰트 크기 증가: 18sp → 20sp
+                        lineHeight = 24.sp // 🆕 줄 간격 추가
+                    ),
                     color = AppColors.neutral700,
                     textAlign = TextAlign.Center,
-                    fontPolicy = FontPolicy.PRETENDA_ALL
+                    fontPolicy = FontPolicy.PRETENDA_ALL,
+                    modifier = Modifier.fillMaxWidth() // 🆕 전체 폭 활용
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp)) // 🔧 간격 증가: 16dp → 20dp
                 
                 // 버튼들
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp) // 🔧 버튼 간격 증가: 16dp → 20dp
                 ) {
                     // 취소 버튼
                     OutlinedButton(
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp), // 🔧 버튼 높이 증가: 52dp → 56dp
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = AppColors.neutral700
                         ),
@@ -89,7 +100,7 @@ fun ManagementConfirmationDialog(
                         LocalizedText(
                             resId = R.string.management_confirm_cancel,
                             style = AppTextStyles.pretendardMedium.copy(
-                                fontSize = 16.sp,
+                                fontSize = 18.sp, // 🔧 버튼 폰트 크기 증가: 18sp → 20sp
                                 fontWeight = FontWeight.Medium
                             ),
                             color = AppColors.neutral700,
@@ -103,7 +114,9 @@ fun ManagementConfirmationDialog(
                             onConfirm()
                             onDismiss()
                         },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp), // 🔧 버튼 높이 증가: 52dp → 56dp
                         colors = ButtonDefaults.buttonColors(
                             containerColor = when (actionType) {
                                 ManagementActionType.DOWNLOAD -> AppColors.blue500
@@ -119,7 +132,7 @@ fun ManagementConfirmationDialog(
                                 ManagementActionType.DELETE -> R.string.management_action_delete
                             },
                             style = AppTextStyles.pretendardMedium.copy(
-                                fontSize = 16.sp,
+                                fontSize = 18.sp, // 🔧 버튼 폰트 크기 증가: 18sp → 20sp
                                 fontWeight = FontWeight.Bold
                             ),
                             color = AppColors.neutralWhite,
@@ -127,16 +140,10 @@ fun ManagementConfirmationDialog(
                         )
                     }
                 }
+                
+                // 🆕 여백 추가 (세로 공간 충분히 활용)
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
-    }
-}
-
-private fun formatFileSize(bytes: Long): String {
-    return when {
-        bytes < 1024 -> "$bytes B"
-        bytes < 1024 * 1024 -> "${bytes / 1024} KB"
-        bytes < 1024 * 1024 * 1024 -> "${bytes / (1024 * 1024)} MB"
-        else -> String.format("%.1f GB", bytes / (1024.0 * 1024.0 * 1024.0))
     }
 }

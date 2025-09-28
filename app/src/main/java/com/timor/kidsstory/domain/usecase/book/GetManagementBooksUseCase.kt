@@ -4,6 +4,7 @@ import android.util.Log
 import com.timor.kidsstory.data.local.assets.UnifiedDataSource
 import com.timor.kidsstory.data.local.database.dao.HybridBooksDao
 import com.timor.kidsstory.domain.model.Book
+import com.timor.kidsstory.data.remote.BookDownloader // 🆕 BookDownloader import 추가
 import javax.inject.Inject
 
 /**
@@ -15,7 +16,8 @@ import javax.inject.Inject
 class GetManagementBooksUseCase @Inject constructor(
     private val unifiedDataSource: UnifiedDataSource,
     private val hybridBooksDao: HybridBooksDao,
-    private val checkUnlockStatusUseCase: CheckUnlockStatusUseCase
+    private val checkUnlockStatusUseCase: CheckUnlockStatusUseCase,
+    private val bookDownloader: BookDownloader // 🆕 BookDownloader 추가
 ) {
     
     /**
@@ -26,7 +28,8 @@ class GetManagementBooksUseCase @Inject constructor(
      */
     suspend fun getDownloadableBooks(
         userId: String,
-        languageCode: String
+        languageCode: String,
+        allLocalBooks: List<Book>? = null
     ): Result<List<Book>> {
         return try {
             val normalizedLang = normalizeLanguageCode(languageCode)
@@ -45,9 +48,12 @@ class GetManagementBooksUseCase @Inject constructor(
             
             val metadata = metadataResult.getOrNull()!!
             
-            // 3. HybridBooksDao에서 현재 DB에 있는 책 목록 조회
-            val existingBooks = hybridBooksDao.getAvailableBooksByLanguage(normalizedLang)
-            val existingBookIds = existingBooks.map { it.id }.toSet()
+            // 3. 로컬에 존재하는 책 ID 목록 생성
+            val existingBookIds = if (allLocalBooks != null) {
+                allLocalBooks.map { it.storyId.split('_').first().toInt() }.toSet()
+            } else {
+                hybridBooksDao.getAvailableBooksByLanguage(normalizedLang).map { it.id }.toSet()
+            }
             
             // 4. 🔥 올바른 순서: GitHub에 있는 책 중에서 → 로컬에 없고 → unlock 정책에 맞는 책
             val downloadableBooks = metadata.books.filter { bookMeta ->
@@ -77,11 +83,13 @@ class GetManagementBooksUseCase @Inject constructor(
             }.mapNotNull { bookMeta ->
                 val languageContent = bookMeta.languages[normalizedLang] ?: return@mapNotNull null
                 
-                // 간단한 Book 객체 생성 (다운로드 전이므로 콘텐츠 없음)
+                // 🆕 BookDownloader.calculateDownloadSize 사용 (언어별 지능형 용량 계산)
+                val actualDownloadSize = bookDownloader.calculateDownloadSize(bookMeta.id, normalizedLang)
+
                 Book(
                     storyId = "${bookMeta.id}_$normalizedLang",
                     title = languageContent.title,
-                    coverImage = "https://raw.githubusercontent.com/choe-yujin/android-kids-story-app/main/app/src/main/assets/images/${bookMeta.id}/cover_${bookMeta.id}_${normalizedLang}.jpg",
+                    coverImage = languageContent.coverImageUrl,
                     category = bookMeta.category,
                     level = bookMeta.level,
                     unlockStep = bookMeta.unlockStep,
@@ -90,7 +98,7 @@ class GetManagementBooksUseCase @Inject constructor(
                     copyright = "",
                     pages = emptyList(),
                     isDownloaded = false,
-                    totalSize = 0L
+                    totalSize = actualDownloadSize // 🆕 실제 다운로드 용량 사용
                 )
             }
             
@@ -135,12 +143,15 @@ class GetManagementBooksUseCase @Inject constructor(
                 val needsUpdate = remoteLanguage.contentVersion != localBook.contentVersion
                 
                 if (!needsUpdate) return@mapNotNull null
+
+                // 🆕 BookDownloader.calculateDownloadSize 사용 (언어별 지능형 용량 계산)
+                val actualDownloadSize = bookDownloader.calculateDownloadSize(remoteMeta.id, normalizedLang)
                 
                 // Book 객체 생성
                 Book(
                     storyId = "${localBook.id}_$normalizedLang",
                     title = remoteLanguage.title,
-                    coverImage = "https://raw.githubusercontent.com/choe-yujin/android-kids-story-app/main/app/src/main/assets/images/${remoteMeta.id}/cover_${remoteMeta.id}_${normalizedLang}.jpg",
+                    coverImage = remoteLanguage.coverImageUrl,
                     category = remoteMeta.category,
                     level = remoteMeta.level,
                     unlockStep = remoteMeta.unlockStep,
@@ -149,7 +160,7 @@ class GetManagementBooksUseCase @Inject constructor(
                     copyright = "",
                     pages = emptyList(),
                     isDownloaded = true,
-                    totalSize = 0L
+                    totalSize = actualDownloadSize // 🆕 실제 다운로드 용량 사용
                 )
             }
             
@@ -158,6 +169,62 @@ class GetManagementBooksUseCase @Inject constructor(
             
         } catch (e: Exception) {
             Log.e("GetManagementBooksUseCase", "❌ Error getting updatable books", e)
+            Result.failure(e)
+        }
+    }
+    
+    /**
+     * 삭제 가능한 책 목록 조회
+     * - HybridBooksDao에 있는 책 중에서
+     * - 실제 삭제될 용량 계산
+     */
+    suspend fun getDeletableBooks(
+        languageCode: String
+    ): Result<List<Book>> {
+        return try {
+            val normalizedLang = normalizeLanguageCode(languageCode)
+            
+            // 1. HybridBooksDao에서 현재 DB에 있는 책 목록 조회 (다운로드된 책만)
+            val existingBooks = hybridBooksDao.getAvailableBooksByLanguage(normalizedLang)
+            
+            // 2. 메타데이터 로드 (책 정보 보완용)
+            val metadataResult = unifiedDataSource.loadRemoteBooksMetadata()
+            if (metadataResult.isFailure) {
+                return Result.failure(metadataResult.exceptionOrNull()!!)
+            }
+            
+            val metadata = metadataResult.getOrNull()!!
+            
+            // 3. 삭제 가능한 책 리스트 생성 (실제 삭제 용량 포함)
+            val deletableBooks = existingBooks.mapNotNull { localBook ->
+                val remoteMeta = metadata.books.find { it.id == localBook.id } ?: return@mapNotNull null
+                val remoteLanguage = remoteMeta.languages[normalizedLang] ?: return@mapNotNull null
+                
+                // 🆕 BookDownloader.calculateDeleteSize 사용 (실제 삭제 용량)
+                val actualDeleteSize = bookDownloader.calculateDeleteSize(localBook.id, normalizedLang)
+                
+                // Book 객체 생성
+                Book(
+                    storyId = "${localBook.id}_$normalizedLang",
+                    title = remoteLanguage.title,
+                    coverImage = remoteLanguage.coverImageUrl,
+                    category = remoteMeta.category,
+                    level = remoteMeta.level,
+                    unlockStep = remoteMeta.unlockStep,
+                    pageCount = 0,
+                    contributors = emptyList(),
+                    copyright = "",
+                    pages = emptyList(),
+                    isDownloaded = true,
+                    totalSize = actualDeleteSize // 🆕 실제 삭제 용량 사용
+                )
+            }
+            
+            Log.d("GetManagementBooksUseCase", "🗑️ Deletable books: ${deletableBooks.size}")
+            Result.success(deletableBooks)
+            
+        } catch (e: Exception) {
+            Log.e("GetManagementBooksUseCase", "❌ Error getting deletable books", e)
             Result.failure(e)
         }
     }

@@ -19,6 +19,7 @@ import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.components.LocalizedPluralText
 import com.timor.kidsstory.ui.components.FontPolicy
+import com.timor.kidsstory.presentation.util.formatFileSize
 import java.text.DecimalFormat
 
 /**
@@ -84,7 +85,7 @@ private fun FloatingActionButtonContent(
                     when (actionType) {
                         ActionType.DOWNLOAD -> R.drawable.ic_download
                         ActionType.UPDATE -> R.drawable.ic_update
-                        ActionType.DELETE -> R.drawable.ic_delete
+                        ActionType.DELETE -> R.drawable.ic_trash
                     }
                 ),
                 contentDescription = null,
@@ -118,28 +119,4 @@ private fun FloatingActionButtonContent(
             }
         }
     }
-}
-
-/**
- * 파일 크기를 사람이 읽기 쉬운 형태로 변환
- */
-private fun formatFileSize(bytes: Long): String {
-    if (bytes == 0L) return "0 B"
-    
-    val units = arrayOf("B", "KB", "MB", "GB")
-    var size = bytes.toDouble()
-    var unitIndex = 0
-    
-    while (size >= 1024 && unitIndex < units.size - 1) {
-        size /= 1024
-        unitIndex++
-    }
-    
-    val format = if (size >= 100) {
-        DecimalFormat("#")
-    } else {
-        DecimalFormat("#.#")
-    }
-    
-    return "${format.format(size)} ${units[unitIndex]}"
 }

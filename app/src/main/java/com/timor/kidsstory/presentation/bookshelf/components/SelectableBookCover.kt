@@ -26,7 +26,24 @@ import coil.request.ImageRequest
 import com.timor.kidsstory.R
 import com.timor.kidsstory.domain.model.Book
 import com.timor.kidsstory.ui.theme.AppColors
+import com.timor.kidsstory.presentation.util.formatFileSize
 import java.text.DecimalFormat
+
+/**
+ * 카테고리 이름을 사람이 읽기 쉬운 형태로 변환
+ */
+private fun getCategoryDisplayName(category: String): String {
+    return when (category.lowercase()) {
+        "environment", "nature" -> "Nature"
+        "science", "math" -> "Science"
+        "culture", "world" -> "Culture"
+        "social", "emotional", "emotion" -> "Emotion"
+        "folktales", "history", "stories" -> "Stories"
+        "daily", "life", "daily_life" -> "Daily Life"
+        "adventure", "fantasy" -> "Adventure"
+        else -> category.replaceFirstChar { it.uppercase() }
+    }
+}
 
 /**
  * 선택 가능한 책 커버 컴포넌트
@@ -77,15 +94,23 @@ fun SelectableBookCover(
             )
         }
         
-        // 파일 크기 정보 (하단)
+        // 파일 크기 정보 (하단 오른쪽)
         if (book.totalSize > 0) {
             FileSizeInfo(
                 size = book.totalSize,
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp)
+                    .align(Alignment.BottomEnd) // 🆕 오른쪽으로 이동
+                    .padding(8.dp)
             )
         }
+        
+        // 🆕 레벨과 카테고리 정보 (하단 왼쪽)
+        BookInfoBadge(
+            book = book,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(8.dp)
+        )
     }
 }
 
@@ -193,7 +218,7 @@ private fun ActionBadge(
     ) {
         Icon(
             painter = painterResource(
-                if (isUpdate) R.drawable.ic_update else R.drawable.ic_download
+                if (isUpdate) R.drawable.ic_update else R.drawable.ic_down // 🆕 ic_download 대신 ic_down 사용
             ),
             contentDescription = if (isUpdate) "업데이트" else "다운로드",
             tint = AppColors.neutralWhite,
@@ -227,25 +252,52 @@ private fun FileSizeInfo(
 }
 
 /**
- * 파일 크기를 사람이 읽기 쉬운 형태로 변환
+ * 🆕 레벨과 카테고리 정보를 보여주는 배지
  */
-private fun formatFileSize(bytes: Long): String {
-    if (bytes == 0L) return "0 B"
-    
-    val units = arrayOf("B", "KB", "MB", "GB")
-    var size = bytes.toDouble()
-    var unitIndex = 0
-    
-    while (size >= 1024 && unitIndex < units.size - 1) {
-        size /= 1024
-        unitIndex++
+@Composable
+private fun BookInfoBadge(
+    book: Book,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        // 레벨 배지
+        Box(
+            modifier = Modifier
+                .background(
+                    color = AppColors.primary500.copy(alpha = 0.9f),
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 6.dp, vertical = 2.dp)
+        ) {
+            Text(
+                text = "Level ${book.level}",
+                fontSize = 9.sp,
+                color = AppColors.neutralWhite,
+                fontWeight = FontWeight.Medium
+            )
+        }
+        
+        // 카테고리 배지
+        Box(
+            modifier = Modifier
+                .background(
+                    color = AppColors.green500.copy(alpha = 0.9f),
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 6.dp, vertical = 2.dp)
+        ) {
+            Text(
+                text = getCategoryDisplayName(book.category),
+                fontSize = 9.sp,
+                color = AppColors.neutralWhite,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
-    
-    val format = if (size >= 100) {
-        DecimalFormat("#")
-    } else {
-        DecimalFormat("#.#")
-    }
-    
-    return "${format.format(size)} ${units[unitIndex]}"
 }
