@@ -116,15 +116,15 @@ fun PageTextSection(
                     val filteredContributors = pageState.contributors.filter { it.lang == currentLanguage }
                     if (filteredContributors.isNotEmpty()) {
                         Column(horizontalAlignment = Alignment.Start) {
-                            filteredContributors.forEach { contributor ->
-                                Text(
-                                    text = "${contributor.role} | ${contributor.name}",
-                                    style = MaterialTheme.typography.titleSmall,//bodySmall.copy(fontSize = 16.sp),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(bottom = 2.dp) // Added bottom padding
-                                )
-                            }
+                            val contributorsByRole = filteredContributors.groupBy { it.role }
+                        contributorsByRole.forEach { (role, contributors) ->
+                            val names = contributors.joinToString(", ") { it.name }
+                            Text(
+                                text = "$role | $names",
+                                style = MaterialTheme.typography.titleSmall, //bodySmall.copy(fontSize = 16.sp),
+                                modifier = Modifier.padding(bottom = 2.dp) // Added bottom padding
+                            )
+                        }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                     }

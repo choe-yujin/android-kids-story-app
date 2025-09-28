@@ -8,6 +8,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,82 +68,65 @@ fun BookScreen(
         }
         
         // 마지막 페이지에서 오버스크롤 감지
-        LaunchedEffect(pagerState) {
-            var hasTriggeredCompletion = false
-            var wasOverSwiping = false // Track if we were in an over-swiping state
-            snapshotFlow { 
-                Triple(
-                    pagerState.currentPage,
-                    pagerState.currentPageOffsetFraction,
-                    pagerState.isScrollInProgress
-                )
-            }.collect { (currentPage, offsetFraction, isScrollInProgress) ->
-                Log.d("BookScreen", "[OverScrollEffect] CurrentPage: $currentPage, Offset: $offsetFraction, IsScrollInProgress: $isScrollInProgress, Total: ${state.pages.size}")
-                
-                // Check if we are on the last page
-                if (currentPage == state.pages.size - 1) {
-                    // If a right swipe (negative offset) is detected, set wasOverSwiping
-                    if (offsetFraction < 0) {
-                        wasOverSwiping = true
-                    } else {
-                        // If offset becomes positive or zero, reset wasOverSwiping
-                        wasOverSwiping = false
-                    }
-
-                    // If an over-swipe was detected (wasOverSwiping was true) AND scroll has just ended AND completion not yet triggered
-                    if (wasOverSwiping && !isScrollInProgress && !hasTriggeredCompletion) {
-                        Log.d("BookScreen", "[OverScrollEffect] Over-swipe detected on last page and scroll ended! Dispatching completion action...")
-                        onAction(BookAction.PageChange(state.pages.size)) // totalPages를 넘는 인덱스로 액션 전달
-                        hasTriggeredCompletion = true // Set flag after triggering
-                    } else if (isScrollInProgress) {
-                        // If scroll is in progress, reset hasTriggeredCompletion to allow re-triggering on next over-swipe
-                        hasTriggeredCompletion = false
-                    }
-                } else {
-                    // Not on the last page, reset all flags
-                    hasTriggeredCompletion = false
-                    wasOverSwiping = false
-                }
-            }
-        }
+        var hasTriggeredCompletion by remember { mutableStateOf(false) }
+        var lastOverscrollAmount by remember { mutableFloatStateOf(0f) }
 
         // Flip 효과를 넣은 Horizontal Pager로 페이지 표시
         FlipPager(
             state = pagerState,
-            modifier = Modifier.fillMaxWidth()
-        ) { pageIndex ->
-            // 개별 페이지 내용 표시
-            PageContent(
-                pageState = state.pages[pageIndex],
-                textSectionState = state.pages[pageIndex].textSectionState,
-                pageIndex = pageIndex,
-                currentLanguage = state.pages[pageIndex].currentLanguageCode, // Added
-                onBackToBookshelf = {
-                    onAction(BookAction.BackBookShelf)
-                },
-                onTextToSpeech = { content ->
-                    onAction(BookAction.TextToSpeak(content))
-                },
-                onLayoutChanged = { pageIdx, contentHeight, containerHeight ->
-                    onAction(
-                        BookAction.UpdateTextSectionLayout(
-                            pageIndex = pageIdx,
-                            contentHeight = contentHeight,
-                            containerHeight = containerHeight
+            modifier = Modifier.fillMaxWidth(),
+            pageContent = { pageIndex ->
+                // 개별 페이지 내용 표시
+                PageContent(
+                    pageState = state.pages[pageIndex],
+                    textSectionState = state.pages[pageIndex].textSectionState,
+                    pageIndex = pageIndex,
+                    currentLanguage = state.pages[pageIndex].currentLanguageCode, // Added
+                    onBackToBookshelf = {
+                        onAction(BookAction.BackBookShelf)
+                    },
+                    onTextToSpeech = { content ->
+                        onAction(BookAction.TextToSpeak(content))
+                    },
+                    onLayoutChanged = { pageIdx, contentHeight, containerHeight ->
+                        onAction(
+                            BookAction.UpdateTextSectionLayout(
+                                pageIndex = pageIdx,
+                                contentHeight = contentHeight,
+                                containerHeight = containerHeight
+                            )
                         )
-                    )
-                },
-                onScrollChanged = { pageIdx, scrollOffset, maxScrollOffset ->
-                    onAction(
-                        BookAction.UpdateTextSectionScroll(
-                            pageIndex = pageIdx,
-                            scrollOffset = scrollOffset,
-                            maxScrollOffset = maxScrollOffset
+                    },
+                    onScrollChanged = { pageIdx, scrollOffset, maxScrollOffset ->
+                        onAction(
+                            BookAction.UpdateTextSectionScroll(
+                                pageIndex = pageIdx,
+                                scrollOffset = scrollOffset,
+                                maxScrollOffset = maxScrollOffset
+                            )
                         )
-                    )
-                },
-                modifier = Modifier.fillMaxSize()
-            )
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            },
+            onOverScrolled = { overscrollAmount ->
+                lastOverscrollAmount = overscrollAmount
+            }
+        )
+
+        LaunchedEffect(pagerState.isScrollInProgress, lastOverscrollAmount) {
+            Log.d("BookScreen", "[OverScrollEffect] isScrollInProgress: ${pagerState.isScrollInProgress}, lastOverscrollAmount: $lastOverscrollAmount, CurrentPage: ${pagerState.currentPage}, Total: ${state.pages.size}")
+            // Only trigger if scroll has ended, we are on the last page,
+            // and there was a significant overscroll, and completion hasn't been triggered
+            if (!pagerState.isScrollInProgress && pagerState.currentPage == state.pages.size - 1 &&
+                lastOverscrollAmount < -0.1f && !hasTriggeredCompletion) { // Use a threshold like -0.1f
+                Log.d("BookScreen", "[OverScrollEffect] Significant overscroll detected on last page and scroll ended! Dispatching completion action...")
+                onAction(BookAction.PageChange(state.pages.size))
+                hasTriggeredCompletion = true
+            } else if (pagerState.isScrollInProgress || lastOverscrollAmount >= 0) {
+                // Reset flag if scrolling starts again or overscroll is gone
+                hasTriggeredCompletion = false
+            }
         }
 
         // 완독 축하 다이얼로그 표시

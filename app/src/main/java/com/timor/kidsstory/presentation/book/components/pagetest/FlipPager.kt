@@ -69,7 +69,8 @@ fun FlipPager(
 
     // 오버스크롤 처리를 위한 중첩 스크롤 연결
     val nestedScrollConnection = rememberFlipPagerOverscroll(
-        overscrollAmount = overscrollAmount
+        overscrollAmount = overscrollAmount,
+        onOverScrolled = onOverScrolled
     )
 
     // 기본 HorizontalPager 설정
@@ -204,7 +205,8 @@ private fun Content(
  */
 @Composable
 private fun rememberFlipPagerOverscroll(
-    overscrollAmount: MutableFloatState
+    overscrollAmount: MutableFloatState,
+    onOverScrolled: (Float) -> Unit
 ): NestedScrollConnection {
     val nestedScrollConnection = object : NestedScrollConnection {
 
@@ -223,6 +225,7 @@ private fun rememberFlipPagerOverscroll(
                 previous < 0 -> overscrollAmount.floatValue.coerceAtMost(0f)   // 음수 방향으로만 감소
                 else -> overscrollAmount.floatValue
             }
+            onOverScrolled(overscrollAmount.floatValue) // 콜백 호출
         }
 
         // 스크롤 전 처리 - 오버스크롤 중일 때 스크롤 소비

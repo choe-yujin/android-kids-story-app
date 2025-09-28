@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -59,12 +60,13 @@ fun BookCompletionScreen(
             .zIndex(10f), // 다른 모든 요소 위에 표시
         contentAlignment = Alignment.Center
     ) {
-        // 축하 카드
+        // 🆕 축하 카드 - 반응형으로 수정
         Column(
             modifier = Modifier
+                .fillMaxWidth(0.95f) // 🆕 가로 폭 95% 사용
                 .background(
                     color = Color.White,
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(24.dp) // 🆕 둥근 모서리 증가
                 )
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,7 +74,7 @@ fun BookCompletionScreen(
         ) {
             // 축하 아이콘 (트로피나 별 등)
             Icon(
-                painter = painterResource(id = android.R.drawable.btn_star_big_on), // 안드로이드 기본 별 아이콘
+                painter = painterResource(id = android.R.drawable.btn_star_big_on),
                 contentDescription = "축하",
                 tint = Color(0xFFFFD700), // 금색
                 modifier = Modifier.size(80.dp)
@@ -80,40 +82,46 @@ fun BookCompletionScreen(
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            // 축하 메시지
+            // 🆕 축하 메시지 - 1줄로 유지
             Text(
                 text = "참 잘했어요!",
-                fontSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).sp,
+                fontSize = 28.sp, // 🆕 고정 크기로 변경
                 fontWeight = FontWeight.Bold,
                 color = AppColors.primary600,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                maxLines = 1, // 🆕 1줄로 제한
+                modifier = Modifier.fillMaxWidth()
             )
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // 부제목
+            // 🆕 부제목 - 1줄로 유지
             Text(
                 text = "책을 끝까지 읽었어요",
-                fontSize = (18 * ResponsiveTextUtils.getScreenScaleFactor()).sp,
+                fontSize = 16.sp, // 🆕 고정 크기로 변경
                 color = AppColors.neutral600,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                maxLines = 1, // 🆕 1줄로 제한
+                modifier = Modifier.fillMaxWidth()
             )
             
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp)) // 🆕 간격 증가
             
-            // 확인 버튼
+            // 🆕 확인 버튼 - 가로 폭 전체 사용
             Button(
                 onClick = onConfirm,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.primary500
                 ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.height(48.dp)
+                shape = RoundedCornerShape(16.dp), // 🆕 둥근 모서리 증가
+                modifier = Modifier
+                    .fillMaxWidth() // 🆕 가로 폭 전체 사용
+                    .height(56.dp) // 🆕 높이 증가
             ) {
                 Text(
-                    text = "확인",
-                    fontSize = (16 * ResponsiveTextUtils.getScreenScaleFactor()).sp,
-                    fontWeight = FontWeight.Medium,
+                    text = "책장으로 돌아가기", // 🆕 더 명확한 텍스트
+                    fontSize = 18.sp, // 🆕 폰트 크기 증가
+                    fontWeight = FontWeight.Bold, // 🆕 굵게
                     color = Color.White
                 )
             }

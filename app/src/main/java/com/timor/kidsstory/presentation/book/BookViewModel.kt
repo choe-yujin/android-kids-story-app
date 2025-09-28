@@ -9,7 +9,7 @@ import com.timor.kidsstory.domain.model.Mission
 import com.timor.kidsstory.domain.model.Page
 import com.timor.kidsstory.domain.usecase.book.GetBookDetailUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
-import com.timor.kidsstory.domain.repository.ReadingProgressRepository
+import com.timor.kidsstory.domain.manager.BookInteractionManager
 import com.timor.kidsstory.domain.model.ReadingProgress
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.TextToSpeechHelper
@@ -44,7 +44,7 @@ import javax.inject.Inject
 class BookViewModel @Inject constructor(
     private val getBookDetailUseCase: GetBookDetailUseCase,
     private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
-    private val readingProgressRepository: ReadingProgressRepository,
+    private val bookInteractionManager: BookInteractionManager,
     private val textToSpeechHelper: TextToSpeechHelper,
     private val soundEffectManager: SoundEffectManager,
     savedStateHandle: SavedStateHandle,
@@ -68,6 +68,20 @@ class BookViewModel @Inject constructor(
     private var currentLanguageCode: String = ""
     private var currentUserId: String = "default_user" // 기본 사용자 ID
     private var bookMissions: List<Mission> = emptyList() // 책의 미션 정보
+
+    /**
+     * 완독 축하 화면 확인 처리
+     * - 축하 화면을 닫고 책장으로 돌아가기 준비
+     */
+    private fun onCompletionConfirmed() {
+        _state.update {
+            it.copy(
+                showCompletionScreen = false,
+                mission = null // 미션 정보 정리
+            )
+        }
+        // 여기서 책장으로 돌아가는 로직은 상위 컴포너트에서 처리됨
+    }
 
     /**
      * 초기화 - 책 데이터 로드 및 TTS 초기화
@@ -265,9 +279,9 @@ currentLanguageCode = storyId.split("_").getOrNull(1) ?: "ko"
                 val now = java.time.LocalDateTime.now()
                 
                 // 기존 진도 조회
-                val existingProgress = readingProgressRepository.getReadingProgress(
-                    userId = currentUserId,
-                    bookId = bookId
+                val existingProgress = bookInteractionManager.getBookProgress(
+                    bookId = bookId,
+                    languageCode = languageCode
                 )
                 
                 val updatedProgress = when {
@@ -298,11 +312,12 @@ currentLanguageCode = storyId.split("_").getOrNull(1) ?: "ko"
                 }
                 
                 // 진도 저장
-                readingProgressRepository.updateReadingProgress(
-                    userId = currentUserId,
+                bookInteractionManager.updateBookProgress(
                     bookId = bookId,
-                    progress = updatedProgress,
-                    languageCode = languageCode
+                    languageCode = languageCode,
+                    currentPage = updatedProgress.currentPage,
+                    totalPages = updatedProgress.totalPages,
+                    isCompleted = updatedProgress.isCompleted
                 )
                 
                 Log.d("BookViewModel", "Reading progress updated: $bookId, page $currentPage/$totalPages, completed: ${updatedProgress.isCompleted}, language: $languageCode")
@@ -367,17 +382,33 @@ currentLanguageCode = storyId.split("_").getOrNull(1) ?: "ko"
     }
 
     /**
-     * 완독 축하 화면 확인 처리
-     * - 축하 화면을 닫고 책장으로 돌아가기 준비
+     * 🔍 디버깅: 현재 책의 이미지 경로 상태 조회
      */
-    private fun onCompletionConfirmed() {
-        _state.update {
-            it.copy(
-                showCompletionScreen = false,
-                mission = null // 미션 정보 정리
-            )
+    private fun debugImagePaths() {
+        if (currentBookId.isEmpty()) {
+            Log.w("BookViewModel", "🔍 No current book ID for debugging")
+            return
         }
-        // 여기서 책장으로 돌아가는 로직은 상위 컴포너트에서 처리됨
+        
+        viewModelScope.launch {
+            try {
+                // 현재 책의 페이지 상태 로깅
+                val currentState = _state.value
+                Log.d("BookViewModel", "🔍 Current book: $currentBookId ($currentLanguageCode)")
+                Log.d("BookViewModel", "🔍 Total pages: ${currentState.pages.size}")
+                
+                // 처음 3개 페이지 이미지 URL 로깅
+                currentState.pages.take(3).forEachIndexed { index, page ->
+                    Log.d("BookViewModel", "🔍 Page $index: imageUrl='${page.imageUrl}'")
+                    Log.d("BookViewModel", "🔍   - isEmpty: ${page.imageUrl.isEmpty()}")
+                    Log.d("BookViewModel", "🔍   - isBlank: ${page.imageUrl.isBlank()}")
+                    Log.d("BookViewModel", "🔍   - starts with 'file://': ${page.imageUrl.startsWith("file://")}")
+                }
+                
+            } catch (e: Exception) {
+                Log.e("BookViewModel", "🔍 Error during image path debugging", e)
+            }
+        }
     }
 
     /**
@@ -475,6 +506,9 @@ currentLanguageCode = storyId.split("_").getOrNull(1) ?: "ko"
             }
             BookAction.CompletionConfirmed -> {
                 onCompletionConfirmed()
+            }
+            is BookAction.DebugImagePaths -> {
+                debugImagePaths()
             }
             is BookAction.UpdateTextSectionLayout -> {
                 updateTextSectionLayout(

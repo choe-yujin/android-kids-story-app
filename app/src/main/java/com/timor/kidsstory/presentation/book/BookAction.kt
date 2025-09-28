@@ -61,6 +61,12 @@ sealed interface BookAction {
     data object CompletionConfirmed : BookAction
     
     /**
+     * 🔍 디버깅: 이미지 경로 상태 조회
+     * - 현재 책의 이미지 경로 문제 진단
+     */
+    data object DebugImagePaths : BookAction
+    
+    /**
      * 읽기 진도 업데이트
      * - 페이지 변경 시 읽기 진도 저장
      *

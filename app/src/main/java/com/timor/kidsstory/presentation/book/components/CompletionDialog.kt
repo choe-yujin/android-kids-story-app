@@ -2,6 +2,7 @@ package com.timor.kidsstory.presentation.book.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -48,7 +49,7 @@ fun CompletionDialog(
         ) {
             Card(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.95f) // 🆕 가로 폭 확장
                     .padding(16.dp),
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -57,21 +58,21 @@ fun CompletionDialog(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                        .padding(24.dp), // 🆕 패딩 축소
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // 미션 제목 또는 기본 축하 제목
                     if (mission != null) {
-                        // 미션 데이터가 있을 때 - 크고 굵게 가운데 정렬
+                        // 🆕 미션 데이터가 있을 때 - 1줄로 제한
                         Text(
                             text = mission.title,
                             style = AppTextStyles.gummyLgSemiboldItalic.copy(
-                                fontSize = 28.sp,
+                                fontSize = 24.sp, // 🆕 크기 약간 축소
                                 fontWeight = FontWeight.Bold
                             ),
                             color = Color(0xFF4CAF50),
                             textAlign = TextAlign.Center,
+                            maxLines = 1, // 🆕 1줄로 제한
                             modifier = Modifier.fillMaxWidth()
                         )
                     } else {
@@ -79,13 +80,16 @@ fun CompletionDialog(
                         LocalizedText(
                             resId = R.string.completion_title,
                             style = AppTextStyles.gummyLgSemiboldItalic.copy(
-                                fontSize = 28.sp,
+                                fontSize = 24.sp, // 🆕 크기 축소
                                 fontWeight = FontWeight.Bold
                             ),
                             color = Color(0xFF4CAF50),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            maxLines = 1, // 🆕 1줄로 제한
+                            modifier = Modifier.fillMaxWidth()
                         )
-                    }
+                    }                    
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     // 미션 설명 또는 기본 축하 메시지
                     if (mission != null) {
@@ -97,18 +101,22 @@ fun CompletionDialog(
                             textAlign = TextAlign.Start,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
+                                .padding(horizontal = 8.dp) // 🆕 패딩 축소
                         )
                     } else {
                         // 기본 축하 메시지
                         LocalizedText(
                             resId = R.string.completion_message,
-                            style = AppTextStyles.gummyMedium.copy(fontSize = 18.sp),
+                            style = AppTextStyles.gummyMedium.copy(fontSize = 16.sp), // 🆕 크기 축소
                             color = Color(0xFF424242),
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp) // 🆕 패딩 축소
                         )
                     }
+                    
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
                         onClick = onConfirm,
