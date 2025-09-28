@@ -21,9 +21,9 @@ object RepositoryModule {
     fun provideBookDownloader(
         @ApplicationContext context: Context,
         networkService: BookNetworkService,
-        downloadedBooksDao: DownloadedBooksDao,
+        hybridBooksDao: com.timor.kidsstory.data.local.database.dao.HybridBooksDao, // Changed
         unifiedDataSource: UnifiedDataSource
     ): BookDownloader {
-        return BookDownloader(context, networkService, downloadedBooksDao, unifiedDataSource)
+        return BookDownloader(context, networkService, hybridBooksDao, unifiedDataSource)
     }
 }

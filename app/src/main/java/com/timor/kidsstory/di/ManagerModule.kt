@@ -3,6 +3,7 @@ package com.timor.kidsstory.di
 import com.timor.kidsstory.data.local.database.dao.UserDao
 import com.timor.kidsstory.domain.manager.AttendanceManager
 import com.timor.kidsstory.domain.manager.BookInteractionManager
+import com.timor.kidsstory.domain.usecase.book.CheckAndProcessUnlockUseCase
 import com.timor.kidsstory.domain.manager.FirstRunManager
 import com.timor.kidsstory.domain.manager.UserManager
 import com.timor.kidsstory.domain.manager.questionbank.QuestionBankManager
@@ -41,9 +42,10 @@ object ManagerModule {
     @Provides
     @Singleton
     fun provideBookInteractionManager(
-        readingProgressRepository: ReadingProgressRepository
+        readingProgressRepository: ReadingProgressRepository,
+        checkAndProcessUnlockUseCase: CheckAndProcessUnlockUseCase
     ): BookInteractionManager {
-        return BookInteractionManager(readingProgressRepository)
+        return BookInteractionManager(readingProgressRepository, checkAndProcessUnlockUseCase)
     }
     
     @Provides

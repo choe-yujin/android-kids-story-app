@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.util.zip.ZipInputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -85,7 +86,7 @@ class ContentUpdateService @Inject constructor(
      */
     private suspend fun fetchRemoteMetadata(): Result<HybridBooksMetadata> {
         return try {
-            val metadataUrl = "${GITHUB_RAW_BASE_URL}/app/src/main/assets/books_metadata_hybrid.json"
+            val metadataUrl = "https://raw.githubusercontent.com/choe-yujin/storybook-assets/master/books_metadata_hybrid.json"
             val tempFile = File(context.cacheDir, "remote_metadata.json")
             
             val downloadSuccess = networkService.downloadFile(metadataUrl, tempFile)
@@ -122,17 +123,15 @@ class ContentUpdateService @Inject constructor(
         // 모든 콘텐츠 파일 업데이트
         for (book in remoteMetadata.books) {
             for ((languageCode, languageContent) in book.languages) {
-                if (languageContent.isBundled) {
-                    val contentUpdated = updateContentFile(book.id, languageCode, languageContent.contentVersion)
-                    if (contentUpdated) updatedCount++
-                    
-                    val coverUpdated = updateCoverImage(book.id, languageCode, languageContent.coverVersion)
-                    if (coverUpdated) updatedCount++
-                }
+                val contentUpdated = updateContentFile(book.id, languageCode, languageContent.contentUrl)
+                if (contentUpdated) updatedCount++
+                
+                val coverUpdated = updateCoverImage(book.id, languageCode, languageContent.coverImageUrl)
+                if (coverUpdated) updatedCount++
             }
             
             // 이미지 에셋 업데이트
-            val imagesUpdated = updateImageAssets(book.id, book.imageAssetsVersion)
+            val imagesUpdated = updateImageAssets(book.id, book.imageAssetsUrl)
             if (imagesUpdated) updatedCount++
         }
         
@@ -172,10 +171,10 @@ class ContentUpdateService @Inject constructor(
                 if (localLanguageContent == null) {
                     // 새로운 언어 버전
                     Log.d(TAG, "🌍 New language found: ${remoteBook.id}/$languageCode")
-                    val contentUpdated = updateContentFile(remoteBook.id, languageCode, remoteLanguageContent.contentVersion)
+                    val contentUpdated = updateContentFile(remoteBook.id, languageCode, remoteLanguageContent.contentUrl)
                     if (contentUpdated) updatedCount++
                     
-                    val coverUpdated = updateCoverImage(remoteBook.id, languageCode, remoteLanguageContent.coverVersion)
+                    val coverUpdated = updateCoverImage(remoteBook.id, languageCode, remoteLanguageContent.coverImageUrl)
                     if (coverUpdated) updatedCount++
                     continue
                 }
@@ -183,14 +182,14 @@ class ContentUpdateService @Inject constructor(
                 // 콘텐츠 버전 체크
                 if (remoteLanguageContent.contentVersion > localLanguageContent.contentVersion) {
                     Log.d(TAG, "📝 Content update: ${remoteBook.id}/$languageCode v${localLanguageContent.contentVersion} → v${remoteLanguageContent.contentVersion}")
-                    val updated = updateContentFile(remoteBook.id, languageCode, remoteLanguageContent.contentVersion)
+                    val updated = updateContentFile(remoteBook.id, languageCode, remoteLanguageContent.contentUrl)
                     if (updated) updatedCount++
                 }
                 
                 // 커버 이미지 버전 체크
                 if (remoteLanguageContent.coverVersion > localLanguageContent.coverVersion) {
                     Log.d(TAG, "🖼️ Cover update: ${remoteBook.id}/$languageCode v${localLanguageContent.coverVersion} → v${remoteLanguageContent.coverVersion}")
-                    val updated = updateCoverImage(remoteBook.id, languageCode, remoteLanguageContent.coverVersion)
+                    val updated = updateCoverImage(remoteBook.id, languageCode, remoteLanguageContent.coverImageUrl)
                     if (updated) updatedCount++
                 }
             }
@@ -198,7 +197,7 @@ class ContentUpdateService @Inject constructor(
             // 이미지 에셋 버전 체크
             if (remoteBook.imageAssetsVersion > localBook.imageAssetsVersion) {
                 Log.d(TAG, "🎨 Images update: ${remoteBook.id} v${localBook.imageAssetsVersion} → v${remoteBook.imageAssetsVersion}")
-                val updated = updateImageAssets(remoteBook.id, remoteBook.imageAssetsVersion)
+                val updated = updateImageAssets(remoteBook.id, remoteBook.imageAssetsUrl)
                 if (updated) updatedCount++
             }
         }
@@ -214,17 +213,15 @@ class ContentUpdateService @Inject constructor(
         
         // 모든 언어 버전 다운로드
         for ((languageCode, languageContent) in bookMetadata.languages) {
-            if (languageContent.isBundled) {
-                val contentUpdated = updateContentFile(bookMetadata.id, languageCode, languageContent.contentVersion)
-                if (contentUpdated) downloadedCount++
-                
-                val coverUpdated = updateCoverImage(bookMetadata.id, languageCode, languageContent.coverVersion)
-                if (coverUpdated) downloadedCount++
-            }
+            val contentUpdated = updateContentFile(bookMetadata.id, languageCode, languageContent.contentUrl)
+            if (contentUpdated) downloadedCount++
+            
+            val coverUpdated = updateCoverImage(bookMetadata.id, languageCode, languageContent.coverImageUrl)
+            if (coverUpdated) downloadedCount++
         }
         
         // 이미지 에셋 다운로드
-        val imagesUpdated = updateImageAssets(bookMetadata.id, bookMetadata.imageAssetsVersion)
+        val imagesUpdated = updateImageAssets(bookMetadata.id, bookMetadata.imageAssetsUrl)
         if (imagesUpdated) downloadedCount++
         
         return downloadedCount
@@ -241,10 +238,9 @@ class ContentUpdateService @Inject constructor(
     /**
      * 콘텐츠 파일 업데이트
      */
-    private suspend fun updateContentFile(bookId: Int, languageCode: String, version: Int): Boolean {
+    private suspend fun updateContentFile(bookId: Int, languageCode: String, remoteUrl: String): Boolean {
         return try {
-            val fileName = "${bookId}_$languageCode.json"
-            val remoteUrl = "$GITHUB_RAW_BASE_URL/app/src/main/assets/content/$fileName"
+            val fileName = "${bookId}_${languageCode}.json"
             val localFile = File(context.filesDir, "hybrid_content/content/$fileName")
             
             val success = networkService.downloadFile(remoteUrl, localFile)
@@ -264,10 +260,9 @@ class ContentUpdateService @Inject constructor(
     /**
      * 커버 이미지 업데이트
      */
-    private suspend fun updateCoverImage(bookId: Int, languageCode: String, version: Int): Boolean {
+    private suspend fun updateCoverImage(bookId: Int, languageCode: String, remoteUrl: String): Boolean {
         return try {
-            val fileName = "cover_${bookId}_$languageCode.jpg"
-            val remoteUrl = "$GITHUB_RAW_BASE_URL/app/src/main/assets/images/$bookId/$fileName"
+            val fileName = "cover_${bookId}_${languageCode}.jpg"
             val localFile = File(context.filesDir, "hybrid_content/images/$bookId/$fileName")
             
             localFile.parentFile?.mkdirs()
@@ -289,28 +284,51 @@ class ContentUpdateService @Inject constructor(
     /**
      * 이미지 에셋 업데이트
      */
-    private suspend fun updateImageAssets(bookId: Int, version: Int): Boolean {
+    private suspend fun updateImageAssets(bookId: Int, remoteUrl: String): Boolean {
+        if (remoteUrl.isBlank() || !remoteUrl.endsWith(".zip")) {
+            Log.w(TAG, "No valid image assets zip URL for book $bookId")
+            return false
+        }
+
         return try {
-            // 개별 이미지 파일들을 다운로드 (ZIP 대신 간단화)
-            val imagesDir = File(context.filesDir, "hybrid_content/images/$bookId")
-            imagesDir.mkdirs()
-            
-            // 기본적인 이미지 파일들 다운로드 시도
-            val commonImageFiles = listOf("cover_${bookId}_ko.jpg", "cover_${bookId}_en.jpg", "cover_${bookId}_tet.jpg")
-            var successCount = 0
-            
-            for (imageFile in commonImageFiles) {
-                val remoteUrl = "$GITHUB_RAW_BASE_URL/app/src/main/assets/images/$bookId/$imageFile"
-                val localFile = File(imagesDir, imageFile)
-                
-                val success = networkService.downloadFile(remoteUrl, localFile)
-                if (success) successCount++
+            val tempZipFile = File(context.cacheDir, "temp_images_$bookId.zip")
+            val downloadSuccess = networkService.downloadFile(remoteUrl, tempZipFile)
+
+            if (!downloadSuccess) {
+                Log.e(TAG, "Failed to download image assets for book $bookId from $remoteUrl")
+                tempZipFile.delete()
+                return false
             }
-            
-            Log.d(TAG, "✅ Updated images for book $bookId: $successCount files")
-            successCount > 0
+
+            val outputDir = File(context.filesDir, "hybrid_content/images/$bookId")
+            if (!outputDir.exists()) {
+                outputDir.mkdirs()
+            }
+
+            // Unzip logic
+            ZipInputStream(tempZipFile.inputStream()).use { zis ->
+                var zipEntry = zis.nextEntry
+                while (zipEntry != null) {
+                    val newFile = File(outputDir, zipEntry.name)
+                    // Create directories for sub-folders in zip
+                    if (zipEntry.isDirectory) {
+                        newFile.mkdirs()
+                    } else {
+                        // Ensure parent directory exists
+                        File(newFile.parent).mkdirs()
+                        newFile.outputStream().use { fos ->
+                            zis.copyTo(fos)
+                        }
+                    }
+                    zipEntry = zis.nextEntry
+                }
+            }
+
+            tempZipFile.delete()
+            Log.d(TAG, "✅ Successfully downloaded and unzipped image assets for book $bookId")
+            true
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error updating image assets: $bookId", e)
+            Log.e(TAG, "❌ Error updating image assets for book $bookId", e)
             false
         }
     }
@@ -414,6 +432,6 @@ class ContentUpdateService @Inject constructor(
     
     companion object {
         private const val TAG = "ContentUpdateService"
-        private const val GITHUB_RAW_BASE_URL = "https://raw.githubusercontent.com/choe-yujin/android-kids-story-app/main"
+        
     }
 }

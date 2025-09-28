@@ -45,12 +45,16 @@
     <string name="info_off">Desliga</string>
     <string name="info_on">Liga</string>
     <string name="info_created_by">Halo husi</string>
-    <string name="info_dev_yujin">Dev/Yujin Choe</string>
-    <string name="info_dev_jaeyeon">Dev/Jaeyeon Kim</string>
-    <string name="info_des_jinsung">Des/Jinsung Kuak</string>
-    <string name="info_edu_yuni">Edu/Siyun Lee</string>
-    <string name="info_edu_jiyoung">Edu/Jiyoung Shon</string>
-    <string name="info_cm_jisu">CM/Jisu An</string>
+    <string name="info_dev_yujin">Dir/Dev | Yujin Choe</string>
+    <string name="info_dev_jaeyeon">Dev | Jaeyeon Kim</string>
+    <string name="info_des_jinsung">Des | Jinsung Kuak</string>
+    <string name="info_edu_yuni">Edu | Siyun Lee</string>
+    <string name="info_edu_jiyoung">Edu | Jiyoung Shon</string>
+    <string name="info_cm_jisu">MGMT | Jisu An</string>
+    <string name="info_tl_rosalina">Trans. | Rosalina Pereira de Carvalho</string>
+    <string name="info_tl_helia">Trans. | Hélia Venígia Úrsula Guterres</string>
+    <string name="info_tl_lourenco">Trans. | Lourenço Sina-Ily Monteiro Baptista</string>
+    <string name="info_tl_alexandrino">Trans. | Alexandrino Soares Lemos</string>
     <string name="info_about">Informasaun</string>
     <string name="info_version">Verzaun</string>
     <string name="info_license">Lisensa</string>
@@ -192,4 +196,28 @@
     <plurals name="management_popup_delete_title_plural">
         <item quantity="other">Hamos %1$d item sira</item>
     </plurals>
+    
+    <!-- Action Completion Dialog -->
+    <string name="action_completion_download_title">Download remata!</string>
+    <string name="action_completion_update_title">Update remata!</string>
+    <string name="action_completion_delete_title">Hamos remata!</string>
+    <string name="action_completion_download_message">Download ho suksesu %d item sira</string>
+    <string name="action_completion_update_message">Update ho suksesu %d item sira</string>
+    <string name="action_completion_delete_message">Hamos ho suksesu %d item sira</string>
+    <string name="action_completion_button_ok">OK</string>
+    
+    <!-- Download Progress Dialog -->
+    <string name="download_progress_title">Download hela…</string>
+    <string name="update_progress_title">Update hela…</string>
+    <string name="delete_progress_title">Hamos hela…</string>
+    <string name="download_progress_message">Download %d item sira hela</string>
+    <string name="update_progress_message">Update %d item sira hela</string>
+    <string name="delete_progress_message">Hamos %d item sira hela</string>
+    <string name="download_progress_wait_message">Favor hein ba momentu ida…</string>
+
+    <!-- Side Project Information -->
+    <string name="side_project_title">Side Project Made Together</string>
+    <string name="side_project_description">TaleTail started from a small idea: "I wish there was an app like this." What began as a personal project created in spare time has become a project for everyone as people who share our vision have joined us one by one.\n\nWe work purely for the joy of sharing talents, without ads or sponsorships. We value working with \'joy\' rather than \'obligation,\' each finding their own enjoyable way to contribute at their own pace.\n\nWe welcome contributions in various fields like illustration, translation, and education to make our stories richer. We are especially looking forward to new language translators so more children can meet fairy tales in their own language.\n\nPlease add your joyful energy!</string>
+    <string name="collaboration_title">How Are We Collaborating?</string>
+    <string name="collaboration_description">We collaborate in a free and horizontal way:\n\n• We aim for free communication.\nThere are no regular meetings or reporting procedures. We freely share opinions and add ideas whenever needed through online channels (KakaoTalk, Notion, Discord, etc.).\n\n• All processes are shared transparently.\nYou can become a new project leader who expands TaleTail\'s world through idea proposals (e.g., building new translation systems, creating educational content linked to fairy tales, planning \'I\'m Also a Writer\' contests). Progress is made public through Notion, making it easy to propose or participate in desired projects.\n\n• We respect each person\'s pace.\nThere are no strict deadlines or mandatory quotas. Real life comes first! We respect a culture where everyone participates as joyfully as they can according to their own schedule and condition.\n\n• You can participate proactively.\nThere\'s no one here who assigns tasks. If you have your own ideas you want to create with TaleTail, or if you want to proactively find and solve problems, you\'re always welcome. Please look around the ongoing projects first and let us hear your voice about what fun things we can do together.</string>
 </resources>

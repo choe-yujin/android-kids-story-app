@@ -46,9 +46,22 @@ data class BookshelfUiState(
     val isCheckingUpdates: Boolean = false,
     val hasCheckedUpdates: Boolean = false,
     
+    // 🆕 다운로드 진행 상태
+    val isDownloading: Boolean = false,
+    val downloadingBookIds: Set<String> = emptySet(),
+    
     // Unlock 정책 관련
     val unlockedSteps: Map<String, Int> = emptyMap(),
     val showLockedBookPopup: Boolean = false,
+    
+    // 🆕 Unlock 축하 팝업 관련
+    val showUnlockPopup: Boolean = false,
+    val unlockedLevelGroup: String? = null,
+    
+    // 🆕 작업 완료 다이얼로그 관련
+    val showActionCompletionDialog: Boolean = false,
+    val completionActionType: ManagementActionType? = null,
+    val completedItemsCount: Int = 0,
     
     // 동화 정보 팝업 관련
     val showStoryInfoDialog: Boolean = false,

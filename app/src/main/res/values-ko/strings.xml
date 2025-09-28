@@ -45,12 +45,16 @@
     <string name="info_off">끄기</string>
     <string name="info_on">켜기</string>
     <string name="info_created_by">제작자</string>
-    <string name="info_dev_yujin">개발/최유진</string>
-    <string name="info_dev_jaeyeon">개발/김재연</string>
-    <string name="info_des_jinsung">디자인/곽진성</string>
-    <string name="info_edu_yuni">교육/이시윤</string>
-    <string name="info_edu_jiyoung">교육/손지영</string>
-    <string name="info_cm_jisu">사업운영/안지수</string>
+    <string name="info_dev_yujin">총괄/개발 | 최유진</string>
+    <string name="info_dev_jaeyeon">개발 | 김재연</string>
+    <string name="info_des_jinsung">디자인 | 곽진성</string>
+    <string name="info_edu_yuni">교육 | 이시윤</string>
+    <string name="info_edu_jiyoung">교육 | 손지영</string>
+    <string name="info_cm_jisu">서비스운영 | 안지수</string>
+    <string name="info_tl_rosalina">번역 | Rosalina Pereira de Carvalho</string>
+    <string name="info_tl_helia">번역 | Hélia Venígia Úrsula Guterres</string>
+    <string name="info_tl_lourenco">번역 | Lourenço Sina-Ily Monteiro Baptista</string>
+    <string name="info_tl_alexandrino">번역 | Alexandrino Soares Lemos</string>ㄹ
     <string name="info_about">정보</string>
     <string name="info_version">버전</string>
     <string name="info_license">라이센스</string>
@@ -149,8 +153,13 @@
     
     <!-- Locked Book Dialog -->
     <string name="locked_book_title">책이 잠겨있어요</string>
-    <string name="locked_book_message">지금 읽을 수 있는 책들을 다 읽으면 이 책들을 읽을 수 있어요!</string>
-    <string name="locked_book_button">확인</string>
+    <string name="locked_book_message">이 책은 아직 잠겨 있어요. 지금 읽을 수 있는 다른 책들을 모두 읽으면 이 책도 읽을 수 있답니다!</string>
+    <string name="locked_book_button">알겠어요!</string>
+
+    <!-- Unlock Popup -->
+    <string name="unlock_popup_title">축하해요!</string>
+    <string name="unlock_popup_message">와! %1$s의 새로운 책들이 열렸어요! 신나는 모험을 떠나볼까요?</string>
+    <string name="unlock_popup_button">신나요!</string>
     
     <!-- Admin Screen -->
     <string name="admin_count_unit">개</string>
@@ -190,4 +199,28 @@
     <plurals name="management_popup_delete_title_plural">
         <item quantity="other">%1$d개 항목 삭제</item>
     </plurals>
+    
+    <!-- 🆕 Action Completion Messages -->
+    <string name="action_completion_download_title">다운로드 완료!</string>
+    <string name="action_completion_update_title">업데이트 완료!</string>
+    <string name="action_completion_delete_title">삭제 완료!</string>
+    <string name="action_completion_download_message">성공적으로 %d개 항목을 다운로드했습니다</string>
+    <string name="action_completion_update_message">성공적으로 %d개 항목을 업데이트했습니다</string>
+    <string name="action_completion_delete_message">성공적으로 %d개 항목을 삭제했습니다</string>
+    <string name="action_completion_button_ok">확인</string>
+    
+    <!-- 🆕 Download Progress Dialog -->
+    <string name="download_progress_title">다운로드 중…</string>
+    <string name="update_progress_title">업데이트 중…</string>
+    <string name="delete_progress_title">삭제 중…</string>
+    <string name="download_progress_message">%d개 항목 다운로드 중</string>
+    <string name="update_progress_message">%d개 항목 업데이트 중</string>
+    <string name="delete_progress_message">%d개 항목 삭제 중</string>
+    <string name="download_progress_wait_message">잠시만 기다려 주세요…</string>
+    
+    <!-- 🆕 사이드 프로젝트 정보 -->
+    <string name="side_project_title">함께 만드는 사이드 프로젝트</string>
+    <string name="side_project_description">테일테일은 "이런 앱이 있으면 좋겠다"는 작은 생각에서 시작되었어요. 혼자 사부작거리며 남는 시간에 만들던 개인 프로젝트에, 취지에 공감하는 좋은 분들이 하나둘 모여 \'모두의 프로젝트\'가 되었습니다.\n\n그래서 저희는 광고나 기부 없이, 재능을 나누는 즐거움만으로 움직입니다. \'의무감\'이 아닌 \'즐거움\'으로, 각자 가능한 시간에 자신이 가장 즐겁게 기여할 수 있는 지점을 찾아 함께하는 방식을 가장 소중히 여깁니다.\n\n이야기를 더 풍성하게 만들어 줄 그림, 번역, 교육 등 다양한 분야의 참여를 기다립니다. 특히 더 많은 아이들이 자신의 언어로 동화를 만날 수 있도록, 새로운 언어 번역가의 참여를 기다리고 있습니다.\n\n당신의 즐거운 에너지를 보태주세요!</string>
+    <string name="collaboration_title">어떻게 함께하고 있나요?</string>
+    <string name="collaboration_description">저희는 다음과 같은 방식으로 자유롭고 수평적으로 협업합니다:\n\n• 자유로운 소통을 지향해요.\n정기적인 회의나 보고 절차는 없어요. 온라인 채널(카톡, 노션, 디스코드 등)을 통해 필요할 때마다 자유롭게 의견을 나누고 아이디어를 더합니다.\n\n• 모든 과정은 투명하게 공유돼요.\n아이디어 제안을 통해 \'테일테일\'의 세상을 넓히는 새로운 프로젝트 리더가 될 수 있습니다. (예: 새로운 번역 시스템 구축, 동화 연계 교육 콘텐츠 제작, \'나도 작가\' 공모전 기획 등) 진행 상황은 노션을 통해 공개되어, 원하는 프로젝트를 쉽게 제안하거나 참여할 수 있습니다.\n\n• 자신의 속도를 존중해요.\n엄격한 마감일이나 의무 할당량은 없습니다. 각자의 현생이 최우선! 자신의 스케줄과 컨디션에 맞춰 가장 즐겁게 참여할 수 있는 만큼만 함께하는 문화를 존중합니다.\n\n• 주도적으로 참여할 수 있어요.\n이곳에는 업무를 지시하는 사람이 없습니다. \'테일테일\'과 함께 만들어가고 싶은 자신만의 아이디어가 있거나, 주도적으로 문제를 찾아 해결하고 싶은 분들이라면 언제든 환영합니다. 먼저 진행 중인 프로젝트들을 둘러보시고, 어떤 재미있는 일을 함께할 수 있을지 당신의 목소리를 들려주세요.</string>
 </resources>

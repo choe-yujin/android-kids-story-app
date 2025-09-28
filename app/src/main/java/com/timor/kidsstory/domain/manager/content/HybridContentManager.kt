@@ -16,169 +16,182 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * 하이브리드 콘텐츠 매니저 (DB 통합 버전)
- * - 첫 실행 시 assets → 내부저장소 복사
- * - 모든 책 정보를 Room DB로 관리 
- * - 버전 체크 및 업데이트 관리
- * - 항상 내부저장소에서 읽기
+ * 📂 새로운 폴더 구조를 지원하는 HybridContentManager:
+ *
+ * 내장 책 (Internal Storage):
+ * hybrid_content/
+ * ├── books_metadata.json
+ * ├── content/{bookId}_{lang}.json
+ * └── images/{bookId}/
+ *     ├── cover_{bookId}_{lang}.jpg
+ *     └── book_{bookId}_page_*.jpg
+ *
+ * 다운로드 책 (External Storage):
+ * downloaded_books/{bookId}/
+ * ├── cover_{bookId}_{lang}.jpg    ← 북커버 (언어별, bookDir 직하위)
+ * ├── {bookId}_{lang}.json         ← JSON 콘텐츠 (언어별, bookDir 직하위)
+ * └── images/                      ← 페이지 이미지들 (공통, 하위 폴더)
+ *     ├── book_{bookId}_page_0.jpg
+ *     └── book_{bookId}_page_*.jpg
  */
 @Singleton
 class HybridContentManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val hybridBooksDao: HybridBooksDao
 ) {
-    
+
     private val json = Json {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
-    
+
     /**
-     * 내부 저장소 기본 경로
+     * 내부 저장소 기본 경로 (내장 책용)
      */
     private val internalStorageDir: File by lazy {
         File(context.filesDir, "hybrid_content").apply { mkdirs() }
     }
-    
+
+    /**
+     * 🆕 외부 저장소 기본 경로 (다운로드된 책용)
+     */
+    private val externalStorageDir: File by lazy {
+        context.getExternalFilesDir(null) ?: context.filesDir
+    }
+
+    /**
+     * 다운로드된 책 디렉토리
+     */
+    private val downloadedBooksDir: File by lazy {
+        File(externalStorageDir, "downloaded_books").apply { mkdirs() }
+    }
+
     /**
      * 메타데이터 파일 경로
      */
     private val metadataFile: File by lazy {
         File(internalStorageDir, "books_metadata.json")
     }
-    
+
     /**
-     * 콘텐츠 디렉토리
+     * 내장 콘텐츠 디렉토리
      */
     private val contentDir: File by lazy {
         File(internalStorageDir, "content").apply { mkdirs() }
     }
-    
+
     /**
-     * 이미지 디렉토리  
+     * 내장 이미지 디렉토리
      */
     private val imagesDir: File by lazy {
         File(internalStorageDir, "images").apply { mkdirs() }
     }
-    
+
     /**
      * 하이브리드 콘텐츠 초기화
-     * - 첫 실행 시에만 assets에서 내부저장소로 복사
-     * - 모든 책 정보를 Room DB에 등록
-     * - 버전 체크 및 필요 시 업데이트
      */
     suspend fun initializeHybridContent(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "🚀 Initializing hybrid content system with DB integration...")
-            
-            // SharedPreferences로 첫 실행 체크
+            Log.d(TAG, "🚀 Initializing hybrid content system with new folder structure...")
+
             val prefs = context.getSharedPreferences("hybrid_content_prefs", Context.MODE_PRIVATE)
             val isFirstRun = !prefs.getBoolean("content_initialized", false)
             val storedVersion = prefs.getInt("content_version", 0)
-            
+
             Log.d(TAG, "🔍 First run: $isFirstRun, Stored version: $storedVersion")
-            
+
             // 1. 메타데이터 초기화/업데이트 체크
             val metadataInitResult = initializeMetadata(isFirstRun, storedVersion)
             if (metadataInitResult.isFailure) {
                 return@withContext metadataInitResult
             }
-            
+
             // 2. 내장 책들을 DB에 등록 (첫 실행시에만)
             if (isFirstRun) {
                 val dbInitResult = initializeBooksInDatabase()
                 if (dbInitResult.isFailure) {
                     return@withContext dbInitResult
                 }
-                
-                // 3. 콘텐츠 파일들 초기화 (첫 실행시에만)
+
                 val contentInitResult = initializeContentFiles(true)
                 if (contentInitResult.isFailure) {
                     return@withContext contentInitResult
                 }
-                
-                // 4. 이미지 파일들 초기화 (첫 실행시에만)
+
                 val imagesInitResult = initializeImageFiles(true)
                 if (imagesInitResult.isFailure) {
                     return@withContext imagesInitResult
                 }
-                
-                // 첫 실행 완료 표시
+
                 val currentMetadata = loadMetadataFromInternal().getOrThrow()
                 prefs.edit()
                     .putBoolean("content_initialized", true)
                     .putInt("content_version", currentMetadata.version)
                     .apply()
-                    
+
                 Log.d(TAG, "✅ First run initialization completed")
             } else {
-                // 첫 실행이 아닌 경우, 삭제된 파일만 복원 (DB에 있는데 파일이 없는 경우)
                 val contentInitResult = initializeContentFiles(false)
                 if (contentInitResult.isFailure) {
                     return@withContext contentInitResult
                 }
-                
+
                 val imagesInitResult = initializeImageFiles(false)
                 if (imagesInitResult.isFailure) {
                     return@withContext imagesInitResult
                 }
-                
+
                 Log.d(TAG, "✅ Subsequent run - only restored missing files")
             }
-            
-            Log.d(TAG, "✅ Hybrid content initialization completed with DB integration")
+
+            Log.d(TAG, "✅ Hybrid content initialization completed with new folder structure")
             Result.success(Unit)
-            
+
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to initialize hybrid content", e)
             Result.failure(e)
         }
     }
-    
+
     /**
-     * 내장 책들을 Room DB에 등록
+     * 내장 책들을 Room DB에 등록 (새로운 경로 구조 반영)
      */
     private suspend fun initializeBooksInDatabase(): Result<Unit> {
         return try {
             val metadata = loadMetadataFromInternal().getOrThrow()
-            
+
             for (book in metadata.books) {
                 for ((languageCode, languageContent) in book.languages) {
                     if (languageContent.isBundled) {
-                        
-                        // 이미 DB에 등록된 책인지 확인
+
                         val existsInDb = hybridBooksDao.isBookExists(book.id, languageCode)
-                        
+
                         if (!existsInDb) {
-                            // 새로운 내장 책을 DB에 등록
+                            // 🔧 수정: 내장 책 경로 구조 (기존 유지)
                             val hybridBookEntity = HybridBookEntity(
                                 id = book.id,
                                 language = languageCode,
                                 title = languageContent.title,
                                 level = book.level,
                                 category = book.category,
+                                unlockStep = book.unlockStep,
                                 countryOfOrigin = book.countryOfOrigin,
-                                
-                                // 파일 경로 (내부저장소 기준)
+
+                                // 내장 책 파일 경로 (내부저장소 기준)
                                 contentPath = File(contentDir, "${book.id}_$languageCode.json").absolutePath,
                                 coverImagePath = File(imagesDir, "${book.id}/cover_${book.id}_$languageCode.jpg").absolutePath,
                                 imagesDirectoryPath = File(imagesDir, book.id.toString()).absolutePath,
-                                
-                                // 버전 정보
+
                                 contentVersion = languageContent.contentVersion,
                                 coverVersion = languageContent.coverVersion,
                                 imageAssetsVersion = book.imageAssetsVersion,
-                                
-                                // 내장 책으로 설정
                                 source = BookSource.BUNDLED,
                                 isAvailable = true,
                                 downloadDate = null,
-                                
-                                // AI 기능 및 태그
                                 aiFeatures = book.aiFeatures,
                                 tags = languageContent.tags
                             )
-                            
+
                             hybridBooksDao.insertBook(hybridBookEntity)
                             Log.d(TAG, "📚 Registered bundled book: ${book.id}/$languageCode")
                         } else {
@@ -187,7 +200,7 @@ class HybridContentManager @Inject constructor(
                     }
                 }
             }
-            
+
             Log.d(TAG, "✅ Books database initialization completed")
             Result.success(Unit)
         } catch (e: Exception) {
@@ -195,7 +208,7 @@ class HybridContentManager @Inject constructor(
             Result.failure(e)
         }
     }
-    
+
     /**
      * 메타데이터 초기화 및 버전 체크
      */
@@ -203,54 +216,49 @@ class HybridContentManager @Inject constructor(
         return try {
             val assetsMetadata = loadMetadataFromAssets()
             val localMetadata = if (metadataFile.exists()) {
-                loadMetadataFromFile(metadataFile) 
+                loadMetadataFromFile(metadataFile)
             } else null
-            
-            // 버전 비교 및 업데이트 결정
-            val needsUpdate = isFirstRun || localMetadata == null || 
-                            assetsMetadata.version > (localMetadata?.version ?: 0) ||
-                            assetsMetadata.version > storedVersion
-            
+
+            val needsUpdate = isFirstRun || localMetadata == null ||
+                    assetsMetadata.version > (localMetadata?.version ?: 0) ||
+                    assetsMetadata.version > storedVersion
+
             if (needsUpdate) {
                 Log.d(TAG, "📥 Updating metadata: ${localMetadata?.version ?: 0} → ${assetsMetadata.version}")
-                
-                // assets에서 내부저장소로 복사
                 copyMetadataToInternal(assetsMetadata)
                 Log.d(TAG, "✅ Metadata updated successfully")
             } else {
                 Log.d(TAG, "✅ Metadata is up to date (v${localMetadata?.version ?: 0})")
             }
-            
+
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to initialize metadata", e)
             Result.failure(e)
         }
     }
-    
+
     /**
      * 콘텐츠 파일들 초기화
      */
     private suspend fun initializeContentFiles(isFirstRun: Boolean): Result<Unit> {
         return try {
             val metadata = loadMetadataFromInternal().getOrThrow()
-            
+
             for (book in metadata.books) {
                 for ((languageCode, languageContent) in book.languages) {
                     if (languageContent.isBundled) {
                         val contentFileName = "${book.id}_$languageCode.json"
                         val localContentFile = File(contentDir, contentFileName)
-                        
+
                         if (isFirstRun) {
-                            // 첫 실행시: 모든 내장 콘텐츠 복사
                             if (!localContentFile.exists()) {
                                 Log.d(TAG, "📥 Copying initial content: $contentFileName")
                                 copyContentFileFromAssets(contentFileName, localContentFile)
                             }
                         } else {
-                            // 재실행시: DB에 있는데 파일이 없는 경우만 복원
                             val bookExistsInDb = hybridBooksDao.isBookExists(book.id, languageCode)
-                            
+
                             if (!localContentFile.exists() && bookExistsInDb) {
                                 Log.d(TAG, "📥 Restoring missing content: $contentFileName")
                                 copyContentFileFromAssets(contentFileName, localContentFile)
@@ -259,7 +267,7 @@ class HybridContentManager @Inject constructor(
                     }
                 }
             }
-            
+
             Log.d(TAG, "✅ Content files initialization completed (firstRun: $isFirstRun)")
             Result.success(Unit)
         } catch (e: Exception) {
@@ -267,43 +275,37 @@ class HybridContentManager @Inject constructor(
             Result.failure(e)
         }
     }
-    
+
     /**
      * 이미지 파일들 초기화
      */
     private suspend fun initializeImageFiles(isFirstRun: Boolean): Result<Unit> {
         return try {
             val metadata = loadMetadataFromInternal().getOrThrow()
-            
+
             for (book in metadata.books) {
                 val bookImagesDir = File(imagesDir, book.id.toString()).apply { mkdirs() }
-                
+
                 if (isFirstRun) {
-                    // 첫 실행시: 모든 내장 이미지 복사
                     val hasNoImages = bookImagesDir.listFiles()?.isEmpty() != false
                     if (hasNoImages) {
                         Log.d(TAG, "📥 Copying initial images for book ${book.id}")
                         copyBookImagesFromAssets(book.id, bookImagesDir)
                     }
                 } else {
-                    // 재실행시: DB에 있는데 이미지가 없는 경우만 복원
                     val bookExistsInDb = hybridBooksDao.getBooksByStoryId(book.id).isNotEmpty()
                     val hasNoImages = bookImagesDir.listFiles()?.isEmpty() != false
-                    val needsCoverImage = !File(bookImagesDir, "cover_${book.id}_ko.jpg").exists() && 
-                                        !File(bookImagesDir, "cover_${book.id}_en.jpg").exists() &&
-                                        !File(bookImagesDir, "cover_${book.id}_tet.jpg").exists()
-                    
+                    val needsCoverImage = !File(bookImagesDir, "cover_${book.id}_ko.jpg").exists() &&
+                            !File(bookImagesDir, "cover_${book.id}_en.jpg").exists() &&
+                            !File(bookImagesDir, "cover_${book.id}_tet.jpg").exists()
+
                     if (hasNoImages && bookExistsInDb && needsCoverImage) {
                         Log.d(TAG, "📥 Restoring missing images for book ${book.id}")
                         copyBookImagesFromAssets(book.id, bookImagesDir)
-                    } else if (bookExistsInDb) {
-                        Log.d(TAG, "✅ Images already exist for book ${book.id}")
-                    } else {
-                        Log.d(TAG, "⚠️ Book ${book.id} not in DB, skipping image restoration")
                     }
                 }
             }
-            
+
             Log.d(TAG, "✅ Image files initialization completed (firstRun: $isFirstRun)")
             Result.success(Unit)
         } catch (e: Exception) {
@@ -311,7 +313,7 @@ class HybridContentManager @Inject constructor(
             Result.failure(e)
         }
     }
-    
+
     /**
      * Room DB에서 모든 책 조회 (언어별)
      */
@@ -325,7 +327,7 @@ class HybridContentManager @Inject constructor(
             Result.failure(e)
         }
     }
-    
+
     /**
      * 다운로드한 책을 DB에 등록
      */
@@ -365,81 +367,156 @@ class HybridContentManager @Inject constructor(
                 aiFeatures = aiFeatures,
                 tags = tags
             )
-            
+
             hybridBooksDao.insertBook(downloadedBook)
             Log.d(TAG, "✅ Registered downloaded book: $bookId/$languageCode")
-            
+
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to register downloaded book", e)
             Result.failure(e)
         }
     }
-    
+
     /**
      * 항상 내부저장소에서 메타데이터 로드
      */
     suspend fun loadMetadata(): Result<HybridBooksMetadata> {
         return loadMetadataFromInternal()
     }
-    
+
     /**
-     * 항상 내부저장소에서 콘텐츠 로드
+     * 콘텐츠 로드 (내장/다운로드 책 모두 지원)
      */
-    suspend fun loadBookContent(bookId: Int, languageCode: String): Result<UnifiedBookContent> {
+    suspend fun loadBookContent(bookId: Int, languageCode: String, contentBasePath: String? = null): Result<UnifiedBookContent> {
         return withContext(Dispatchers.IO) {
+            var contentFile: File? = null
             try {
-                val contentFileName = "${bookId}_$languageCode.json"
-                val contentFile = File(contentDir, contentFileName)
-                
+                if (contentBasePath != null) {
+                    // 🔧 수정: 다운로드 책용 - 새로운 경로 구조
+                    contentFile = File(contentBasePath, "${bookId}_$languageCode.json")
+                } else {
+                    // 내장 책용 - 기존 경로 구조 유지
+                    contentFile = File(contentDir, "${bookId}_$languageCode.json")
+                }
+
                 if (!contentFile.exists()) {
                     return@withContext Result.failure(
-                        IllegalStateException("Content file not found: $contentFileName")
+                        IllegalStateException("Content file not found: ${contentFile.absolutePath}")
                     )
                 }
-                
+
                 val contentJson = contentFile.readText()
                 val content = json.decodeFromString<UnifiedBookContent>(contentJson)
-                
-                Log.d(TAG, "✅ Loaded content from internal storage: $contentFileName")
+
+                Log.d(TAG, "✅ Loaded content from: ${contentFile.absolutePath}")
                 Result.success(content)
             } catch (e: Exception) {
-                Log.e(TAG, "❌ Failed to load content from internal storage", e)
+                Log.e(TAG, "❌ Failed to load content from: ${contentFile?.absolutePath ?: "unknown path"}", e)
                 Result.failure(e)
             }
         }
     }
-    
+
     /**
      * 콘텐츠 파일 경로 반환 (내부저장소 기준)
      */
     fun getContentPath(bookId: Int, languageCode: String): String {
         return File(contentDir, "${bookId}_$languageCode.json").absolutePath
     }
-    
+
     /**
      * 이미지 파일 경로 반환 (내부저장소 기준)
      */
     fun getImagePath(bookId: Int, imageName: String): String {
         return File(imagesDir, "$bookId/$imageName").absolutePath
     }
-    
+
     /**
-     * 이미지 URL 반환 (내부저장소 전용)
-     * - 내부저장소에 파일이 없으면 null 반환
-     * - DB에 없는 책은 표시되지 않아야 함
+     * 🔧 수정된 이미지 URL 반환 (새로운 폴더 구조 지원)
      */
-    fun getImageUrl(bookId: Int, imageName: String): String? {
-        val internalImageFile = File(imagesDir, "$bookId/$imageName")
-        return if (internalImageFile.exists()) {
-            "file://${internalImageFile.absolutePath}"  // 내부저장소
-        } else {
-            null  // 🆕 assets fallback 제거
+    suspend fun getImageUrl(bookId: Int, imageName: String): String? = withContext(Dispatchers.IO) {
+        try {
+            Log.d(TAG, "🔍 Resolving image: $bookId/$imageName")
+
+            // 1. DB에서 책 정보 조회
+            val bookEntities = hybridBooksDao.getBooksByStoryId(bookId)
+            if (bookEntities.isEmpty()) {
+                Log.w(TAG, "❌ Book $bookId not found in database")
+                return@withContext null
+            }
+
+            Log.d(TAG, "📚 Found ${bookEntities.size} book entries in DB")
+
+            // 2. 각 언어별 책 엔티티에서 이미지 경로 확인
+            for (entity in bookEntities) {
+                val imagePath = resolveImagePath(imageName, entity)
+                if (imagePath != null) {
+                    val imageFile = File(imagePath)
+                    Log.d(TAG, "📷 Checking ${entity.source} path: ${imageFile.absolutePath}")
+
+                    if (imageFile.exists()) {
+                        Log.d(TAG, "✅ Found image via DB path: ${imageFile.absolutePath}")
+                        return@withContext "file://${imageFile.absolutePath}"
+                    }
+                }
+            }
+
+            // 3. Fallback: 기존 하드코딩된 경로들 확인
+            val fallbackPaths = listOf(
+                // 내부저장소 기본 경로 (내장 책)
+                File(imagesDir, "$bookId/$imageName"),
+                // 외부저장소 패턴들 (다운로드 책 - 구버전 호환)
+                File(externalStorageDir, "downloaded_books/$bookId/images/$imageName"),
+                File(externalStorageDir, "downloaded_books/$bookId/$imageName"),
+                // 새로운 다운로드 책 경로 구조
+                File(downloadedBooksDir, "$bookId/images/$imageName"),
+                File(downloadedBooksDir, "$bookId/$imageName")
+            )
+
+            for (fallbackFile in fallbackPaths) {
+                if (fallbackFile.exists()) {
+                    Log.d(TAG, "✅ Found image via fallback: ${fallbackFile.absolutePath}")
+                    return@withContext "file://${fallbackFile.absolutePath}"
+                }
+            }
+
+            Log.w(TAG, "❌ Image not found anywhere: $bookId/$imageName")
+            return@withContext null
+
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error resolving image: $bookId/$imageName", e)
+            return@withContext null
         }
     }
-    
+
+    /**
+     * 🆕 이미지 경로 결정 로직 (새로운 폴더 구조 반영)
+     */
+    private fun resolveImagePath(imageName: String, entity: HybridBookEntity): String? {
+        return when (entity.source) {
+            BookSource.BUNDLED -> {
+                // 내장 책: 기존 경로 구조 유지
+                File(entity.imagesDirectoryPath, imageName).absolutePath
+            }
+            BookSource.DOWNLOADED -> {
+                // 다운로드 책: 새로운 경로 구조
+                when {
+                    imageName.startsWith("cover_") -> {
+                        // 커버 이미지: bookDir 직하위
+                        entity.coverImagePath
+                    }
+                    else -> {
+                        // 페이지 이미지: bookDir/images/ 하위
+                        File(entity.imagesDirectoryPath, imageName).absolutePath
+                    }
+                }
+            }
+        }
+    }
+
     // ========== Private Helper Methods ==========
-    
+
     /**
      * Assets에서 메타데이터 로드
      */
@@ -451,7 +528,7 @@ class HybridContentManager @Inject constructor(
             }
         }
     }
-    
+
     /**
      * 파일에서 메타데이터 로드
      */
@@ -466,7 +543,7 @@ class HybridContentManager @Inject constructor(
             }
         }
     }
-    
+
     /**
      * 내부저장소에서 메타데이터 로드
      */
@@ -478,7 +555,7 @@ class HybridContentManager @Inject constructor(
                         IllegalStateException("Metadata file not found in internal storage")
                     )
                 }
-                
+
                 val metadata = loadMetadataFromFile(metadataFile)
                 if (metadata != null) {
                     Result.success(metadata)
@@ -490,7 +567,7 @@ class HybridContentManager @Inject constructor(
             }
         }
     }
-    
+
     /**
      * 메타데이터를 내부저장소에 복사
      */
@@ -500,7 +577,7 @@ class HybridContentManager @Inject constructor(
             metadataFile.writeText(jsonString)
         }
     }
-    
+
     /**
      * Assets에서 콘텐츠 파일 복사
      */
@@ -519,7 +596,7 @@ class HybridContentManager @Inject constructor(
             }
         }
     }
-    
+
     /**
      * Assets에서 책 이미지들 복사
      */
@@ -528,7 +605,7 @@ class HybridContentManager @Inject constructor(
             try {
                 val assetsImagesPath = "images/$bookId"
                 val imageFiles = context.assets.list(assetsImagesPath) ?: emptyArray()
-                
+
                 for (imageFile in imageFiles) {
                     context.assets.open("$assetsImagesPath/$imageFile").use { inputStream ->
                         File(targetDir, imageFile).outputStream().use { outputStream ->
@@ -536,7 +613,7 @@ class HybridContentManager @Inject constructor(
                         }
                     }
                 }
-                
+
                 Log.d(TAG, "✅ Copied ${imageFiles.size} images for book $bookId")
             } catch (e: Exception) {
                 Log.e(TAG, "❌ Failed to copy images for book $bookId", e)
@@ -544,7 +621,67 @@ class HybridContentManager @Inject constructor(
             }
         }
     }
-    
+
+    /**
+     * 🔍 디버깅용: 특정 책의 이미지 경로 상태 조회
+     */
+    suspend fun debugImagePathsForBook(bookId: Int): String = withContext(Dispatchers.IO) {
+        val debug = StringBuilder()
+        debug.appendLine("🔍 Debugging image paths for book $bookId (New Structure):")
+
+        try {
+            // 1. DB 정보 확인
+            val bookEntities = hybridBooksDao.getBooksByStoryId(bookId)
+            debug.appendLine("📚 Books in DB: ${bookEntities.size}")
+
+            for (entity in bookEntities) {
+                debug.appendLine("  - ${entity.language}: ${entity.source}")
+                debug.appendLine("    Images dir: ${entity.imagesDirectoryPath}")
+                debug.appendLine("    Cover path: ${entity.coverImagePath}")
+
+                val resolvedPath = when (entity.source) {
+                    BookSource.BUNDLED -> {
+                        File(entity.imagesDirectoryPath)
+                    }
+                    BookSource.DOWNLOADED -> {
+                        // 새로운 구조: bookDir/images/
+                        File(entity.imagesDirectoryPath)
+                    }
+                }
+
+                debug.appendLine("    Resolved dir: ${resolvedPath.absolutePath}")
+                debug.appendLine("    Dir exists: ${resolvedPath.exists()}")
+
+                if (resolvedPath.exists()) {
+                    val imageFiles = resolvedPath.listFiles()?.map { it.name }?.sorted() ?: emptyList()
+                    debug.appendLine("    Files (${imageFiles.size}): ${imageFiles.take(10)}")
+                }
+            }
+
+            // 2. 새로운 폴더 구조 확인
+            debug.appendLine("\n📁 New structure paths:")
+            val newStructurePaths = listOf(
+                File(downloadedBooksDir, "$bookId"),
+                File(downloadedBooksDir, "$bookId/images"),
+                File(imagesDir, "$bookId")
+            )
+
+            for (path in newStructurePaths) {
+                debug.appendLine("  Path: ${path.absolutePath}")
+                debug.appendLine("    Exists: ${path.exists()}")
+                if (path.exists()) {
+                    val files = path.listFiles()?.map { it.name }?.take(5) ?: emptyList()
+                    debug.appendLine("    Files: $files")
+                }
+            }
+
+        } catch (e: Exception) {
+            debug.appendLine("❌ Error during debug: ${e.message}")
+        }
+
+        debug.toString()
+    }
+
     companion object {
         private const val TAG = "HybridContentManager"
     }

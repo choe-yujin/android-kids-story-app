@@ -39,7 +39,7 @@ fun CreatedByCardContent(scaleFactor: Float, onAction: (SettingAction) -> Unit, 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding((16 * scaleFactor).dp)
+            .padding((8 * scaleFactor).dp)
             .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -49,7 +49,7 @@ fun CreatedByCardContent(scaleFactor: Float, onAction: (SettingAction) -> Unit, 
             color = AppColors.neutral800
         )
 
-        Spacer(modifier = Modifier.height(if (isTablet) (24 * scaleFactor).dp else (8 * scaleFactor).dp))
+        Spacer(modifier = Modifier.height((12 * scaleFactor).dp))
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -88,6 +88,30 @@ fun CreatedByCardContent(scaleFactor: Float, onAction: (SettingAction) -> Unit, 
             DeveloperRow(
                 roleResId = R.string.info_cm_jisu,
                 flagResId = R.drawable.flag_ko,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            DeveloperRow(
+                roleResId = R.string.info_tl_rosalina,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            DeveloperRow(
+                roleResId = R.string.info_tl_helia,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            DeveloperRow(
+                roleResId = R.string.info_tl_lourenco,
+                flagResId = R.drawable.flag_tet,
+hasEmail = false,
+                onEmailClick = {}
+            )
+            DeveloperRow(
+                roleResId = R.string.info_tl_alexandrino,
+                flagResId = R.drawable.flag_tet,
                 hasEmail = false,
                 onEmailClick = {}
             )
@@ -152,6 +176,30 @@ fun SmallCreatedByCardContent(scaleFactor: Float, onAction: (SettingAction) -> U
                 hasEmail = false,
                 onEmailClick = {}
             )
+            SmallDeveloperRow(
+                roleResId = R.string.info_tl_rosalina,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            SmallDeveloperRow(
+                roleResId = R.string.info_tl_helia,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            SmallDeveloperRow(
+                roleResId = R.string.info_tl_lourenco,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            SmallDeveloperRow(
+                roleResId = R.string.info_tl_alexandrino,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
         }
     }
 }
@@ -213,6 +261,30 @@ fun VerySmallCreatedByCardContent(scaleFactor: Float, onAction: (SettingAction) 
                 hasEmail = false,
                 onEmailClick = {}
             )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_tl_rosalina,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_tl_helia,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_tl_lourenco,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_tl_alexandrino,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
         }
     }
 }
@@ -241,13 +313,13 @@ fun DeveloperRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LocalizedText(
-                resId = roleResId,
-                style = ResponsiveTextUtils.getDeveloperNameTextStyle(),
-                color = AppColors.neutral800,
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
+            Column(modifier = Modifier.weight(1f)) {
+                LocalizedText(
+                    resId = roleResId,
+                    style = ResponsiveTextUtils.getDeveloperNameTextStyle(),
+                    color = AppColors.neutral800,
+                )
+            }
 
             if (hasEmail) {
                 Card(
@@ -312,14 +384,15 @@ fun SmallDeveloperRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LocalizedText(
-                resId = roleResId,
-                style = ResponsiveTextUtils.getDeveloperNameTextStyle().copy(
-                    fontSize = ResponsiveTextUtils.getDeveloperNameTextStyle().fontSize * 0.75f
-                ),
-                color = AppColors.neutral800,
-                modifier = Modifier.weight(1f)
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                LocalizedText(
+                    resId = roleResId,
+                    style = ResponsiveTextUtils.getDeveloperNameTextStyle().copy(
+                        fontSize = ResponsiveTextUtils.getDeveloperNameTextStyle().fontSize * 0.75f
+                    ),
+                    color = AppColors.neutral800,
+                )
+            }
 
             if (hasEmail) {
                 Card(
@@ -384,14 +457,15 @@ fun VerySmallDeveloperRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LocalizedText(
-                resId = roleResId,
-                style = ResponsiveTextUtils.getDeveloperNameTextStyle().copy(
-                    fontSize = ResponsiveTextUtils.getDeveloperNameTextStyle().fontSize * 0.65f
-                ),
-                color = AppColors.neutral800,
-                modifier = Modifier.weight(1f)
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                LocalizedText(
+                    resId = roleResId,
+                    style = ResponsiveTextUtils.getDeveloperNameTextStyle().copy(
+                        fontSize = ResponsiveTextUtils.getDeveloperNameTextStyle().fontSize * 0.65f
+                    ),
+                    color = AppColors.neutral800,
+                )
+            }
 
             if (hasEmail) {
                 Card(
