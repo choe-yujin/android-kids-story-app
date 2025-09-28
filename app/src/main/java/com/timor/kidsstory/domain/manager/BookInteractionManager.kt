@@ -2,6 +2,7 @@ package com.timor.kidsstory.domain.manager
 
 import com.timor.kidsstory.domain.model.ReadingProgress
 import com.timor.kidsstory.domain.repository.ReadingProgressRepository
+import com.timor.kidsstory.domain.usecase.book.CheckAndProcessUnlockUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +17,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class BookInteractionManager @Inject constructor(
-    private val readingProgressRepository: ReadingProgressRepository
+    private val readingProgressRepository: ReadingProgressRepository,
+    private val checkAndProcessUnlockUseCase: CheckAndProcessUnlockUseCase
 ) {
     companion object {
         private const val DEFAULT_USER_ID = "default_user"
@@ -75,6 +77,11 @@ class BookInteractionManager @Inject constructor(
         )
         
         readingProgressRepository.updateReadingProgress(DEFAULT_USER_ID, bookId, progress)
+        
+        // 🆕 If the book is completed, check for unlocks
+        if (isCompleted) {
+            checkAndProcessUnlockUseCase(DEFAULT_USER_ID, languageCode, bookId)
+        }
     }
 
     /**
@@ -90,6 +97,7 @@ class BookInteractionManager @Inject constructor(
         totalPages: Int
     ) {
         readingProgressRepository.markBookCompleted(DEFAULT_USER_ID, bookId)
+        checkAndProcessUnlockUseCase(DEFAULT_USER_ID, languageCode, bookId)
     }
 
     /**
