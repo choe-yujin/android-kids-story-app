@@ -50,45 +50,53 @@ enum class FilterBookCategory(
 ) {
     ENVIRONMENT(
         displayNameRes = R.string.category_environment_nature,
-        keywords = listOf("environment", "nature", "환경", "자연", "생태", "동물", "식물", "기후", "재활용"),
+        keywords = listOf("ENVIRONMENT", "environment", "nature", "환경", "자연", "생태", "동물", "식물", "기후", "재활용"),
         iconRes = R.drawable.ic_category_environment
     ),
     SCIENCE_NATURE(
         displayNameRes = R.string.category_science_math, 
-        keywords = listOf("math", "science", "수학", "과학", "실험", "숫자", "계산", "우주", "물리"),
+        keywords = listOf("SCIENCE_NATURE", "MATH_SCIENCE", "math", "science", "수학", "과학", "실험", "숫자", "계산", "우주", "물리"),
         iconRes = R.drawable.ic_category_math
     ),
     CULTURE_WORLD(
         displayNameRes = R.string.category_culture_world,
-        keywords = listOf("culture", "world", "문화", "세계", "전통", "음식", "축제", "여행", "나라"),
+        keywords = listOf("CULTURE_WORLD", "culture", "world", "문화", "세계", "전통", "음식", "축제", "여행", "나라"),
         iconRes = R.drawable.ic_category_culture
     ),
     SOCIAL_EMOTIONAL(
         displayNameRes = R.string.category_social_emotional,
-        keywords = listOf("social", "emotional", "사회", "정서", "감정", "우정", "가족", "갈등", "친구"),
+        keywords = listOf("SOCIAL_EMOTIONAL", "social", "emotional", "사회", "정서", "감정", "우정", "가족", "갈등", "친구"),
         iconRes = R.drawable.ic_category_society
     ),
     FOLKTALES_HISTORY(
         displayNameRes = R.string.category_folktales_history,
-        keywords = listOf("folktale", "history", "이야기", "역사", "전설", "신화", "옛이야기", "위인", "과거"),
+        keywords = listOf("FOLKTALES_HISTORY", "folktale", "history", "이야기", "역사", "전설", "신화", "옛이야기", "위인", "과거"),
         iconRes = R.drawable.ic_category_history
     ),
     DAILY_LIFE(
         displayNameRes = R.string.category_daily_life,
-        keywords = listOf("daily", "life", "일상", "생활", "학교", "집", "일과", "습관", "하루"),
+        keywords = listOf("DAILY_LIFE", "daily", "life", "일상", "생활", "학교", "집", "일과", "습관", "하루"),
         iconRes = R.drawable.ic_category_life
     ),
     ADVENTURE_FANTASY(
         displayNameRes = R.string.category_adventure_fantasy,
-        keywords = listOf("adventure", "fantasy", "모험", "판타지", "탐험", "마법", "상상", "꿈", "여행"),
+        keywords = listOf("ADVENTURE_FANTASY", "adventure", "fantasy", "모험", "판타지", "탐험", "마법", "상상", "꿈", "여행"),
         iconRes = R.drawable.ic_category_adventure
     );
 
     /**
      * 주어진 카테고리 문자열이 이 필터와 일치하는지 확인
+     * 🔄 정확한 매칭을 위해 대문자 카테고리명을 우선 검사
      */
     fun matches(category: String): Boolean {
-        return keywords.any { keyword ->
+        // 🔄 1순위: 정확한 대문자 카테곣0명 매칭
+        val exactCategoryMatch = keywords.firstOrNull()?.equals(category, ignoreCase = true) == true
+        if (exactCategoryMatch) {
+            return true
+        }
+        
+        // 🔄 2순위: 기타 키워드 매칭 (첫 번째 제외)
+        return keywords.drop(1).any { keyword ->
             category.contains(keyword, ignoreCase = true) ||
             keyword.contains(category, ignoreCase = true)
         }
