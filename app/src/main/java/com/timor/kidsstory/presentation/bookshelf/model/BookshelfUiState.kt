@@ -42,7 +42,11 @@ data class BookshelfUiState(
     // 다운로드/업데이트 가능 항목
     val downloadableBooks: List<Book> = emptyList(),
     val updatableBooks: List<Book> = emptyList(),
-    val downloadableItemsCount: Int = 0,
+    val downloadableItemsCount: Int = 0,              // 전체 알림 수 (관리 버튼용)
+    val downloadableOnlyCount: Int = 0,              // 🆕 새 책만 (DOWNLOAD 탭용)
+    val updatableOnlyCount: Int = 0,                 // 🆕 업데이트만 (UPDATE 탭용)
+    val hasViewedDownloadTab: Boolean = false,       // 🆕 DOWNLOAD 탭 확인 여부
+    val hasViewedUpdateTab: Boolean = false,         // 🆕 UPDATE 탭 확인 여부
     val isCheckingUpdates: Boolean = false,
     val hasCheckedUpdates: Boolean = false,
     
