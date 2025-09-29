@@ -52,6 +52,7 @@ import android.app.Application
  */
 import com.timor.kidsstory.domain.usecase.CheckAppVersionUseCase
 import com.timor.kidsstory.domain.usecase.PostponeUpdateUseCase
+import com.timor.kidsstory.domain.usecase.update.CheckAvailableUpdatesUseCase
 import com.timor.kidsstory.domain.usecase.book.CheckUnlockStatusUseCase
 import com.timor.kidsstory.domain.usecase.book.GetManagementBooksUseCase
 import com.timor.kidsstory.domain.usecase.book.ExecuteBookDownloadUseCase
@@ -76,6 +77,7 @@ class BookshelfViewModel @Inject constructor(
     private val soundEffectManager: SoundEffectManager,
     private val checkAppVersionUseCase: CheckAppVersionUseCase,
     private val postponeUpdateUseCase: PostponeUpdateUseCase,
+    private val checkAvailableUpdatesUseCase: CheckAvailableUpdatesUseCase,
     private val checkUnlockStatusUseCase: CheckUnlockStatusUseCase,
     private val getManagementBooksUseCase: GetManagementBooksUseCase,
     private val executeBookDownloadUseCase: ExecuteBookDownloadUseCase,
@@ -109,7 +111,92 @@ class BookshelfViewModel @Inject constructor(
             }
         }
     }
+    
+    /**
+     * 🆕 백그라운드에서 업데이트 체크 (네트워크 최적화)
+     * - 1일 1회만 체크
+     * - 메타데이터만 다운로드  
+     * - 캐시 활용
+     */
+    private fun checkForAvailableUpdates() {
+        viewModelScope.launch {
+            try {
+                Log.d("BookshelfViewModel", "🔍 Checking for available updates in background...")
+                
+                val result = checkAvailableUpdatesUseCase.getAvailableUpdatesCount(
+                    userId = "default_user", // TODO: 실제 사용자 ID 사용
+                    languageCode = _state.value.currentLanguage.code,
+                    forceRefresh = false // 캐시 우선
+                )
+                
+                result.onSuccess { updateResult ->
+                    Log.d("BookshelfViewModel", "📦 Available updates: D=${updateResult.downloadableCount}, U=${updateResult.updatableCount}, Total=${updateResult.totalCount}")
+                    
+                    // UI 상태 업데이트
+                    _state.update { 
+                        it.copy(
+                            downloadableItemsCount = updateResult.totalCount,         // 관리 버튼용 전체 수
+                            downloadableOnlyCount = updateResult.downloadableCount,   // 🆕 DOWNLOAD 탭용
+                            updatableOnlyCount = updateResult.updatableCount,         // 🆕 UPDATE 탭용
+                            hasCheckedUpdates = false // 아직 사용자가 다운로드 탭을 확인하지 않음
+                        ) 
+                    }
+                    
+                    if (updateResult.totalCount > 0) {
+                        Log.d("BookshelfViewModel", "📢 배지 표시: ${updateResult.totalCount}개 항목 업데이트 가능")
+                    }
+                }.onFailure { error ->
+                    Log.w("BookshelfViewModel", "Failed to check for updates", error)
+                    // 실패시 무시 (네트워크 없는 환경 등)
+                }
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error in background update check", e)
+            }
+        }
+    }
 
+    /**
+     * 🆕 다운로드/업데이트 완료 후 배지 카운트 업데이트
+     * - 실제 작업 완료시 호출
+     * - 캐시 무효화 후 새로고침
+     */
+    fun refreshUpdateCounts() {
+        viewModelScope.launch {
+            try {
+                Log.d("BookshelfViewModel", "🔄 다운로드/업데이트 완료 후 카운트 업데이트")
+                
+                // 캐시 무효화
+                checkAvailableUpdatesUseCase.invalidateCache()
+                
+                // 새로고침
+                val result = checkAvailableUpdatesUseCase.getAvailableUpdatesCount(
+                    userId = "default_user",
+                    languageCode = _state.value.currentLanguage.code,
+                    forceRefresh = true // 강제 새로고침
+                )
+                
+                result.onSuccess { updateResult ->
+                    _state.update { 
+                        it.copy(
+                            downloadableItemsCount = updateResult.totalCount,
+                            downloadableOnlyCount = updateResult.downloadableCount,
+                            updatableOnlyCount = updateResult.updatableCount,
+                            // 🆕 하이브리드: 실제 다운로드/업데이트 완료로 카운트 변경시 확인 상태 초기화
+                            hasViewedDownloadTab = false,
+                            hasViewedUpdateTab = false
+                        ) 
+                    }
+                    
+                    Log.d("BookshelfViewModel", "🔄 배지 카운트 업데이트 완료: D=${updateResult.downloadableCount}, U=${updateResult.updatableCount}")
+                }
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error refreshing update counts", e)
+            }
+        }
+    }
+    
     private suspend fun loadUserPreferences(
         initialLevel: Int?,
         wasSkipped: Boolean,
@@ -725,17 +812,22 @@ class BookshelfViewModel @Inject constructor(
             )
         }
         
-        // 관리 모드 진입 시 초기 데이터 로드
+        // 관리 모드 진        // 관리 모드 진입 시 초기 데이터 로드
         if (!currentMode) {
             loadManagementData()
-            // 🆕 기본 탭(다운로드)의 책 목록 로드
-            loadDownloadableBooks(_state.value.books)
+            // 🆕 기본 탭(DOWNLOAD)의 책 목록 로드 후 "확인됨" 처리
+            viewModelScope.launch {
+                loadDownloadableBooks(_state.value.books)
+                // 로드 완료 후 DOWNLOAD 탭을 "확인됨"으로 설정
+                _state.update { it.copy(hasViewedDownloadTab = true) }
+                Log.d("BookshelfViewModel", "📁 Management mode entered - DOWNLOAD tab auto-viewed")
+            }
         } else {
             // 🆕 관리 모드 종료 시 필터 재적용 (일반 모드는 isDownloaded=true만)
             applyCurrentFilter()
         }
         
-        Log.d("BookshelfViewModel", "Management mode toggled: ${!currentMode}")
+        Log.d("BookshelfViewModel", "📁 Management mode toggled: ${!currentMode} (viewed: D=${_state.value.hasViewedDownloadTab}, U=${_state.value.hasViewedUpdateTab})")
     }
     
     /**
@@ -798,9 +890,13 @@ class BookshelfViewModel @Inject constructor(
      * 선택된 탭에 맞는 책 목록 로드
      */
     private fun selectManagementTab(tab: ManagementTab) {
-        _state.update { 
-            it.copy(
+        // 🆕 하이브리드: 탭 클릭시 “확인됨” 상태로 설정
+        _state.update { currentState ->
+            currentState.copy(
                 selectedManagementTab = tab,
+                // 🆕 버튼 클릭시 해당 탭 “확인됨” 처리
+                hasViewedDownloadTab = if (tab == ManagementTab.DOWNLOAD) true else currentState.hasViewedDownloadTab,
+                hasViewedUpdateTab = if (tab == ManagementTab.UPDATE) true else currentState.hasViewedUpdateTab,
                 // 🆕 탭 변경 시 filteredBooks를 빈 리스트로 초기화 (버퍼링 효과)
                 filteredBooks = emptyList(),
                 // 🆕 선택 내역도 초기화
@@ -824,7 +920,7 @@ class BookshelfViewModel @Inject constructor(
             }
         }
 
-        Log.d("BookshelfViewModel", "Management tab selected: $tab")
+        Log.d("BookshelfViewModel", "📁 Management tab selected: $tab (viewed: D=${_state.value.hasViewedDownloadTab}, U=${_state.value.hasViewedUpdateTab})")
     }
     
     /**
@@ -1154,7 +1250,8 @@ class BookshelfViewModel @Inject constructor(
                         // 다운로드 실행
                         executeBookDownloadUseCase(
                             books = selectedBooks,
-                            languageCode = currentLanguage
+                            languageCode = currentLanguage,
+                            isUpdate = false // 새로운 다운로드
                         ).onSuccess {
                             Log.d("BookshelfViewModel", "✅ Download completed for ${selectedBooks.size} books")
                             showActionCompletionDialog(ManagementActionType.DOWNLOAD, selectedBooks.size)
@@ -1165,10 +1262,11 @@ class BookshelfViewModel @Inject constructor(
                     }
                     
                     ManagementActionType.UPDATE -> {
-                        // 업데이트 실행 (다운로드와 동일)
+                        // 업데이트 실행 (강제 업데이트 모드)
                         executeBookDownloadUseCase(
                             books = selectedBooks,
-                            languageCode = currentLanguage
+                            languageCode = currentLanguage,
+                            isUpdate = true // 🔄 업데이트 모드
                         ).onSuccess {
                             Log.d("BookshelfViewModel", "✅ Update completed for ${selectedBooks.size} books")
                             showActionCompletionDialog(ManagementActionType.UPDATE, selectedBooks.size)
