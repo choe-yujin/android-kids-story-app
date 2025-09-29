@@ -106,9 +106,7 @@ fun BookshelfScreen(
         bookshelfViewModel.onAction(BookShelfAction.CheckForUpdate)
     }
 
-    /**
-     * 언어 변경 시 진도 데이터 다시 로드
-     */
+    // 언어 변경 시 진도 데이터 다시 로드
     LaunchedEffect(bookshelfState.currentLanguage.code) {
         // 언어가 변경될 때마다 진도 로드
         Log.d("BookshelfScreen", "Language changed to: ${bookshelfState.currentLanguage.code}")
@@ -118,13 +116,17 @@ fun BookshelfScreen(
         )
     }
     
-    // 책 목록이 로드된 후 총 책 수를 업데이트
-    LaunchedEffect(bookshelfState.books.size) {
+    // 책 목록이 로드된 후 다운로드된 책 수를 기준으로 총 책 수를 업데이트
+    LaunchedEffect(bookshelfState.books.size, bookshelfState.currentLanguage.code) {
         if (bookshelfState.books.isNotEmpty()) {
-            Log.d("BookshelfScreen", "Books loaded: ${bookshelfState.books.size} for ${bookshelfState.currentLanguage.code}")
+            // 🔧 수정: 다운로드된 책만 카운트
+            val downloadedBooksCount = bookshelfState.books.count { it.isDownloaded }
+            
+            Log.d("BookshelfScreen", "Books loaded: ${bookshelfState.books.size} total, $downloadedBooksCount downloaded for ${bookshelfState.currentLanguage.code}")
+            
             progressViewModel.loadProgress(
                 languageCode = bookshelfState.currentLanguage.code,
-                totalBooks = bookshelfState.books.size
+                totalBooks = downloadedBooksCount  // 🔧 다운로드된 책 수만 전달
             )
         }
     }
@@ -138,7 +140,7 @@ fun BookshelfScreen(
         }
     }
 
-    // 앱 생명주기에 따른 음악 제어
+    // 앱 생명주기에 따른 음악 제어 및 상태 새로고침
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -146,6 +148,25 @@ fun BookshelfScreen(
                 Lifecycle.Event.ON_START -> {
                     if (bookshelfState.isMusicOn) {
                         bookshelfViewModel.onAction(BookShelfAction.StartMusic)
+                    }
+                }
+                Lifecycle.Event.ON_RESUME -> {
+                    // 🆕 화면이 다시 활성화될 때 Reading Status 필터 새로고침
+                    Log.d("BookshelfScreen", "🔄 Screen resumed - refreshing reading status filter")
+                    
+                    // 현재 Reading Status 필터가 설정되어 있으면 다시 적용
+                    bookshelfState.selectedReadingStatus?.let { currentStatus ->
+                        Log.d("BookshelfScreen", "🔄 Re-applying reading status filter: $currentStatus")
+                        bookshelfViewModel.onAction(BookShelfAction.SelectReadingStatus(currentStatus))
+                    }
+                    
+                    // 진도 데이터도 새로고침
+                    val downloadedBooksCount = bookshelfState.books.count { it.isDownloaded }
+                    if (downloadedBooksCount > 0) {
+                        progressViewModel.loadProgress(
+                            languageCode = bookshelfState.currentLanguage.code,
+                            totalBooks = downloadedBooksCount
+                        )
                     }
                 }
                 else -> {}
@@ -265,9 +286,11 @@ private fun BookshelfScreenContent(
                         // 관리 모드: ManagementTabBar
                         ManagementTabBar(
                             selectedTab = bookshelfState.selectedManagementTab,
-                            downloadCount = bookshelfState.downloadableBooks.size,
-                            updateCount = bookshelfState.updatableBooks.size,
-                            deleteCount = bookshelfState.books.count { it.isDownloaded }, // 🆕 로컬 책 수
+                            downloadCount = bookshelfState.downloadableOnlyCount,   // 🆕 새 책만
+                            updateCount = bookshelfState.updatableOnlyCount,       // 🆕 업데이트만
+                            deleteCount = 0, // 🆕 삭제 탭은 카운트 없음
+                            hasViewedDownloadTab = bookshelfState.hasViewedDownloadTab, // 🆕 하이브리드
+                            hasViewedUpdateTab = bookshelfState.hasViewedUpdateTab,     // 🆕 하이브리드
                             onTabSelected = { tab ->
                                 onBookshelfAction(BookShelfAction.SelectManagementTab(tab))
                             }
