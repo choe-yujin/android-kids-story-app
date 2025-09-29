@@ -13,10 +13,15 @@ class ExecuteBookDownloadUseCase @Inject constructor(
 ) {
     /**
      * 책 다운로드 또는 업데이트
+     * 
+     * @param books 다운로드할 책 목록
+     * @param languageCode 언어 코드
+     * @param isUpdate 업데이트 모드 여부 (기존 버전 무시하고 새로 다운로드)
      */
     suspend operator fun invoke(
         books: List<Book>,
-        languageCode: String
+        languageCode: String,
+        isUpdate: Boolean = false
     ): Result<Unit> {
         return try {
             val normalizedLang = normalizeLanguageCode(languageCode)
@@ -24,12 +29,17 @@ class ExecuteBookDownloadUseCase @Inject constructor(
             books.forEach { book ->
                 val bookId = book.storyId.split("_").first().toInt()
                 
-                Log.d("ExecuteBookDownloadUseCase", "📥 Downloading book: $bookId ($normalizedLang)")
+                if (isUpdate) {
+                    Log.d("ExecuteBookDownloadUseCase", "🔄 Updating book: $bookId ($normalizedLang)")
+                } else {
+                    Log.d("ExecuteBookDownloadUseCase", "📥 Downloading book: $bookId ($normalizedLang)")
+                }
                 
-                val result = bookDownloader.downloadBook(bookId, normalizedLang)
+                val result = bookDownloader.downloadBook(bookId, normalizedLang, forceUpdate = isUpdate)
                 
                 if (result.isFailure) {
-                    Log.e("ExecuteBookDownloadUseCase", "❌ Failed to download book $bookId", result.exceptionOrNull())
+                    val action = if (isUpdate) "update" else "download"
+                    Log.e("ExecuteBookDownloadUseCase", "❌ Failed to $action book $bookId", result.exceptionOrNull())
                     return result.map { }
                 }
             }

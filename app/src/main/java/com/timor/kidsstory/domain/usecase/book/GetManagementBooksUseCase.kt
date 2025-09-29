@@ -123,8 +123,8 @@ class GetManagementBooksUseCase @Inject constructor(
         return try {
             val normalizedLang = normalizeLanguageCode(languageCode)
             
-            // 1. GitHub 메타데이터 로드
-            val metadataResult = unifiedDataSource.loadBooksMetadata()
+            // 1. GitHub 메타데이터 로드 (업데이트 감지를 위해 원격 데이터 사용)
+            val metadataResult = unifiedDataSource.loadRemoteBooksMetadata()
             if (metadataResult.isFailure) {
                 return Result.failure(metadataResult.exceptionOrNull()!!)
             }
@@ -141,6 +141,9 @@ class GetManagementBooksUseCase @Inject constructor(
                 
                 // 버전 비교 (contentVersion으로 비교)
                 val needsUpdate = remoteLanguage.contentVersion != localBook.contentVersion
+                
+                // 🔍 디버그 로그 추가
+                Log.d("GetManagementBooksUseCase", "🔄 Book ${localBook.id} ($normalizedLang): Local v${localBook.contentVersion} vs Remote v${remoteLanguage.contentVersion} -> Update needed: $needsUpdate")
                 
                 if (!needsUpdate) return@mapNotNull null
 
