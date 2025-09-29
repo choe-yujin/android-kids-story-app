@@ -7,7 +7,7 @@
       "level": 1,
       "unlockStep": 0,
       "category": "SOCIAL_EMOTIONAL",
-      "countryOfOrigin": "Unknown",
+      "countryOfOrigin": "ko",
       "aiFeatures": [
         "VOCABULARY",
         "MISSIONS"
@@ -61,7 +61,7 @@
       "level": 1,
       "unlockStep": 0,
       "category": "MATH_SCIENCE",
-      "countryOfOrigin": "Unknown",
+      "countryOfOrigin": "ko",
       "aiFeatures": [
         "VOCABULARY",
         "MISSIONS"
@@ -115,7 +115,7 @@
       "level": 2,
       "unlockStep": 0,
       "category": "SOCIAL_EMOTIONAL",
-      "countryOfOrigin": "Global",
+      "countryOfOrigin": "ko",
       "aiFeatures": [
         "VOCABULARY",
         "MISSIONS"
