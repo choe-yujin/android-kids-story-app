@@ -32,6 +32,11 @@ data class HybridBookEntity(
     val coverVersion: Int,                // 커버 이미지 버전
     val imageAssetsVersion: Int,          // 이미지 에셋 버전
     
+    // 🆕 파일 크기 정보 (Bytes 단위)
+    val contentSize: Long = 0,            // 콘텐츠 JSON 파일 크기
+    val coverImageSize: Long = 0,         // 커버 이미지 파일 크기
+    val imageAssetsSize: Long = 0,        // 이미지 에셋 전체 크기
+    
     // 상태 관리
     val source: BookSource,               // 책 출처 (BUNDLED/DOWNLOADED)
     val isAvailable: Boolean = true,      // 사용 가능 여부

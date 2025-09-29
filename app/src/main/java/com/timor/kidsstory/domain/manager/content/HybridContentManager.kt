@@ -433,13 +433,17 @@ class HybridContentManager @Inject constructor(
     }
 
     /**
-     * 🔧 수정된 이미지 URL 반환 (새로운 폴더 구조 지원)
+     * 🔧 수정된 이미지 URL 반환 (언어별 정확한 이미지 찾기)
      */
     suspend fun getImageUrl(bookId: Int, imageName: String): String? = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "🔍 Resolving image: $bookId/$imageName")
 
-            // 1. DB에서 책 정보 조회
+            // 🆕 언어 코드 추출 (imageName에서)
+            val targetLanguage = extractLanguageFromImageName(imageName)
+            Log.d(TAG, "🌍 Target language from image name: $targetLanguage")
+
+            // 1. DB에서 해당 언어의 책 정보 우선 조회
             val bookEntities = hybridBooksDao.getBooksByStoryId(bookId)
             if (bookEntities.isEmpty()) {
                 Log.w(TAG, "❌ Book $bookId not found in database")
@@ -448,21 +452,50 @@ class HybridContentManager @Inject constructor(
 
             Log.d(TAG, "📚 Found ${bookEntities.size} book entries in DB")
 
-            // 2. 각 언어별 책 엔티티에서 이미지 경로 확인
-            for (entity in bookEntities) {
-                val imagePath = resolveImagePath(imageName, entity)
-                if (imagePath != null) {
-                    val imageFile = File(imagePath)
-                    Log.d(TAG, "📷 Checking ${entity.source} path: ${imageFile.absolutePath}")
+            // 2. 🆕 해당 언어의 엔티티 우선 처리
+            val targetEntity = if (targetLanguage != null) {
+                bookEntities.find { it.language == targetLanguage }
+                    ?: bookEntities.firstOrNull() // 폴백: 언어가 없으면 첫 번째
+            } else {
+                bookEntities.firstOrNull()
+            }
 
-                    if (imageFile.exists()) {
-                        Log.d(TAG, "✅ Found image via DB path: ${imageFile.absolutePath}")
-                        return@withContext "file://${imageFile.absolutePath}"
+            if (targetEntity == null) {
+                Log.w(TAG, "❌ No suitable entity found for $bookId/$imageName")
+                return@withContext null
+            }
+
+            Log.d(TAG, "🎯 Using entity: ${targetEntity.language} (${targetEntity.source})")
+
+            // 3. 해당 엔티티에서 이미지 경로 확인
+            val imagePath = resolveImagePath(imageName, targetEntity)
+            if (imagePath != null) {
+                val imageFile = File(imagePath)
+                Log.d(TAG, "📷 Checking ${targetEntity.source} path: ${imageFile.absolutePath}")
+
+                if (imageFile.exists()) {
+                    Log.d(TAG, "✅ Found image via DB path: ${imageFile.absolutePath}")
+                    return@withContext "file://${imageFile.absolutePath}"
+                } else {
+                    Log.w(TAG, "⚠️ Image file doesn't exist: ${imageFile.absolutePath}")
+                }
+            }
+
+            // 4. 🆕 폴백: 다른 언어들에서도 찾아보기 (해당 언어가 없을 때)
+            if (targetLanguage != null) {
+                for (entity in bookEntities.filter { it.language != targetLanguage }) {
+                    val fallbackImagePath = resolveImagePath(imageName, entity)
+                    if (fallbackImagePath != null) {
+                        val fallbackFile = File(fallbackImagePath)
+                        if (fallbackFile.exists()) {
+                            Log.d(TAG, "✅ Found image via fallback entity (${entity.language}): ${fallbackFile.absolutePath}")
+                            return@withContext "file://${fallbackFile.absolutePath}"
+                        }
                     }
                 }
             }
 
-            // 3. Fallback: 기존 하드코딩된 경로들 확인
+            // 5. 최종 Fallback: 기존 하드코딩된 경로들 확인
             val fallbackPaths = listOf(
                 // 내부저장소 기본 경로 (내장 책)
                 File(imagesDir, "$bookId/$imageName"),
@@ -488,6 +521,17 @@ class HybridContentManager @Inject constructor(
             Log.e(TAG, "❌ Error resolving image: $bookId/$imageName", e)
             return@withContext null
         }
+    }
+    
+    /**
+     * 🆕 이미지 파일명에서 언어 코드 추출
+     */
+    private fun extractLanguageFromImageName(imageName: String): String? {
+        // cover_801_ko.jpg -> "ko"
+        // book_801_page_1.jpg -> null (언어 정보 없음)
+        val coverPattern = Regex("cover_(\\d+)_([a-z]{2,3})\\.jpg")
+        val match = coverPattern.find(imageName)
+        return match?.groupValues?.get(2) // 두 번째 그룹이 언어 코드
     }
 
     /**

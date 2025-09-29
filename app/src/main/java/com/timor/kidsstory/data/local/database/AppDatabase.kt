@@ -182,7 +182,7 @@ abstract class AppDatabase : RoomDatabase() {
         // 새로운 마이그레이션 6 -> 7 (HybridBookEntity 추가)
         private val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // hybrid_books 테이블 생성
+                // hybrid_books 테이블 생성 (🆕 크기 필드 포함)
                 database.execSQL("""
                     CREATE TABLE IF NOT EXISTS hybrid_books (
                         id INTEGER NOT NULL,
@@ -190,6 +190,7 @@ abstract class AppDatabase : RoomDatabase() {
                         title TEXT NOT NULL,
                         level INTEGER NOT NULL,
                         category TEXT NOT NULL,
+                        unlockStep INTEGER NOT NULL DEFAULT 0,
                         countryOfOrigin TEXT NOT NULL,
                         contentPath TEXT NOT NULL,
                         coverImagePath TEXT NOT NULL,
@@ -197,6 +198,9 @@ abstract class AppDatabase : RoomDatabase() {
                         contentVersion INTEGER NOT NULL,
                         coverVersion INTEGER NOT NULL,
                         imageAssetsVersion INTEGER NOT NULL,
+                        contentSize INTEGER NOT NULL DEFAULT 0,
+                        coverImageSize INTEGER NOT NULL DEFAULT 0,
+                        imageAssetsSize INTEGER NOT NULL DEFAULT 0,
                         source TEXT NOT NULL,
                         isAvailable INTEGER NOT NULL DEFAULT 1,
                         lastUpdated INTEGER NOT NULL,
@@ -210,16 +214,18 @@ abstract class AppDatabase : RoomDatabase() {
                 // 기존 downloaded_books 데이터를 hybrid_books로 마이그레이션
                 database.execSQL("""
                     INSERT INTO hybrid_books (
-                        id, language, title, level, category, countryOfOrigin,
+                        id, language, title, level, category, unlockStep, countryOfOrigin,
                         contentPath, coverImagePath, imagesDirectoryPath,
                         contentVersion, coverVersion, imageAssetsVersion,
+                        contentSize, coverImageSize, imageAssetsSize,
                         source, isAvailable, lastUpdated, downloadDate,
                         aiFeatures, tags
                     )
                     SELECT 
-                        id, language, title, level, category, '' as countryOfOrigin,
+                        id, language, title, level, category, 0 as unlockStep, '' as countryOfOrigin,
                         contentJsonPath as contentPath, coverImagePath, '' as imagesDirectoryPath,
                         bookVersion as contentVersion, 100 as coverVersion, 100 as imageAssetsVersion,
+                        0 as contentSize, 0 as coverImageSize, 0 as imageAssetsSize,
                         'DOWNLOADED' as source, 1 as isAvailable, downloadDate as lastUpdated, downloadDate,
                         '[]' as aiFeatures, '[]' as tags
                     FROM downloaded_books
