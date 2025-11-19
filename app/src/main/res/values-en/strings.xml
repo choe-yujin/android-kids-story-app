@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TaleTail</string>
+
+    <!-- Bookcover -->
+    <string name="bookcover_download">Download</string>
+    <string name="bookcover_downloading">Downloading…</string>
+    <string name="bookcover_retry">Retry</string>
+    <string name="bookcover_update">Update</string>
+
+    <!-- Bookshelf Filter Bar -->
+    <string name="filter_all">All</string>
+    <string name="filter_stage">Stage</string>
+    <string name="filter_category">Category</string>
+
+    <!-- Category Names -->
+    <string name="category_legend">Legend</string>
+    <string name="category_folktale">Folktale</string>
+    <string name="category_culture">Culture</string>
+    <string name="category_life">Life</string>
+    <string name="category_environment">Environment</string>
+    <string name="category_science">Science</string>
+    <string name="category_adventure">Adventure</string>
+    
+    <!-- New Category Groups -->
+    <string name="category_folktales_history">Folktales/History</string>
+    <string name="category_culture_world">Culture/World</string>
+    <string name="category_daily_life">Daily Life</string>
+    <string name="category_science_nature">Science/Nature</string>
+    <string name="category_social_emotional">Social/Emotion</string>
+    <string name="category_adventure_fantasy">Adventure/Fantasy</string>
+
+    <!-- Reading Levels -->
+    <string name="level_1">First Steps</string>
+    <string name="level_2">Early Reader</string>
+    <string name="level_3">Growing Reader</string>
+    <string name="level_4">Confident Reader</string>
+    <string name="level_5">Advanced Reader</string>
+    
+    <!-- Age Ranges -->
+    <string name="age_3_5">3-5 years</string>
+    <string name="age_5_7">5-7 years</string>
+    <string name="age_7_9">7-9 years</string>
+    <string name="age_9_11">9-11 years</string>
+    <string name="age_11_plus">11+ years</string>
+
+    <!-- Empty State Messages -->
+    <string name="empty_bookshelf_title">No books available</string>
+    <string name="empty_bookshelf_message">Check your internet connection to download new books</string>
+    <string name="empty_filter_title">No books found</string>
+    <string name="empty_filter_message">Try adjusting your filter settings</string>
+    <string name="empty_downloading">Looking for new books…</string>
+
+    <!-- Info Screen -->
+    <string name="info_setting">Setting</string>
+    <string name="info_music">Music</string>
+    <string name="info_sound_effect">Sound Effect</string>
+    <string name="info_music_volume">Music Volume</string>
+    <string name="info_sound_volume">Sound Effect Volume</string>
+    <string name="info_off">Off</string>
+    <string name="info_on">On</string>
+    <string name="info_created_by">Created by</string>
+    <string name="info_dev_yujin">Dev/Yujin Choe</string>
+    <string name="info_dev_jaeyeon">Dev/JaeYeon Kim</string>
+    <string name="info_des_jinsung">Des/Jinsung Kuak</string>
+    <string name="info_des_yuni">Edu/Siyun Lee</string>
+    <string name="info_cm_jisu">CM/Jisu An</string>
+    <string name="info_about">About</string>
+    <string name="info_version">Ver.</string>
+    <string name="info_license">License</string>
+
+    <!-- Reading Screen -->
+    <string name="reading_scroll_hint">Scroll to read more</string>
+
+    <!-- Update Dialog -->
+    <string name="update_dialog_title_optional">Update Available</string>
+    <string name="update_dialog_title_required">Required Update</string>
+    <string name="update_dialog_new_version">New version: %s</string>
+    <string name="update_dialog_release_notes">What\'s New:</string>
+    <string name="update_dialog_button_later">Later</string>
+    <string name="update_dialog_button_update">Update</string>
+    <string name="update_dialog_button_update_now">Update Now</string>
+</resources>

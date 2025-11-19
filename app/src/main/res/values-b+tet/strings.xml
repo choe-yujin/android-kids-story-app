@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TaleTail</string>
+
+    <!-- Bookcover -->
+    <string name="bookcover_download">Download</string>
+    <string name="bookcover_downloading">Download daudaun…</string>
+    <string name="bookcover_retry">Koko fali</string>
+    <string name="bookcover_update">Update</string>
+
+    <!-- Bookshelf Filter Bar -->
+    <string name="filter_all">Hotu</string>
+    <string name="filter_stage">Faze</string>
+    <string name="filter_category">Kategoria</string>
+
+    <!-- Category Names -->
+    <string name="category_legend">Lenda</string>
+    <string name="category_folktale">Istória Popular</string>
+    <string name="category_culture">Kultura</string>
+    <string name="category_life">Moris Loroloron</string>
+    <string name="category_environment">Meiu-ambiente</string>
+    <string name="category_science">Siénsia</string>
+    <string name="category_adventure">Aventura</string>
+    
+    <!-- New Category Groups -->
+    <string name="category_folktales_history">Istória Popular/Istória</string>
+    <string name="category_culture_world">Kultura/Mundu</string>
+    <string name="category_daily_life">Moris Loroloron</string>
+    <string name="category_science_nature">Siénsia/Natureza</string>
+    <string name="category_social_emotional">Sosial/Emosaun</string>
+    <string name="category_adventure_fantasy">Aventura/Fantazia</string>
+
+    <!-- Reading Levels -->
+    <string name="level_1">Primeiru Pasu</string>
+    <string name="level_2">Lee Inísiu</string>
+    <string name="level_3">Lee Boot</string>
+    <string name="level_4">Lee Konfiante</string>
+    <string name="level_5">Lee Avansu</string>
+    
+    <!-- Age Ranges -->
+    <string name="age_3_5">3-5 tinan</string>
+    <string name="age_5_7">5-7 tinan</string>
+    <string name="age_7_9">7-9 tinan</string>
+    <string name="age_9_11">9-11 tinan</string>
+    <string name="age_11_plus">11+ tinan</string>
+
+    <!-- Empty State Messages -->
+    <string name="empty_bookshelf_title">Laiha livru</string>
+    <string name="empty_bookshelf_message">Konekta internet atu download livru foun</string>
+    <string name="empty_filter_title">La hetan livru</string>
+    <string name="empty_filter_message">Koko muda filtru</string>
+    <string name="empty_downloading">Buka livru foun…</string>
+
+    <!-- Info Screen -->
+    <string name="info_setting">Konfigurasaun</string>
+    <string name="info_music">Múzika</string>
+    <string name="info_sound_effect">Lian</string>
+    <string name="info_music_volume">Múzika vol.</string>
+    <string name="info_sound_volume">Lian vol.</string>
+    <string name="info_off">Mate</string>
+    <string name="info_on">Loke</string>
+    <string name="info_created_by">Halo husi</string>
+    <string name="info_dev_yujin">Dev/Yujin Choe</string>
+    <string name="info_dev_jaeyeon">Dev/JaeYeon Kim</string>
+    <string name="info_des_jinsung">Des/Jinsung Kuak</string>
+    <string name="info_des_yuni">Edu/Siyun Lee</string>
+    <string name="info_cm_jisu">CM/Jisu An</string>
+    <string name="info_about">Kona-ba</string>
+    <string name="info_version">Ver.</string>
+    <string name="info_license">Lisensa</string>
+
+    <!-- Reading Screen -->
+    <string name="reading_scroll_hint">Scroll ba lee tan</string>
+
+    <!-- Update Dialog -->
+    <string name="update_dialog_title_optional">Update Disponível</string>
+    <string name="update_dialog_title_required">Update Presiza</string>
+    <string name="update_dialog_new_version">Versaun foun: %s</string>
+    <string name="update_dialog_release_notes">Mudansa:</string>
+    <string name="update_dialog_button_later">Oinmai</string>
+    <string name="update_dialog_button_update">Update</string>
+    <string name="update_dialog_button_update_now">Update Agora</string>
+</resources>

@@ -1,0 +1,80 @@
+{
+  "version": "2.0.0",
+  "lastUpdated": "2025-01-27",
+  "categories": [
+    {
+      "id": "ENVIRONMENT",
+      "displayName": "Environment",
+      "description": "환경",
+      "tags": ["환경보호", "재활용", "생태계", "기후"]
+    },
+    {
+      "id": "SCIENCE_NATURE",
+      "displayName": "Science & Nature", 
+      "description": "과학과 자연",
+      "tags": ["자연현상", "동식물", "우주", "과학실험"]
+    },
+    {
+      "id": "CULTURE_WORLD",
+      "displayName": "Culture & World",
+      "description": "문화와 세계",
+      "tags": ["각국문화", "전통", "음식", "축제", "여행"]
+    },
+    {
+      "id": "SOCIAL_EMOTIONAL",
+      "displayName": "Social Emotional",
+      "description": "사회정서",
+      "tags": ["감정", "우정", "가족애", "갈등해결"]
+    },
+    {
+      "id": "FOLKTALES_HISTORY",
+      "displayName": "Folktales & History",
+      "description": "이야기와 역사",
+      "tags": ["전설", "신화", "옛이야기", "역사적사건", "위인"]
+    },
+    {
+      "id": "DAILY_LIFE",
+      "displayName": "Daily Life",
+      "description": "일상생활",
+      "tags": ["학교", "집", "일과", "생활습관"]
+    },
+    {
+      "id": "ADVENTURE_FANTASY",
+      "displayName": "Adventure & Fantasy",
+      "description": "모험과 판타지",
+      "tags": ["모험", "탐험", "마법", "상상의세계"]
+    }
+  ],
+  "levels": [
+    {
+      "level": 1,
+      "levelName": "First Steps",
+      "ageRange": "3-5세",
+      "description": "단순한 문장, 반복적 표현, 그림 중심"
+    },
+    {
+      "level": 2,
+      "levelName": "Early Reader",
+      "ageRange": "5-7세",
+      "description": "짧은 문장, 쉬운 어휘, 간단한 스토리"
+    },
+    {
+      "level": 3,
+      "levelName": "Growing Reader",
+      "ageRange": "7-9세",
+      "description": "복잡한 문장, 다양한 어휘, 연속된 사건"
+    },
+    {
+      "level": 4,
+      "levelName": "Confident Reader",
+      "ageRange": "9-11세",
+      "description": "긴 문단, 추상적 개념, 복잡한 플롯"
+    },
+    {
+      "level": 5,
+      "levelName": "Advanced Reader",
+      "ageRange": "11세 이상",
+      "description": "고급 어휘, 복잡한 주제, 비유적 표현"
+    }
+  ]
+}

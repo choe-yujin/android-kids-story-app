@@ -34,22 +34,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import android.app.Application
-
-/**
- * 책장 화면 전용 ViewModel (슬림화됨)
- * 
- * 단일 책임: 책장 UI 상태 관리
- * - 책 목록 로드 및 표시
- * - 책 필터링
- * - 언어 변경
- * - 배경 음악 제어
- * - 사운드 이펙트 관리
- * 
- * 제거된 책임들:
- * - 출석 관리 → AttendanceViewModel
- * - 읽기 진도 관리 → ProgressViewModel
- * - 복잡한 다운로드 로직 → 향후 분리 예정
- */
 import com.timor.kidsstory.domain.usecase.CheckAppVersionUseCase
 import com.timor.kidsstory.domain.usecase.PostponeUpdateUseCase
 import com.timor.kidsstory.domain.usecase.update.CheckAvailableUpdatesUseCase
@@ -155,7 +139,7 @@ class BookshelfViewModel @Inject constructor(
             }
         }
     }
-
+    
     /**
      * 🆕 다운로드/업데이트 완료 후 배지 카운트 업데이트
      * - 실제 작업 완료시 호출
@@ -171,7 +155,7 @@ class BookshelfViewModel @Inject constructor(
                 
                 // 새로고침
                 val result = checkAvailableUpdatesUseCase.getAvailableUpdatesCount(
-                    userId = "default_user",
+                    userId = currentUserId,
                     languageCode = _state.value.currentLanguage.code,
                     forceRefresh = true // 강제 새로고침
                 )
@@ -812,7 +796,7 @@ class BookshelfViewModel @Inject constructor(
             )
         }
         
-        // 관리 모드 진        // 관리 모드 진입 시 초기 데이터 로드
+        // 관리 모드 진입 시 초기 데이터 로드
         if (!currentMode) {
             loadManagementData()
             // 🆕 기본 탭(DOWNLOAD)의 책 목록 로드 후 "확인됨" 처리

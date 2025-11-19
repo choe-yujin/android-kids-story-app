@@ -38,9 +38,9 @@ android {
 
         // API 키 설정
         if (localProperties.containsKey("GEMINI_API_KEY")) {
-            buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties["GEMINI_API_KEY"]}\"")
+            buildConfigField("String", "GEMINI_API_KEY", "${localProperties["GEMINI_API_KEY"]}")
         } else {
-            buildConfigField("String", "GEMINI_API_KEY", "\"\"")
+            buildConfigField("String", "GEMINI_API_KEY", "")
         }
     }
 
