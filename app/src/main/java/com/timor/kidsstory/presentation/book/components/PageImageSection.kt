@@ -104,7 +104,7 @@ fun PageImageSectionPreview() {
     KidsStoryTheme {
         PageImageSection(
             state = PageUiState(
-                imageUrl = "file:///android_asset/images/801/book_801_page_1.jpg",
+                imageUrl = "file:///android_asset/images/801/book_801_page_1.webp",
                 texts = listOf(
                     "옛날 옛날에"
                 ),

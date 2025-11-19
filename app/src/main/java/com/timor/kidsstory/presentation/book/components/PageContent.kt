@@ -50,6 +50,14 @@ fun PageContent(
     onTextToSpeech: (List<String>) -> Unit,
     onLayoutChanged: (pageIndex: Int, contentHeight: Int, containerHeight: Int) -> Unit,
     onScrollChanged: (pageIndex: Int, scrollOffset: Int, maxScrollOffset: Int) -> Unit,
+    isTetumTtsReady: Boolean,
+    isDownloadingModel: Boolean,
+    downloadProgress: Float,
+    showTtsDownloadDialog: Boolean,
+    ttsErrorMessage: String?,
+    onDownloadTtsModel: () -> Unit,
+    onDismissTtsDialog: () -> Unit,
+    onDismissTtsError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // 페이지 타입에 따라 다른 레이아웃 선택
@@ -67,6 +75,14 @@ fun PageContent(
                 onTextToSpeech = onTextToSpeech,
                 onLayoutChanged = onLayoutChanged,
                 onScrollChanged = onScrollChanged,
+                isTetumTtsReady = isTetumTtsReady,
+                isDownloadingModel = isDownloadingModel,
+                downloadProgress = downloadProgress,
+                showTtsDownloadDialog = showTtsDownloadDialog,
+                ttsErrorMessage = ttsErrorMessage,
+                onDownloadTtsModel = onDownloadTtsModel,
+                onDismissTtsDialog = onDismissTtsDialog,
+                onDismissTtsError = onDismissTtsError,
                 modifier = modifier
             )
         }
@@ -77,6 +93,14 @@ fun PageContent(
                 currentLanguage = currentLanguage,
                 onBackToBookshelf = onBackToBookshelf,
                 onTextToSpeech = onTextToSpeech,
+                isTetumTtsReady = isTetumTtsReady,
+                isDownloadingModel = isDownloadingModel,
+                downloadProgress = downloadProgress,
+                showTtsDownloadDialog = showTtsDownloadDialog,
+                ttsErrorMessage = ttsErrorMessage,
+                onDownloadTtsModel = onDownloadTtsModel,
+                onDismissTtsDialog = onDismissTtsDialog,
+                onDismissTtsError = onDismissTtsError,
                 modifier = modifier
             )
         }

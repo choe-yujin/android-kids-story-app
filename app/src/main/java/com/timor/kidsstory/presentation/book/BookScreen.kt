@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,11 +34,20 @@ import com.timor.kidsstory.ui.theme.KidsStoryTheme
  * - 텍스트 섹션 상태 관리 지원
  *
  * @param state 책 읽기 화면 UI 상태
+ * @param isTetumTtsReady 테툼어 TTS 준비 상태
+ * @param isDownloadingModel 모델 다운로드 중 여부
+ * @param downloadProgress 다운로드 진행률
+ * @param showTtsDownloadDialog TTS 다운로드 다이얼로그 표시 여부
  * @param onAction 사용자 액션 처리 콜백
  */
 @Composable
 fun BookScreen(
     state: BookUiState,
+    isTetumTtsReady: Boolean,
+    isDownloadingModel: Boolean,
+    downloadProgress: Float,
+    showTtsDownloadDialog: Boolean,
+    ttsErrorMessage: String?,
     onAction: (BookAction) -> Unit,
 ) {
     if (state.pages.isEmpty()) {
@@ -81,7 +91,7 @@ fun BookScreen(
                     pageState = state.pages[pageIndex],
                     textSectionState = state.pages[pageIndex].textSectionState,
                     pageIndex = pageIndex,
-                    currentLanguage = state.pages[pageIndex].currentLanguageCode, // Added
+                    currentLanguage = state.pages[pageIndex].currentLanguageCode,
                     onBackToBookshelf = {
                         onAction(BookAction.BackBookShelf)
                     },
@@ -105,6 +115,20 @@ fun BookScreen(
                                 maxScrollOffset = maxScrollOffset
                             )
                         )
+                    },
+                    isTetumTtsReady = isTetumTtsReady,
+                    isDownloadingModel = isDownloadingModel,
+                    downloadProgress = downloadProgress,
+                    showTtsDownloadDialog = showTtsDownloadDialog,
+                    ttsErrorMessage = ttsErrorMessage,
+                    onDownloadTtsModel = {
+                        onAction(BookAction.DownloadTtsModel)
+                    },
+                    onDismissTtsDialog = {
+                        onAction(BookAction.DismissTtsDialog)
+                    },
+                    onDismissTtsError = {
+                        onAction(BookAction.DismissTtsError)
                     },
                     modifier = Modifier.fillMaxSize()
                 )
@@ -158,6 +182,11 @@ private fun BookScreenPreview() {
                     )
                 )
             ),
+            isTetumTtsReady = false,
+            isDownloadingModel = false,
+            downloadProgress = 0f,
+            showTtsDownloadDialog = false,
+            ttsErrorMessage = null,
             onAction = {}
         )
     }

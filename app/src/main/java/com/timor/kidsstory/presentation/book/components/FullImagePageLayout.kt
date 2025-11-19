@@ -7,8 +7,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,42 +29,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.book.model.PageUiState
+import com.timor.kidsstory.ui.components.LocalizedText
 import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 
-/**
- * 전체 이미지 레이아웃 페이지 컴포넌트
- * 
- * 이미지가 화면 전체를 차지하고, 텍스트는 이미지 하단에 오버레이로 표시됩니다.
- * 주로 표지 페이지나 임팩트 있는 장면에 사용됩니다.
- * 
- * @param pageState 페이지 UI 상태 정보
- * @param currentLanguage 현재 언어 코드 (폰트 선택용)
- * @param onBackToBookshelf 책장으로 돌아가기 콜백
- * @param onTextToSpeech TTS 실행 콜백
- * @param modifier 레이아웃 수정자
- */
 @Composable
 fun FullImagePageLayout(
     pageState: PageUiState,
     currentLanguage: String = "ko",
     onBackToBookshelf: () -> Unit = {},
     onTextToSpeech: (List<String>) -> Unit = {},
+    isTetumTtsReady: Boolean,
+    isDownloadingModel: Boolean,
+    downloadProgress: Float,
+    showTtsDownloadDialog: Boolean,
+    ttsErrorMessage: String?,
+    onDownloadTtsModel: () -> Unit,
+    onDismissTtsDialog: () -> Unit,
+    onDismissTtsError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
-    val isTablet = screenWidth >= 600 // Heuristic for tablet
+    val isTablet = screenWidth >= 600
 
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        // 배경 전체 이미지
         Image(
             painter = rememberAsyncImagePainter(
                 model = ImageRequest.Builder(LocalContext.current)
@@ -70,12 +71,10 @@ fun FullImagePageLayout(
             ),
             contentDescription = null,
             modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
-            contentScale = ContentScale.FillWidth // 이미지를 가로 기준으로 꽉 채우도록
+            contentScale = ContentScale.FillWidth
         )
-        
-        // 텍스트가 있는 경우에만 하단 오버레이 표시
+
         if (pageState.texts.isNotEmpty()) {
-            // 하단 그라데이션 오버레이
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -85,20 +84,15 @@ fun FullImagePageLayout(
                             colors = listOf(
                                 Color.Transparent,
                                 Color.Black.copy(alpha = 0.7f)
-                            ),
-                            startY = 0f,
-                            endY = Float.POSITIVE_INFINITY
+                            )
                         )
                     )
                     .padding(24.dp)
             ) {
-                // 언어별 폰트 선택 - pretendard로 통일
                 val textStyle = AppTextStyles.pretendardMedium.copy(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 )
-                
-                // 텍스트 컨테이너
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -107,7 +101,6 @@ fun FullImagePageLayout(
                         .padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // 각 텍스트를 개별적으로 표시
                     pageState.texts.forEach { text ->
                         if (text.isNotBlank()) {
                             Text(
@@ -122,14 +115,12 @@ fun FullImagePageLayout(
                 }
             }
         }
-        
-        // 상단 컨트롤 버튼들 (SPLIT 화면과 동일한 스타일)
-        // 뒤로가기 버튼 (왼쪽 상단)
-        if (isTablet) { // 태블릿의 모든 페이지에 표시
+
+        if (isTablet) {
             val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
             val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
             val padding = (16 * ResponsiveTextUtils.getScreenScaleFactor()).dp
-            
+
             Box(
                 modifier = Modifier
                     .padding(padding)
@@ -152,12 +143,11 @@ fun FullImagePageLayout(
                 }
             }
         }
-        
-        // TTS 버튼 (오른쪽 상단)
-        if (pageState.texts.isNotEmpty() && pageState.texts.any { it.isNotBlank() } && pageState.currentLanguageCode != "tetum") {
+
+        if (pageState.texts.isNotEmpty() && pageState.texts.any { it.isNotBlank() }) {
             val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
             val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
-            
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -177,6 +167,87 @@ fun FullImagePageLayout(
                 }
             }
         }
+
+        if (showTtsDownloadDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    if (!isDownloadingModel) {
+                        onDismissTtsDialog()
+                    }
+                },
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    dismissOnBackPress = !isDownloadingModel,
+                    dismissOnClickOutside = !isDownloadingModel
+                ),
+                title = {
+                    LocalizedText(
+                        resId = R.string.tts_download_title,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                text = {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (ttsErrorMessage != null) {
+                            Text(
+                                text = ttsErrorMessage,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        } else if (isDownloadingModel) {
+                            LocalizedText(
+                                resId = R.string.tts_downloading,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            LinearProgressIndicator(
+                                progress = downloadProgress,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "${(downloadProgress * 100).toInt()}%",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        } else {
+                            LocalizedText(
+                                resId = R.string.tts_download_message,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    if (ttsErrorMessage != null) {
+                        Button(onClick = { onDismissTtsError() }) {
+                            LocalizedText(
+                                resId = R.string.attendance_popup_button_ok,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    } else if (!isDownloadingModel) {
+                        Button(onClick = {
+                            onDownloadTtsModel()
+                        }) {
+                            LocalizedText(
+                                resId = R.string.tts_download_button,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                },
+                dismissButton = {
+                    if (ttsErrorMessage == null && !isDownloadingModel) {
+                        Button(onClick = { onDismissTtsDialog() }) {
+                            LocalizedText(
+                                resId = R.string.tts_download_later,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -186,7 +257,7 @@ private fun FullImagePageLayoutPreview() {
     KidsStoryTheme {
         FullImagePageLayout(
             pageState = PageUiState(
-                imageUrl = "", // 프리뷰에서는 빈 이미지
+                imageUrl = "",
                 texts = listOf("이것은 전체 이미지 레이아웃의 예시입니다.", "텍스트는 이미지 하단에 오버레이로 표시됩니다."),
                 pageNumber = 1,
                 totalPages = 10,
@@ -195,7 +266,15 @@ private fun FullImagePageLayoutPreview() {
             ),
             currentLanguage = "ko",
             onBackToBookshelf = {},
-            onTextToSpeech = {}
+            onTextToSpeech = {},
+            isTetumTtsReady = false,
+            isDownloadingModel = false,
+            downloadProgress = 0f,
+            showTtsDownloadDialog = true,
+            ttsErrorMessage = null,
+            onDownloadTtsModel = {},
+            onDismissTtsDialog = {},
+            onDismissTtsError = {}
         )
     }
 }

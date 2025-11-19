@@ -81,4 +81,19 @@ sealed interface BookAction {
         val totalPages: Int,
         val languageCode: String
     ) : BookAction
+    
+    /**
+     * 테툼어 TTS 모델 다운로드 요청
+     */
+    data object DownloadTtsModel : BookAction
+    
+    /**
+     * TTS 다운로드 다이얼로그 닫기
+     */
+    data object DismissTtsDialog : BookAction
+    
+    /**
+     * TTS 에러 메시지 확인
+     */
+    data object DismissTtsError : BookAction
 }

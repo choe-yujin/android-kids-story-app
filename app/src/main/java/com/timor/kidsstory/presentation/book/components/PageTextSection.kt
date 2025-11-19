@@ -11,6 +11,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -45,6 +46,14 @@ fun PageTextSection(
     onTextToSpeech: (List<String>) -> Unit,
     onLayoutChanged: (pageIndex: Int, contentHeight: Int, containerHeight: Int) -> Unit,
     onScrollChanged: (pageIndex: Int, scrollOffset: Int, maxScrollOffset: Int) -> Unit,
+    isTetumTtsReady: Boolean,
+    isDownloadingModel: Boolean,
+    downloadProgress: Float,
+    showTtsDownloadDialog: Boolean,
+    ttsErrorMessage: String?,
+    onDownloadTtsModel: () -> Unit,
+    onDismissTtsDialog: () -> Unit,
+    onDismissTtsError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val responsivePadding = ResponsiveTextUtils.getResponsivePadding().dp
@@ -216,8 +225,6 @@ fun PageTextSection(
         val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
         val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
 
-        var showAiUpdateAlert by remember { mutableStateOf(false) }
-
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -225,11 +232,7 @@ fun PageTextSection(
                 .zIndex(2f)
         ) {
             IconButton(onClick = {
-                if (pageState.currentLanguageCode == "tet") {
-                    showAiUpdateAlert = true
-                } else {
-                    onTextToSpeech(pageState.texts)
-                }
+                onTextToSpeech(pageState.texts)
             }, modifier = Modifier.size(buttonSize)) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_play),
@@ -240,19 +243,90 @@ fun PageTextSection(
             }
         }
 
-        if (showAiUpdateAlert) {
+        // TTS 다운로드 다이얼로그
+        if (showTtsDownloadDialog) {
             AlertDialog(
-                onDismissRequest = { showAiUpdateAlert = false },
-                properties = DialogProperties(usePlatformDefaultWidth = false), // Attempt to fix system bar issue
+                onDismissRequest = { 
+                    // 다운로드 중이 아니면 닫기 가능
+                    if (!isDownloadingModel) {
+                        onDismissTtsDialog()
+                    }
+                },
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    dismissOnBackPress = !isDownloadingModel,
+                    dismissOnClickOutside = !isDownloadingModel
+                ),
                 title = {
                     LocalizedText(
-                        resId = R.string.ai_speaking_feature_update_message,
-                        style = MaterialTheme.typography.titleLarge // Use an appropriate style
+                        resId = R.string.tts_download_title,
+                        style = MaterialTheme.typography.titleLarge
                     )
                 },
+                text = {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (ttsErrorMessage != null) {
+                            // 에러 메시지 표시
+                            Text(
+                                text = ttsErrorMessage,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        } else if (isDownloadingModel) {
+                            // 다운로드 중
+                            LocalizedText(
+                                resId = R.string.tts_downloading,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            LinearProgressIndicator(
+                                progress = downloadProgress,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "${(downloadProgress * 100).toInt()}%",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        } else {
+                            // 초기 안내 메시지
+                            LocalizedText(
+                                resId = R.string.tts_download_message,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                },
                 confirmButton = {
-                    Button(onClick = { showAiUpdateAlert = false }) {
-                        LocalizedText(resId = R.string.attendance_popup_button_ok, style = MaterialTheme.typography.bodyMedium) // Added style
+                    if (ttsErrorMessage != null) {
+                        // 에러 시 OK 버튼
+                        Button(onClick = { onDismissTtsError() }) {
+                            LocalizedText(
+                                resId = R.string.attendance_popup_button_ok,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    } else if (!isDownloadingModel) {
+                        // 다운로드 버튼
+                        Button(onClick = { 
+                            onDownloadTtsModel()
+                        }) {
+                            LocalizedText(
+                                resId = R.string.tts_download_button,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                },
+                dismissButton = {
+                    if (ttsErrorMessage == null && !isDownloadingModel) {
+                        // 나중에 버튼 (에러가 아니고 다운로드 중이 아닐 때)
+                        Button(onClick = { onDismissTtsDialog() }) {
+                            LocalizedText(
+                                resId = R.string.tts_download_later,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
                 }
             )

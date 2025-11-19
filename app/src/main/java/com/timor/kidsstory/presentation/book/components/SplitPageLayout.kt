@@ -36,6 +36,14 @@ fun SplitPageLayout(
     onTextToSpeech: (List<String>) -> Unit,
     onLayoutChanged: (pageIndex: Int, contentHeight: Int, containerHeight: Int) -> Unit,
     onScrollChanged: (pageIndex: Int, scrollOffset: Int, maxScrollOffset: Int) -> Unit,
+    isTetumTtsReady: Boolean,
+    isDownloadingModel: Boolean,
+    downloadProgress: Float,
+    showTtsDownloadDialog: Boolean,
+    ttsErrorMessage: String?,
+    onDownloadTtsModel: () -> Unit,
+    onDismissTtsDialog: () -> Unit,
+    onDismissTtsError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -56,6 +64,14 @@ fun SplitPageLayout(
                 onTextToSpeech = onTextToSpeech,
                 onLayoutChanged = onLayoutChanged,
                 onScrollChanged = onScrollChanged,
+                isTetumTtsReady = isTetumTtsReady,
+                isDownloadingModel = isDownloadingModel,
+                downloadProgress = downloadProgress,
+                showTtsDownloadDialog = showTtsDownloadDialog,
+                ttsErrorMessage = ttsErrorMessage,
+                onDownloadTtsModel = onDownloadTtsModel,
+                onDismissTtsDialog = onDismissTtsDialog,
+                onDismissTtsError = onDismissTtsError,
                 modifier = Modifier
                     .weight(1f)
                     .background(Color.White)
@@ -82,7 +98,15 @@ private fun SplitPageLayoutPreview() {
             onBackToBookshelf = {},
             onTextToSpeech = {},
             onLayoutChanged = { _, _, _ -> },
-            onScrollChanged = { _, _, _ -> }
+            onScrollChanged = { _, _, _ -> },
+            isTetumTtsReady = false,
+            isDownloadingModel = false,
+            downloadProgress = 0f,
+            showTtsDownloadDialog = false,
+            ttsErrorMessage = null,
+            onDownloadTtsModel = {},
+            onDismissTtsDialog = {},
+            onDismissTtsError = {}
         )
     }
 }
