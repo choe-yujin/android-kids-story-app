@@ -199,7 +199,7 @@ private fun LevelTestIntroContent(
                 .fillMaxWidth(contentWidth)
                 .padding(
                     horizontal = if (isLandscape) 32.dp else 24.dp, // 🎨 가로 패딩 감소
-                    vertical = if (isLandscape) 16.dp else 32.dp // 🎨 세로 패딩 감소
+                    vertical = if (isLandscape) 8.dp else 16.dp // 🎨 세로 패딩 감소
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center

@@ -86,14 +86,15 @@ class TaleTailApplication : Application(), Configuration.Provider {
 
     // Logger 초기화
     private fun initLogger() {
-        // Logger 설정
-        val strategy: FormatStrategy = PrettyFormatStrategy.newBuilder()
-            .showThreadInfo(false)
-            .methodCount(5)
-            .tag("TALETAIL_LOG")
-            .build()
+        Logger.clearLogAdapters() // Clear any existing adapters
 
-        Logger.clearLogAdapters()       // 로그 중복 출력 방지
-        Logger.addLogAdapter(AndroidLogAdapter(strategy))
+        if (BuildConfig.DEBUG) {
+            val strategy: FormatStrategy = PrettyFormatStrategy.newBuilder()
+                .showThreadInfo(false)
+                .methodCount(5)
+                .tag("TALETAIL_LOG")
+                .build()
+            Logger.addLogAdapter(AndroidLogAdapter(strategy))
+        }
     }
 }

@@ -228,4 +228,15 @@
         <item quantity="one">Delete %1$d item</item>
         <item quantity="other">Delete %1$d items</item>
     </plurals>
+    
+    <!-- TTS Download Dialog -->
+    <string name="tts_download_title">Download AI Voice Engine</string>
+    <string name="tts_download_message">To hear the book with AI voice, you need a voice engine (about 36MB). Download now?</string>
+    <string name="tts_downloading">Downloading…</string>
+    <string name="tts_download_button">Download</string>
+    <string name="tts_download_later">Later</string>
+    <string name="tts_download_progress">%d%%</string>
+    <string name="tts_download_error">Voice engine coming soon. Please try again later.</string>
+    <string name="tts_download_error_network">No internet connection. Please check your connection.</string>
+    <string name="tts_download_error_generic">AI voice engine coming soon. Please try again later.</string>
 </resources>

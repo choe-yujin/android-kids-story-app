@@ -122,6 +122,17 @@
     <!-- AI Speaking Feature -->
     <string name="ai_speaking_feature_update_message">Funsionamentu AI koalia sei aktualiza lalais.</string>
     
+    <!-- TTS Download Dialog -->
+    <string name="tts_download_title">Download motor AI nia lian</string>
+    <string name="tts_download_message">Atu rona livru ho lian AI nian, presiza motor lian (besik 36MB). Download agora?</string>
+    <string name="tts_downloading">Download hela…</string>
+    <string name="tts_download_button">Download</string>
+    <string name="tts_download_later">Ikus liu</string>
+    <string name="tts_download_progress">%d%%</string>
+    <string name="tts_download_error">Motor lian sei mai. Favor koba fali iha ikus.</string>
+    <string name="tts_download_error_network">Internet koneksaun la iha. Favor verifika imi nia koneksaun.</string>
+    <string name="tts_download_error_generic">Motor lian sei mai. Favor koba fali iha ikus.</string>
+    
     <!-- Language Selection -->
     <string name="language_selection_title">Hili lian</string>
     
