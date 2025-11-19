@@ -40,7 +40,7 @@ android {
         if (localProperties.containsKey("GEMINI_API_KEY")) {
             buildConfigField("String", "GEMINI_API_KEY", "${localProperties["GEMINI_API_KEY"]}")
         } else {
-            buildConfigField("String", "GEMINI_API_KEY", "")
+            buildConfigField("String", "GEMINI_API_KEY", "\"\"")
         }
     }
 

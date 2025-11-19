@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.timor.kidsstory.data.dto.PageContentResponse
 import com.timor.kidsstory.data.dto.StoriesResponse
-import com.timor.kidsstory.data.dto.BookDto
+import com.timor.kidsstory.data.dto.BookMetadata
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,7 +30,7 @@ class AssetDataSource @Inject constructor(
      *
      * @return DTO 형태의 책 목록
      */
-    suspend fun loadBooks(): Result<List<BookDto>> = withContext(Dispatchers.IO) {
+    suspend fun loadBooks(): Result<List<BookMetadata>> = withContext(Dispatchers.IO) {
         try {
             Log.d("AssetDataSource", "Loading books from metadata JSON")
 

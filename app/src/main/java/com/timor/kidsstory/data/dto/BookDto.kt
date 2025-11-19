@@ -62,22 +62,4 @@ data class Mission(
     val relatedPages: List<Int> = emptyList()
 )
 
-/**
- * 기존 호환성용 DTO (하위 호환성 - 점진적 제거 예정)
- */
-@Serializable
-data class PageContentResponse(
-    val storyId: String,
-    val title: String,
-    val pages: List<PageDto>,
-    val contributors: Map<String, Map<String, List<String>>>? = null,
-    val sponsors: Map<String, List<String>>? = null,
-    val copyright: String = "",
-    val originalCopyright: String? = null,
-)
 
-@Serializable
-data class PageDto(
-    val pageNumber: Int,
-    val texts: List<String>
-)

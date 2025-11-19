@@ -28,7 +28,7 @@ object CategoryLocalizer {
                 ReadingLevel.CONFIDENT_READER -> "Lee Konfiante"
                 ReadingLevel.ADVANCED_READER -> "Lee Avansadu"
             }
-            else -> level.levelName
+            else -> level.displayName
         }
     }
 
@@ -49,8 +49,8 @@ object CategoryLocalizer {
 
 fun getCategoryName(context: Context, category: FilterBookCategory): String {
     return when (category) {
-        FilterBookCategory.ENVIRONMENT -> context.getString(R.string.category_environment)
-        FilterBookCategory.SCIENCE_NATURE -> context.getString(R.string.category_science_nature)
+        FilterBookCategory.ENVIRONMENT -> context.getString(R.string.category_environment_nature)
+        FilterBookCategory.SCIENCE_NATURE -> context.getString(R.string.category_science_math)
         FilterBookCategory.CULTURE_WORLD -> context.getString(R.string.category_culture_world)
         FilterBookCategory.SOCIAL_EMOTIONAL -> context.getString(R.string.category_social_emotional)
         FilterBookCategory.FOLKTALES_HISTORY -> context.getString(R.string.category_folktales_history)
