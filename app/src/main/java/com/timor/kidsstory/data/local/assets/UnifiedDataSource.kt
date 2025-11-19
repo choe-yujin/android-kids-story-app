@@ -34,6 +34,7 @@ class UnifiedDataSource @Inject constructor(
         try {
             Log.d("UnifiedDataSource", "Loading remote metadata from: $REMOTE_METADATA_URL")
             val remoteJson = httpClient.get(REMOTE_METADATA_URL).bodyAsText()
+            Log.d("UnifiedDataSource", "Raw remote JSON received: $remoteJson") // Added log
             val remoteMetadata = json.decodeFromString<HybridBooksMetadata>(remoteJson)
             Log.d("UnifiedDataSource", "Found ${remoteMetadata.books.size} books from remote")
             Result.success(remoteMetadata)
@@ -107,6 +108,13 @@ class UnifiedDataSource @Inject constructor(
             Log.e("UnifiedDataSource", "Error loading book content for $bookId", e)
             Result.failure(e)
         }
+    }
+
+    /**
+     * 메타데이터 가져오기 (내장 assets 또는 로컬 파일)
+     */
+    suspend fun getMetadata(): HybridBooksMetadata = withContext(Dispatchers.IO) {
+        loadBooksMetadata().getOrThrow()
     }
 
     /**

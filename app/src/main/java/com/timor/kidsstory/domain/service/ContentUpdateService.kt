@@ -262,7 +262,7 @@ class ContentUpdateService @Inject constructor(
      */
     private suspend fun updateCoverImage(bookId: Int, languageCode: String, remoteUrl: String): Boolean {
         return try {
-            val fileName = "cover_${bookId}_${languageCode}.jpg"
+            val fileName = "cover_${bookId}_${languageCode}.webp"
             val localFile = File(context.filesDir, "hybrid_content/images/$bookId/$fileName")
             
             localFile.parentFile?.mkdirs()

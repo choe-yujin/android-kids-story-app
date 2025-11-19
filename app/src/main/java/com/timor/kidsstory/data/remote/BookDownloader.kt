@@ -24,11 +24,11 @@ private const val TAG = "BookDownloader"
 /**
  * 📂 새로운 폴더 구조:
  * downloaded_books/{bookId}/
- * ├── cover_{bookId}_{lang}.jpg    ← 북커버 (언어별, bookDir 직하위)
+ * ├── cover_{bookId}_{lang}.webp    ← 북커버 (언어별, bookDir 직하위)
  * ├── {bookId}_{lang}.json         ← JSON 콘텐츠 (언어별, bookDir 직하위)
  * └── images/                      ← 페이지 이미지들 (공통, 하위 폴더)
- *     ├── book_{bookId}_page_0.jpg
- *     ├── book_{bookId}_page_1.jpg
+ *     ├── book_{bookId}_page_0.webp
+ *     ├── book_{bookId}_page_1.webp
  *     └── ...
  */
 @Singleton
@@ -106,7 +106,7 @@ class BookDownloader @Inject constructor(
             }
 
             // 6. 🖼️ 커버 이미지 개별 다운로드 (bookDir 직하위)
-            val coverFileName = "cover_${bookId}_${normalizedLang}.jpg"
+            val coverFileName = "cover_${bookId}_${normalizedLang}.webp"
             val coverFile = File(bookDir, coverFileName)
             if (!coverFile.exists()) {
                 val coverDownloaded = networkService.downloadFile(languageContent.coverImageUrl, coverFile)
@@ -309,7 +309,7 @@ class BookDownloader @Inject constructor(
             }
 
             // 커버 이미지 삭제
-            val coverFile = File(bookDir, "cover_${bookId}_${normalizedLang}.jpg")
+            val coverFile = File(bookDir, "cover_${bookId}_${normalizedLang}.webp")
             if (coverFile.exists()) {
                 coverFile.delete()
                 Log.d(TAG, "🖼️ Cover file deleted: ${coverFile.absolutePath}")

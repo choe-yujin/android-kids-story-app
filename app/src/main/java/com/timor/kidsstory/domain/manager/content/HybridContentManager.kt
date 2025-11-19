@@ -23,16 +23,16 @@ import javax.inject.Singleton
  * ├── books_metadata.json
  * ├── content/{bookId}_{lang}.json
  * └── images/{bookId}/
- *     ├── cover_{bookId}_{lang}.jpg
- *     └── book_{bookId}_page_*.jpg
+ *     ├── cover_{bookId}_{lang}.webp
+ *     └── book_{bookId}_page_*.webp
  *
  * 다운로드 책 (External Storage):
  * downloaded_books/{bookId}/
- * ├── cover_{bookId}_{lang}.jpg    ← 북커버 (언어별, bookDir 직하위)
+ * ├── cover_{bookId}_{lang}.webp    ← 북커버 (언어별, bookDir 직하위)
  * ├── {bookId}_{lang}.json         ← JSON 콘텐츠 (언어별, bookDir 직하위)
  * └── images/                      ← 페이지 이미지들 (공통, 하위 폴더)
- *     ├── book_{bookId}_page_0.jpg
- *     └── book_{bookId}_page_*.jpg
+ *     ├── book_{bookId}_page_0.webp
+ *     └── book_{bookId}_page_*.webp
  */
 @Singleton
 class HybridContentManager @Inject constructor(
@@ -179,7 +179,7 @@ class HybridContentManager @Inject constructor(
 
                                 // 내장 책 파일 경로 (내부저장소 기준)
                                 contentPath = File(contentDir, "${book.id}_$languageCode.json").absolutePath,
-                                coverImagePath = File(imagesDir, "${book.id}/cover_${book.id}_$languageCode.jpg").absolutePath,
+                                coverImagePath = File(imagesDir, "${book.id}/cover_${book.id}_$languageCode.webp").absolutePath,
                                 imagesDirectoryPath = File(imagesDir, book.id.toString()).absolutePath,
 
                                 contentVersion = languageContent.contentVersion,
@@ -295,9 +295,9 @@ class HybridContentManager @Inject constructor(
                 } else {
                     val bookExistsInDb = hybridBooksDao.getBooksByStoryId(book.id).isNotEmpty()
                     val hasNoImages = bookImagesDir.listFiles()?.isEmpty() != false
-                    val needsCoverImage = !File(bookImagesDir, "cover_${book.id}_ko.jpg").exists() &&
-                            !File(bookImagesDir, "cover_${book.id}_en.jpg").exists() &&
-                            !File(bookImagesDir, "cover_${book.id}_tet.jpg").exists()
+                    val needsCoverImage = !File(bookImagesDir, "cover_${book.id}_ko.webp").exists() &&
+                            !File(bookImagesDir, "cover_${book.id}_en.webp").exists() &&
+                            !File(bookImagesDir, "cover_${book.id}_tet.webp").exists()
 
                     if (hasNoImages && bookExistsInDb && needsCoverImage) {
                         Log.d(TAG, "📥 Restoring missing images for book ${book.id}")
@@ -527,9 +527,9 @@ class HybridContentManager @Inject constructor(
      * 🆕 이미지 파일명에서 언어 코드 추출
      */
     private fun extractLanguageFromImageName(imageName: String): String? {
-        // cover_801_ko.jpg -> "ko"
-        // book_801_page_1.jpg -> null (언어 정보 없음)
-        val coverPattern = Regex("cover_(\\d+)_([a-z]{2,3})\\.jpg")
+        // cover_801_ko.webp -> "ko"
+        // book_801_page_1.webp -> null (언어 정보 없음)
+        val coverPattern = Regex("cover_(\\d+)_([a-z]{2,3})\\.webp")
         val match = coverPattern.find(imageName)
         return match?.groupValues?.get(2) // 두 번째 그룹이 언어 코드
     }

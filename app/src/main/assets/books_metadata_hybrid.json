@@ -17,7 +17,7 @@
       "languages": {
         "ko": {
           "title": "내 기분은",
-          "coverImageUrl": "cover_104_ko.jpg",
+          "coverImageUrl": "cover_104_ko.webp",
           "contentUrl": "104_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -30,7 +30,7 @@
         },
         "en": {
           "title": "I Feel…",
-          "coverImageUrl": "cover_104_en.jpg",
+          "coverImageUrl": "cover_104_en.webp",
           "contentUrl": "104_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -43,7 +43,7 @@
         },
         "tet": {
           "title": "Ha'u nia Sentimentu",
-          "coverImageUrl": "cover_104_tet.jpg",
+          "coverImageUrl": "cover_104_tet.webp",
           "contentUrl": "104_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -71,7 +71,7 @@
       "languages": {
         "ko": {
           "title": "세는 말",
-          "coverImageUrl": "cover_105_ko.jpg",
+          "coverImageUrl": "cover_105_ko.webp",
           "contentUrl": "105_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -84,7 +84,7 @@
         },
         "en": {
           "title": "Counting Words",
-          "coverImageUrl": "cover_105_en.jpg",
+          "coverImageUrl": "cover_105_en.webp",
           "contentUrl": "105_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -97,7 +97,7 @@
         },
         "tet": {
           "title": "Liafuan ida ne'ebe sura",
-          "coverImageUrl": "cover_105_tet.jpg",
+          "coverImageUrl": "cover_105_tet.webp",
           "contentUrl": "105_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -125,7 +125,7 @@
       "languages": {
         "ko": {
           "title": "생쥐와 사자",
-          "coverImageUrl": "cover_403_ko.jpg",
+          "coverImageUrl": "cover_403_ko.webp",
           "contentUrl": "403_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -138,7 +138,7 @@
         },
         "en": {
           "title": "The Mouse and the Lion",
-          "coverImageUrl": "cover_403_en.jpg",
+          "coverImageUrl": "cover_403_en.webp",
           "contentUrl": "403_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -151,7 +151,7 @@
         },
         "tet": {
           "title": "Laho-kiik no Leão",
-          "coverImageUrl": "cover_403_tet.jpg",
+          "coverImageUrl": "cover_403_tet.webp",
           "contentUrl": "403_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -179,7 +179,7 @@
       "languages": {
         "ko": {
           "title": "황냔의 하루",
-          "coverImageUrl": "cover_802_ko.jpg",
+          "coverImageUrl": "cover_802_ko.webp",
           "contentUrl": "802_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -192,7 +192,7 @@
         },
         "en": {
           "title": "Hoang Nhan’s Day",
-          "coverImageUrl": "cover_802_en.jpg",
+          "coverImageUrl": "cover_802_en.webp",
           "contentUrl": "802_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -205,7 +205,7 @@
         },
         "tet": {
           "title": "Loron ida ho Huang Nian",
-          "coverImageUrl": "cover_802_tet.jpg",
+          "coverImageUrl": "cover_802_tet.webp",
           "contentUrl": "802_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -233,7 +233,7 @@
       "languages": {
         "ko": {
           "title": "백사전: 중국의 하얀 뱀 전설",
-          "coverImageUrl": "cover_807_ko.jpg",
+          "coverImageUrl": "cover_807_ko.webp",
           "contentUrl": "807_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -246,7 +246,7 @@
         },
         "en": {
           "title": "The Legend of the White Snake",
-          "coverImageUrl": "cover_807_en.jpg",
+          "coverImageUrl": "cover_807_en.webp",
           "contentUrl": "807_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -259,7 +259,7 @@
         },
         "tet": {
           "title": "Lenda Kona-ba Samea Mutin",
-          "coverImageUrl": "cover_807_tet.jpg",
+          "coverImageUrl": "cover_807_tet.webp",
           "contentUrl": "807_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -287,7 +287,7 @@
       "languages": {
         "ko": {
           "title": "후예와 항아",
-          "coverImageUrl": "cover_810_ko.jpg",
+          "coverImageUrl": "cover_810_ko.webp",
           "contentUrl": "810_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -300,7 +300,7 @@
         },
         "en": {
           "title": "Houyi and Chang’e",
-          "coverImageUrl": "cover_810_en.jpg",
+          "coverImageUrl": "cover_810_en.webp",
           "contentUrl": "810_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -313,7 +313,7 @@
         },
         "tet": {
           "title": "Desendente sira no Pan sira",
-          "coverImageUrl": "cover_810_tet.jpg",
+          "coverImageUrl": "cover_810_tet.webp",
           "contentUrl": "810_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -341,7 +341,7 @@
       "languages": {
         "ko": {
           "title": "필리핀에 대한 아홉 가지 사실",
-          "coverImageUrl": "cover_816_ko.jpg",
+          "coverImageUrl": "cover_816_ko.webp",
           "contentUrl": "816_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -354,7 +354,7 @@
         },
         "en": {
           "title": "Only in the Philippines: Did you know?",
-          "coverImageUrl": "cover_816_en.jpg",
+          "coverImageUrl": "cover_816_en.webp",
           "contentUrl": "816_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -367,7 +367,7 @@
         },
         "tet": {
           "title": "So iha Filipina de'it : Ita-boot hatene ka lae ?",
-          "coverImageUrl": "cover_816_tet.jpg",
+          "coverImageUrl": "cover_816_tet.webp",
           "contentUrl": "816_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -395,7 +395,7 @@
       "languages": {
         "ko": {
           "title": "병아리 별",
-          "coverImageUrl": "cover_821_ko.jpg",
+          "coverImageUrl": "cover_821_ko.webp",
           "contentUrl": "821_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -408,7 +408,7 @@
         },
         "en": {
           "title": "The Chick Stars",
-          "coverImageUrl": "cover_821_en.jpg",
+          "coverImageUrl": "cover_821_en.webp",
           "contentUrl": "821_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -421,7 +421,7 @@
         },
         "tet": {
           "title": "Fitun Manu-Oan",
-          "coverImageUrl": "cover_821_tet.jpg",
+          "coverImageUrl": "cover_821_tet.webp",
           "contentUrl": "821_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -449,7 +449,7 @@
       "languages": {
         "ko": {
           "title": "햇님의 하루",
-          "coverImageUrl": "cover_904_ko.jpg",
+          "coverImageUrl": "cover_904_ko.webp",
           "contentUrl": "904_ko.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -462,7 +462,7 @@
         },
         "en": {
           "title": "A Day of the Sun",
-          "coverImageUrl": "cover_904_en.jpg",
+          "coverImageUrl": "cover_904_en.webp",
           "contentUrl": "904_en.json",
           "coverVersion": 100,
           "contentVersion": 101,
@@ -475,7 +475,7 @@
         },
         "tet": {
           "title": "Loron Loro nian",
-          "coverImageUrl": "cover_904_tet.jpg",
+          "coverImageUrl": "cover_904_tet.webp",
           "contentUrl": "904_tet.json",
           "coverVersion": 100,
           "contentVersion": 101,

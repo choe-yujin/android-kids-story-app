@@ -64,13 +64,13 @@ object PageMapper {
     /**
      * 이미지 파일명 자동 생성 규칙
      * 
-     * - book_{bookId}_page_{pageNumber}.jpg (본문 페이지)
+     * - book_{bookId}_page_{pageNumber}.webp (본문 페이지)
      */
     private fun generateImageFileName(
         bookId: Int,
         languageCode: String,
         pageNumber: Int
     ): String {
-        return "book_${bookId}_page_${pageNumber}.jpg"
+        return "book_${bookId}_page_${pageNumber}.webp"
     }
 }

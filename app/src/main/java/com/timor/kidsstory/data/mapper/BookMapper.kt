@@ -35,10 +35,10 @@ object BookMapper {
         
         // 커버 이미지 경로 - HybridContentManager를 통해 결정
         val coverImageUrl = if (hybridContentManager != null) {
-            hybridContentManager.getImageUrl(metadata.id, "cover_${metadata.id}_$normalizedLang.jpg")
+            hybridContentManager.getImageUrl(metadata.id, "cover_${metadata.id}_$normalizedLang.webp")
                 ?: ""  // 🆕 null일 경우 빈 문자열
         } else {
-            "file:///android_asset/images/$baseId/cover_${metadata.id}_$normalizedLang.jpg"
+            "file:///android_asset/images/$baseId/cover_${metadata.id}_$normalizedLang.webp"
         }
         
         // 🆕 페이지 매핑 (비동기)
@@ -112,7 +112,7 @@ object BookMapper {
         
         // 🆕 커버 이미지 경로 - HybridContentManager를 통해 DB 기반으로 결정
         val coverImageUrl = if (hybridContentManager != null) {
-            val coverFileName = "cover_${entity.id}_${entity.language}.jpg"
+            val coverFileName = "cover_${entity.id}_${entity.language}.webp"
             hybridContentManager.getImageUrl(entity.id, coverFileName)
                 ?: run {
                     // HybridContentManager에서 찾지 못하면 entity 경로 직접 사용
@@ -232,7 +232,7 @@ object BookMapper {
             }
             
             // 2. 커버 이미지 크기
-            val coverPath = hybridContentManager.getImagePath(bookId, "cover_${bookId}_$languageCode.jpg")
+            val coverPath = hybridContentManager.getImagePath(bookId, "cover_${bookId}_$languageCode.webp")
             val coverFile = java.io.File(coverPath)
             if (coverFile.exists()) {
                 totalSize += coverFile.length()

@@ -1,6 +1,7 @@
 package com.timor.kidsstory.data.dto
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
 /**
  * 하이브리드 메타데이터 구조 - 완전한 버전 관리 지원
@@ -9,6 +10,7 @@ import kotlinx.serialization.Serializable
 data class HybridBooksMetadata(
     val version: Int,
     val lastUpdated: String,
+    val aiModels: Map<String, AiModelInfo>? = null,
     val books: List<HybridBookMetadata>
 )
 
@@ -38,4 +40,13 @@ data class HybridLanguageContent(
     val contentSize: Long = 0,
     val isBundled: Boolean = true,
     val tags: List<String> = emptyList()
+)
+
+@Serializable
+data class AiModelInfo(
+    @SerialName("glow_tts_url") val glowTtsUrl: String,
+    @SerialName("hifigan_url") val hifiganUrl: String,
+    @SerialName("config_url") val configUrl: String? = null,
+    val version: Int,
+    val size: Long
 )

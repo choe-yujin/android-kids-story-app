@@ -84,7 +84,7 @@ class DeleteBookUseCase @Inject constructor(
                 }
 
                 // 커버 이미지 파일 삭제
-                val coverFileName = "cover_${bookId}_${languageCode}.jpg"
+                val coverFileName = "cover_${bookId}_${languageCode}.webp"
                 val coverImageFile = File(hybridContentManager.getImagePath(bookId, coverFileName))
                 if (coverImageFile.exists()) {
                     coverImageFile.delete()
@@ -98,7 +98,7 @@ class DeleteBookUseCase @Inject constructor(
                 if (remainingVersions.isEmpty()) {
                     // 🔧 FIXED: 특정 책의 이미지 디렉토리만 삭제
                     val bookImagesDir = File(
-                        hybridContentManager.getImagePath(bookId, "book_page_0.jpg").substringBeforeLast("/")
+                        hybridContentManager.getImagePath(bookId, "book_page_0.webp").substringBeforeLast("/")
                     )
                     
                     if (bookImagesDir.exists() && bookImagesDir.name == bookId.toString()) {
