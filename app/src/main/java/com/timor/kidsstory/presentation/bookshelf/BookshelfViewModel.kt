@@ -1,278 +1,230 @@
 package com.timor.kidsstory.presentation.bookshelf
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.Constraints
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import com.orhanobut.logger.Logger
-import com.timor.kidsstory.data.dto.StoriesResponse
-import com.timor.kidsstory.data.local.assets.AssetDataSource
-import com.timor.kidsstory.data.remote.BookDownloader
-import com.timor.kidsstory.data.remote.model.RemoteBook
-import com.timor.kidsstory.data.remote.network.BookNetworkService
-import com.timor.kidsstory.data.remote.worker.DownloadWorker
-import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
-import com.timor.kidsstory.domain.model.Book
-import com.timor.kidsstory.domain.model.DownloadStatus
-import com.timor.kidsstory.domain.model.DownloadProgress
 import com.timor.kidsstory.domain.model.Language
 import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
-import com.timor.kidsstory.domain.usecase.book.DownloadBookUseCase
-import com.timor.kidsstory.domain.usecase.book.GetBooksUseCase
-import com.timor.kidsstory.domain.usecase.book.GetRemoteBooksUseCase
+import com.timor.kidsstory.domain.usecase.book.FilterBooksUseCase
+import com.timor.kidsstory.domain.usecase.book.GetAllBooksUseCase
+import com.timor.kidsstory.domain.usecase.book.GetStoryInfoUseCase
+import com.timor.kidsstory.domain.usecase.language.ChangeLanguageUseCase
 import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
-import com.timor.kidsstory.domain.usecase.preference.SaveUserPreferenceUseCase
+import com.timor.kidsstory.domain.repository.ReadingProgressRepository
 import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.LanguageManager
 import com.timor.kidsstory.domain.util.MusicManager
 import com.timor.kidsstory.domain.util.SoundEffectManager
+import com.timor.kidsstory.presentation.bookshelf.BookShelfAction
 import com.timor.kidsstory.presentation.bookshelf.model.BookshelfUiState
+import com.timor.kidsstory.presentation.bookshelf.model.LocalizedMessage
+import com.timor.kidsstory.presentation.bookshelf.components.ReadingStatusFilter
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
-import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterLevel
+import com.timor.kidsstory.presentation.bookshelf.model.ManagementTab
+import com.timor.kidsstory.domain.model.UserPreference
+import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
+import com.timor.kidsstory.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
-import com.timor.kidsstory.data.mapper.toBook // Added import
+import android.app.Application
+import com.timor.kidsstory.domain.usecase.CheckAppVersionUseCase
+import com.timor.kidsstory.domain.usecase.PostponeUpdateUseCase
+import com.timor.kidsstory.domain.usecase.update.CheckAvailableUpdatesUseCase
+import com.timor.kidsstory.domain.usecase.book.CheckUnlockStatusUseCase
+import com.timor.kidsstory.domain.usecase.book.GetManagementBooksUseCase
+import com.timor.kidsstory.domain.usecase.book.ExecuteBookDownloadUseCase
+import com.timor.kidsstory.domain.usecase.book.DeleteBookUseCase
+import com.timor.kidsstory.data.remote.BookDownloader // 🆕 BookDownloader import 추가
+import com.timor.kidsstory.presentation.bookshelf.model.ManagementActionType
+import com.timor.kidsstory.domain.event.UnlockEventManager
 
-import com.timor.kidsstory.domain.model.Contributor
-import java.io.File
+import androidx.lifecycle.SavedStateHandle
+import com.timor.kidsstory.domain.model.Book
 
-/**
- * 책장 화면의 상태 관리 및 비즈니스 로직 처리 뷰모델
- * - 책 목록 로드 및 필터링
- * - 언어 설정 관리
- * - 배경 음악 제어
- * - 책 다운로드 관리
- */
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
-    private val getBooksUseCase: GetBooksUseCase,
+    private val getAllBooksUseCase: GetAllBooksUseCase,
+    private val filterBooksUseCase: FilterBooksUseCase,
+    private val getStoryInfoUseCase: GetStoryInfoUseCase,
+    private val changeLanguageUseCase: ChangeLanguageUseCase,
     private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
-    private val saveUserPreferenceUseCase: SaveUserPreferenceUseCase,
+    private val readingProgressRepository: ReadingProgressRepository,
     private val musicSettingUseCase: MusicSettingUseCase,
     private val musicManager: MusicManager,
     private val soundEffectManager: SoundEffectManager,
-    private val networkService: BookNetworkService,
-    private val getRemoteBooksUseCase: GetRemoteBooksUseCase,
-    private val downloadBookUseCase: DownloadBookUseCase,
-    private val bookDownloader: BookDownloader,
-    private val downloadedBooksDao: DownloadedBooksDao,
-    private val assetDataSource: AssetDataSource, // Added injection
-    @ApplicationContext private val context: Context
+    private val checkAppVersionUseCase: CheckAppVersionUseCase,
+    private val postponeUpdateUseCase: PostponeUpdateUseCase,
+    private val checkAvailableUpdatesUseCase: CheckAvailableUpdatesUseCase,
+    private val checkUnlockStatusUseCase: CheckUnlockStatusUseCase,
+    private val getManagementBooksUseCase: GetManagementBooksUseCase,
+    private val executeBookDownloadUseCase: ExecuteBookDownloadUseCase,
+    private val deleteBookUseCase: DeleteBookUseCase,
+    private val bookDownloader: BookDownloader, // 🆕 BookDownloader 추가
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    // UI 상태 관리
+    // 핵심 UI 상태만 관리
     private val _state = MutableStateFlow(BookshelfUiState())
     val state = _state.asStateFlow()
+    
+    // 사용자 ID (기본값)
+    private val currentUserId = "default_user"
 
-    // 다운로드 진행률 작업 관리용 맵 (사용하지 않지만 호환성을 위해 유지)
-    private val downloadProgressJobs = mutableMapOf<Int, Job>()
-
-    /**
-     * 초기화 - 앱 시작 시 필요한 데이터 로드
-     */
     init {
-        // 앱 시작 시 초기 데이터 로딩
-        loadInitialData()
-        // 이후 사용자 설정 변경 관찰
-        observeUserPreference()
-        // 스위치 상태를 불러오고 배경음 재생 여부 판단
-        loadMusicSetting()
-    }
+        viewModelScope.launch {
+            val initialLevel = savedStateHandle.get<Int>("level")
+            val wasSkipped = savedStateHandle.get<Boolean>("wasSkipped") ?: false
+            val showLevelResultPopup = savedStateHandle.get<Boolean>("showLevelResultPopup") ?: false
 
+            loadUserPreferences(initialLevel, wasSkipped, showLevelResultPopup)
+            loadBooks(_state.value.currentLanguage.code)
+            loadMusicSetting()
+
+            // 🆕 Unlock 이벤트 수신
+            UnlockEventManager.unlockEvent.collect { levelGroup ->
+                Log.d("BookshelfViewModel", "🎉 Unlock event received for level group: $levelGroup")
+                _state.update { it.copy(showUnlockPopup = true, unlockedLevelGroup = levelGroup) }
+                loadBooks(_state.value.currentLanguage.code) // 🆕 Refresh books to update unlockedSteps
+            }
+        }
+    }
+    
     /**
-     * 언어 전환 전용 책 목록 로드 (로딩 상태 없이 자연스럽게 전환)
+     * 🆕 백그라운드에서 업데이트 체크 (네트워크 최적화)
+     * - 1일 1회만 체크
+     * - 메타데이터만 다운로드  
+     * - 캐시 활용
      */
-    private suspend fun loadStoriesForLanguageSwitch(languageCode: String) {
+    private fun checkForAvailableUpdates() {
         viewModelScope.launch {
             try {
-                // 로딩 상태를 표시하지 않고 백그라운드에서 로드
-
-                // 1. 로컬 asset 책 로드
-                val result = getBooksUseCase(languageCode)
-
-                // 2. 추가로 다운로드된 책도 함께 로드
-                val downloadedBooks = loadDownloadedBooks(languageCode)
-
-                result.fold(
-                    onSuccess = { localBooks ->
-                        // 로컬 책(assets에 있는 책)은 항상 다운로드된 상태로 설정
-                        val localBooksWithDownloadStatus = localBooks.map { localBook ->
-                            localBook.copy(
-                                isDownloaded = true,
-                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
-                            )
-                        }
-
-                        // 로컬 책과 다운로드된 책을 합친 목록 생성 (중복 제거)
-                        val localStoryIds =
-                            localBooksWithDownloadStatus.map { it.storyId.split("_").first() }
-                                .toSet()
-                        val newDownloadedBooks = downloadedBooks.filter {
-                            !localStoryIds.contains(it.storyId.split("_").first())
-                        }
-
-                        // 전체 책 목록 (로컬 + 다운로드)
-                        val combinedBooks = localBooksWithDownloadStatus + newDownloadedBooks
-
-                        // 현재 필터 상태 확인
-                        val currentFilter = _state.value.filterBarState.selectedFilter
-                        val shouldApplyFilters = currentFilter != FilterBarCategory.All
-
-                        // UI 상태 업데이트 (로딩 상태 없이)
-                        _state.update {
-                            if (shouldApplyFilters) {
-                                // 현재 필터 상태가 있으면 books만 업데이트
-                                it.copy(books = combinedBooks)
-                            } else {
-                                // 필터 상태가 ALL이면 filteredBooks도 함께 업데이트
-                                it.copy(books = combinedBooks, filteredBooks = combinedBooks)
-                            }
-                        }
-
-                        // 필터링이 필요한 경우 applyFilters 호출
-                        if (shouldApplyFilters) {
-                            applyFilters()
-                        }
-
-                        Log.d(
-                            "BookshelfViewModel",
-                            "Language switch: Loaded total ${combinedBooks.size} books (${localBooksWithDownloadStatus.size} local + ${newDownloadedBooks.size} downloaded)"
-                        )
-
-                        // 백그라운드에서 원격 책 확인 (다운로드 가능한 새 책 확인)
-                        checkAndLoadRemoteBooks(languageCode)
-                    },
-                    onFailure = { error ->
-                        Log.e(
-                            "BookshelfViewModel",
-                            "Error loading books for language switch",
-                            error
-                        )
-                        // 에러 발생 시에도 로딩 상태를 표시하지 않음
-                    }
+                Log.d("BookshelfViewModel", "🔍 Checking for available updates in background...")
+                
+                val result = checkAvailableUpdatesUseCase.getAvailableUpdatesCount(
+                    userId = "default_user", // TODO: 실제 사용자 ID 사용
+                    languageCode = _state.value.currentLanguage.code,
+                    forceRefresh = false // 캐시 우선
                 )
-            } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Exception in loadStoriesForLanguageSwitch", e)
-            }
-        }
-    }
-
-    /**
-     * 뷰모델 종료 시 리소스 해제
-     */
-    override fun onCleared() {
-        super.onCleared()
-        musicManager.release()
-        soundEffectManager.release()
-        // 진행률 작업은 더 이상 사용하지 않음
-        // downloadProgressJobs.values.forEach { it.cancel() }
-        // downloadProgressJobs.clear()
-    }
-
-    /**
-     * 음악 설정 로드 및 관찰
-     */
-    private fun loadMusicSetting() {
-        viewModelScope.launch {
-            musicSettingUseCase.isMusicOn.collect { isMusicOn ->
-                val previousState = _state.value.isMusicOn
-                _state.update { it.copy(isMusicOn = isMusicOn) }
-
-                // 상태가 변경되었거나 처음 로드시 음악 상태 동기화
-                if (previousState != isMusicOn || previousState == false) {
-                    android.util.Log.d(
-                        "BookshelfViewModel",
-                        "Music setting changed: $isMusicOn (was: $previousState)"
-                    )
-                    if (isMusicOn) {
-                        musicManager.startMusic()
-                    } else {
-                        musicManager.stopMusic()
+                
+                result.onSuccess { updateResult ->
+                    Log.d("BookshelfViewModel", "📦 Available updates: D=${updateResult.downloadableCount}, U=${updateResult.updatableCount}, Total=${updateResult.totalCount}")
+                    
+                    // UI 상태 업데이트
+                    _state.update { 
+                        it.copy(
+                            downloadableItemsCount = updateResult.totalCount,         // 관리 버튼용 전체 수
+                            downloadableOnlyCount = updateResult.downloadableCount,   // 🆕 DOWNLOAD 탭용
+                            updatableOnlyCount = updateResult.updatableCount,         // 🆕 UPDATE 탭용
+                            hasCheckedUpdates = false // 아직 사용자가 다운로드 탭을 확인하지 않음
+                        ) 
                     }
+                    
+                    if (updateResult.totalCount > 0) {
+                        Log.d("BookshelfViewModel", "📢 배지 표시: ${updateResult.totalCount}개 항목 업데이트 가능")
+                    }
+                }.onFailure { error ->
+                    Log.w("BookshelfViewModel", "Failed to check for updates", error)
+                    // 실패시 무시 (네트워크 없는 환경 등)
                 }
-            }
-        }
-
-        // 음악 음량 설정 로드 및 관찰
-        viewModelScope.launch {
-            musicSettingUseCase.musicVolume.collect { volume ->
-                val wasMusicPlaying = _state.value.isMusicOn
-                musicManager.setVolume(volume)
-
-                // 음악이 켜져 있는 상태라면 음량 조절 후에도 재생 상태 유지
-                if (wasMusicPlaying) {
-                    // 짧은 대기 후 음악 재생 보장
-                    kotlinx.coroutines.delay(100)
-                    musicManager.startMusic()
-                    android.util.Log.d(
-                        "BookshelfViewModel",
-                        "Music restarted after volume change: $volume"
-                    )
-                }
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error in background update check", e)
             }
         }
     }
-
+    
     /**
-     * 초기 데이터 로드
-     * - 사용자 언어 설정 가져오기
-     * - 해당 언어로 책 목록 로드
+     * 🆕 다운로드/업데이트 완료 후 배지 카운트 업데이트
+     * - 실제 작업 완료시 호출
+     * - 캐시 무효화 후 새로고침
      */
-    private fun loadInitialData() {
+    fun refreshUpdateCounts() {
         viewModelScope.launch {
-            val preference = getUserPreferenceUseCase().first() // 현재 설정값 가져오기
-
-            // 언어 코드 결정 (저장된 값이 없으면 기본값 사용)
-            val languageCode = if (preference.languageCode.isBlank()) {
-                LanguageConstants.DEFAULT_LANGUAGE.code
-            } else {
-                preference.languageCode
+            try {
+                Log.d("BookshelfViewModel", "🔄 다운로드/업데이트 완료 후 카운트 업데이트")
+                
+                // 캐시 무효화
+                checkAvailableUpdatesUseCase.invalidateCache()
+                
+                // 새로고침
+                val result = checkAvailableUpdatesUseCase.getAvailableUpdatesCount(
+                    userId = currentUserId,
+                    languageCode = _state.value.currentLanguage.code,
+                    forceRefresh = true // 강제 새로고침
+                )
+                
+                result.onSuccess { updateResult ->
+                    _state.update { 
+                        it.copy(
+                            downloadableItemsCount = updateResult.totalCount,
+                            downloadableOnlyCount = updateResult.downloadableCount,
+                            updatableOnlyCount = updateResult.updatableCount,
+                            // 🆕 하이브리드: 실제 다운로드/업데이트 완료로 카운트 변경시 확인 상태 초기화
+                            hasViewedDownloadTab = false,
+                            hasViewedUpdateTab = false
+                        ) 
+                    }
+                    
+                    Log.d("BookshelfViewModel", "🔄 배지 카운트 업데이트 완료: D=${updateResult.downloadableCount}, U=${updateResult.updatableCount}")
+                }
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error refreshing update counts", e)
             }
-
-            // 언어 객체 찾기
-            val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
-                it.code == languageCode
-            } ?: LanguageConstants.DEFAULT_LANGUAGE
-
-            // LanguageManager에도 초기 언어 설정
-            LanguageManager.setCurrentLanguageCode(language.code)
-
-            _state.update { it.copy(currentLanguage = language) }
-            loadStories(language.code)  // 해당 언어로 책 로드
         }
+    }
+    
+    private suspend fun loadUserPreferences(
+        initialLevel: Int?,
+        wasSkipped: Boolean,
+        showLevelResultPopup: Boolean
+    ) {
+        Log.d("BookshelfViewModel", "loadUserPreferences: initialLevel=$initialLevel, wasSkipped=$wasSkipped, showLevelResultPopup=$showLevelResultPopup")
+        val prefs = getUserPreferenceUseCase().first()
+        val currentLanguage = LanguageConstants.SUPPORTED_LANGUAGES.find { it.code == prefs.languageCode } ?: LanguageConstants.DEFAULT_LANGUAGE
+        
+        // 🆕 앞 초기 진입 시 LanguageManager 업데이트
+        LanguageManager.setCurrentLanguageCode(currentLanguage.code)
+
+        val initialFilterBarState = if (wasSkipped) {
+            FilterBarState(selectedFilter = FilterBarCategory.All)
+        } else if (initialLevel != null) {
+            FilterBarState(selectedFilter = FilterBarCategory.STAGE, selectedStage = initialLevel.toFilterLevel(), isStageFilterExpanded = true)
+        } else if (prefs.hasCompletedLevelTest) {
+            FilterBarState(selectedFilter = FilterBarCategory.STAGE, selectedStage = prefs.selectedLevel.toFilterLevel())
+        } else {
+            FilterBarState(selectedFilter = FilterBarCategory.All)
+        }
+
+        val popupMessage = if (showLevelResultPopup && initialLevel != null) {
+            LocalizedMessage(R.string.level_test_popup_message, arrayOf(initialLevel))
+        } else {
+            null
+        }
+
+        _state.value = _state.value.copy(
+            currentLanguage = currentLanguage,
+            isMusicOn = prefs.isMusicOn,
+            filterBarState = initialFilterBarState,
+            showLevelResultPopup = showLevelResultPopup,
+            levelResultPopupMessage = popupMessage
+        )
     }
 
     /**
-     * 사용자 설정 변경 관찰
-     * - 언어 변경 시 책 목록 다시 로드
+     * 사용자 언어 설정 변화 관찰
      */
     private fun observeUserPreference() {
         viewModelScope.launch {
             getUserPreferenceUseCase().collect { preference ->
                 val languageCode = if (preference.languageCode.isBlank()) {
-                    // 저장된 언어가 없으면 기본 언어 사용
                     LanguageConstants.DEFAULT_LANGUAGE.code
                 } else {
                     preference.languageCode
@@ -282,88 +234,86 @@ class BookshelfViewModel @Inject constructor(
                     it.code == languageCode
                 } ?: LanguageConstants.DEFAULT_LANGUAGE
 
-                // 언어가 변경되었을 때만 상태 업데이트 및 책 로딩
                 if (language.code != _state.value.currentLanguage.code) {
-                    Log.d(
-                        "BookshelfViewModel",
-                        "Language changed from ${_state.value.currentLanguage.code} to ${language.code}"
-                    )
-
-                    // LanguageManager에도 언어 설정
                     LanguageManager.setCurrentLanguageCode(language.code)
-
-                    _state.update {
-                        it.copy(currentLanguage = language)
-                    }
-                    loadStories(language.code)
+                    _state.update { it.copy(currentLanguage = language) }
+                    loadBooks(language.code)
                 }
             }
         }
     }
 
-    private suspend fun loadStories(languageCode: String) {
+    /**
+     * 배경 음악 설정 로드 및 관찰
+     */
+    private fun loadMusicSetting() {
+        viewModelScope.launch {
+            musicSettingUseCase.isMusicOn.collect { isMusicOn ->
+                val previousState = _state.value.isMusicOn
+                _state.update { it.copy(isMusicOn = isMusicOn) }
+
+                if (previousState != isMusicOn || previousState == false) {
+                    if (isMusicOn) {
+                        musicManager.startMusic()
+                    } else {
+                        musicManager.stopMusic()
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            musicSettingUseCase.musicVolume.collect { volume ->
+                val wasMusicPlaying = _state.value.isMusicOn
+                musicManager.setVolume(volume)
+
+                if (wasMusicPlaying) {
+                    kotlinx.coroutines.delay(100)
+                    musicManager.startMusic()
+                }
+            }
+        }
+    }
+
+    /**
+     * 책 목록 로드 (UseCase 사용)
+     */
+    private fun loadBooks(languageCode: String, updateFilteredBooks: Boolean = true) {
         viewModelScope.launch {
             try {
                 _state.update { it.copy(isLoading = true, error = null) }
-
-                // 1. 로컬 asset 책 로드
-                val result = getBooksUseCase(languageCode)
-
-                // 2. 추가로 다운로드된 책도 함께 로드
-                val downloadedBooks = loadDownloadedBooks(languageCode)
-
+                
+                Log.d("BookshelfViewModel", "Loading books for language: $languageCode")
+                
+                // GetAllBooksUseCase를 통한 통합 책 목록 조회
+                val result = getAllBooksUseCase(languageCode)
+                
                 result.fold(
-                    onSuccess = { localBooks ->
-                        // 로컬 책(assets에 있는 책)은 항상 다운로드된 상태로 설정
-                        val localBooksWithDownloadStatus = localBooks.map { localBook ->
-                            localBook.copy(
-                                isDownloaded = true,
-                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
+                    onSuccess = { books ->
+                        // 🆕 unlock 상태 로드 (일반 모드에서도 필요)
+                        val unlockedStepsMap = checkUnlockStatusUseCase.getUnlockedSteps(
+                            userId = currentUserId,
+                            languageCode = languageCode
+                        )
+                        
+                        _state.update { currentState ->
+                            currentState.copy(
+                                books = books,
+                                filteredBooks = if (updateFilteredBooks) books else currentState.filteredBooks,
+                                unlockedSteps = unlockedStepsMap, // 🆕 unlock 상태 설정
+                                isLoading = false,
+                                error = null
                             )
                         }
-
-                        // 로컬 책과 다운로드된 책을 합친 목록 생성 (중복 제거)
-                        val localStoryIds =
-                            localBooksWithDownloadStatus.map { it.storyId.split("_").first() }
-                                .toSet()
-                        val newDownloadedBooks = downloadedBooks.filter {
-                            !localStoryIds.contains(it.storyId.split("_").first())
-                        }
-
-                        // 전체 책 목록 (로컬 + 다운로드)
-                        val combinedBooks = localBooksWithDownloadStatus + newDownloadedBooks
-
-                        // 현재 필터 상태 확인
+                        
+                        // 현재 필터가 적용된 경우 다시 필터링
                         val currentFilter = _state.value.filterBarState.selectedFilter
-                        val shouldApplyFilters = currentFilter != FilterBarCategory.All
-
-                        // UI 상태 업데이트
-                        _state.update {
-                            if (shouldApplyFilters) {
-                                // 현재 필터 상태가 있으면 books만 업데이트
-                                it.copy(books = combinedBooks, isLoading = false)
-                            } else {
-                                // 필터 상태가 ALL이면 filteredBooks도 함께 업데이트
-                                it.copy(
-                                    books = combinedBooks,
-                                    filteredBooks = combinedBooks,
-                                    isLoading = false
-                                )
-                            }
+                        if (currentFilter != FilterBarCategory.All) {
+                            applyCurrentFilter()
                         }
-
-                        // 필터링이 필요한 경우 applyFilters 호출
-                        if (shouldApplyFilters) {
-                            applyFilters()
-                        }
-
-                        Log.d(
-                            "BookshelfViewModel",
-                            "Loaded total ${combinedBooks.size} books (${localBooksWithDownloadStatus.size} local + ${newDownloadedBooks.size} downloaded)"
-                        )
-
-                        // 백그라운드에서 원격 책 확인 (다운로드 가능한 새 책 확인)
-                        checkAndLoadRemoteBooks(languageCode)
+                        
+                        Log.d("BookshelfViewModel", "Successfully loaded ${books.size} books")
+                        Log.d("BookshelfViewModel", "🔓 Unlocked steps: $unlockedStepsMap") // 🆕 로그 추가
                     },
                     onFailure = { error ->
                         Log.e("BookshelfViewModel", "Error loading books", error)
@@ -375,8 +325,9 @@ class BookshelfViewModel @Inject constructor(
                         }
                     }
                 )
+                
             } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Exception in loadStories", e)
+                Log.e("BookshelfViewModel", "Exception in loadBooks", e)
                 _state.update {
                     it.copy(
                         isLoading = false,
@@ -388,473 +339,267 @@ class BookshelfViewModel @Inject constructor(
     }
 
     /**
-     * 다운로드한 책 목록 로드
+     * 사용자 액션 처리 (슬림화됨)
      */
-    private suspend fun loadDownloadedBooks(languageCode: String): List<Book> {
-        return try {
-            // Get downloaded books directly
-            val downloadedEntities = downloadedBooksDao.getDownloadedBooksByLanguage(languageCode)
-
-            // Convert entities to Book objects
-            downloadedEntities.mapNotNull { entity ->
-                // 다운로드된 책의 contentJsonPath를 사용하여 PageContentResponse를 로드
-                val bookContentResult =
-                    assetDataSource.loadExternalBookContent(entity.contentJsonPath)
-                bookContentResult.getOrNull()?.let { response ->
-                    // 다운로드된 책의 이미지 폴더 경로 구성
-                    val contentJsonFile = File(entity.contentJsonPath)
-                    val bookRootDir = contentJsonFile.parentFile?.parentFile
-                    val imageFolderPath = File(bookRootDir, "images").absolutePath
-                    response.toBook(
-                        languageCode,
-                        entity.level,
-                        entity.category,
-                        entity.coverImagePath,
-                        imageFolderPath
-                    )
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("BookshelfViewModel", "Error loading downloaded books", e)
-            emptyList()
-        }
-    }
-
-    /**
-     * 원격 책 로드 및 다운로드 상태 확인
-     */
-    private fun checkAndLoadRemoteBooks(languageCode: String) {
-        viewModelScope.launch {
-            try {
-                // 원격 데이터 가져오기
-                loadRemoteBooks(languageCode)
-
-                // 모든 책의 다운로드 상태 확인
-                verifyAllBooksDownloadStatus(languageCode)
-            } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Error in checking remote books", e)
-            }
-        }
-    }
-
-    /**
-     * 모든 책의 다운로드 상태 검증
-     */
-    private suspend fun verifyAllBooksDownloadStatus(languageCode: String) {
-        try {
-            val currentBooks = _state.value.books.toMutableList()
-            var hasChanges = false
-
-            Log.d(
-                "BookshelfViewModel",
-                "Verifying download status for ${currentBooks.size} books in language: $languageCode"
-            )
-
-            // 로컬 책의 ID 목록을 가져옴 (로컬 assets에 포함된 책)
-            val localAssetBookIds = try {
-                val jsonString =
-                    context.assets.open("metadata/stories-metadata.json").bufferedReader()
-                        .use { it.readText() }
-                val localResponse = Json.decodeFromString<StoriesResponse>(jsonString)
-                val ids =
-                    localResponse.stories.map { it.storyId.split("_").first().toInt() }.distinct()
-                Log.d("BookshelfViewModel", "Local asset book IDs (unique): $ids")
-                ids
-            } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Error loading local metadata", e)
-                emptyList<Int>()
+    fun onAction(action: BookShelfAction) {
+        when (action) {
+            is BookShelfAction.BookSelect -> {
+                soundEffectManager.playButtonClick()
+                // 책 선택은 Navigation에서 처리
             }
 
-            // 각 책의 다운로드 상태 확인
-            for (i in currentBooks.indices) {
-                val book = currentBooks[i]
-
-                // 책 ID 추출
-                val bookId = book.storyId.split("_").firstOrNull()?.toIntOrNull()
-                if (bookId != null) {
-                    // 현재 책의 스토리 ID와 현재 언어 코드가 일치하는지 확인
-                    val bookLanguageCode = book.storyId.split("_").getOrElse(1) { languageCode }
-
-                    // 현재 언어에 맞는 책이 아니면 건너뛰기
-                    if (!book.storyId.endsWith("_$languageCode") && bookLanguageCode != languageCode) {
-                        Log.d(
-                            "BookshelfViewModel",
-                            "Skipping book ${book.storyId} - wrong language (current: $languageCode)"
-                        )
-                        continue
-                    }
-
-                    // 로컬 asset 책인 경우 항상 다운로드된 상태로 설정
-                    val isLocalAssetBook = localAssetBookIds.contains(bookId)
-                    if (isLocalAssetBook) {
-                        // 로컬 책은 항상 다운로드된 상태로 설정
-                        if (!book.isDownloaded) {
-                            Log.d(
-                                "BookshelfViewModel",
-                                "Setting local book ${book.storyId} as downloaded"
-                            )
-                            currentBooks[i] = book.copy(
-                                isDownloaded = true,
-                                downloadProgress = DownloadProgress(DownloadStatus.DOWNLOADED)
-                            )
-                            hasChanges = true
-                        }
-                        continue // 로컬 책은 더 이상 처리할 필요 없음
-                    }
-
-                    // 원격 책인 경우만 DB에서 다운로드 상태 확인
-                    val downloadedBook = try {
-                        downloadedBooksDao.getDownloadedBook(bookId, languageCode)
-                    } catch (e: Exception) {
-                        Log.e(
-                            "BookshelfViewModel",
-                            "Error checking download status for book $bookId",
-                            e
-                        )
-                        null
-                    }
-
-                    val isDownloaded = downloadedBook != null
-
-                    // Check for updates if the book is downloaded
-                    if (isDownloaded) {
-                        val remoteBook = _state.value.remoteBooks.find { it.id == bookId }
-                        if (remoteBook != null && remoteBook.bookVersion > downloadedBook!!.bookVersion) {
-                            Log.d(
-                                "BookshelfViewModel",
-                                "Book ${book.storyId} has an update available (local: ${downloadedBook.bookVersion}, remote: ${remoteBook.bookVersion})"
-                            )
-                            currentBooks[i] = book.copy(
-                                isDownloaded = true, // Still downloaded
-                                downloadProgress = DownloadProgress(DownloadStatus.UPDATE_AVAILABLE) // New status
-                            )
-                            hasChanges = true
-                            continue // Skip further status checks for this book
-                        }
-                    }
-
-                    // 현재 상태와 다르면 업데이트
-                    if (book.isDownloaded != isDownloaded) {
-                        Log.d(
-                            "BookshelfViewModel",
-                            "Updating book ${book.storyId} status from ${if (book.isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"} to ${if (isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"}"
-                        )
-                        val downloadProgress = if (isDownloaded) {
-                            DownloadProgress(DownloadStatus.DOWNLOADED)
-                        } else {
-                            DownloadProgress(DownloadStatus.AVAILABLE)
-                        }
-                        currentBooks[i] = book.copy(
-                            isDownloaded = isDownloaded,
-                            downloadProgress = downloadProgress
-                        )
-                        hasChanges = true
-                    }
-                }
+            is BookShelfAction.ChatbotClick -> {
+                soundEffectManager.playButtonClick()
+                // Chatbot 네비게이션은 외부에서 처리
             }
 
-            // 변경사항이 있으면 UI 업데이트
-            if (hasChanges) {
-                Log.d("BookshelfViewModel", "Updated download status for books")
-
-                // 현재 필터 상태 확인
-                val selectedFilter = _state.value.filterBarState.selectedFilter
-                val shouldApplyFilters = selectedFilter != FilterBarCategory.All
-
-                // 필터 상태에 따라 업데이트 방식 결정
-                if (shouldApplyFilters) {
-                    // 필터링된 상태면 필터 적용을 위해 books 업데이트 후 필터 적용
-                    _state.update { it.copy(books = currentBooks) }
-                    applyFilters()
-                } else {
-                    // All 상태면 books와 filteredBooks 모두 업데이트
-                    _state.update { it.copy(books = currentBooks, filteredBooks = currentBooks) }
-                }
-            } else {
-                Log.d("BookshelfViewModel", "No books status changes detected")
+            is BookShelfAction.SettingClick -> {
+                soundEffectManager.playButtonClick()
+                // Settings 네비게이션은 외부에서 처리
             }
-        } catch (e: Exception) {
-            Log.e("BookshelfViewModel", "Error verifying book download status", e)
-        }
-    }
+            
+            is BookShelfAction.MyPageClick -> {
+                soundEffectManager.playButtonClick()
+                // MyPage 네비게이션은 외부에서 처리
+            }
 
-    /**
-     * 원격 서버에서 책 목록 로드
-     * - GitHub에서 메타데이터 가져오기
-     * - 로컬 DB와 비교하여 다운로드 가능한 책 필터링
-     *
-     * @param languageCode 언어 코드
-     */
-    private suspend fun loadRemoteBooks(languageCode: String) {
-        viewModelScope.launch {
-            try {
-                // 원격 데이터 가져오기
-                val remoteResult = getRemoteBooksUseCase(languageCode)
-                remoteResult.fold(
-                    onSuccess = { remoteBooksResult ->
-                        // 원격 책 목록 저장
-                        _state.update { currentState ->
-                            currentState.copy(remoteBooks = remoteBooksResult)
-                        }
+            is BookShelfAction.ShowLanguageDialog -> {
+                soundEffectManager.playButtonClick()
+                handleLanguageDialog(action.isShow)
+            }
 
-                        // 다운로드 가능한 책 필터링 및 처리
-                        val downloadableBooks =
-                            filterDownloadableBooks(remoteBooksResult, languageCode)
+            is BookShelfAction.ChangeLanguage -> {
+                soundEffectManager.playButtonClick()
+                changeLanguage(action.language)
+            }
 
-                        // UI에 다운로드 가능 책 표시
-                        if (downloadableBooks.isNotEmpty()) {
-                            processBooksForUI(downloadableBooks, languageCode)
-                        }
-                    },
-                    onFailure = { error ->
-                        Log.e("BookshelfViewModel", "원격 책 데이터 로드 실패", error)
-                    }
+            is BookShelfAction.StartMusic -> startMusic()
+            is BookShelfAction.StopMusic -> stopMusic()
+            
+            // DownloadBook 액션 제거 - 관리 모드에서만 다운로드 처리
+
+            is BookShelfAction.SelectFilter -> {
+                soundEffectManager.playButtonClick()
+                onFilterOptionSelected(
+                    filter = action.filter,
+                    stage = action.stage,
+                    category = action.category,
                 )
-            } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "원격 책 로딩 중 예외 발생", e)
             }
-        }
-    }
+            
+            // 출석/진도 관련 액션들은 제거됨 (각각의 ViewModel에서 처리)
+            is BookShelfAction.DismissAttendancePopup -> {
+                // AttendanceViewModel에서 처리
+            }
 
-    /**
-     * 다운로드 가능한 책을 UI에 표시하기 위해 처리
-     * - 책 표지 이미지 다운로드 및 UI 상태 업데이트
-     *
-     * @param downloadableBooks 다운로드 가능한 책 목록
-     * @param languageCode 언어 코드
-     */
-    private fun processBooksForUI(downloadableBooks: List<RemoteBook>, languageCode: String) {
-        val currentBooks = _state.value.books.toMutableList()
+            is BookShelfAction.SelectReadingStatus -> {
+                soundEffectManager.playButtonClick()
+                selectReadingStatus(action.status)
+            }
+            
+            // 🆕 관리 모드 관련 액션들
+            is BookShelfAction.ToggleManagementMode -> {
+                soundEffectManager.playButtonClick()
+                toggleManagementMode()
+            }
+            
+            is BookShelfAction.SelectManagementTab -> {
+                soundEffectManager.playButtonClick()
+                selectManagementTab(action.tab)
+            }
+            
+            is BookShelfAction.ToggleBookSelection -> {
+                soundEffectManager.playButtonClick()
+                toggleBookSelection(action.bookId, action.isSelected)
+            }
+            
+            is BookShelfAction.ExecuteSelectedActions -> {
+                soundEffectManager.playButtonClick()
+                executeSelectedActions()
+            }
+            
+            is BookShelfAction.ShowConfirmationPopup -> {
+                handleConfirmationPopup(action.show)
+            }
 
-        Log.d("BookshelfViewModel", "Processing ${downloadableBooks.size} remote books for UI")
+            is BookShelfAction.CheckForUpdate -> {
+                checkForUpdate()
+            }
 
-        // 로컬 책의 ID 목록을 가져옴 (로컬 assets에 포함된 책)
-        val localAssetBookIds = try {
-            val jsonString = context.assets.open("metadata/stories-metadata.json").bufferedReader()
-                .use { it.readText() }
-            val localResponse = Json.decodeFromString<StoriesResponse>(jsonString)
-            val ids = localResponse.stories.map { it.storyId.split("_").first().toInt() }.distinct()
-            Log.d("BookshelfViewModel", "Local asset book IDs for UI: $ids")
-            ids
-        } catch (e: Exception) {
-            Log.e("BookshelfViewModel", "Error loading local metadata for UI", e)
-            emptyList<Int>()
-        }
+            is BookShelfAction.ShowUpdateDialog -> {
+                _state.update { it.copy(showUpdateDialog = action.show) }
+            }
 
-        viewModelScope.launch {
-            downloadableBooks.forEach { remoteBook ->
-                // 로컬 책인지 확인 (로컬 책은 항상 다운로드된 상태)
-                val isLocalAssetBook = localAssetBookIds.contains(remoteBook.id)
-
-                // 로컬 책이면 처리하지 않음 (이미 로컬에 있음)
-                if (isLocalAssetBook) {
-                    return@forEach
-                }
-
-                // 이미 리스트에 있는지 확인 - 같은 ID와 언어인 경우만 체크
-                val existingIndex = currentBooks.indexOfFirst {
-                    val bookId = it.storyId.split("_").firstOrNull()?.toIntOrNull() ?: -1
-                    bookId == remoteBook.id && it.storyId.endsWith("_$languageCode")
-                }
-                if (existingIndex == -1) {
-                    // 책 표지 이미지 미리 다운로드
-                    val langKey = when {
-                        languageCode.startsWith("ko") -> "ko"
-                        languageCode.startsWith("tet") -> "tet"
-                        languageCode.startsWith("mn") -> "mn" // Added for Mongolian
-                        else -> "en"
+            is BookShelfAction.PostponeUpdate -> {
+                viewModelScope.launch {
+                    _state.value.appVersionInfo?.let {
+                        postponeUpdateUseCase(it.latestVersionCode)
                     }
+                    _state.update { it.copy(showUpdateDialog = false) }
+                }
+            }
 
-                    val coverUrl = remoteBook.cover[langKey] ?: ""
-                    val title = remoteBook.title[langKey] ?: "Book ${remoteBook.id}"
-                    val category = remoteBook.category
-
-                    Log.d(
-                        "BookshelfViewModel",
-                        "Processing book ${remoteBook.id}: $title, cover URL: $coverUrl"
+            is BookShelfAction.DismissLevelResultPopup -> {
+                _state.update { it.copy(showLevelResultPopup = false, levelResultPopupMessage = null) }
+            }
+            
+            is BookShelfAction.ShowLockedBookPopup -> {
+                _state.update { it.copy(showLockedBookPopup = action.show) }
+            }
+            
+            is BookShelfAction.CancelSelection -> {
+                // 🆕 선택 취소: 선택 내역 초기화 + 팝업 닫기
+                _state.update {
+                    it.copy(
+                        showConfirmationPopup = false,
+                        pendingActionType = null
                     )
+                }
+            }
+            
+            is BookShelfAction.ShowStoryInfoDialog -> {
+                loadStoryInfo(action.storyId)
+            }
+            
+            is BookShelfAction.DismissStoryInfoDialog -> {
+                dismissStoryInfoDialog()
+            }
+            
+            is BookShelfAction.DismissActionCompletionDialog -> {
+                dismissActionCompletionDialog()
+            }
+            is BookShelfAction.DismissUnlockPopup -> {
+                dismissUnlockPopup()
+            }
+        }
+    }
 
-                    if (coverUrl.isNotEmpty()) {
-                        try {
-                            Log.d(
-                                "BookshelfViewModel",
-                                "Attempting to download cover image from: $coverUrl"
-                            )
-                            val localCoverPath = bookDownloader.preloadCoverImage(coverUrl)
-                            Log.d("BookshelfViewModel", "Cover download result: $localCoverPath")
-
-                            if (localCoverPath != null) {
-                                // Book 객체 생성 (원격 책은 처음에 isDownloaded = false)
-                                val newBook = Book(
-                                    storyId = "${remoteBook.id}_$languageCode",
-                                    title = title,
-                                    coverImage = localCoverPath,
-                                    level = remoteBook.level,  // 원격 데이터에서 level 정보 가져오기
-                                    category = category,
-                                    pageCount = 0,
-                                    isDownloaded = false,  // 원격 책은 다운로드 필요
-                                    isBookmarked = false,
-                                    downloadProgress = DownloadProgress(DownloadStatus.AVAILABLE),
-                                    contributors = remoteBook.contributors?.flatMap { (lang, rolesMap) ->
-                                        rolesMap.flatMap { (role, names) ->
-                                            names.map { name -> Contributor(role = role, name = name, lang = lang) }
-                                        }
-                                    } ?: emptyList(),
-                                    sponsors = remoteBook.sponsors?.flatMap { (_, namesList) -> namesList } ?: emptyList(),
-                                    copyright = remoteBook.copyright,
-                                    originalCopyright = remoteBook.originalCopyright,
-                                    pages = emptyList() // Pages are not available in RemoteBook
-                                )
-
-                                currentBooks.add(newBook)
-                                Log.d(
-                                    "BookshelfViewModel",
-                                    "Added new remote book to UI: $title (id: ${remoteBook.id})"
-                                )
-
-                                // UI 갱신 - books와 filteredBooks 모두 업데이트
-                                val updatedBooks = currentBooks.toList()
-                                val selectedFilter = _state.value.filterBarState.selectedFilter
-                                val shouldApplyFilters = selectedFilter != FilterBarCategory.All
-
-                                _state.update {
-                                    if (shouldApplyFilters) {
-                                        // 현재 필터가 All이 아니면 필터 적용
-                                        it.copy(books = updatedBooks)
-                                    } else {
-                                        // All 필터면 filteredBooks도 함께 업데이트
-                                        it.copy(books = updatedBooks, filteredBooks = updatedBooks)
-                                    }
-                                }
-
-                                // 필터가 적용된 상태라면 applyFilters 호출하여 filteredBooks 업데이트
-                                if (shouldApplyFilters) {
-                                    applyFilters()
-                                }
-                            } else {
-                                Log.e(
-                                    "BookshelfViewModel",
-                                    "Failed to download cover image: localCoverPath is null"
-                                )
-                            }
-                        } catch (e: Exception) {
-                            Log.e("BookshelfViewModel", "Error preloading cover: $coverUrl", e)
-                        }
-                    } else {
-                        Log.w("BookshelfViewModel", "Empty cover URL for book ${remoteBook.id}")
-                    }
+    private fun checkForUpdate() {
+        viewModelScope.launch {
+            val result = checkAppVersionUseCase()
+            result.getOrNull()?.let { versionInfo ->
+                _state.update {
+                    it.copy(
+                        appVersionInfo = versionInfo,
+                        showUpdateDialog = true
+                    )
                 }
             }
         }
     }
 
     /**
-     * 다운로드할 수 있는 책만 필터링
-     * - 이미 다운로드된 책은 제외
-     *
-     * @param remoteBooks 원격 책 목록
-     * @param languageCode 언어 코드
-     * @return 다운로드 가능한 책 목록
+     * 언어 선택 다이얼로그 표시/숨김
      */
-    private suspend fun filterDownloadableBooks(
-        remoteBooks: List<RemoteBook>,
-        languageCode: String
-    ): List<RemoteBook> {
-        // 로컬 assets에서 메타데이터 로드
-        val localAssetBookIds = try {
-            val jsonString = context.assets.open("metadata/stories-metadata.json").bufferedReader()
-                .use { it.readText() }
-            val localResponse = Json.decodeFromString<StoriesResponse>(jsonString)
-            val ids = localResponse.stories.map { it.storyId.split("_").first().toInt() }.distinct()
-            Log.d("BookshelfViewModel", "Local asset book IDs (unique): $ids")
-            ids
-        } catch (e: Exception) {
-            Log.e("BookshelfViewModel", "Error loading local metadata", e)
-            emptyList<Int>()
-        }
-
-        val currentLanguageCode = _state.value.currentLanguage.code
-        Log.d("BookshelfViewModel", "Current language code: $currentLanguageCode")
-
-        // 각 책의 다운로드 상태를 확인하고 필터링
-        val downloadableBooks = remoteBooks.filter { remoteBook ->
-            val isNotInLocalAssets = !localAssetBookIds.contains(remoteBook.id)
-
-            // 언어 코드를 고려하여 정확한 다운로드 상태 확인
-            val downloadedBookEntity =
-                downloadedBooksDao.getDownloadedBook(remoteBook.id, currentLanguageCode)
-            val isNotDownloaded = downloadedBookEntity == null
-
-            Log.d(
-                "BookshelfViewModel",
-                "Book ${remoteBook.id}: isNotInLocalAssets=$isNotInLocalAssets, isNotDownloaded=$isNotDownloaded, language=$currentLanguageCode"
-            )
-
-            // 로컬 assets에 없고 아직 다운로드되지 않은 책만 필터
-            isNotInLocalAssets && isNotDownloaded
-        }
-
-        Log.d(
-            "BookshelfViewModel",
-            "Found ${downloadableBooks.size} downloadable books for language: $currentLanguageCode"
-        )
-        return downloadableBooks
+    private fun handleLanguageDialog(isShow: Boolean) {
+        _state.update { it.copy(showLanguageDialog = isShow) }
     }
 
     /**
-     * 네트워크 연결 상태 확인
-     *
-     * @return 네트워크 연결 가능 여부
+     * 언어 변경 (UseCase 사용)
      */
-    private fun isNetworkAvailable(): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private fun changeLanguage(language: Language) {
+        Log.d("BookshelfViewModel", "Changing language to: ${language.code}")
 
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = connectivityManager.activeNetwork ?: return false
-            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        if (language.code != _state.value.currentLanguage.code) {
+            viewModelScope.launch {
+                try {
+                    _state.update {
+                        it.copy(
+                            showLanguageDialog = false,
+                            isLoading = true,
+                            currentLanguage = language,
+                            // 언어 변경 시 필터 상태 초기화
+                            filterBarState = it.filterBarState.copy(
+                                selectedFilter = FilterBarCategory.All,
+                                selectedStage = FilterLevel.ONE,
+                                selectedCategory = FilterBookCategory.ENVIRONMENT,
+                                isStageFilterExpanded = false,
+                                isCategoryFilterExpanded = false
+                            ),
+                            selectedReadingStatus = ReadingStatusFilter.ALL, // ReadingStatus도 전체로 초기화
+                            // 🆕 관리 모드 상태 초기화
+                            selectedBookIds = emptySet(),
+                            totalSelectedSize = 0L,
+                            showConfirmationPopup = false,
+                            pendingActionType = null,
+                            // 🆕 관리 데이터 초기화 (새 언어로 다시 로드해야 함)
+                            downloadableBooks = emptyList(),
+                            updatableBooks = emptyList(),
+                            hasCheckedUpdates = false,
+                            downloadableItemsCount = 0,
+                            filteredBooks = emptyList() // 🆕 버그 수정을 위해 추가
+                        )
+                    }
 
-            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    // ChangeLanguageUseCase를 통한 언어 변경
+                    changeLanguageUseCase(language)
+                    
+                    // 🆕 LanguageManager 업데이트 (모든 LocalizedText가 재구성됨)
+                    LanguageManager.setCurrentLanguageCode(language.code)
+
+                    kotlinx.coroutines.delay(100)
+                    loadBooks(language.code, updateFilteredBooks = !_state.value.isManagementMode)
+                    
+                    // 🆕 관리 모드인 경우 새 언어로 관리 데이터 다시 로드
+                    if (_state.value.isManagementMode) {
+                        // 언어 변경 후 지연을 두어 books 업데이트 완료 후 실행
+                        kotlinx.coroutines.delay(200)
+                        
+                        Log.d("BookshelfViewModel", "💼 Language changed in management mode - reloading management data")
+                        loadManagementData()
+                        
+                        // 추가 지연 후 현재 선택된 탭에 맞는 책 목록 로드
+                        kotlinx.coroutines.delay(100)
+                        when (_state.value.selectedManagementTab) {
+                            ManagementTab.DOWNLOAD -> {
+                                Log.d("BookshelfViewModel", "💼 Reloading DOWNLOAD tab for new language: ${language.code}")
+                                loadDownloadableBooks(_state.value.books)
+                            }
+                            ManagementTab.UPDATE -> {
+                                Log.d("BookshelfViewModel", "💼 Reloading UPDATE tab for new language: ${language.code}")
+                                loadUpdatableBooks(_state.value.books)
+                            }
+                            ManagementTab.DELETE -> {
+                                Log.d("BookshelfViewModel", "💼 Reloading DELETE tab for new language: ${language.code}")
+                                loadDeletableBooks(_state.value.books)
+                            }
+                        }
+                    }
+                    
+                    Log.d("BookshelfViewModel", "Language changed successfully to: ${language.code}")
+                    
+                } catch (e: Exception) {
+                    Log.e("BookshelfViewModel", "언어 변경 중 오류 발생", e)
+                    _state.update { 
+                        it.copy(
+                            isLoading = false,
+                            error = "언어 변경에 실패했습니다: ${e.message}"
+                        )
+                    }
+                }
+            }
         } else {
-            @Suppress("DEPRECATION")
-            val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            @Suppress("DEPRECATION")
-            activeNetworkInfo != null && activeNetworkInfo.isConnected
+            _state.update { it.copy(showLanguageDialog = false) }
         }
     }
 
     /**
-     * 선택된 책 정보 반환
-     *
-     * @param index 책 목록 인덱스
-     * @return 선택된 책 객체 또는 null
+     * 배경 음악 시작
      */
-    fun onBookSelected(index: Int): Book {
-        if (index < 0 || index >= _state.value.books.size) {
-            Log.e("BookshelfViewModel", "Invalid book index: $index")
-            return Book(
-                storyId = "",
-                title = "",
-                coverImage = "",
-                level = 0,
-                category = "",
-                pageCount = 0,
-                isDownloaded = false,
-                isBookmarked = false,
-                contributors = emptyList(),
-                sponsors = null,
-                copyright = "",
-                originalCopyright = null,
-                pages = emptyList()
-            )
-        }
-
-        // 상태에서 직접 책 객체를 반환
-        return _state.value.books[index]
+    private fun startMusic() {
+        musicManager.startMusic()
     }
 
     /**
-     * 책 리스트 필터링 UI 반영용
+     * 배경 음악 정지
+     */
+    private fun stopMusic() {
+        musicManager.stopMusic()
+    }
+
+    /**
+     * 필터 옵션 선택 처리
      */
     private fun onFilterOptionSelected(
         filter: FilterBarCategory? = null,
@@ -863,19 +608,16 @@ class BookshelfViewModel @Inject constructor(
     ) {
         _state.update {
             val isNewFilterSelected =
-                filter != null && filter != it.filterBarState.selectedFilter      // 대분류중 하나를 선택했는지와 기존에 선택된 필터와 다른 필터인지 확인
+                filter != null && filter != it.filterBarState.selectedFilter
             val isStageSelected = filter == FilterBarCategory.STAGE
             val isCategorySelected = filter == FilterBarCategory.CATEGORY
 
-            // Stage 필터 클릭시 기본사항
             val updatedStage = when {
-                // Stage 카테고리를 처음 전환시 기본값 One
                 isStageSelected && isNewFilterSelected -> FilterLevel.ONE
                 stage != null -> stage
                 else -> it.filterBarState.selectedStage
             }
 
-            // Category 필터 기본 사항 적용
             val updatedCategory = when {
                 isCategorySelected && isNewFilterSelected -> FilterBookCategory.ENVIRONMENT
                 category != null -> category
@@ -888,387 +630,873 @@ class BookshelfViewModel @Inject constructor(
                     selectedStage = updatedStage,
                     selectedCategory = updatedCategory,
                     isStageFilterExpanded = when {
-                        isNewFilterSelected -> isStageSelected  // 새로운 대분류 선택시 필터 닫기
-                        stage != null -> true // 하위 필터일 경우 유지
+                        isNewFilterSelected -> isStageSelected
+                        stage != null -> true
                         else -> it.filterBarState.isStageFilterExpanded
                     },
                     isCategoryFilterExpanded = when {
-                        isNewFilterSelected -> isCategorySelected // 위와 동일
-                        category != null -> true // 위와 동일
+                        isNewFilterSelected -> isCategorySelected
+                        category != null -> true
                         else -> it.filterBarState.isCategoryFilterExpanded
                     }
                 )
             )
         }
-        applyFilters()
+        applyCurrentFilter()
     }
 
     /**
-     * 책 리스트 필터링 실제 리스트 반영
+     * 현재 선택된 필터 적용 (UseCase 사용)
      */
-    private fun applyFilters() {
-        val selectedFilter = _state.value.filterBarState.selectedFilter
-        val selectedStage = _state.value.filterBarState.selectedStage
-        val selectedCategory = _state.value.filterBarState.selectedCategory
-
-        val filteredList = _state.value.books.filter { book ->
-            when (selectedFilter) {
-                FilterBarCategory.STAGE -> selectedStage?.let { book.level == (it.ordinal + 1) }
-                    ?: true
-
-                FilterBarCategory.CATEGORY -> selectedCategory?.let {
-                    // 대소문자 무시하고 비교 또는 displayName도 함께 확인
-                    book.category.equals(it.name, ignoreCase = true) ||
-                            book.category.equals(it.displayName, ignoreCase = true)
-                } ?: true
-
-                else -> true // ALL일 경우 필터 적용 없음
-            }
-        }
-
-        _state.update { it.copy(filteredBooks = filteredList) }
-    }
-
-    /**
-     * 언어 선택 다이얼로그 표시 제어
-     *
-     * @param isShow 다이얼로그 표시 여부
-     */
-    private fun handleLanguageSelector(isShow: Boolean) {
-        _state.update { it.copy(showLanguageDialog = isShow) }
-    }
-
-    /**
-     * 언어 변경
-     *
-     * @param language 변경할 언어
-     */
-    private fun changeLanguage(language: Language) {
-        Log.d("BookshelfViewModel", "Changing language to: ${language.code}")
-
-        if (language.code != _state.value.currentLanguage.code) {
-            // 선택한 언어를 저장
-            viewModelScope.launch {
-                try {
-                    // 다이얼로그만 닫고 기존 책 목록은 유지 (블랙아웃 방지)
-                    _state.update {
-                        it.copy(
-                            showLanguageDialog = false,
-                            currentLanguage = language
-                        )
-                    }
-
-                    saveUserPreferenceUseCase.updateLanguage(language.code)
-
-                    // LanguageManager에 언어 코드 설정
-                    LanguageManager.setCurrentLanguageCode(language.code)
-
-                    Logger.e("현재 언어 코드: ${LanguageManager.getCurrentLanguageCode()}")
-
-                    // 백그라운드에서 새 언어의 책 로드 (기존 UI는 유지)
-                    // 잠시 지연 후 새로 로드 (DB 업데이트 되도록)
-                    kotlinx.coroutines.delay(100)
-
-                    // 현재 선택된 언어로 다운로드된 모든 책 ID 출력
-                    val downloadedIds =
-                        downloadedBooksDao.getDownloadedBooksByLanguage(language.code)
-                    Log.d(
-                        "BookshelfViewModel", "====== 언어 변경 후 ${language.code}로 다운로드된 책 ID: " +
-                                "${
-                                    downloadedIds.map { it.id }.toSet()
-                                }, 수: ${downloadedIds.size} ======"
-                    )
-
-                    // 새 언어로 책 목록 로드 (로딩 상태 없이)
-                    loadStoriesForLanguageSwitch(language.code)
-                } catch (e: Exception) {
-                    Log.e("BookshelfViewModel", "언어 변경 중 오류 발생", e)
-                    _state.update { it.copy(isLoading = false) }
-                }
-            }
-        } else {
-            _state.update { it.copy(showLanguageDialog = false) }
-        }
-    }
-
-    /**
-     * 음악 재생 시작
-     */
-    private fun startMusic() {
-        musicManager.startMusic()
-    }
-
-    /**
-     * 음악 재생 정지
-     */
-    private fun stopMusic() {
-        musicManager.stopMusic()
-    }
-
-    /**
-     * 책 다운로드 처리 - 진행률 없이 단순한 다운로드
-     * - 선택한 책 다운로드 작업 시작
-     * - WorkManager를 통한 백그라운드 다운로드
-     *
-     * @param index 다운로드할 책 인덱스
-     */
-    private fun downloadBook(index: Int) {
-        val book = _state.value.books.getOrNull(index) ?: return
-        val bookId = book.storyId.split("_").firstOrNull()?.toIntOrNull() ?: return
-        val languageCode = _state.value.currentLanguage.code
-
-        // 이미 다운로드 중이거나 다운로드된 책은 처리하지 않음 (단, 업데이트가 필요한 경우는 제외)
-        if (book.downloadProgress.status == DownloadStatus.DOWNLOADING ||(book.isDownloaded && book.downloadProgress.status !=DownloadStatus.UPDATE_AVAILABLE)) {
-            return
-        }
-
-        // 먼저 이미 다운로드되었는지 한 번 더 확인
+    private fun applyCurrentFilter() {
         viewModelScope.launch {
             try {
-                val downloadedBook = downloadedBooksDao.getDownloadedBook(bookId, languageCode)
-                if (downloadedBook != null) {
-                    // 이미 다운로드된 경우
-                    Log.d(
-                        "BookshelfViewModel",
-                        "Book $bookId is already downloaded for language $languageCode"
+                val currentState = _state.value
+                val selectedFilter = currentState.filterBarState.selectedFilter
+                val selectedStage = currentState.filterBarState.selectedStage
+                val selectedCategory = currentState.filterBarState.selectedCategory
+                
+                // FilterBooksUseCase를 통한 필터링 (Presentation 모델 사용)
+                var filteredBooks = filterBooksUseCase(
+                    books = currentState.books,
+                    selectedFilter = selectedFilter,
+                    selectedStage = selectedStage,
+                    selectedCategory = selectedCategory
+                )
+                
+                // 🆕 일반 모드: 다운로드된 책만 표시 (unlock 여부 무관)
+                // 관리 모드: 모든 책 표시
+                if (!currentState.isManagementMode) {
+                    filteredBooks = filteredBooks.filter { it.isDownloaded }
+                    Log.d("BookshelfViewModel", "👁️ Normal mode filter applied: ${filteredBooks.size} downloaded books")
+                } else {
+                    // 🆕 관리 모드에서는 여기서 전체 책 목록을 바로 설정하지 말고
+                    // 탭별 별도 로드 메서드가 처리하도록 함
+                    Log.d("BookshelfViewModel", "💼 Management mode: filteredBooks will be set by tab-specific methods")
+                }
+                
+                _state.update { 
+                    it.copy(
+                        filteredBooks = if (currentState.isManagementMode) it.filteredBooks else filteredBooks,
+                        selectedReadingStatus = null // 필터 변경 시 ReadingStatus 리셋
+                    ) 
+                }
+                
+                Log.d("BookshelfViewModel", "Filtered books: ${if (currentState.isManagementMode) currentState.filteredBooks.size else filteredBooks.size}/${currentState.books.size} (isManagementMode=${currentState.isManagementMode})")
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error applying filter", e)
+            }
+        }
+    }
+
+    /**
+     * 읽음 상태 필터 선택 처리
+     */
+    private fun selectReadingStatus(status: ReadingStatusFilter) {
+        viewModelScope.launch {
+            try {
+                // 상태 업데이트
+                _state.update {
+                    it.copy(selectedReadingStatus = status)
+                }
+                
+                // 상태에 따른 책 필터링
+                applyReadingStatusFilter(status)
+                
+                Log.d("BookshelfViewModel", "Reading status filter applied: $status")
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error applying reading status filter", e)
+            }
+        }
+    }
+    
+    /**
+     * 읽기 상태에 따른 책 필터링
+     */
+    private suspend fun applyReadingStatusFilter(status: ReadingStatusFilter) {
+        val currentState = _state.value
+        val currentLanguage = currentState.currentLanguage.code
+        
+        // 현재 언어의 모든 읽기 진도 조회
+        val allProgress = readingProgressRepository.getAllProgressByLanguage(
+            userId = currentUserId,
+            languageCode = currentLanguage
+        )
+        
+        // 먼저 FilterBar에 의한 필터링 적용
+        val filterBarFilteredBooks = filterBooksUseCase(
+            books = currentState.books,
+            selectedFilter = currentState.filterBarState.selectedFilter,
+            selectedStage = currentState.filterBarState.selectedStage,
+            selectedCategory = currentState.filterBarState.selectedCategory
+        )
+        
+        // 그 다음 ReadingStatus에 따른 추가 필터링
+        val finalFilteredBooks = when (status) {
+            ReadingStatusFilter.ALL -> {
+                // 전체: FilterBar만 적용된 결과 그대로 사용
+                filterBarFilteredBooks
+            }
+            ReadingStatusFilter.UNREAD -> {
+                // 안 읽음: 진도가 없거나 currentPage = 0인 책
+                filterBarFilteredBooks.filter { book ->
+                    val progress = allProgress[book.storyId]
+                    progress == null || progress.currentPage == 0
+                }
+            }
+            ReadingStatusFilter.READING -> {
+                // 읽는 중: 0 < currentPage < totalPages 이고 완독되지 않은 책
+                filterBarFilteredBooks.filter { book ->
+                    val progress = allProgress[book.storyId]
+                    progress != null && 
+                    progress.currentPage > 0 && 
+                    !progress.isCompleted
+                }
+            }
+            ReadingStatusFilter.READ -> {
+                // 다 읽음: isCompleted = true인 책
+                filterBarFilteredBooks.filter { book ->
+                    val progress = allProgress[book.storyId]
+                    progress?.isCompleted == true
+                }
+            }
+        }
+        
+        // 필터링된 결과 업데이트
+        _state.update {
+            it.copy(filteredBooks = finalFilteredBooks)
+        }
+        
+        Log.d("BookshelfViewModel", "Filtered books by $status: ${finalFilteredBooks.size}/${currentState.books.size}")
+    }
+    
+    // 🆕 관리 모드 관련 메서드들
+    
+    /**
+     * 관리 모드 전환
+     */
+    private fun toggleManagementMode() {
+        val currentMode = _state.value.isManagementMode
+        
+        _state.update { currentState ->
+            currentState.copy(
+                isManagementMode = !currentMode,
+                // 관리 모드 종료 시 선택 내역 초기화
+                selectedBookIds = if (currentMode) emptySet() else currentState.selectedBookIds,
+                selectedManagementTab = if (currentMode) ManagementTab.DOWNLOAD else currentState.selectedManagementTab,
+                showConfirmationPopup = false,
+                // 읽기 상태 필터도 초기화
+                selectedReadingStatus = if (currentMode) null else currentState.selectedReadingStatus,
+                // 🆕 관리 모드 진입 시 업데이트 확인 상태로 설정 (뱃지 숨김)
+                hasCheckedUpdates = if (!currentMode) true else currentState.hasCheckedUpdates,
+                // 🆕 관리 모드 진입 시 filteredBooks를 빈 리스트로 초기화 (버퍼링 효과)
+                filteredBooks = if (!currentMode) emptyList() else currentState.filteredBooks
+            )
+        }
+        
+        // 관리 모드 진입 시 초기 데이터 로드
+        if (!currentMode) {
+            loadManagementData()
+            // 🆕 기본 탭(DOWNLOAD)의 책 목록 로드 후 "확인됨" 처리
+            viewModelScope.launch {
+                loadDownloadableBooks(_state.value.books)
+                // 로드 완료 후 DOWNLOAD 탭을 "확인됨"으로 설정
+                _state.update { it.copy(hasViewedDownloadTab = true) }
+                Log.d("BookshelfViewModel", "📁 Management mode entered - DOWNLOAD tab auto-viewed")
+            }
+        } else {
+            // 🆕 관리 모드 종료 시 필터 재적용 (일반 모드는 isDownloaded=true만)
+            applyCurrentFilter()
+        }
+        
+        Log.d("BookshelfViewModel", "📁 Management mode toggled: ${!currentMode} (viewed: D=${_state.value.hasViewedDownloadTab}, U=${_state.value.hasViewedUpdateTab})")
+    }
+    
+    /**
+     * 관리 데이터 로드
+     */
+    private fun loadManagementData() {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isCheckingUpdates = true) }
+                
+                val currentLanguage = _state.value.currentLanguage.code
+                
+                // 1. 다운로드 가능한 책 조회
+                val downloadableResult = getManagementBooksUseCase.getDownloadableBooks(
+                    userId = currentUserId,
+                    languageCode = currentLanguage
+                )
+                val downloadableBooks = downloadableResult.getOrElse { emptyList() }
+                
+                // 2. 업데이트 가능한 책 조회
+                val updatableResult = getManagementBooksUseCase.getUpdatableBooks(
+                    languageCode = currentLanguage
+                )
+                val updatableBooks = updatableResult.getOrElse { emptyList() }
+                
+                // 3. unlock 상태 확인 (표시용)
+                val unlockedStepsMap = checkUnlockStatusUseCase.getUnlockedSteps(
+                    userId = currentUserId,
+                    languageCode = currentLanguage
+                )
+                
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        unlockedSteps = unlockedStepsMap, // ⚠️ Map<String, Int> 그대로 사용
+                        downloadableItemsCount = downloadableBooks.size + updatableBooks.size,
+                        downloadableBooks = downloadableBooks,
+                        updatableBooks = updatableBooks,
+                        hasCheckedUpdates = true
                     )
-                    updateBookDownloadStatus(index, DownloadStatus.DOWNLOADED)
+                }
+                
+                Log.d("BookshelfViewModel", "🔓 Unlocked steps by group: $unlockedStepsMap")
+                Log.d("BookshelfViewModel", "⬇️ Downloadable books: ${downloadableBooks.size}")
+                Log.d("BookshelfViewModel", "🔄 Updatable books: ${updatableBooks.size}")
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "❌ Error loading management data", e)
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        error = "관리 데이터를 불러올 수 없습니다: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
+    
+    /**
+     * 선택된 탭에 맞는 책 목록 로드
+     */
+    private fun selectManagementTab(tab: ManagementTab) {
+        // 🆕 하이브리드: 탭 클릭시 “확인됨” 상태로 설정
+        _state.update { currentState ->
+            currentState.copy(
+                selectedManagementTab = tab,
+                // 🆕 버튼 클릭시 해당 탭 “확인됨” 처리
+                hasViewedDownloadTab = if (tab == ManagementTab.DOWNLOAD) true else currentState.hasViewedDownloadTab,
+                hasViewedUpdateTab = if (tab == ManagementTab.UPDATE) true else currentState.hasViewedUpdateTab,
+                // 🆕 탭 변경 시 filteredBooks를 빈 리스트로 초기화 (버퍼링 효과)
+                filteredBooks = emptyList(),
+                // 🆕 선택 내역도 초기화
+                selectedBookIds = emptySet(),
+                totalSelectedSize = 0L
+            )
+        }
+
+        when (tab) {
+            ManagementTab.DOWNLOAD -> {
+                // 다운로드 탭: 다운로드 가능한 책만 표시
+                loadDownloadableBooks(_state.value.books)
+            }
+            ManagementTab.UPDATE -> {
+                // 업데이트 탭: 업데이트 가능한 책만 표시
+                loadUpdatableBooks(_state.value.books)
+            }
+            ManagementTab.DELETE -> {
+                // 🆕 삭제 탭: 로컬에 저장된 책만 표시
+                loadDeletableBooks(_state.value.books)
+            }
+        }
+
+        Log.d("BookshelfViewModel", "📁 Management tab selected: $tab (viewed: D=${_state.value.hasViewedDownloadTab}, U=${_state.value.hasViewedUpdateTab})")
+    }
+    
+    /**
+     * 다운로드 가능한 책 로드
+     */
+    private fun loadDownloadableBooks(allLocalBooks: List<Book>? = null) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isCheckingUpdates = true) }
+                
+                val currentLanguage = _state.value.currentLanguage.code
+                Log.d("BookshelfViewModel", "🔍 Loading downloadable books for language: $currentLanguage")
+                
+                // GetManagementBooksUseCase를 통한 다운로드 가능한 책 조회
+                val downloadableResult = getManagementBooksUseCase.getDownloadableBooks(
+                    userId = currentUserId,
+                    languageCode = currentLanguage,
+                    allLocalBooks = allLocalBooks
+                )
+                val downloadableBooks = downloadableResult.getOrElse { 
+                    Log.e("BookshelfViewModel", "❌ Failed to get downloadable books: ${downloadableResult.exceptionOrNull()?.message}")
+                    emptyList() 
+                }
+                
+                Log.d("BookshelfViewModel", "📚 Downloadable books found: ${downloadableBooks.size}")
+                downloadableBooks.take(3).forEach { book ->
+                    Log.d("BookshelfViewModel", "  - ${book.storyId}: ${book.title} (downloaded: ${book.isDownloaded})")
+                }
+                
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        downloadableBooks = downloadableBooks,
+                        filteredBooks = downloadableBooks
+                    )
+                }
+                
+                Log.d("BookshelfViewModel", "✅ Downloadable books loaded: ${downloadableBooks.size}")
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "❌ Error loading downloadable books", e)
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        filteredBooks = emptyList(), // 🆕 오류 시에도 빈 리스트로 설정
+                        error = "다운로드 가능한 책을 불러올 수 없습니다: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
+    
+    /**
+     * 삭제 가능한 책 로드
+     */
+    private fun loadDeletableBooks(books: List<com.timor.kidsstory.domain.model.Book>) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isCheckingUpdates = true) }
+
+                val currentLanguage = _state.value.currentLanguage.code
+                Log.d("BookshelfViewModel", "🔍 Loading deletable books for language: $currentLanguage")
+                
+                // 🆕 GetManagementBooksUseCase.getDeletableBooks 사용 (실제 삭제 용량 포함)
+                val deletableResult = getManagementBooksUseCase.getDeletableBooks(
+                    languageCode = currentLanguage
+                )
+                val deletableBooks = deletableResult.getOrElse {
+                    Log.e("BookshelfViewModel", "❌ Failed to get deletable books: ${deletableResult.exceptionOrNull()?.message}")
+                    emptyList()
+                }
+                
+                Log.d("BookshelfViewModel", "📚 Deletable books found: ${deletableBooks.size}")
+                deletableBooks.take(3).forEach { book ->
+                    Log.d("BookshelfViewModel", "  - ${book.storyId}: ${book.title} (delete size: ${book.totalSize / 1024}KB)")
+                }
+
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        filteredBooks = deletableBooks
+                    )
+                }
+
+                Log.d("BookshelfViewModel", "🗑️ Deletable books loaded: ${deletableBooks.size}")
+
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error loading deletable books", e)
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        filteredBooks = emptyList(), // 🆕 오류 시에도 빈 리스트로 설정
+                        error = "삭제 가능한 책을 불러올 수 없습니다: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * 업데이트 가능한 책 로드
+     */
+    private fun loadUpdatableBooks(books: List<com.timor.kidsstory.domain.model.Book>) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isCheckingUpdates = true) }
+
+                val currentLanguage = _state.value.currentLanguage.code
+
+                // GetManagementBooksUseCase를 통한 업데이트 가능한 책 조회
+                val updatableResult = getManagementBooksUseCase.getUpdatableBooks(
+                    languageCode = currentLanguage
+                )
+                val updatableBooks = updatableResult.getOrElse { emptyList() }
+
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        updatableBooks = updatableBooks,
+                        filteredBooks = updatableBooks
+                    )
+                }
+
+                Log.d("BookshelfViewModel", "Updatable books loaded: ${updatableBooks.size}")
+
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "Error loading updatable books", e)
+                _state.update { 
+                    it.copy(
+                        isCheckingUpdates = false,
+                        filteredBooks = emptyList(), // 🆕 오류 시에도 빈 리스트로 설정
+                        error = "업데이트 가능한 책을 불러올 수 없습니다: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
+    
+    /**
+     * 책 선택 상태 변경
+     */
+    private fun toggleBookSelection(bookId: String, isSelected: Boolean) {
+        viewModelScope.launch {
+            _state.update { currentState ->
+                val newSelectedIds = if (isSelected) {
+                    currentState.selectedBookIds + bookId
+                } else {
+                    currentState.selectedBookIds - bookId
+                }
+                
+                currentState.copy(
+                    selectedBookIds = newSelectedIds,
+                    totalSelectedSize = 0L // 임시로 0으로 설정
+                )
+            }
+            
+            // 🆕 선택된 책들의 실제 용량 계산 (다운로드 vs 삭제)
+            val currentState = _state.value
+            val selectedBooks = currentState.filteredBooks.filter { it.storyId in currentState.selectedBookIds }
+            
+            val actualTotalSize = when (currentState.selectedManagementTab) {
+                ManagementTab.DELETE -> {
+                    // 삭제 탭: 실제 삭제될 파일 크기 계산
+                    calculateTotalDeleteSize(selectedBooks, currentState.currentLanguage.code)
+                }
+                ManagementTab.DOWNLOAD, ManagementTab.UPDATE -> {
+                    // 다운로드/업데이트 탭: 다운로드될 파일 크기 계산
+                    calculateTotalDownloadSize(selectedBooks, currentState.currentLanguage.code)
+                }
+            }
+            
+            // 계산된 용량으로 업데이트
+            _state.update { it.copy(totalSelectedSize = actualTotalSize) }
+            
+            val actionName = when (currentState.selectedManagementTab) {
+                ManagementTab.DELETE -> "delete"
+                ManagementTab.DOWNLOAD -> "download"
+                ManagementTab.UPDATE -> "update"
+            }
+            
+            Log.d("BookshelfViewModel", "Book selection toggled: $bookId -> $isSelected, actual $actionName size: ${actualTotalSize / 1024}KB")
+        }
+    }
+    
+    /**
+     * 🆕 선택된 책들의 실제 다운로드 용량 계산
+     */
+    private suspend fun calculateTotalDownloadSize(
+        selectedBooks: List<Book>,
+        languageCode: String
+    ): Long {
+        return try {
+            var totalSize = 0L
+            
+            selectedBooks.forEach { book ->
+                val bookId = book.storyId.split("_")[0].toIntOrNull()
+                if (bookId != null) {
+                    val size = bookDownloader.calculateDownloadSize(bookId, languageCode)
+                    totalSize += size
+                    Log.d("BookshelfViewModel", "📊 Book ${book.title}: ${size / 1024}KB")
+                }
+            }
+            
+            Log.d("BookshelfViewModel", "📊 Total download size: ${totalSize / 1024}KB (${selectedBooks.size} books)")
+            totalSize
+            
+        } catch (e: Exception) {
+            Log.e("BookshelfViewModel", "Failed to calculate total download size", e)
+            // 🆕 오류 시 기본 예상 크기 반환
+            selectedBooks.size * 3L * 1024 * 1024 // 책당 3MB 예상
+        }
+    }
+    
+    /**
+     * 🆕 선택된 책들의 실제 삭제 용량 계산
+     */
+    private suspend fun calculateTotalDeleteSize(
+        selectedBooks: List<Book>, 
+        languageCode: String
+    ): Long {
+        return try {
+            var totalSize = 0L
+            
+            selectedBooks.forEach { book ->
+                val bookId = book.storyId.split("_")[0].toIntOrNull()
+                if (bookId != null) {
+                    // 현재 상태의 전체 책 목록에서 이 책의 다른 버전이 있는지 확인
+                    val versionCount = _state.value.books.count { it.storyId.startsWith("${bookId}_") }
+                    
+                    val size = bookDownloader.calculateDeleteSize(bookId, languageCode, versionCount)
+                    totalSize += size
+                    Log.d("BookshelfViewModel", "🗑️ Book ${book.title}: ${size / 1024}KB (delete), versions: $versionCount")
+                }
+            }
+            
+            Log.d("BookshelfViewModel", "🗑️ Total delete size: ${totalSize / 1024}KB (${selectedBooks.size} books)")
+            totalSize
+            
+        } catch (e: Exception) {
+            Log.e("BookshelfViewModel", "Failed to calculate total delete size", e)
+            // 🆕 오류 시 기본 예상 크기 반환
+            selectedBooks.size * 250L * 1024 // 책당 250KB 예상
+        }
+    }
+    
+    /**
+     * 선택된 항목들 실행 (다운로드/업데이트/삭제)
+     */
+    private fun executeSelectedActions() {
+        val selectedBooks = _state.value.filteredBooks.filter { 
+            it.storyId in _state.value.selectedBookIds 
+        }
+        
+        if (selectedBooks.isEmpty()) {
+            Log.w("BookshelfViewModel", "No books selected")
+            return
+        }
+        
+        // 선택된 책들을 타입별로 분류
+        val downloadBooks = selectedBooks.filter { !it.isDownloaded }
+        val updateBooks = selectedBooks.filter { 
+            it.storyId in _state.value.updatableBooks.map { b -> b.storyId } 
+        }
+        val deleteBooks = selectedBooks.filter { 
+            it.isDownloaded && it.storyId !in _state.value.updatableBooks.map { b -> b.storyId }
+        }
+        
+        // 확인 팝업 표시 (작업 타입 저장)
+        _state.update { 
+            it.copy(
+                showConfirmationPopup = true,
+                pendingActionType = when {
+                    downloadBooks.isNotEmpty() -> ManagementActionType.DOWNLOAD
+                    updateBooks.isNotEmpty() -> ManagementActionType.UPDATE
+                    deleteBooks.isNotEmpty() -> ManagementActionType.DELETE
+                    else -> null
+                }
+            )
+        }
+        
+        Log.d("BookshelfViewModel", "Execute actions: download=${downloadBooks.size}, update=${updateBooks.size}, delete=${deleteBooks.size}")
+    }
+    
+    /**
+     * 확인 팝업 표시/숨김 처리
+     */
+    private fun handleConfirmationPopup(show: Boolean) {
+        _state.update { it.copy(showConfirmationPopup = show) }
+        
+        if (!show) {
+            // 팝업이 닫힐 때 실제 다운로드/업데이트 실행
+            performSelectedActions()
+        }
+    }
+    
+    /**
+     * 실제 다운로드/업데이트/삭제 실행
+     */
+    private fun performSelectedActions() {
+        viewModelScope.launch {
+            try {
+                val selectedBooks = _state.value.filteredBooks.filter { 
+                    it.storyId in _state.value.selectedBookIds 
+                }
+                
+                if (selectedBooks.isEmpty()) {
+                    Log.w("BookshelfViewModel", "No books selected for action")
                     return@launch
                 }
-            } catch (e: Exception) {
-                Log.e("BookshelfViewModel", "Error checking download status", e)
-            }
-
-            // 해당 책 찾기
-            val remoteBook = _state.value.remoteBooks.find { it.id == bookId } ?: run {
-                Log.e("BookshelfViewModel", "Remote book not found for ID: $bookId")
-                updateBookDownloadStatus(index, DownloadStatus.FAILED)
-                return@launch
-            }
-
-            // UI 상태 업데이트 - 다운로드 중으로 변경
-            updateBookDownloadStatus(index, DownloadStatus.DOWNLOADING)
-
-            // WorkManager를 사용하여 백그라운드에서 다운로드
-            // Input 데이터 설정
-            val inputData = Data.Builder()
-                .putInt(DownloadWorker.KEY_BOOK_ID, remoteBook.id)
-                .putString(DownloadWorker.KEY_LANGUAGE, languageCode)
-                .putString(DownloadWorker.KEY_METADATA, Json.encodeToString(remoteBook))
-                .build()
-
-            // WorkManager 작업 설정
-            val downloadRequest = OneTimeWorkRequestBuilder<DownloadWorker>()
-                .setInputData(inputData)
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                )
-                .build()
-
-            // 다운로드 작업 시작
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(
-                    "download_book_${remoteBook.id}_$languageCode",
-                    ExistingWorkPolicy.KEEP,
-                    downloadRequest
-                )
-
-            // WorkManager 작업 결과 관찰
-            WorkManager.getInstance(context)
-                .getWorkInfoByIdLiveData(downloadRequest.id)
-                .observeForever { workInfo ->
-                    workInfo?.let { nonNullWorkInfo ->
-                        when (nonNullWorkInfo.state) {
-                            WorkInfo.State.SUCCEEDED -> {
-                                Log.d(
-                                    "BookshelfViewModel",
-                                    "Download completed successfully for book $bookId with language $languageCode"
-                                )
-
-                                // 여기서 바로 UI 상태를 최신 책 데이터로 갱신
-                                viewModelScope.launch {
-                                    try {
-                                        val downloadedBookEntity =
-                                            downloadedBooksDao.getDownloadedBook(
-                                                bookId,
-                                                languageCode
-                                            )
-                                        if (downloadedBookEntity != null) {
-                                            val bookContentResult =
-                                                assetDataSource.loadExternalBookContent(downloadedBookEntity.contentJsonPath)
-                                            bookContentResult.getOrNull()?.let { response ->
-                                                // Recalculate imageFolderPath here, as it's needed for toBook
-                                                val contentJsonFile = File(downloadedBookEntity.contentJsonPath)
-                                                val bookRootDir = contentJsonFile.parentFile?.parentFile
-                                                val imageFolderPath = File(bookRootDir, "images").absolutePath
-
-                                                val newBook = response.toBook(
-                                                    languageCode,
-                                                    downloadedBookEntity.level,
-                                                    downloadedBookEntity.category,
-                                                    downloadedBookEntity.coverImagePath,
-                                                    imageFolderPath,
-                                                    downloadedBookEntity.bookVersion // Pass bookVersion
-                                                )
-
-                                                _state.update { currentState ->
-                                                    val newBookList =
-                                                        currentState.books.toMutableList()
-                                                    val existingIndex =
-                                                        newBookList.indexOfFirst { it.storyId == newBook.storyId }
-
-                                                    if (existingIndex >= 0) {
-                                                        newBookList[existingIndex] = newBook
-                                                    } else {
-                                                        newBookList.add(newBook)
-                                                    }
-
-                                                    val selectedFilter =
-                                                        currentState.filterBarState.selectedFilter
-                                                    val shouldApplyFilters =
-                                                        selectedFilter != FilterBarCategory.All
-
-                                                    if (shouldApplyFilters) {
-                                                        currentState.copy(books = newBookList)
-                                                    } else {
-                                                        currentState.copy(
-                                                            books = newBookList,
-                                                            filteredBooks = newBookList
-                                                        )
-                                                    }
-                                                }
-
-                                                Log.d(
-                                                    "BookshelfViewModel",
-                                                    "Book added to UI: ${newBook.storyId}"
-                                                )
-                                            }
-                                        }
-                                    } catch (e: Exception) {
-                                        Log.e(
-                                            "BookshelfViewModel",
-                                            "Error updating UI after download success",
-                                            e
-                                        )
-                                    }
-                                }
-                            }
-
-                            WorkInfo.State.FAILED -> {
-                                Log.e(
-                                    "BookshelfViewModel",
-                                    "Download failed for book $bookId with language $languageCode"
-                                )
-
-                                updateBookDownloadStatus(index, DownloadStatus.FAILED)
-                            }
-
-                            WorkInfo.State.CANCELLED -> {
-                                Log.d(
-                                    "BookshelfViewModel",
-                                    "Download cancelled for book $bookId with language $languageCode"
-                                )
-
-                                updateBookDownloadStatus(index, DownloadStatus.AVAILABLE)
-                            }
-
-                            else -> {
-                                // 처리 중 상태는 무시
-                            }
+                
+                val currentLanguage = _state.value.currentLanguage.code
+                val actionType = _state.value.pendingActionType
+                
+                Log.d("BookshelfViewModel", "🛠️ Performing action: $actionType for ${selectedBooks.size} books")
+                Log.d("BookshelfViewModel", "📚 Selected book IDs: ${selectedBooks.map { it.storyId }}")
+                
+                // 🆕 다운로드 진행 상태 시작
+                _state.update { 
+                    it.copy(
+                        isDownloading = true,
+                        downloadingBookIds = selectedBooks.map { book -> book.storyId }.toSet()
+                    )
+                }
+                
+                when (actionType) {
+                    ManagementActionType.DOWNLOAD -> {
+                        // 다운로드 실행
+                        executeBookDownloadUseCase(
+                            books = selectedBooks,
+                            languageCode = currentLanguage,
+                            isUpdate = false // 새로운 다운로드
+                        ).onSuccess {
+                            Log.d("BookshelfViewModel", "✅ Download completed for ${selectedBooks.size} books")
+                            showActionCompletionDialog(ManagementActionType.DOWNLOAD, selectedBooks.size)
+                            resetSelection()
+                        }.onFailure { error ->
+                            handleActionError("다운로드", error)
+                        }
+                    }
+                    
+                    ManagementActionType.UPDATE -> {
+                        // 업데이트 실행 (강제 업데이트 모드)
+                        executeBookDownloadUseCase(
+                            books = selectedBooks,
+                            languageCode = currentLanguage,
+                            isUpdate = true // 🔄 업데이트 모드
+                        ).onSuccess {
+                            Log.d("BookshelfViewModel", "✅ Update completed for ${selectedBooks.size} books")
+                            showActionCompletionDialog(ManagementActionType.UPDATE, selectedBooks.size)
+                            resetSelection()
+                        }.onFailure { error ->
+                            handleActionError("업데이트", error)
+                        }
+                    }
+                    
+                    ManagementActionType.DELETE -> {
+                        // 삭제 실행
+                        Log.d("BookshelfViewModel", "🗑️ Starting delete for: ${selectedBooks.map { it.storyId }}")
+                        
+                        deleteBookUseCase(
+                            books = selectedBooks,
+                            languageCode = currentLanguage
+                        ).onSuccess {
+                            Log.d("BookshelfViewModel", "🗑️ Delete completed for ${selectedBooks.size} books")
+                            showActionCompletionDialog(ManagementActionType.DELETE, selectedBooks.size)
+                            resetSelection()
+                        }.onFailure { error ->
+                            Log.e("BookshelfViewModel", "❌ Delete failed", error)
+                            handleActionError("삭제", error)
+                        }
+                    }
+                    
+                    null -> {
+                        Log.w("BookshelfViewModel", "⚠️ No action type specified")
+                        // 🆕 작업 타입이 없으면 로딩 상태 즉시 해제
+                        _state.update { 
+                            it.copy(
+                                isDownloading = false,
+                                downloadingBookIds = emptySet()
+                            )
                         }
                     }
                 }
-        }
-    }
-
-    /**
-     * 책 다운로드 상태 업데이트
-     * - 다운로드 상태를 UI에 반영
-     * - 다운로드 완료 시 책 데이터를 bookList에도 추가
-     *
-     * @param index 책 목록 인덱스
-     * @param status 다운로드 상태
-     */
-    private fun updateBookDownloadStatus(index: Int, status: DownloadStatus) {
-        if (index < 0 || index >= _state.value.books.size) return
-
-        _state.update { currentState ->
-            val updatedBooks = currentState.books.toMutableList()
-            val bookToUpdate = updatedBooks[index]
-            val updatedBook = bookToUpdate.copy(
-                isDownloaded = status == DownloadStatus.DOWNLOADED,
-                downloadProgress = DownloadProgress(status)
-            )
-            updatedBooks[index] = updatedBook
-
-            // Log the status change
-            Log.d(
-                "BookshelfViewModel", "Book status updated: storyId=${bookToUpdate.storyId}, " +
-                        "from=${if (bookToUpdate.isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"}, " +
-                        "to=${if (updatedBook.isDownloaded) "DOWNLOADED" else "NOT_DOWNLOADED"}, " +
-                        "language=${_state.value.currentLanguage.code}"
-            )
-
-            // Re-apply filters if needed, after the initial status update
-            val selectedFilter = currentState.filterBarState.selectedFilter
-            val shouldApplyFilters = selectedFilter != FilterBarCategory.All
-
-            if (shouldApplyFilters) {
-                currentState.copy(books = updatedBooks)
-            } else {
-                currentState.copy(books = updatedBooks, filteredBooks = updatedBooks)
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "❌ Exception in performSelectedActions", e)
+                // 🆕 예외 발생 시 로딩 상태 해제
+                _state.update {
+                    it.copy(
+                        isDownloading = false,
+                        downloadingBookIds = emptySet(),
+                        error = "오류가 발생했습니다: ${e.message}"
+                    )
+                }
             }
         }
     }
+    
+    /**
+     * 선택 초기화 및 책 목록 새로고침
+     */
+    private suspend fun resetSelection() {
+        // 🆕 다운로드 진행 상태 해제
+        _state.update {
+            it.copy(
+                isDownloading = false,
+                downloadingBookIds = emptySet(),
+                selectedBookIds = emptySet(),
+                totalSelectedSize = 0L,
+                pendingActionType = null
+            )
+        }
 
+        // 1. DB에서 최신 책 목록을 다시 로드 (Source of Truth)
+        val freshBooksResult = getAllBooksUseCase(_state.value.currentLanguage.code)
+        if (freshBooksResult.isSuccess) {
+            val freshBooks = freshBooksResult.getOrThrow()
+            // 2. ViewModel의 기본 책 목록(books)을 최신 상태로 업데이트
+            _state.update { it.copy(books = freshBooks) }
+
+            // 3. 현재 활성화된 탭에 따라 UI 새로고침
+        when (_state.value.selectedManagementTab) {
+            ManagementTab.DOWNLOAD -> loadDownloadableBooks(freshBooks)
+            ManagementTab.UPDATE -> loadUpdatableBooks(freshBooks)
+            ManagementTab.DELETE -> loadDeletableBooks(freshBooks)
+        }
+        } else {
+            handleActionError("책 목록 새로고침", freshBooksResult.exceptionOrNull() ?: Exception("Unknown error"))
+        }
+
+        Log.d("BookshelfViewModel", "✅ Selection reset and current management tab refreshed")
+    }
+    
+    /**
+     * 작업 오류 처리
+     */
+    private fun handleActionError(actionName: String, error: Throwable) {
+        Log.e("BookshelfViewModel", "❌ Error in $actionName", error)
+        _state.update {
+            it.copy(
+                isDownloading = false, // 🆕 오류 시 다운로드 상태 해제
+                downloadingBookIds = emptySet(), // 🆕 다운로드 중인 책 ID 목록 초기화
+                error = "${actionName} 작업을 수행할 수 없습니다: ${error.message}"
+            )
+        }
+    }
+    
+    fun clearError() {
+        _state.update { it.copy(error = null) }
+    }
 
     /**
-     * UI 액션 처리
-     *
-     * @param action 처리할 액션
+     * 책 목록 새로고침
      */
-    fun onAction(action: BookShelfAction) {
-        when (action) {
-            is BookShelfAction.BookSelect -> {
-                soundEffectManager.playButtonClick()
-                onBookSelected(action.index)
-            }
+    fun refreshBooks() {
+        val currentLanguage = _state.value.currentLanguage.code
+        loadBooks(currentLanguage)
+    }
 
-            is BookShelfAction.ChatbotClick -> {
-                soundEffectManager.playButtonClick()
-            }
-
-            is BookShelfAction.SettingClick -> {
-                soundEffectManager.playButtonClick()
-            }
-
-            is BookShelfAction.ShowLanguageDialog -> {
-                soundEffectManager.playButtonClick()
-                handleLanguageSelector(action.isShow)
-            }
-
-            is BookShelfAction.ChangeLanguage -> {
-                soundEffectManager.playButtonClick()
-                changeLanguage(action.language)
-            }
-
-            is BookShelfAction.StartMusic -> startMusic()
-            is BookShelfAction.StopMusic -> stopMusic()
-            is BookShelfAction.DownloadBook -> {
-                soundEffectManager.playButtonClick()
-                downloadBook(action.index)
-            }
-
-            is BookShelfAction.SelectFilter -> {
-                soundEffectManager.playButtonClick()
-                onFilterOptionSelected(
-                    filter = action.filter,
-                    stage = action.stage,
-                    category = action.category,
+    override fun onCleared() {
+        super.onCleared()
+        musicManager.release()
+        soundEffectManager.release()
+        Log.d("BookshelfViewModel", "ViewModel cleared")
+    }
+    
+    /**
+     * 동화 정보 로드 및 팝업 표시
+     */
+    private fun loadStoryInfo(storyId: String) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isLoadingStoryInfo = true, showStoryInfoDialog = true) }
+                
+                val currentLanguage = _state.value.currentLanguage.code
+                Log.d("BookshelfViewModel", "🔍 Loading story info for: $storyId, language: $currentLanguage")
+                
+                // 🔍 현재 책 목록에서 해당 책 찾기
+                val book = _state.value.books.find { it.storyId == storyId }
+                if (book != null) {
+                    Log.d("BookshelfViewModel", "📚 Found book in current list: ${book.title} (isDownloaded: ${book.isDownloaded})")
+                } else {
+                    Log.w("BookshelfViewModel", "⚠️ Book not found in current list: $storyId")
+                    Log.d("BookshelfViewModel", "📚 Available books: ${_state.value.books.map { it.storyId }}")
+                }
+                
+                // 🔍 filteredBooks에서도 확인
+                val filteredBook = _state.value.filteredBooks.find { it.storyId == storyId }
+                if (filteredBook != null) {
+                    Log.d("BookshelfViewModel", "📚 Found book in filtered list: ${filteredBook.title}")
+                } else {
+                    Log.w("BookshelfViewModel", "⚠️ Book not found in filtered list: $storyId")
+                    Log.d("BookshelfViewModel", "📚 Filtered books: ${_state.value.filteredBooks.map { it.storyId }}")
+                }
+                
+                val result = getStoryInfoUseCase(storyId, currentLanguage)
+                
+                result.fold(
+                    onSuccess = { storyInfo ->
+                        Log.d("BookshelfViewModel", "✅ Story info loaded successfully")
+                        Log.d("BookshelfViewModel", "📖 StoryInfo - ID: ${storyInfo.storyId}, Summary: ${storyInfo.summary?.take(100)}...")
+                        _state.update { 
+                            it.copy(
+                                currentStoryInfo = storyInfo,
+                                isLoadingStoryInfo = false
+                            )
+                        }
+                    },
+                    onFailure = { error ->
+                        Log.e("BookshelfViewModel", "❌ Error loading story info for $storyId", error)
+                        _state.update {
+                            it.copy(
+                                isLoadingStoryInfo = false,
+                                error = "동화 정보를 불러올 수 없습니다: ${error.message}",
+                                showStoryInfoDialog = false
+                            )
+                        }
+                    }
                 )
+                
+            } catch (e: Exception) {
+                Log.e("BookshelfViewModel", "❌ Exception in loadStoryInfo for $storyId", e)
+                _state.update {
+                    it.copy(
+                        isLoadingStoryInfo = false,
+                        error = "오류가 발생했습니다: ${e.message}",
+                        showStoryInfoDialog = false
+                    )
+                }
             }
         }
+    }
+    
+    /**
+     * 동화 정보 팝업 닫기
+     */
+    private fun dismissStoryInfoDialog() {
+        _state.update {
+            it.copy(
+                showStoryInfoDialog = false,
+                currentStoryInfo = null,
+                isLoadingStoryInfo = false
+            )
+        }
+    }
+    
+    /**
+     * 작업 완료 다이얼로그 닫기
+     */
+    private fun dismissActionCompletionDialog() {
+        _state.update {
+            it.copy(
+                showActionCompletionDialog = false,
+                completionActionType = null,
+                completedItemsCount = 0
+            )
+        }
+    }
+    
+    /**
+     * 작업 완료 다이얼로그 표시
+     */
+    private fun showActionCompletionDialog(actionType: ManagementActionType, completedCount: Int) {
+        _state.update {
+            it.copy(
+                showActionCompletionDialog = true,
+                completionActionType = actionType,
+                completedItemsCount = completedCount
+            )
+        }
+    }
+    
+    /**
+     * Unlock 팝업 닫기
+     */
+    private fun dismissUnlockPopup() {
+        _state.update {
+            it.copy(
+                showUnlockPopup = false,
+                unlockedLevelGroup = null
+            )
+        }
+    }
+}
+
+fun Int.toFilterLevel(): FilterLevel {
+    return when (this) {
+        1 -> FilterLevel.ONE
+        2 -> FilterLevel.TWO
+        3 -> FilterLevel.THREE
+        4 -> FilterLevel.FOUR
+        5 -> FilterLevel.FIVE
+        else -> FilterLevel.THREE // Default or error handling
     }
 }

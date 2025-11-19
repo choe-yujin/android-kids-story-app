@@ -3,46 +3,44 @@ package com.timor.kidsstory.presentation.bookshelf.components.filter
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBookCategory
-import com.timor.kidsstory.presentation.util.getCategoryName
+import com.timor.kidsstory.ui.components.LocalizedText
+import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 
 @Composable
 fun CategoryFilterBar(
+    modifier: Modifier = Modifier,
     isExpanded: Boolean,
     selectedCategory: FilterBookCategory? = null,
+    currentLanguageCode: String = "en",
     onCategorySelected: (FilterBookCategory) -> Unit = {},
 ) {
     Row(
+        modifier = modifier,
         verticalAlignment = Alignment.Top
     ) {
         AnimatedVisibility(
@@ -50,33 +48,45 @@ fun CategoryFilterBar(
             enter = expandHorizontally(),
             exit = shrinkHorizontally()
         ) {
-            BoxWithConstraints {
-                // val itemWidth = maxWidth / FilterBookCategory.values().size // No longer needed
+            val configuration = LocalConfiguration.current
+            val screenWidth = configuration.screenWidthDp
+            val scaleFactor = ResponsiveTextUtils.getScreenScaleFactor()
+            
+            // 태블릿에서는 크고 여유롭게, 휴대폰에서는 컴팩트하게
+            val isTablet = screenWidth >= 800
 
-                // Layer 1: Icons
-                Row(
-                    modifier = Modifier.padding(start = 8.dp),
-                    verticalAlignment = Alignment.Top,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp) // Use fixed spacing
-                ) {
-                    FilterBookCategory.values().forEach { category ->
-                        CategoryIcon(
-                            category = category,
-                            isSelected = selectedCategory == category,
-                            onCategorySelected = onCategorySelected,
-                            showTextLabel = selectedCategory == category, // Show text only for selected
-                            textLabel = getCategoryName(LocalContext.current, category) // Pass category name
-                        )
-                    }
+            val iconSize = when {
+                isTablet -> (56 * scaleFactor).dp // 태블릿: 큰 아이콘
+                else -> 48.dp // 휴대폰: 기존 크기
+            }
+            
+            val spacing = when {
+                isTablet -> (4 * scaleFactor).dp // 태블릿: 여유로운 간격
+                else -> 0.dp // 휴대폰: 간격 없음
+            }
+
+            val scrollModifier = if (!isTablet) Modifier.horizontalScroll(rememberScrollState()) else Modifier
+            
+            Row(
+                modifier = scrollModifier,
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(spacing)
+            ) {
+                FilterBookCategory.values().forEach { category ->
+                    CategoryIcon(
+                        category = category,
+                        isSelected = selectedCategory == category,
+                        onCategorySelected = onCategorySelected,
+                        showTextLabel = true,
+                        currentLanguageCode = currentLanguageCode,
+                        iconSize = iconSize,
+                        isTablet = screenWidth >= 800
+                    )
                 }
-
-                // Layer 2: Text (Moved inside CategoryIcon)
-                // if (selectedCategory != null) { ... } // Removed from here
             }
         }
     }
 }
-
 
 @Composable
 fun CategoryIcon(
@@ -84,73 +94,65 @@ fun CategoryIcon(
     category: FilterBookCategory,
     isSelected: Boolean = false,
     onCategorySelected: (FilterBookCategory) -> Unit,
-    showTextLabel: Boolean = false, // New parameter
-    textLabel: String? = null // New parameter
+    showTextLabel: Boolean = false,
+    currentLanguageCode: String = "ko",
+    iconSize: androidx.compose.ui.unit.Dp = 48.dp,
+    isTablet: Boolean = false
 ) {
-    val categoryBackgroundColor = when (category) {
-        FilterBookCategory.FOLKTALES_HISTORY -> Color(0xFFE4E9D6)
-        FilterBookCategory.CULTURE_WORLD -> Color(0xFFDFE9F2)
-        FilterBookCategory.DAILY_LIFE -> Color(0xFFD9EEE7)
-        FilterBookCategory.ENVIRONMENT -> Color(0xFFE8F5E9)
-        FilterBookCategory.SCIENCE_NATURE -> Color(0xFFE1F5FE)
-        FilterBookCategory.ADVENTURE_FANTASY -> Color(0xFFFF9800)
-        FilterBookCategory.SOCIAL_EMOTIONAL -> Color(0xFFF3E5F5)
-    }
+    val scaleFactor = ResponsiveTextUtils.getScreenScaleFactor()
+    
+    // 선택된 아이콘은 2dp 더 크게 (태블릿에서는 4dp)
+    val selectionBoost = if (isTablet) 4.dp else 2.dp
+    val actualIconSize = if (isSelected) iconSize + selectionBoost else iconSize
+    val iconInnerSize = actualIconSize * 0.75f
 
-    val categoryBorderColor = when (category) {
-        FilterBookCategory.FOLKTALES_HISTORY -> Color(0xFF60A917)
-        FilterBookCategory.CULTURE_WORLD -> Color(0xFF7DBDF9)
-        FilterBookCategory.DAILY_LIFE -> Color(0xFF31C292)
-        FilterBookCategory.ENVIRONMENT -> Color(0xFF4CAF50)
-        FilterBookCategory.SCIENCE_NATURE -> Color(0xFF2196F3)
-        FilterBookCategory.ADVENTURE_FANTASY -> Color(0xFFFF9800)
-        FilterBookCategory.SOCIAL_EMOTIONAL -> Color(0xFF9C27B0)
-    }
-
-    val icon = when (category) {
-        FilterBookCategory.CULTURE_WORLD -> ImageVector.vectorResource(R.drawable.culture)
-        FilterBookCategory.FOLKTALES_HISTORY -> ImageVector.vectorResource(R.drawable.folktale)
-        else -> ImageVector.vectorResource(R.drawable.life) // Placeholder
-    }
+    // 태블릿에서는 더 큰 텍스트 공간
+    val textAreaWidth = if (isTablet) iconSize + (12 * scaleFactor).dp else iconSize + 8.dp
 
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .width(textAreaWidth)
+            .clickable { onCategorySelected(category) },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        val iconBoxModifier = if (isSelected) {
-            Modifier
-                .size(34.dp)
-                .clip(CircleShape)
-                .background(categoryBackgroundColor)
-                .border(width = 2.dp, color = categoryBorderColor, shape = CircleShape)
-        } else {
-            Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-                .background(categoryBackgroundColor)
-        }
+        // 경계 없이 아이콘만 표시
+        Icon(
+            imageVector = ImageVector.vectorResource(category.iconRes),
+            contentDescription = stringResource(category.displayNameRes),
+            tint = Color.Unspecified,
+            modifier = Modifier.size(iconInnerSize)
+        )
 
-        Box(
-            modifier = iconBoxModifier.clickable { onCategorySelected(category) },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = category.displayName,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(20.dp)
-            )
-        }
+        if (showTextLabel) {
+            // 언어별 폰트 적용
+            val fontFamily = when (currentLanguageCode) {
+                "ko" -> FontFamily(Font(R.font.cookierun_regular))
+                "en", "tet" -> FontFamily(Font(R.font.gummy_italic_variable))
+                else -> FontFamily(Font(R.font.cookierun_regular))
+            }
 
-        if (showTextLabel && textLabel != null) {
-            Text(
-                text = textLabel,
-                fontSize = 12.sp,
-                color = Color.Black,
+            // 태블릿에서는 더 큰 텍스트
+            val textSize = when {
+                isTablet -> (11 * scaleFactor).sp // 태블릿: 큰 텍스트
+                else -> 10.sp // 휴대폰: 기존 크기
+            }
+
+            val topPadding = if (isTablet) (6 * scaleFactor).dp else 3.dp
+
+            LocalizedText(
+                resId = category.displayNameRes,
+                style = TextStyle(
+                    fontSize = textSize,
+                    lineHeight = (textSize.value + 2).sp,
+                    fontFamily = fontFamily,
+                    fontWeight = FontWeight(400),
+                    fontStyle = FontStyle.Italic,
+                    color = if (isSelected) Color(0xFF000000) else Color(0xFF919191),
+                ),
                 maxLines = 1,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 4.dp) // Position text below icon with a small padding
+                modifier = Modifier.padding(top = topPadding)
             )
         }
     }

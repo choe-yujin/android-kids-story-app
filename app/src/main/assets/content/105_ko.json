@@ -1,0 +1,114 @@
+{
+  "bookId": 105,
+  "language": "ko",
+  "title": "세는 말",
+  "summary": "이 책은 어린이들이 사물을 셀 때 쓰는 다양한 세는 말을 소개합니다. 각 페이지마다 다른 단위 명사와 함께 숫자 표현을 익히며 자연스럽게 수 개념을 배울 수 있도록 구성되어 있습니다.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["세는 말"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": ["콜라 한 병"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["주스 두 잔"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["피자 세 판"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["아이 네 명"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["색종이 다섯 장"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["참기름 여섯 방울"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 7,
+      "texts": ["고양이 일곱 마리"],
+      "pageType": "FULL_IMAGE"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "세는 말이 무엇인가요?",
+        "keyConcepts": ["수량", "단위", "세는 말"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "사람이나 물건을 셀 때 사용하는 단위는 무엇이 있나요?",
+        "keyConcepts": ["병", "잔", "판", "마리", "장", "방울"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "내가 좋아하는 물건 세기",
+      "description": "가족이나 친구와 함께 주변에 있는 물건을 여러 가지 단위로 세어보세요.",
+      "type": "ACTIVITY_LOG"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "병",
+      "definition": "액체를 담는 단위로 사용되는 병 모양의 용기.",
+      "pageNumber": 1
+    },
+    {
+      "word": "잔",
+      "definition": "음료를 마실 때 사용하는 작은 컵이나 단위.",
+      "pageNumber": 2
+    },
+    {
+      "word": "판",
+      "definition": "피자나 납작한 음식을 세는 단위.",
+      "pageNumber": 3
+    },
+    {
+      "word": "명",
+      "definition": "사람을 셀 때 쓰는 단위.",
+      "pageNumber": 4
+    },
+    {
+      "word": "장",
+      "definition": "종이나 얇고 넓은 물건을 세는 단위.",
+      "pageNumber": 5
+    },
+    {
+      "word": "방울",
+      "definition": "액체의 작은 점이나 방울을 세는 단위.",
+      "pageNumber": 6
+    },
+    {
+      "word": "마리",
+      "definition": "동물을 셀 때 사용하는 단위.",
+      "pageNumber": 7
+    }
+  ],
+  "contributors": {
+    "글": ["김은파"],
+    "삽화": ["호"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}

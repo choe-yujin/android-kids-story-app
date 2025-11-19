@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,7 +19,8 @@ fun WideScreenCardLayout(
     state: SettingUiState,
     onAction: (SettingAction) -> Unit,
     scaleFactor: Float,
-    screenWidth: Int
+    screenWidth: Int,
+    isTablet: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -30,7 +33,9 @@ fun WideScreenCardLayout(
     ) {
         // 설정 카드
         SettingCard(
-            modifier = Modifier.weight(1f).widthIn(max = 280.dp),
+            modifier = Modifier
+                .weight(1f)
+                .widthIn(max = 280.dp),
             scaleFactor = scaleFactor
         ) {
             SettingCardContent(state, onAction, scaleFactor)
@@ -38,15 +43,19 @@ fun WideScreenCardLayout(
 
         // 제작자 카드
         SettingCard(
-            modifier = Modifier.weight(1f).widthIn(max = 280.dp),
+            modifier = Modifier
+                .weight(1f)
+                .widthIn(max = 280.dp),
             scaleFactor = scaleFactor
         ) {
-            CreatedByCardContent(scaleFactor, onAction)
+            CreatedByCardContent(scaleFactor, onAction, isTablet) // Pass isTablet
         }
 
         // 정보 카드
         SettingCard(
-            modifier = Modifier.weight(1f).widthIn(max = 280.dp),
+            modifier = Modifier
+                .weight(1f)
+                .widthIn(max = 280.dp),
             scaleFactor = scaleFactor
         ) {
             AboutCardContent(scaleFactor)
@@ -58,7 +67,8 @@ fun WideScreenCardLayout(
 fun NormalScreenCardLayout(
     state: SettingUiState,
     onAction: (SettingAction) -> Unit,
-    scaleFactor: Float
+    scaleFactor: Float,
+    isTablet: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -67,7 +77,7 @@ fun NormalScreenCardLayout(
                 horizontal = 48.dp,
                 vertical = (16 * scaleFactor).dp
             ),
-        horizontalArrangement = Arrangement.spacedBy((16 * scaleFactor).dp)
+        horizontalArrangement = Arrangement.spacedBy((32 * scaleFactor).dp)
     ) {
         // 설정 카드
         SettingCard(
@@ -82,7 +92,7 @@ fun NormalScreenCardLayout(
             modifier = Modifier.weight(1f),
             scaleFactor = scaleFactor
         ) {
-            CreatedByCardContent(scaleFactor, onAction)
+            CreatedByCardContent(scaleFactor, onAction, isTablet) // Pass isTablet
         }
 
         // 정보 카드
@@ -99,7 +109,8 @@ fun NormalScreenCardLayout(
 fun SmallScreenCardLayout(
     state: SettingUiState,
     onAction: (SettingAction) -> Unit,
-    scaleFactor: Float
+    scaleFactor: Float,
+    isTablet: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -107,7 +118,8 @@ fun SmallScreenCardLayout(
             .padding(
                 horizontal = (16 * scaleFactor).dp,
                 vertical = (12 * scaleFactor).dp
-            ),
+            )
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         verticalArrangement = Arrangement.spacedBy((12 * scaleFactor).dp)
     ) {
         // 설정 카드
@@ -123,7 +135,7 @@ fun SmallScreenCardLayout(
             modifier = Modifier.fillMaxWidth(),
             scaleFactor = scaleFactor
         ) {
-            SmallCreatedByCardContent(scaleFactor, onAction)
+            SmallCreatedByCardContent(scaleFactor, onAction, isTablet) // Pass isTablet
         }
 
         // 정보 카드
@@ -140,7 +152,8 @@ fun SmallScreenCardLayout(
 fun VerySmallScreenCardLayout(
     state: SettingUiState,
     onAction: (SettingAction) -> Unit,
-    scaleFactor: Float
+    scaleFactor: Float,
+    isTablet: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -148,7 +161,8 @@ fun VerySmallScreenCardLayout(
             .padding(
                 horizontal = (8 * scaleFactor).dp,
                 vertical = (8 * scaleFactor).dp
-            ),
+            )
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         verticalArrangement = Arrangement.spacedBy((8 * scaleFactor).dp)
     ) {
         // 설정 카드
@@ -164,7 +178,7 @@ fun VerySmallScreenCardLayout(
             modifier = Modifier.fillMaxWidth(),
             scaleFactor = scaleFactor
         ) {
-            VerySmallCreatedByCardContent(scaleFactor, onAction)
+            VerySmallCreatedByCardContent(scaleFactor, onAction, isTablet) // Pass isTablet
         }
 
         // 정보 카드
@@ -175,4 +189,4 @@ fun VerySmallScreenCardLayout(
             VerySmallAboutCardContent(scaleFactor)
         }
     }
-} 
+}

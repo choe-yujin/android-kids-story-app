@@ -26,4 +26,10 @@ interface DownloadedBooksDao {
 
     @Query("SELECT * FROM downloaded_books WHERE storyId LIKE :storyIdPrefix || '%'")
     suspend fun getDownloadedBooksByStoryId(storyIdPrefix: String): List<DownloadedBookEntity>
+
+    @Query("DELETE FROM downloaded_books WHERE id = :bookId AND language = :language")
+    suspend fun deleteDownloadedBook(bookId: Int, language: String): Int
+
+    @Query("DELETE FROM downloaded_books")
+    suspend fun deleteAllDownloadedBooks(): Int
 }

@@ -1,0 +1,105 @@
+{
+  "bookId": 403,
+  "language": "en",
+  "title": "The Mouse and the Lion",
+  "summary": "This book tells the story of a small mouse and a mighty lion who become friends. They help each other and show that kindness and friendship are important, no matter how big or small you are.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["The Mouse and the Lion"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": ["A hungry little mouse was looking for food in the forest."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["But what the mouse found was not food—it was a lion!", "The lion was a little hungry, too."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["The lion roared fiercely.", "The mouse trembled and spoke."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["\"Lion, please don't eat me.", "Let me go.", "Someday I will help you.\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["The lion said,", "\"You? A small mouse helping me? That's silly.", "But I'm not very hungry, so I will let you go.\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["A few days later, the lion got caught with wire around his leg and couldn’t move."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 7,
+      "texts": ["\"Help me!\" called the lion, crying.", "\"I can’t move!\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 8,
+      "texts": ["Then the mouse ran over and said, \"Lion, I will use my teeth to bite the wire and set you free.\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 9,
+      "texts": ["The lion said,", "\"Thank you so much, Mouse.", "And I’m sorry for not believing you.\""],
+      "pageType": "SPLIT"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "What kind of relationship do the mouse and the lion have?",
+        "keyConcepts": ["mouse", "lion", "friendship", "help"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "How did the mouse help the lion?",
+        "keyConcepts": ["wire", "bite", "help", "thank you"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "Write a Friendship Story",
+      "description": "Think about the friendship and sharing in the story. Write or talk about a time you helped a friend, or when someone helped you.",
+      "type": "TEXT_RESPONSE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "lion",
+      "definition": "A big, strong cat that lives in the forest.",
+      "pageNumber": 2
+    },
+    {
+      "word": "roar",
+      "definition": "To make a loud, deep sound to scare others.",
+      "pageNumber": 3
+    },
+    {
+      "word": "thank you",
+      "definition": "To show you are grateful.",
+      "pageNumber": 9
+    }
+  ],
+  "contributors": {
+    "Writer": ["Mary Malhotra"],
+    "Illustrator": ["Katie Kleinbaum"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "originalCopyright": "is a derivative of 'The Mouse and the Lion' by Mary Malhotra and Katie Kleinbaum, used under CC BY 4.0.",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}

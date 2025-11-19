@@ -1,228 +1,285 @@
 package com.timor.kidsstory.data.repository
 
 import android.util.Log
-import com.timor.kidsstory.data.local.assets.AssetDataSource
-import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
+import com.timor.kidsstory.data.dto.PageContentResponse
+import com.timor.kidsstory.data.local.assets.UnifiedDataSource
+import com.timor.kidsstory.data.local.database.dao.HybridBooksDao
+import com.timor.kidsstory.data.local.database.entity.BookSource
 import com.timor.kidsstory.data.mapper.BookMapper
-import com.timor.kidsstory.data.mapper.PageMapper
-import com.timor.kidsstory.data.mapper.toBook // Added import
+import com.timor.kidsstory.domain.manager.content.HybridContentManager
 import com.timor.kidsstory.domain.model.Book
-import com.timor.kidsstory.domain.model.Page
+import com.timor.kidsstory.domain.model.StoryInfo
 import com.timor.kidsstory.domain.repository.BookRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
- * BookRepository 인터페이스의 구현체
- * - 실제 데이터 소스에서 책 정보를 가져와 도메인 모델로 변환
- *
- * @property assetDataSource 앱 Assets에서 데이터 로드를 담당하는 데이터 소스
- * @property downloadedBooksDao 다운로드된 책 정보에 접근하는 DAO
+ * 통합 구조 전용 BookRepository 구현체
+ * - 새로운 통합 메타데이터 구조만 지원
+ * - 이제 DB를 Single Source of Truth로 사용
  */
+@Singleton
 class BookRepositoryImpl @Inject constructor(
-    private val assetDataSource: AssetDataSource,
-    private val downloadedBooksDao: DownloadedBooksDao
+    private val unifiedDataSource: UnifiedDataSource,
+    private val hybridBooksDao: HybridBooksDao,
+    private val hybridContentManager: HybridContentManager // 🆕 추가
 ) : BookRepository {
 
-    private val TAG = "BookRepositoryImpl"
-
     /**
-     * 특정 언어로 된 모든 책 목록을 가져옴
-     *
-     * @param language 언어 코드
-     * @return 책 목록 또는 오류
+     * 지정된 언어의 모든 책 가져오기 (DB 기반)
      */
-    override suspend fun getBooks(language: String): Result<List<Book>> {
-        Log.d(TAG, "Getting books for language: $language")
-
+    override suspend fun getBooks(languageCode: String): Result<List<Book>> {
         return try {
-            assetDataSource.loadBooks().map { storyDtos ->
-                // 언어 접두사 결정 (ko, tet, en)
-                val languagePrefix = when {
-                    language.startsWith("ko") -> "ko"
-                    language.startsWith("tet") -> "tet"
-                    language.startsWith("mn") -> "mn" // Added for Mongolian
-                    else -> "en"
-                }
+            val normalizedLanguageCode = normalizeLanguageCode(languageCode)
+            val bookEntities = hybridBooksDao.getAvailableBooksByLanguage(normalizedLanguageCode)
 
-                // 해당 언어로 된 책만 필터링
-                val filteredBooks = storyDtos.filter {
-                    it.storyId.contains(languagePrefix, ignoreCase = true)
-                }
+            val remoteMetadata = unifiedDataSource.loadRemoteBooksMetadata().getOrNull()
 
-                Log.d(TAG, "Found ${filteredBooks.size} books for language $language")
-
-                // BookMapper를 통해 DTO를 도메인 모델로 변환
-                filteredBooks.map { BookMapper.mapToDomain(it, language) }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting books", e)
-            Result.failure(e)
-        }
-    }
-
-    /**
-     * ID로 특정 책의 정보를 가져옴
-     *
-     * @param storyId 책 ID (예: "801_en-ph")
-     * @param language 언어 코드
-     * @return 책 정보 또는 오류
-     */
-    override suspend fun getBookById(storyId: String, language: String): Result<Book?> {
-        val baseId = storyId.split("_").firstOrNull() ?: storyId
-        Log.d(TAG, "Getting book by ID: $baseId, full storyId: $storyId")
-
-        return try {
-            // 1. 먼저 다운로드된 책인지 확인하고, 있다면 외부 저장소에서 로드
-            try {
-                val downloadedBookEntity = downloadedBooksDao.getDownloadedBook(baseId.toInt(), language)
-                if (downloadedBookEntity != null) {
-                    Log.d(TAG, "Found downloaded book entity: ${downloadedBookEntity.storyId}")
-                    val bookContentResult = assetDataSource.loadExternalBookContent(downloadedBookEntity.contentJsonPath)
-                    return bookContentResult.map { response ->
-                        val contentJsonFile = File(downloadedBookEntity.contentJsonPath)
-                        val bookRootDir = contentJsonFile.parentFile?.parentFile
-                        val imageFolderPath = File(bookRootDir, "images").absolutePath
-                        response.toBook(
-                            language,
-                            downloadedBookEntity.level,
-                            downloadedBookEntity.category,
-                            downloadedBookEntity.coverImagePath, // Pass the full path
-                            imageFolderPath, // This is for page images, not cover
-                            downloadedBookEntity.bookVersion // Pass bookVersion
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error checking downloaded book or loading external content", e)
-                // 오류 발생해도 앱 내장 책 확인 계속 진행
-            }
-
-            // 2. 다운로드된 책이 아니면 앱 내장 책 (assets)에서 로드
-            // 먼저 assetDataSource에서 메타데이터를 로드하여 selectedBookDto를 찾습니다.
-            val selectedBookDtoResult = assetDataSource.loadBooks().mapCatching { allBookDtos ->
-                val langPrefix = when {
-                    language.startsWith("ko") -> "ko"
-                    language.startsWith("tet") -> "tet"
-                    language.startsWith("mn") -> "mn"
-                    else -> "en"
-                }
-                allBookDtos.find { bookDto ->
-                    bookDto.storyId.split("_").first() == baseId &&
-                    (bookDto.storyId.contains(langPrefix, ignoreCase = true) ||
-                     (langPrefix == "en" && !bookDto.storyId.contains("ko", ignoreCase = true) && !bookDto.storyId.contains("tet", ignoreCase = true) && !bookDto.storyId.contains("mn", ignoreCase = true)))
-                } ?: allBookDtos.find { bookDto ->
-                    bookDto.storyId.split("_").first() == baseId && bookDto.storyId.contains("en", ignoreCase = true)
-                }
-            }
-
-            val selectedBookDto = selectedBookDtoResult.getOrThrow() // Throw if metadata not found
-
-            if (selectedBookDto == null) {
-                Log.e(TAG, "BookDto metadata not found for storyId: $storyId")
-                return Result.success(null) // Book metadata not found
-            }
-
-            // 언어에 맞는 coverUrl 가져오기 (from selectedBookDto)
-            val coverUrl = "file:///android_asset/images/${baseId}/${selectedBookDto.coverImage}"
-
-            Log.d(TAG, "Loading built-in book from assets for storyId: $storyId")
-            val bookContentResult = assetDataSource.loadBookPages(storyId, language)
-            return bookContentResult.map { response ->
-                response.toBook(
-                    language,
-                    selectedBookDto.level, // Pass level from selectedBookDto
-                    selectedBookDto.category, // Pass category from selectedBookDto
-                    coverUrl, // Pass coverUrl
-                    null, // imageFolderPath is null for built-in books
-                    selectedBookDto.bookVersion // Pass bookVersion
-                )
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting book by ID", e)
-            Result.failure(e)
-        }
-    }
-
-    /**
-     * 특정 책의 모든 페이지 정보를 가져옴
-     *
-     * @param storyId 책 ID
-     * @param language 언어 코드
-     * @return 페이지 목록 또는 오류
-     */
-    override suspend fun getBookPages(storyId: String, language: String): Result<List<Page>> {
-        // storyId에서 기본 ID 추출
-        val baseId = storyId.split("_").firstOrNull() ?: storyId
-
-        Log.d(TAG, "Getting book pages for base ID: $baseId, language: $language")
-
-        try {
-            // 먼저 다운로드된 책인지 확인
-            try {
-                val downloadedBook = downloadedBooksDao.getDownloadedBook(baseId.toInt(), language)
-
-                // 책이 다운로드되어 있는 경우 외부 저장소에서 로드
-                if (downloadedBook != null) {
-                    Log.d(TAG, "Loading downloaded book from: ${downloadedBook.contentJsonPath}")
-
-                    val pagesResult = assetDataSource.loadExternalBookContent(downloadedBook.contentJsonPath)
-
-                    return pagesResult.map { response ->
-                        // 다운로드된 책의 이미지 폴더 경로 구성
-                        val contentJsonFile = File(downloadedBook.contentJsonPath)
-                        val bookRootDir = contentJsonFile.parentFile?.parentFile
-                        val imageFolderPath = File(bookRootDir, "images").absolutePath
-
-                        Log.d(TAG, "Using image folder path: $imageFolderPath")
-
-                        // 개별 페이지 매핑 - 다운로드된 책 처리
-                        val mappedPages = response.pages.map { pageDto ->
-                            PageMapper.mapToDomain(
-                                pageDto = pageDto,
-                                storyBaseId = baseId,
-                                isDownloaded = true,
-                                imageFolderPath = imageFolderPath
+            // 🆕 비동기 변환을 위해 순차 처리
+            val books = mutableListOf<Book>()
+            for (entity in bookEntities) {
+                try {
+                    // 🔧 수정: 책의 소스에 따라 다른 로딩 방식 사용
+                    val contentResult = when (entity.source) {
+                        BookSource.BUNDLED -> {
+                            unifiedDataSource.loadBookContent(
+                                bookId = entity.id,
+                                language = normalizedLanguageCode,
+                                contentBasePath = null
                             )
-                        }.sortedBy { it.pageNumber }
-
-                        PageMapper.addTotalPagesInfo(mappedPages)
+                        }
+                        BookSource.DOWNLOADED -> {
+                            val contentBasePath = File(entity.contentPath).parent
+                            unifiedDataSource.loadBookContent(
+                                bookId = entity.id,
+                                language = normalizedLanguageCode,
+                                contentBasePath = contentBasePath
+                            )
+                        }
                     }
+                    val content = contentResult.getOrNull()
+                    
+                    val bookMeta = remoteMetadata?.books?.find { it.id == entity.id }
+                    
+                    // 🆕 HybridContentManager를 BookMapper에 전달하여 DB 기반 이미지 경로 사용
+                    val book = BookMapper.fromHybridEntity(entity, content, hybridContentManager, bookMeta)
+                    books.add(book)
+                } catch (e: Exception) {
+                    Log.e("BookRepositoryImpl", "Error mapping book entity ${entity.id}", e)
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error checking downloaded book", e)
-                // 다운로드 확인 중 오류 발생해도 앱 내장 책 로드 계속 진행
             }
-
-            // 앱 내장 책은 기존 방식대로 assets에서 로드
-            Log.d(TAG, "Loading built-in book from assets")
-
-            // 언어에 맞는 파일 이름 결정
-            val languageCode = when {
-                language.startsWith("ko") -> "ko-kr"
-                language.startsWith("tet") -> "tetum"
-                language.startsWith("mn") -> "mn-MN" // Added for Mongolian
-                else -> "en-ph"
-            }
-
-            val fullStoryId = "${baseId}_${languageCode}"
-            Log.d(TAG, "Loading pages for full story ID: $fullStoryId")
-
-            // 페이지 로드 및 매핑
-            val pagesResult = assetDataSource.loadBookPages(fullStoryId, language)
-
-            return pagesResult.map { response ->
-                // 개별 페이지 매핑
-                val mappedPages = response.pages.map { pageDto ->
-                    PageMapper.mapToDomain(pageDto, baseId)
-                }.sortedBy { it.pageNumber }
-
-                // totalPages 정보 추가
-                PageMapper.addTotalPagesInfo(mappedPages)
-            }
+            Result.success(books)
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting book pages", e)
-            return Result.failure(e)
+            Log.e("BookRepositoryImpl", "Error getting books from DB", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 특정 책의 상세 정보 가져오기
+     */
+    override suspend fun getBookById(storyId: String, languageCode: String): Result<Book?> {
+        return try {
+            Log.d("BookRepositoryImpl", "Getting book detail for: $storyId")
+
+            val parts = storyId.split("_")
+            if (parts.size != 2) {
+                return Result.failure(IllegalArgumentException("Invalid storyId format: $storyId"))
+            }
+
+            val bookId = parts[0].toIntOrNull()
+                ?: return Result.failure(IllegalArgumentException("Invalid bookId in storyId: $storyId"))
+            
+            val normalizedLanguageCode = normalizeLanguageCode(languageCode)
+
+            val entity = hybridBooksDao.getBook(bookId, normalizedLanguageCode)
+                ?: return Result.success(null)
+
+            // 🔧 수정: 책의 소스에 따라 다른 로딩 방식 사용
+            val contentResult = when (entity.source) {
+                BookSource.BUNDLED -> {
+                    unifiedDataSource.loadBookContent(
+                        bookId = entity.id,
+                        language = normalizedLanguageCode,
+                        contentBasePath = null
+                    )
+                }
+                BookSource.DOWNLOADED -> {
+                    val contentBasePath = File(entity.contentPath).parent
+                    unifiedDataSource.loadBookContent(
+                        bookId = entity.id,
+                        language = normalizedLanguageCode,
+                        contentBasePath = contentBasePath
+                    )
+                }
+            }
+            val content = contentResult.getOrNull()
+
+            val remoteMetadata = unifiedDataSource.loadRemoteBooksMetadata().getOrNull()
+            val bookMeta = remoteMetadata?.books?.find { it.id == entity.id }
+
+            // 🆕 HybridContentManager를 BookMapper에 전달하여 DB 기반 이미지 경로 사용
+            val book = BookMapper.fromHybridEntity(entity, content, hybridContentManager, bookMeta)
+
+            Result.success(book)
+
+        } catch (e: Exception) {
+            Log.e("BookRepositoryImpl", "Error getting book detail", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 로컬 Asset 책 목록 로드
+     */
+    override suspend fun getLocalBooks(languageCode: String): Result<List<Book>> {
+        // getBooks와 동일 (모든 내장 책은 로컬 책)
+        return getBooks(languageCode)
+    }
+
+    /**
+     * 다운로드된 책 목록 로드 (향후 구현)
+     */
+    override suspend fun getDownloadedBooks(languageCode: String): Result<List<Book>> {
+        // TODO: 다운로드 기능 구현 시 추가
+        return Result.success(emptyList())
+    }
+
+    override suspend fun isBookDownloaded(storyId: String): Boolean {
+        // 현재는 모든 내장 책이 "다운로드됨" 상태
+        return true
+    }
+
+    override suspend fun downloadBook(storyId: String): Result<Unit> {
+        // TODO: 다운로드 로직 구현
+        return Result.success(Unit)
+    }
+
+    override fun observeDownloadProgress(storyId: String): Flow<Float> {
+        // TODO: 다운로드 진행률 관찰 구현
+        return flowOf(0f)
+    }
+
+    override suspend fun loadExternalBookContent(contentPath: String): Result<PageContentResponse> {
+        // TODO: 향후 다운로드 기능에서 필요시 구현
+        return Result.failure(UnsupportedOperationException("Legacy external content not supported"))
+    }
+
+    /**
+     * 특정 책의 상세 정보 (줄거리, 사전/사후 질문) 조회
+     */
+    override suspend fun getStoryInfo(storyId: String, languageCode: String): Result<StoryInfo> {
+        return try {
+            Log.d("BookRepositoryImpl", "🔍 Getting story info for: $storyId, language: $languageCode")
+
+            val parts = storyId.split("_")
+            if (parts.size != 2) {
+                Log.e("BookRepositoryImpl", "❌ Invalid storyId format: $storyId")
+                return Result.failure(IllegalArgumentException("Invalid storyId format: $storyId"))
+            }
+
+            val bookId = parts[0].toIntOrNull()
+            if (bookId == null) {
+                Log.e("BookRepositoryImpl", "❌ Invalid bookId in storyId: $storyId")
+                return Result.failure(IllegalArgumentException("Invalid bookId in storyId: $storyId"))
+            }
+            
+            val normalizedLanguageCode = normalizeLanguageCode(languageCode)
+            Log.d("BookRepositoryImpl", "🔍 Looking for book ID: $bookId, normalized language: $normalizedLanguageCode")
+
+            // 🔍 디버깅: DB에 어떤 책들이 있는지 확인
+            val allBooksInLanguage = hybridBooksDao.getAvailableBooksByLanguage(normalizedLanguageCode)
+            Log.d("BookRepositoryImpl", "📚 All books in $normalizedLanguageCode: ${allBooksInLanguage.map { "${it.id} (${it.source})" }}")
+
+            val entity = hybridBooksDao.getBook(bookId, normalizedLanguageCode)
+            if (entity == null) {
+                Log.e("BookRepositoryImpl", "❌ Book not found in DB: bookId=$bookId, language=$normalizedLanguageCode")
+                return Result.failure(NoSuchElementException("Book not found in DB"))
+            }
+
+            Log.d("BookRepositoryImpl", "✅ Found book entity: ${entity.id}, source: ${entity.source}, contentPath: ${entity.contentPath}")
+
+            // 🔧 수정: 책의 소스에 따라 다른 로딩 방식 사용
+            val contentResult = when (entity.source) {
+                BookSource.BUNDLED -> {
+                    // 내장 책: 기존 방식 (contentBasePath = null)
+                    Log.d("BookRepositoryImpl", "📖 Loading BUNDLED book content")
+                    unifiedDataSource.loadBookContent(
+                        bookId = entity.id,
+                        language = normalizedLanguageCode,
+                        contentBasePath = null
+                    )
+                }
+                BookSource.DOWNLOADED -> {
+                    // 다운로드된 책: contentPath의 디렉토리를 contentBasePath로 사용
+                    val contentBasePath = File(entity.contentPath).parent
+                    Log.d("BookRepositoryImpl", "📱 Loading DOWNLOADED book content from: $contentBasePath")
+                    unifiedDataSource.loadBookContent(
+                        bookId = entity.id,
+                        language = normalizedLanguageCode,
+                        contentBasePath = contentBasePath
+                    )
+                }
+            }
+
+            if (contentResult.isFailure) {
+                Log.e("BookRepositoryImpl", "❌ Failed to load book content", contentResult.exceptionOrNull())
+                return Result.failure(contentResult.exceptionOrNull()!!)
+            }
+
+            val content = contentResult.getOrNull()!!
+            Log.d("BookRepositoryImpl", "✅ Loaded book content successfully")
+            
+            val summary = content.summary
+            Log.d("BookRepositoryImpl", "📖 Summary length: ${summary?.length ?: 0}")
+            
+            val preQuestions = content.comprehensionChecks?.preQuestions?.map { it.question } ?: emptyList()
+            val postQuestions = content.comprehensionChecks?.postQuestions?.map { it.question } ?: emptyList()
+            Log.d("BookRepositoryImpl", "❓ Questions - Pre: ${preQuestions.size}, Post: ${postQuestions.size}")
+            
+            val storyInfo = StoryInfo(
+                storyId = storyId,
+                summary = summary,
+                preQuestions = preQuestions,
+                postQuestions = postQuestions
+            )
+            
+            Log.d("BookRepositoryImpl", "✅ Story info created successfully for $storyId")
+            Result.success(storyInfo)
+            
+        } catch (e: Exception) {
+            Log.e("BookRepositoryImpl", "❌ Error getting story info for $storyId", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 🔍 디버깅용: 특정 책의 이미지 경로 상태 조회
+     */
+    suspend fun debugBookImagePaths(storyId: String): String {
+        val parts = storyId.split("_")
+        if (parts.size != 2) {
+            return "Invalid storyId format: $storyId"
+        }
+        
+        val bookId = parts[0].toIntOrNull() ?: return "Invalid bookId in storyId: $storyId"
+        
+        return hybridContentManager.debugImagePathsForBook(bookId)
+    }
+
+    /**
+     * 언어 코드 정규화
+     */
+    private fun normalizeLanguageCode(language: String): String {
+        return when {
+            language.startsWith("ko") -> "ko"
+            language.startsWith("tet") -> "tet"
+            language.startsWith("en") -> "en"
+            language.startsWith("mn") -> "mn"
+            else -> "en"
         }
     }
 }

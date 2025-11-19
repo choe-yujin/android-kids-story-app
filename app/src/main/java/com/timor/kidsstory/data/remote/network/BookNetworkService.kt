@@ -80,4 +80,26 @@ class BookNetworkService @Inject constructor(
             false
         }
     }
+
+    /**
+     * 🆕 파일 크기 확인 (HEAD 요청)
+     */
+    suspend fun getFileSize(url: String): Long {
+        return try {
+            val response = httpClient.get(url) {
+                // HEAD 요청 대신 GET 요청의 header만 확인
+            }
+            if (response.status.isSuccess()) {
+                val contentLength = response.headers["Content-Length"]?.toLongOrNull() ?: 0L
+                Log.d("BookNetworkService", "📊 File size for $url: ${contentLength / 1024}KB")
+                contentLength
+            } else {
+                Log.w("BookNetworkService", "Failed to get file size for $url: ${response.status}")
+                0L
+            }
+        } catch (e: Exception) {
+            Log.e("BookNetworkService", "Error getting file size for $url", e)
+            0L
+        }
+    }
 }

@@ -65,4 +65,24 @@ interface UserPreferenceRepository {
      * @param volume 효과음 음량 (0.0 ~ 1.0)
      */
     suspend fun updateSoundEffectVolume(volume: Float)
+    
+    /**
+     * 첫 실행 상태 업데이트
+     * - 첫 실행 완료 처리
+     */
+    suspend fun markFirstRunComplete()
+    
+    /**
+     * 선택된 언어와 레벨 업데이트
+     * - 레벨 테스트 완료 후 언어와 레벨을 함께 저장
+     *
+     * @param languageCode 선택된 언어 코드
+     * @param level 측정된 또는 선택된 레벨
+     * @param hasCompletedLevelTest 레벨 테스트 완료 여부
+     */
+    suspend fun updateLanguageAndLevel(
+        languageCode: String, 
+        level: Int, 
+        hasCompletedLevelTest: Boolean = true
+    )
 }

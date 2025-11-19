@@ -1,0 +1,141 @@
+{
+  "version": 100,
+  "language": "tet",
+  "levels": {
+    "1": [
+      {
+        "question": "Animal ida ne'ebé dehan 'au au'?",
+        "options": ["Busa", "Asu", "Manu"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Lalehan kor saida?",
+        "options": ["Mean", "Kinur", "Azul"],
+        "answerIndex": 2
+      },
+      {
+        "question": "Kareta halo saida iha dalan?",
+        "options": ["Semo", "La'o", "Nani"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Liafuan 'boot' nia opostu saida?",
+        "options": ["Ki'ik", "Barak", "Nain"],
+        "answerIndex": 0
+      },
+      {
+        "question": "Ita bele halo saida ho tesoura?",
+        "options": ["Hán", "Tesi", "Lee"],
+        "answerIndex": 1
+      }
+    ],
+    "2": [
+      {
+        "question": "Iha fraze 'Manu semo iha lalehan.', sé mak semo?",
+        "options": ["Ai-hun", "Manu", "Kalohan"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Rai malirin, tan ne'e ha'u hatais kazaku. Tanba sá ha'u hatais kazaku?",
+        "options": ["Tanba rai manas", "Tanba rai malirin", "Tanba udan"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Saida mak 'triste'?",
+        "options": ["Tanjis no laran moras", "Haksolok no hamnasa", "Ta'uk no nakdedar"],
+        "answerIndex": 0
+      },
+      {
+        "question": "Iha fraze 'Ha'u gosta masán mean.', masán ne'e kor saida?",
+        "options": ["Matak", "Kinur", "Mean"],
+        "answerIndex": 2
+      },
+      {
+        "question": "Depois de halimar barak, oinsá ita-nia sentimentu?",
+        "options": ["Haksolok", "Kole", "Triste"],
+        "answerIndex": 0
+      }
+    ],
+    "3": [
+      {
+        "question": "Iha fraze 'Maria la bá eskola tanba nia moras.', tanba sá Maria la bá eskola?",
+        "options": ["Tanba nia baruk", "Tanba nia moras", "Tanba udan"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Se ema ida 'ikus mai' hetan susesu, ne'e katak sá?",
+        "options": ["Nia hetan susesu ho lais", "Nia liu tiha dezafiu barak", "Ema seluk mak tulun nia"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Saida mak 'ajuda' kolega ida?",
+        "options": ["La husu nia problema", "Rona no fó apoiu ba nia", "Husik nia mesak"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Iha fraze 'Nia hala'o nia promesa maske udan tun.', nia ema oinsá?",
+        "options": ["Ema ne'ebé iha responsabilidade", "Ema ne'ebé ta'uk", "Ema ne'ebé baruk"],
+        "answerIndex": 0
+      },
+      {
+        "question": "Fraze 'Kalohan mosu iha lalehan.' hatudu saida?",
+        "options": ["Rai sei manas", "Udan sei tun", "Loron sei monu"],
+        "answerIndex": 1
+      }
+    ],
+    "4": [
+      {
+        "question": "Liafuan 'antigu' iha fraze 'uma katedral antigu' katak sá?",
+        "options": ["Foun loos", "Kapaas loos", "Tuan loos"],
+        "answerIndex": 2
+      },
+      {
+        "question": "Se istória ida dehan ema ida 'duvida' antes foti desizaun, nia sente oinsá?",
+        "options": ["Kontente", "Laran-rua", "Hirus"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Iha istória aventura nian, 'mapa' nia funsaun saida?",
+        "options": ["Hatudu klima", "Hatudu dalan ba fatin ida", "Hatudu lista ema nian"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Iha fraze 'Anin fuik hirus sobu ró kiik.', 'hirus' katak anin oinsá?",
+        "options": ["Anin ne'ebé neineik", "Anin ne'ebé maka'as", "Anin ne'ebé lais de'it"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Tuir mai ne'e, ida ne'ebé mak 'opiniaun' la'ós 'faktu'?",
+        "options": ["Rai ne'e planeta ida", "Xokolate mak di'ak liu", "Bee mai husi idrojéniu no osijéniu"],
+        "answerIndex": 1
+      }
+    ],
+    "5": [
+      {
+        "question": "Fraze 'Tudik ne'e kro'at karuk-loos' katak sá?",
+        "options": ["Buat ne'ebé kro'at tebes", "Buat ne'ebé iha konsekuénsia di'ak no aat", "Buat ne'ebé di'ak dala rua"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Se hakerek-na'in uza ton 'nostáljiku', nia hatudu sentimentu saida?",
+        "options": ["Sentimentu hirus kona-ba pasadu", "Vontade ba futuru", "Hanoin ho sentimentu kona-ba tempu uluk"],
+        "answerIndex": 2
+      },
+      {
+        "question": "Istória ida nia 'tema' katak sá?",
+        "options": ["Akontesimentu sira-nia orden", "Idea prinsipál ne'ebé hakerek-na'in hakarak hato'o", "Lista personajen no fatin nian"],
+        "answerIndex": 1
+      },
+      {
+        "question": "Liafuan 'korajen' nia signifika saida?",
+        "options": ["Hatudu aten-barani", "Hatudu ta'uk", "Hatudu baruk"],
+        "answerIndex": 0
+      },
+      {
+        "question": "Se ema ida nia hahalok 'misteriozu', ne'e katak sá?",
+        "options": ["Nia hahalok klaru tebes", "Nia hahalok bele iha interpretasaun barak", "Nia hahalok aat tebes"],
+        "answerIndex": 1
+      }
+    ]
+  }
+}

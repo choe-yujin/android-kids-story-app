@@ -23,7 +23,7 @@ class MusicManager @Inject constructor(
     private var mediaPlayer: MediaPlayer? = null
     
     // 현재 음량 저장
-    private var currentVolume: Float = 0.7f  // 기본 음량을 70%로 설정
+    private var currentVolume: Float = 0.1f  // 기본 음량을 10%로 설정 (훨씬 낮게)
 
     /**
      * 초기화 - MediaPlayer 설정

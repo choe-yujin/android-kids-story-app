@@ -59,4 +59,41 @@ sealed interface BookAction {
      * - 축하 화면에서 확인 버튼 클릭 시 호출
      */
     data object CompletionConfirmed : BookAction
+    
+    /**
+     * 🔍 디버깅: 이미지 경로 상태 조회
+     * - 현재 책의 이미지 경로 문제 진단
+     */
+    data object DebugImagePaths : BookAction
+    
+    /**
+     * 읽기 진도 업데이트
+     * - 페이지 변경 시 읽기 진도 저장
+     *
+     * @property bookId 책 ID
+     * @property currentPage 현재 페이지 (1부터 시작)
+     * @property totalPages 총 페이지 수
+     * @property languageCode 언어 코드
+     */
+    data class UpdateReadingProgress(
+        val bookId: String,
+        val currentPage: Int,
+        val totalPages: Int,
+        val languageCode: String
+    ) : BookAction
+    
+    /**
+     * 테툼어 TTS 모델 다운로드 요청
+     */
+    data object DownloadTtsModel : BookAction
+    
+    /**
+     * TTS 다운로드 다이얼로그 닫기
+     */
+    data object DismissTtsDialog : BookAction
+    
+    /**
+     * TTS 에러 메시지 확인
+     */
+    data object DismissTtsError : BookAction
 }

@@ -1,5 +1,7 @@
 package com.timor.kidsstory.presentation.book.model
 
+import com.timor.kidsstory.domain.model.Mission
+
 /**
  * 책 읽기 화면의 전체 상태 클래스
  * - 책 읽기 화면의 모든 상태 정보를 담는 불변 데이터 클래스
@@ -9,11 +11,13 @@ package com.timor.kidsstory.presentation.book.model
  * @property isLoading 로딩 중 상태
  * @property error 오류 메시지 (있을 경우)
  * @property showCompletionScreen 완독 축하 화면 표시 여부
+ * @property mission 완독 시 표시할 미션 정보
  */
 data class BookUiState(
     val currentPageIndex: Int = 0,
     val pages: List<PageUiState> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val showCompletionScreen: Boolean = false
+    val showCompletionScreen: Boolean = false,
+    val mission: Mission? = null
 )

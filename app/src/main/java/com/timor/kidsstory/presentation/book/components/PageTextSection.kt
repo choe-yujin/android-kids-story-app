@@ -1,13 +1,17 @@
 package com.timor.kidsstory.presentation.book.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -18,14 +22,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.book.model.PageTextSectionUiState
 import com.timor.kidsstory.presentation.book.model.PageUiState
+import com.timor.kidsstory.ui.components.LocalizedText
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -39,11 +46,20 @@ fun PageTextSection(
     onTextToSpeech: (List<String>) -> Unit,
     onLayoutChanged: (pageIndex: Int, contentHeight: Int, containerHeight: Int) -> Unit,
     onScrollChanged: (pageIndex: Int, scrollOffset: Int, maxScrollOffset: Int) -> Unit,
+    isTetumTtsReady: Boolean,
+    isDownloadingModel: Boolean,
+    downloadProgress: Float,
+    showTtsDownloadDialog: Boolean,
+    ttsErrorMessage: String?,
+    onDownloadTtsModel: () -> Unit,
+    onDismissTtsDialog: () -> Unit,
+    onDismissTtsError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val responsivePadding = ResponsiveTextUtils.getResponsivePadding().dp
     val scrollState = rememberScrollState(initial = textSectionState.scrollOffset)
     var containerHeight by remember { mutableStateOf(0) }
+    Log.d("PageTextSection", "Current Language: $currentLanguage")
 
     // 스크롤 상태 변경 감지
     LaunchedEffect(scrollState) {
@@ -109,15 +125,15 @@ fun PageTextSection(
                     val filteredContributors = pageState.contributors.filter { it.lang == currentLanguage }
                     if (filteredContributors.isNotEmpty()) {
                         Column(horizontalAlignment = Alignment.Start) {
-                            filteredContributors.forEach { contributor ->
-                                Text(
-                                    text = "${contributor.role} | ${contributor.name}",
-                                    style = MaterialTheme.typography.titleSmall,//bodySmall.copy(fontSize = 16.sp),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(bottom = 2.dp) // Added bottom padding
-                                )
-                            }
+                            val contributorsByRole = filteredContributors.groupBy { it.role }
+                        contributorsByRole.forEach { (role, contributors) ->
+                            val names = contributors.joinToString(", ") { it.name }
+                            Text(
+                                text = "$role | $names",
+                                style = MaterialTheme.typography.titleSmall, //bodySmall.copy(fontSize = 16.sp),
+                                modifier = Modifier.padding(bottom = 2.dp) // Added bottom padding
+                            )
+                        }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                     }
@@ -206,25 +222,114 @@ fun PageTextSection(
         }
 
         // TTS 버튼
-        if (pageState.currentLanguageCode != "tetum") {
-            val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
-            val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+        val buttonSize = (32 * ResponsiveTextUtils.getScreenScaleFactor()).dp
+        val iconSize = (21 * ResponsiveTextUtils.getScreenScaleFactor()).dp
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .background(Color.Black.copy(alpha = 0.4f), CircleShape)
-                    .zIndex(2f)
-            ) {
-                IconButton(onClick = { onTextToSpeech(pageState.texts) }, modifier = Modifier.size(buttonSize)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_play),
-                        contentDescription = "Text to speech",
-                        tint = Color.White,
-                        modifier = Modifier.size(iconSize)
-                    )
-                }
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .background(Color.Black.copy(alpha = 0.4f), CircleShape)
+                .zIndex(2f)
+        ) {
+            IconButton(onClick = {
+                onTextToSpeech(pageState.texts)
+            }, modifier = Modifier.size(buttonSize)) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_play),
+                    contentDescription = "Text to speech",
+                    tint = Color.White,
+                    modifier = Modifier.size(iconSize)
+                )
             }
+        }
+
+        // TTS 다운로드 다이얼로그
+        if (showTtsDownloadDialog) {
+            AlertDialog(
+                onDismissRequest = { 
+                    // 다운로드 중이 아니면 닫기 가능
+                    if (!isDownloadingModel) {
+                        onDismissTtsDialog()
+                    }
+                },
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    dismissOnBackPress = !isDownloadingModel,
+                    dismissOnClickOutside = !isDownloadingModel
+                ),
+                title = {
+                    LocalizedText(
+                        resId = R.string.tts_download_title,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                text = {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (ttsErrorMessage != null) {
+                            // 에러 메시지 표시
+                            Text(
+                                text = ttsErrorMessage,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        } else if (isDownloadingModel) {
+                            // 다운로드 중
+                            LocalizedText(
+                                resId = R.string.tts_downloading,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            LinearProgressIndicator(
+                                progress = downloadProgress,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "${(downloadProgress * 100).toInt()}%",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        } else {
+                            // 초기 안내 메시지
+                            LocalizedText(
+                                resId = R.string.tts_download_message,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    if (ttsErrorMessage != null) {
+                        // 에러 시 OK 버튼
+                        Button(onClick = { onDismissTtsError() }) {
+                            LocalizedText(
+                                resId = R.string.attendance_popup_button_ok,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    } else if (!isDownloadingModel) {
+                        // 다운로드 버튼
+                        Button(onClick = { 
+                            onDownloadTtsModel()
+                        }) {
+                            LocalizedText(
+                                resId = R.string.tts_download_button,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                },
+                dismissButton = {
+                    if (ttsErrorMessage == null && !isDownloadingModel) {
+                        // 나중에 버튼 (에러가 아니고 다운로드 중이 아닐 때)
+                        Button(onClick = { onDismissTtsDialog() }) {
+                            LocalizedText(
+                                resId = R.string.tts_download_later,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+            )
         }
 
         // Bottom Row for Copyright

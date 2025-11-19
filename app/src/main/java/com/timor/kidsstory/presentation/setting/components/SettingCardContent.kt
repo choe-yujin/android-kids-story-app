@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +28,8 @@ fun SettingCardContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding((16 * scaleFactor).dp),
+            .padding((16 * scaleFactor).dp)
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LocalizedText(
@@ -41,6 +44,7 @@ fun SettingCardContent(
         SettingToggleRow(
             titleResId = R.string.info_music,
             isChecked = state.isMusicOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.MusicSwitchClick(it)) }
         )
 
@@ -52,12 +56,13 @@ fun SettingCardContent(
             onVolumeChange = { onAction(SettingAction.MusicVolumeChange(it)) }
         )
 
-        Spacer(modifier = Modifier.height((8 * scaleFactor).dp))
+        Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
 
         // 효과음 설정
         SettingToggleRow(
             titleResId = R.string.info_sound_effect,
             isChecked = state.isSoundEffectOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.SoundEffectSwitchClick(it)) }
         )
 
@@ -80,7 +85,8 @@ fun SmallSettingCardContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding((12 * scaleFactor).dp),
+            .padding((12 * scaleFactor).dp)
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LocalizedText(
@@ -95,6 +101,7 @@ fun SmallSettingCardContent(
         SmallSettingToggleRow(
             titleResId = R.string.info_music,
             isChecked = state.isMusicOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.MusicSwitchClick(it)) }
         )
 
@@ -106,12 +113,11 @@ fun SmallSettingCardContent(
             onVolumeChange = { onAction(SettingAction.MusicVolumeChange(it)) }
         )
 
-        Spacer(modifier = Modifier.height((8 * scaleFactor).dp))
-
-        // 효과음 설정
+        Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
         SmallSettingToggleRow(
             titleResId = R.string.info_sound_effect,
             isChecked = state.isSoundEffectOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.SoundEffectSwitchClick(it)) }
         )
 
@@ -134,7 +140,8 @@ fun VerySmallSettingCardContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding((8 * scaleFactor).dp),
+            .padding((8 * scaleFactor).dp)
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LocalizedText(
@@ -149,6 +156,7 @@ fun VerySmallSettingCardContent(
         VerySmallSettingToggleRow(
             titleResId = R.string.info_music,
             isChecked = state.isMusicOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.MusicSwitchClick(it)) }
         )
 
@@ -160,12 +168,13 @@ fun VerySmallSettingCardContent(
             onVolumeChange = { onAction(SettingAction.MusicVolumeChange(it)) }
         )
 
-        Spacer(modifier = Modifier.height((6 * scaleFactor).dp))
+        Spacer(modifier = Modifier.height((12 * scaleFactor).dp))
 
         // 효과음 설정
         VerySmallSettingToggleRow(
             titleResId = R.string.info_sound_effect,
             isChecked = state.isSoundEffectOn,
+            selectedLanguageCode = state.currentLanguage.code, // 언어 코드 전달
             onToggle = { onAction(SettingAction.SoundEffectSwitchClick(it)) }
         )
 
@@ -183,6 +192,7 @@ fun VerySmallSettingCardContent(
 fun SettingToggleRow(
     titleResId: Int,
     isChecked: Boolean,
+    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
     onToggle: (Boolean) -> Unit
 ) {
     Row(
@@ -199,7 +209,8 @@ fun SettingToggleRow(
 
         CustomToggle(
             isChecked = isChecked,
-            onToggle = onToggle
+            onToggle = onToggle,
+            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
         )
     }
 }
@@ -208,6 +219,7 @@ fun SettingToggleRow(
 fun SmallSettingToggleRow(
     titleResId: Int,
     isChecked: Boolean,
+    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
     onToggle: (Boolean) -> Unit
 ) {
     Row(
@@ -225,7 +237,8 @@ fun SmallSettingToggleRow(
 
         CustomToggle(
             isChecked = isChecked,
-            onToggle = onToggle
+            onToggle = onToggle,
+            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
         )
     }
 }
@@ -234,6 +247,7 @@ fun SmallSettingToggleRow(
 fun VerySmallSettingToggleRow(
     titleResId: Int,
     isChecked: Boolean,
+    selectedLanguageCode: String = "en", // 추가: 선택된 언어 코드
     onToggle: (Boolean) -> Unit
 ) {
     Row(
@@ -251,7 +265,8 @@ fun VerySmallSettingToggleRow(
 
         CustomToggle(
             isChecked = isChecked,
-            onToggle = onToggle
+            onToggle = onToggle,
+            selectedLanguageCode = selectedLanguageCode // 언어 코드 전달
         )
     }
-} 
+}

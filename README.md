@@ -38,40 +38,33 @@ TaleTail은 동티모르 어린이들에게 테툼어로 된 디지털 동화책
 - **가로 모드 최적화**: 태블릿 친화적 레이아웃
 - **좌우 분할 화면**: 이미지와 텍스트의 균형잡힌 배치
 - **페이지 스와이프**: 직관적인 페이지 넘김
-- **반응형 텍스트**: 화면 크기에 따른 텍스트 자동 조정
+- **반응형 텍텍스트**: 화면 크기에 따른 텍스트 자동 조정
 - **다크/라이트 테마**: 읽기 환경 최적화
-
-### 🤖 AI 챗봇
-- **Google Gemini AI**: 동화 관련 질문 답변
-- **음성 인식**: 말로 질문하기 기능
-- **다국어 대화**: 사용자 언어 설정에 따른 응답
 
 ## 프로젝트 구조
 ```
 com.timor.kidsstory/
-├── KidsStoryApplication.kt           # Hilt Application 클래스
+├── TaleTailApplication.kt            # Hilt Application 클래스
 ├── MainActivity.kt                   # 메인 액티비티
 │
 ├── data/                            # 데이터 레이어
 │   ├── dto/                         # 데이터 전송 객체
-│   ├── local/                       # 로컬 데이터 소스
-│   │   ├── assets/                  # Asset 파일 관리
-│   │   └── database/                # Room 데이터베이스
-│   ├── remote/                      # 원격 데이터 소스
-│   │   ├── network/                 # Retrofit 네트워크 서비스
-│   │   └── worker/                  # WorkManager 백그라운드 작업
-│   └── repository/                  # Repository 구현체
+│   ├── local/                       # 로컬 데이터 소스 (Assets, Room)
+│   ├── remote/                      # 원격 데이터 소스 (Network, Worker)
+│   ├── repository/                  # Repository 구현체
+│   └── mapper/                      # 데이터 모델 매퍼
 │
 ├── domain/                          # 도메인 레이어
 │   ├── model/                       # 도메인 모델
 │   ├── repository/                  # Repository 인터페이스
-│   ├── usecase/                     # 비즈니스 로직
-│   └── util/                        # 유틸리티 클래스
+│   └── usecase/                     # 비즈니스 로직
 │
 ├── presentation/                    # 프레젠테이션 레이어
+│   ├── splash/                      # 스플래시 화면
 │   ├── bookshelf/                   # 책장 화면
 │   ├── book/                        # 책 읽기 화면
-│   ├── chatbot/                     # AI 챗봇 화면
+│   ├── leveltest/                   # 레벨 테스트 화면
+
 │   ├── setting/                     # 설정 화면
 │   └── navigation/                  # 내비게이션 관리
 │
@@ -128,6 +121,9 @@ Access the [translation](https://docs.google.com/spreadsheets/d/15ATv7NLafQUndAM
 ### Current Contributors
 - SiYoon-Lee - Environmental storybook creation
 - Francisco Mendosa - English/Tetum translation
+
+## 기획 및 발표 자료
+- [2025 새싹 해커톤 AI 기능 추가 기획 자료](./docs/README.md)
 
 ## Contact Us
 ### General Inquiries / Bug Reports

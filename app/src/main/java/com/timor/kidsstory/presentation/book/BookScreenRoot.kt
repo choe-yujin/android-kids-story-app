@@ -21,6 +21,12 @@ fun BookScreenRoot(
     BookScreen(
         // 뷰모델의 상태를 UI에 연결
         state = viewModel.state.collectAsStateWithLifecycle().value,
+        // TTS 관련 상태
+        isTetumTtsReady = viewModel.isTetumTtsReady.collectAsStateWithLifecycle().value,
+        isDownloadingModel = viewModel.isDownloadingModel.collectAsStateWithLifecycle().value,
+        downloadProgress = viewModel.downloadProgress.collectAsStateWithLifecycle().value,
+        showTtsDownloadDialog = viewModel.showTtsDownloadDialog.collectAsStateWithLifecycle().value,
+        ttsErrorMessage = viewModel.ttsErrorMessage.collectAsStateWithLifecycle().value,
         // 액션 처리 - 모든 액션을 뷰모델에 전달하여 효과음 처리
         onAction = { action ->
             when (action) {

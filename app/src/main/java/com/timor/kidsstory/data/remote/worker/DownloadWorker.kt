@@ -7,35 +7,26 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.timor.kidsstory.data.local.database.dao.DownloadedBooksDao
 import com.timor.kidsstory.data.remote.BookDownloader
-import com.timor.kidsstory.data.remote.model.RemoteBook
-import com.timor.kidsstory.data.remote.network.BookNetworkService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.serialization.json.Json
 
 @HiltWorker
 class DownloadWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted private val params: WorkerParameters,
-    private val bookDownloader: BookDownloader,
-    private val downloadedBooksDao: DownloadedBooksDao,
-    private val networkService: BookNetworkService
+    private val bookDownloader: BookDownloader
 ) : CoroutineWorker(context, params) {
 
     companion object {
         private const val TAG = "DownloadWorker"
         const val KEY_BOOK_ID = "book_id"
         const val KEY_LANGUAGE = "language"
-        const val KEY_METADATA = "metadata"
     }
-
-    private val json = Json { ignoreUnknownKeys = true }
 
     override suspend fun doWork(): Result {
         try {
             val bookId = inputData.getInt(KEY_BOOK_ID, -1)
             val language = inputData.getString(KEY_LANGUAGE) ?: return Result.failure()
-            val metadataJson = inputData.getString(KEY_METADATA) ?: return Result.failure()
 
             if (bookId == -1) {
                 Log.e(TAG, "Invalid book ID")
@@ -44,12 +35,8 @@ class DownloadWorker @AssistedInject constructor(
 
             Log.d(TAG, "Starting download for book ID: $bookId, language: $language")
 
-            // 카테고리 정보가 포함된 RemoteBook 객체 디코딩
-            val remoteBook = json.decodeFromString<RemoteBook>(metadataJson)
-
-            // bookDownloader.downloadBook 메서드에 remoteBook을 그대로 전달
-            // (BookDownloader 클래스는 RemoteBook에서 category 필드를 처리하도록 수정 필요)
-            val result = bookDownloader.downloadBook(remoteBook, language)
+            // 통합 구조 기반 다운로드
+            val result = bookDownloader.downloadBook(bookId, language)
 
             return if (result.isSuccess) {
                 Log.d(TAG, "Book downloaded successfully: $bookId")

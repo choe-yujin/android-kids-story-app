@@ -1,0 +1,114 @@
+{
+  "bookId": 105,
+  "language": "en",
+  "title": "Counting Words",
+  "summary": "This book teaches children many ways to count things. Each page introduces number words and counting units to help kids understand numbers in everyday life.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["Counting Words"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": ["One bottle of coke"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["Two glasses of juice"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["Three slices of pizza"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["Four children"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["Five sheets of colored paper"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["Six drops of sesame oil"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 7,
+      "texts": ["Seven cats"],
+      "pageType": "FULL_IMAGE"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "What are counting words?",
+        "keyConcepts": ["amount", "unit", "numbers"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "What words do we use to count people or things?",
+        "keyConcepts": ["bottle", "glass", "slice", "child", "sheet", "drop", "cat"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "Counting My Favorite Things",
+      "description": "Find things with your family or friends and count them using different number words.",
+      "type": "ACTIVITY_LOG"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "bottle",
+      "definition": "A container for liquids, used for counting drinks.",
+      "pageNumber": 1
+    },
+    {
+      "word": "glass",
+      "definition": "A small cup for drinks, a way to count beverages.",
+      "pageNumber": 2
+    },
+    {
+      "word": "slice",
+      "definition": "A piece of flat food like pizza, used for counting.",
+      "pageNumber": 3
+    },
+    {
+      "word": "child",
+      "definition": "A word to count people, especially kids.",
+      "pageNumber": 4
+    },
+    {
+      "word": "sheet",
+      "definition": "Used to count paper or thin flat things.",
+      "pageNumber": 5
+    },
+    {
+      "word": "drop",
+      "definition": "A small bit of liquid, for counting drops.",
+      "pageNumber": 6
+    },
+    {
+      "word": "cat",
+      "definition": "A word for counting animals.",
+      "pageNumber": 7
+    }
+  ],
+  "contributors": {
+    "Writer": ["Kim Eunpa"],
+    "Illustrator": ["Ho"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}

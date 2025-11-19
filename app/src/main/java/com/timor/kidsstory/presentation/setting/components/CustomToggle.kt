@@ -14,9 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.timor.kidsstory.R
+import com.timor.kidsstory.presentation.util.ContextLanguageHelper
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 
@@ -24,7 +26,9 @@ import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 fun CustomToggle(
     isChecked: Boolean,
     onToggle: (Boolean) -> Unit,
+    selectedLanguageCode: String = "en" // 추가: 선택된 언어 코드
 ) {
+    val context = LocalContext.current
     val responsivePadding = (5 * ResponsiveTextUtils.getScreenScaleFactor()).dp
     val responsiveInnerPadding = (3 * ResponsiveTextUtils.getScreenScaleFactor()).dp
     val toggleSize = (16 * ResponsiveTextUtils.getScreenScaleFactor()).dp
@@ -40,7 +44,9 @@ fun CustomToggle(
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (isChecked) {
                 Text(
-                    text = stringResource(R.string.info_on),
+                    text = ContextLanguageHelper.getStringInLanguage(
+                        context, selectedLanguageCode, R.string.info_on
+                    ),
                     style = ResponsiveTextUtils.getSettingToggleTextStyle().copy(
                         fontSize = ResponsiveTextUtils.getSettingToggleTextStyle().fontSize * 0.8f
                     ),
@@ -56,7 +62,9 @@ fun CustomToggle(
             )
             if (!isChecked) {
                 Text(
-                    text = stringResource(R.string.info_off),
+                    text = ContextLanguageHelper.getStringInLanguage(
+                        context, selectedLanguageCode, R.string.info_off
+                    ),
                     style = ResponsiveTextUtils.getSettingToggleTextStyle().copy(
                         fontSize = ResponsiveTextUtils.getSettingToggleTextStyle().fontSize * 0.8f
                     ),
@@ -66,4 +74,4 @@ fun CustomToggle(
             }
         }
     }
-} 
+}

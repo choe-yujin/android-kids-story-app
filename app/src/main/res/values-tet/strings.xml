@@ -1,0 +1,234 @@
+<resources>
+    <string name="app_name">TaleTail</string>
+
+    <!-- Bookcover -->
+    <string name="bookcover_download">Download</string>
+    <string name="bookcover_downloading">Download hela…</string>
+    <string name="bookcover_retry">Koba fila</string>
+    <string name="bookcover_update">Update</string>
+
+    <!-- Bookshelf Filter Bar -->
+    <string name="filter_all">Hotu</string>
+    <string name="filter_stage">Nivel</string>
+    <string name="filter_category">Kategoria</string>
+    
+    <!-- Category Groups -->
+    <string name="category_environment_nature">Ambiente</string>
+    <string name="category_science_math">Matemátika</string>
+    <string name="category_culture_world">Kultura</string>
+    <string name="category_social_emotional">Emosaun</string>
+    <string name="category_folktales_history">Istória</string>
+    <string name="category_daily_life">Moris</string>
+    <string name="category_adventure_fantasy">Aventura</string>
+
+    <!-- Reading Levels -->
+    <string name="level_1">Nivel 1</string>
+    <string name="level_2">Nivel 2</string>
+    <string name="level_3">Nivel 3</string>
+    <string name="level_4">Nivel 4</string>
+    <string name="level_5">Nivel 5</string>
+
+
+    <!-- Empty State Messages -->
+    <string name="empty_bookshelf_title">Livru la iha</string>
+    <string name="empty_bookshelf_message">Verifika ligasaun internet ba download livru foun</string>
+    <string name="empty_filter_title">La hetan livru</string>
+    <string name="empty_filter_message">Koko muda filtru sira</string>
+    <string name="empty_downloading">Buka livru foun…</string>
+
+    <!-- Info Screen -->
+    <string name="info_setting">Konfigura</string>
+    <string name="info_music">Múzika</string>
+    <string name="info_sound_effect">Lian</string>
+    <string name="info_music_volume">Vol. Múzika</string>
+    <string name="info_sound_volume">Vol. Lian</string>
+    <string name="info_off">Desliga</string>
+    <string name="info_on">Liga</string>
+    <string name="info_created_by">Halo husi</string>
+    <string name="info_dev_yujin">Dir/Dev | Yujin Choe</string>
+    <string name="info_dev_jaeyeon">Dev | Jaeyeon Kim</string>
+    <string name="info_des_jinsung">Des | Jinsung Kuak</string>
+    <string name="info_edu_yuni">Edu | Siyun Lee</string>
+    <string name="info_edu_jiyoung">Edu | Jiyoung Shon</string>
+    <string name="info_cm_jisu">MGMT | Jisu An</string>
+    <string name="info_tl_rosalina">Trans. | Rosalina Pereira de Carvalho</string>
+    <string name="info_tl_helia">Trans. | Hélia Venígia Úrsula Guterres</string>
+    <string name="info_tl_lourenco">Trans. | Lourenço Sina-Ily Monteiro Baptista</string>
+    <string name="info_tl_alexandrino">Trans. | Alexandrino Soares Lemos</string>
+    <string name="info_about">Informasaun</string>
+    <string name="info_version">Verzaun</string>
+    <string name="info_license">Lisensa</string>
+
+    <!-- Reading Screen -->
+    <string name="reading_scroll_hint">Scroll ba lee tan</string>
+
+    <!-- Update Dialog -->
+    <string name="update_dialog_title_optional">Update iha</string>
+    <string name="update_dialog_title_required">Update presiza</string>
+    <string name="update_dialog_new_version">Verzaun foun: %s</string>
+    <string name="update_dialog_release_notes">Saida mak foun:</string>
+    <string name="update_dialog_button_later">Ikus liu</string>
+    <string name="update_dialog_button_update">Update</string>
+    <string name="update_dialog_button_update_now">Update agora</string>
+
+    <!-- Reading Status Bar -->
+    <string name="reading_status_all">Hotu</string>
+    <string name="reading_status_reading">Lee hela</string>
+    <string name="reading_status_read">Lee ona</string>
+    <string name="reading_status_unread">Seidauk lee</string>
+    
+    <!-- Progress and Attendance -->
+    <string name="attendance_day">loron</string>
+    <string name="attendance_days">loron</string>
+    <string name="reading_progress_fraction">%1$d/%2$d</string>
+    
+    <!-- Book Completion -->
+    <string name="completion_title">Parabéns!</string>
+    <string name="completion_message">Ita lee ona livru tomak!</string>
+    <string name="completion_button">Fila ba livru sira</string>
+
+    <!-- Attendance Popup -->
+    <string name="attendance_popup_title_first">Parabéns ba prezensa dahuluk!</string>
+    <string name="attendance_popup_title_consecutive">Prezensa loron %1$d tuir-tuir malu!</string>
+    <string name="attendance_popup_message_first">Lee loron-loron hodi dezenvolve an!</string>
+    <string name="attendance_popup_message_consecutive">Nia toman lee ne\'ebé konsistente furak tebes!</string>
+    <string name="attendance_popup_streak_info">Prezensa loron %1$d</string>
+    <string name="attendance_popup_button_ok">OK</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_title">Teste nivel lee nian</string>
+    <string name="level_test_question_count">Pergunta %1$d</string>
+    <string name="level_test_skip">IGNORA</string>
+    <string name="level_test_next">Tuir mai</string>
+    <string name="level_test_result_title">Teste remata!</string>
+    <string name="level_test_recommendation">Ami rekomenda atu hahú husi Level %d!</string>
+    <string name="level_test_result_accuracy">Rezultadu loos: %d%%</string>
+    <string name="level_test_result_questions">Pergunta sira neebé responde: %d</string>
+    <string name="level_test_start_reading">Hahú lee</string>
+    <string name="level_test_retake">Halo teste fali</string>
+    
+    <!-- Level Test New Strings -->
+    <string name="level_test_introduction">Ha\'u sei kria estante livru ida ne\'ebé úniku ba ó! Uluk, mai ita buka hatene ó-nia nivel lee nian.</string>
+    <string name="level_test_start_button">Buka hatene ha\'u-nia nivel lee!</string>
+    <string name="level_test_skip_button">Sae</string>
+    <string name="level_test_complete_title">Ha\'u hetan ona ó-nia nivel lee!</string>
+    <string name="level_test_result_level">Ó mak lee-na\'in nivel %d!</string>
+    <string name="level_test_start_reading_button">Mai ita bá ha\'u-nia estante livru rasik!</string>
+    <string name="level_test_retry_button">Hakarak koko dala ida tan?</string>
+    <string name="level_test_level_display">Nivel %d</string>
+    <string name="level_test_reading_adventure_title">Mai ita hahú aventura lee nian!</string>
+    <string name="level_test_popup_message">Diak tebes! Ó mak lee-na\'in Nivel %1$d! Mai ita esplora livru foun sira!</string>
+    
+    <!-- AI Speaking Feature -->
+    <string name="ai_speaking_feature_update_message">Funsionamentu AI koalia sei aktualiza lalais.</string>
+    
+    <!-- TTS Download Dialog -->
+    <string name="tts_download_title">Download motor AI nia lian</string>
+    <string name="tts_download_message">Atu rona livru ho lian AI nian, presiza motor lian (besik 36MB). Download agora?</string>
+    <string name="tts_downloading">Download hela…</string>
+    <string name="tts_download_button">Download</string>
+    <string name="tts_download_later">Ikus liu</string>
+    <string name="tts_download_progress">%d%%</string>
+    <string name="tts_download_error">Motor lian sei mai. Favor koba fali iha ikus.</string>
+    <string name="tts_download_error_network">Internet koneksaun la iha. Favor verifika imi nia koneksaun.</string>
+    <string name="tts_download_error_generic">Motor lian sei mai. Favor koba fali iha ikus.</string>
+    
+    <!-- Language Selection -->
+    <string name="language_selection_title">Hili lian</string>
+    
+    <!-- Management Mode -->
+    <string name="management_mode_button">Jere</string>
+    <string name="management_mode_done">Remata</string>
+    <string name="management_tab_download">Download</string>
+    <string name="management_tab_update">Update</string>
+    <string name="management_tab_delete">Hamos</string>
+    <string name="management_action_download">Download</string>
+    <string name="management_action_update">Update</string>
+    <string name="management_action_delete">Hamos</string>
+    <string name="management_confirm_title_download">Download %d item sira</string>
+    <string name="management_confirm_title_update">Update %d item sira</string>
+    <string name="management_confirm_title_delete">Hamos %d item sira</string>
+    <string name="management_confirm_size">Tamañu tomak: %s</string>
+    <string name="management_confirm_warning">Download boot (%s). Rekomenda Wi-Fi.</string>
+    <string name="management_confirm_cancel">Kansela</string>
+    <string name="management_confirm_proceed">Kontinua</string>
+    
+    <!-- Bookshelf Management Popup (New) -->
+    <string name="management_popup_download_title">Download %1$d item sira</string>
+    <string name="management_popup_update_title">Update %1$d item sira</string>
+    <string name="management_popup_delete_title">Hamos %1$d item sira</string>
+    <string name="management_popup_total_size">Tamañu tomak: %1$s</string>
+    <string name="management_popup_cancel">Kansela</string>
+    <string name="management_popup_download">Download</string>
+    <string name="management_popup_update">Update</string>
+    <string name="management_popup_delete">Hamos</string>
+    <string name="management_popup_warning_large_download">Download boot (%1$s). Rekomenda Wi-Fi.</string>
+    
+    <!-- Locked Book Dialog -->
+    <string name="locked_book_title">Livru taka hela</string>
+    <string name="locked_book_message">Lee ona livru sira ne\'ebé disponível atu loke livru ida ne\'e!</string>
+    <string name="locked_book_button">OK</string>
+    
+    <!-- Admin Screen -->
+    <string name="admin_count_unit">item</string>
+    <string name="admin_selected">hili ona</string>
+    <string name="admin_download">Download</string>
+    <string name="admin_update">Update</string>
+    <string name="admin_delete">Hamos</string>
+    
+    <!-- Story Info Dialog -->
+    <string name="story_info_dialog_title">Informasaun istória</string>
+    <string name="story_summary_label">Rezumu:</string>
+    <string name="pre_questions_label">Pergunta molok lee:</string>
+    <string name="post_questions_label">Pergunta depois lee:</string>
+    <string name="close_button">Taka</string>
+    <string name="no_summary_available">La iha rezumu</string>
+    <string name="no_pre_questions_available">La iha pergunta molok lee</string>
+    <string name="no_post_questions_available">La iha pergunta depois lee</string>
+    
+    <!-- Management Mode - Plurals (테퐸어는 sira로 복수 표현) -->
+    <plurals name="management_confirm_title_download_plural">
+        <item quantity="other">Download %d item sira</item>
+    </plurals>
+    <plurals name="management_confirm_title_update_plural">
+        <item quantity="other">Update %d item sira</item>
+    </plurals>
+    <plurals name="management_confirm_title_delete_plural">
+        <item quantity="other">Hamos %d item sira</item>
+    </plurals>
+    
+    <!-- Management Popup - Plurals -->
+    <plurals name="management_popup_download_title_plural">
+        <item quantity="other">Download %1$d item sira</item>
+    </plurals>
+    <plurals name="management_popup_update_title_plural">
+        <item quantity="other">Update %1$d item sira</item>
+    </plurals>
+    <plurals name="management_popup_delete_title_plural">
+        <item quantity="other">Hamos %1$d item sira</item>
+    </plurals>
+    
+    <!-- Action Completion Dialog -->
+    <string name="action_completion_download_title">Download remata!</string>
+    <string name="action_completion_update_title">Update remata!</string>
+    <string name="action_completion_delete_title">Hamos remata!</string>
+    <string name="action_completion_download_message">Download ho suksesu %d item sira</string>
+    <string name="action_completion_update_message">Update ho suksesu %d item sira</string>
+    <string name="action_completion_delete_message">Hamos ho suksesu %d item sira</string>
+    <string name="action_completion_button_ok">OK</string>
+    
+    <!-- Download Progress Dialog -->
+    <string name="download_progress_title">Download hela…</string>
+    <string name="update_progress_title">Update hela…</string>
+    <string name="delete_progress_title">Hamos hela…</string>
+    <string name="download_progress_message">Download %d item sira hela</string>
+    <string name="update_progress_message">Update %d item sira hela</string>
+    <string name="delete_progress_message">Hamos %d item sira hela</string>
+    <string name="download_progress_wait_message">Favor hein ba momentu ida…</string>
+
+    <!-- Side Project Information -->
+    <string name="side_project_title">Side Project Made Together</string>
+    <string name="side_project_description">TaleTail started from a small idea: "I wish there was an app like this." What began as a personal project created in spare time has become a project for everyone as people who share our vision have joined us one by one.\n\nWe work purely for the joy of sharing talents, without ads or sponsorships. We value working with \'joy\' rather than \'obligation,\' each finding their own enjoyable way to contribute at their own pace.\n\nWe welcome contributions in various fields like illustration, translation, and education to make our stories richer. We are especially looking forward to new language translators so more children can meet fairy tales in their own language.\n\nPlease add your joyful energy!</string>
+    <string name="collaboration_title">How Are We Collaborating?</string>
+    <string name="collaboration_description">We collaborate in a free and horizontal way:\n\n• We aim for free communication.\nThere are no regular meetings or reporting procedures. We freely share opinions and add ideas whenever needed through online channels (KakaoTalk, Notion, Discord, etc.).\n\n• All processes are shared transparently.\nYou can become a new project leader who expands TaleTail\'s world through idea proposals (e.g., building new translation systems, creating educational content linked to fairy tales, planning \'I\'m Also a Writer\' contests). Progress is made public through Notion, making it easy to propose or participate in desired projects.\n\n• We respect each person\'s pace.\nThere are no strict deadlines or mandatory quotas. Real life comes first! We respect a culture where everyone participates as joyfully as they can according to their own schedule and condition.\n\n• You can participate proactively.\nThere\'s no one here who assigns tasks. If you have your own ideas you want to create with TaleTail, or if you want to proactively find and solve problems, you\'re always welcome. Please look around the ongoing projects first and let us hear your voice about what fun things we can do together.</string>
+</resources>

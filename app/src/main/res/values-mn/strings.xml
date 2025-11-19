@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TaleTail</string>
 
@@ -12,37 +11,22 @@
     <string name="filter_all">Бүгд</string>
     <string name="filter_stage">Түвшин</string>
     <string name="filter_category">Ангилал</string>
-
-    <!-- Category Names -->
-    <string name="category_legend">Домог</string>
-    <string name="category_folktale">Ардын үлгэр</string>
-    <string name="category_culture">Соёл</string>
-    <string name="category_life">Амьдрал</string>
-    <string name="category_environment">Байгаль орчин</string>
-    <string name="category_science">Шинжлэх ухаан</string>
-    <string name="category_adventure">Адал явдал</string>
     
-    <!-- New Category Groups -->
-    <string name="category_folktales_history">Ардын үлгэр/Түүх</string>
-    <string name="category_culture_world">Соёл/Дэлхий</string>
-    <string name="category_daily_life">Өдөр тутмын амьдрал</string>
-    <string name="category_science_nature">Шинжлэх ухаан/Байгаль</string>
-    <string name="category_social_emotional">Нийгэм/Сэтгэл хөдлөл</string>
-    <string name="category_adventure_fantasy">Адал явдал/Уран зөгнөл</string>
+    <!-- Category Groups -->
+    <string name="category_environment_nature">Байгаль</string>
+    <string name="category_science_math">Шинжлэх ухаан</string>
+    <string name="category_culture_world">Соёл</string>
+    <string name="category_social_emotional">Сэтгэл</string>
+    <string name="category_folktales_history">Түүх</string>
+    <string name="category_daily_life">Амьдрал</string>
+    <string name="category_adventure_fantasy">Адал явдал</string>
 
     <!-- Reading Levels -->
     <string name="level_1">Эхний алхам</string>
     <string name="level_2">Анхан шат</string>
     <string name="level_3">Дунд шат</string>
-    <string name="level_4">Итгэлтэй уншигч</string>
+    <string name="level_4">Итгэлтэй</string>
     <string name="level_5">Ахисан шат</string>
-    
-    <!-- Age Ranges -->
-    <string name="age_3_5">3-5 нас</string>
-    <string name="age_5_7">5-7 нас</string>
-    <string name="age_7_9">7-9 нас</string>
-    <string name="age_9_11">9-11 нас</string>
-    <string name="age_11_plus">11+ нас</string>
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">Ном байхгүй байна</string>
@@ -56,14 +40,15 @@
     <string name="info_music">Хөгжим</string>
     <string name="info_sound_effect">Дуу чимээ</string>
     <string name="info_music_volume">Хөгжмийн дуу</string>
-    <string name="info_sound_volume">Дуу чимээний түвшин</string>
+    <string name="info_sound_volume">Дуу түвшин</string>
     <string name="info_off">Унтраах</string>
     <string name="info_on">Асаах</string>
     <string name="info_created_by">Бүтээгч</string>
     <string name="info_dev_yujin">Хөгжүүлэгч/Южин Чой</string>
     <string name="info_dev_jaeyeon">Хөгжүүлэгч/Жэёон Ким</string>
     <string name="info_des_jinsung">Дизайн/Жинсүң Куак</string>
-    <string name="info_des_yuni">Боловсрол/Сиюн Ли</string>
+    <string name="info_edu_yuni">Боловсрол/Сиюн Ли</string>
+    <string name="info_edu_jiyoung">Боловсрол/Жийоунг Шон</string>
     <string name="info_cm_jisu">Менежмент/Жису Ан</string>
     <string name="info_about">Тухай</string>
     <string name="info_version">Хувилбар</string>
@@ -80,4 +65,123 @@
     <string name="update_dialog_button_later">Дараа</string>
     <string name="update_dialog_button_update">Шинэчлэх</string>
     <string name="update_dialog_button_update_now">Одоо шинэчлэх</string>
+
+    <!-- Reading Status Bar -->
+    <string name="reading_status_all">Бүгд</string>
+    <string name="reading_status_reading">Уншиж байгаа</string>
+    <string name="reading_status_read">Уншсан</string>
+    <string name="reading_status_unread">Уншаагүй</string>
+    
+    <!-- Progress and Attendance -->
+    <string name="attendance_day">өдөр</string>
+    <string name="attendance_days">өдөр</string>
+    <string name="reading_progress_fraction">%1$d/%2$d</string>
+    
+    <!-- Book Completion -->
+    <string name="completion_title">Баяр хүргэе!</string>
+    <string name="completion_message">Номоо бүрэн уншлаа!</string>
+    <string name="completion_button">Номын тавиур руу буцах</string>
+
+    <!-- Attendance Popup -->
+    <string name="attendance_popup_title_first">Анхны ирц барилалаа!</string>
+    <string name="attendance_popup_title_consecutive">%1$d дахь өдөр дараалан!</string>
+    <string name="attendance_popup_message_first">Өдөр бүр ном унших замаар өсөөрэй!</string>
+    <string name="attendance_popup_message_consecutive">Тасралтгүй унших чадвар чинь гайхалтай!</string>
+    <string name="attendance_popup_streak_info">%1$d өдөр дараалан</string>
+    <string name="attendance_popup_button_ok">Тийм</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_title">Унших түвшин шалгах</string>
+    <string name="level_test_question_count">Асуулга %1$d</string>
+    <string name="level_test_skip">Алгасах</string>
+    <string name="level_test_next">Дараагийн</string>
+    <string name="level_test_result_title">Шалгалт дууслаа!</string>
+    <string name="level_test_recommendation">%d-р түвшнээс эхлэхийг зөвлөе!</string>
+    <string name="level_test_result_accuracy">Зөв хувь: %d%%</string>
+    <string name="level_test_result_questions">Хариулсан асуултууд: %d</string>
+    <string name="level_test_start_reading">Унших эхлэх</string>
+    <string name="level_test_retake">Дахин шалгах</string>
+    
+    <!-- Level Test New Strings -->
+    <string name="level_test_introduction">Би зөвхөн танд зориулсан номын тавиурыг бий болгоно! Эхлээд унших түвшингээ тодорхойлъё.</string>
+    <string name="level_test_start_button">Миний унших түвшинг олоорой!</string>
+    <string name="level_test_skip_button">Алгасах</string>
+    <string name="level_test_complete_title">Би таны унших түвшинг оллоо!</string>
+    <string name="level_test_result_level">Та бол %d-р түвшний уншигч!</string>
+    <string name="level_test_start_reading_button">Миний номын тавиур руу явцгаая!</string>
+    <string name="level_test_retry_button">Дахин нэг удаа оролдоод үзэх үү?</string>
+    <string name="level_test_level_display">%d-р түвшин</string>
+    <string name="level_test_reading_adventure_title">Уншихын адал явдлыг эхлүүлье!</string>
+    <string name="level_test_popup_message">Маш сайн! Та бол %1$d-р түвшний уншигч! Шинэ номуудыг судалж үзэцгээе!</string>
+    
+    <!-- AI Speaking Feature -->
+    <string name="ai_speaking_feature_update_message">AI ярих функц удахгүй шинэчлэгдэнэ.</string>
+    
+    <!-- Language Selection -->
+    <string name="language_selection_title">Хэл сонгох</string>
+    
+    <!-- Management Mode -->
+    <string name="management_mode_button">Удирдах</string>
+    <string name="management_mode_done">Дууссан</string>
+    <string name="management_tab_download">Татаж авах</string>
+    <string name="management_tab_update">Шинэчлэх</string>
+    <string name="management_tab_delete">Устгах</string>
+    <string name="management_action_download">Татаж авах</string>
+    <string name="management_action_update">Шинэчлэх</string>
+    <string name="management_action_delete">Устгах</string>
+    <string name="management_confirm_title_download">%d зүйл татах</string>
+    <string name="management_confirm_title_update">%d зүйл шинэчлэх</string>
+    <string name="management_confirm_title_delete">%d зүйл устгах</string>
+    <string name="management_confirm_size">Нийт хэмжээ: %s</string>
+    <string name="management_confirm_warning">Том таталт (%s). Wi-Fi зөвлөм.</string>
+    <string name="management_confirm_cancel">Цуцлах</string>
+    <string name="management_confirm_proceed">Үргэлжлүүлэх</string>
+    
+    <!-- Bookshelf Management Popup (New) -->
+    <string name="management_popup_download_title">%1$d зүйл татаж авах</string>
+    <string name="management_popup_update_title">%1$d зүйл шинэчлэх</string>
+    <string name="management_popup_delete_title">%1$d зүйл устгах</string>
+    <string name="management_popup_total_size">Нийт хэмжээ: %1$s</string>
+    <string name="management_popup_cancel">Цуцлах</string>
+    <string name="management_popup_download">Татаж авах</string>
+    <string name="management_popup_update">Шинэчлэх</string>
+    <string name="management_popup_delete">Устгах</string>
+    <string name="management_popup_warning_large_download">Том таталт (%1$s). Wi-Fi зөвлөм.</string>
+    
+    <!-- Locked Book Dialog -->
+    <string name="locked_book_title">Ном түгжээтэй байна</string>
+    <string name="locked_book_message">Энэ номыг нээхийн тулд боломжтой номуудыг бүгдийг нь уншаарай!</string>
+    <string name="locked_book_button">Тийм</string>
+    
+    <!-- Admin Screen -->
+    <string name="admin_count_unit">зүйл</string>
+    <string name="admin_selected">сонгогдсон</string>
+    <string name="admin_download">Татаж авах</string>
+    <string name="admin_update">Шинэчлэх</string>
+    <string name="admin_delete">Устгах</string>
+    
+    <!-- Story Info Dialog -->
+    <string name="story_info_dialog_title">Үлгэрийн мэдээлэл</string>
+    <string name="story_summary_label">Товчлол:</string>
+    <string name="pre_questions_label">Уншихын өмнө асуулт:</string>
+    <string name="post_questions_label">Уншсны дараа асуулт:</string>
+    <string name="close_button">Хаах</string>
+    <string name="no_summary_available">Товчлол байхгүй</string>
+    <string name="no_pre_questions_available">Урьдчилсан асуулт байхгүй</string>
+    <string name="no_post_questions_available">Дараах асуулт байхгүй</string>
+    
+    <!-- Action Completion Dialog -->
+    <string name="action_completion_download_title">Татаж дууслаа!</string>
+    <string name="action_completion_update_title">Шинэчлэж дууслаа!</string>
+    <string name="action_completion_delete_title">Устгаж дууслаа!</string>
+    <string name="action_completion_download_message">%d зүйлийг амжилттай татлаа</string>
+    <string name="action_completion_update_message">%d зүйлийг амжилттай шинэчиллээ</string>
+    <string name="action_completion_delete_message">%d зүйлийг амжилттай устгалаа</string>
+    <string name="action_completion_button_ok">Тийм</string>
+
+    <!-- Side Project Information -->
+    <string name="side_project_title">Хамтдаа Хийж Буй Хажуугийн Төсөл</string>
+    <string name="side_project_description">TaleTail апп нь жижиг санаанаас эхэлсэн. Чөлөөт цагтаа хийдэг төсөл байсан зүйл сайхан хүмүүс нэгдэж бүгдийн төсөл болжээ. Бид зар сурталчилгаагүйгээр зөвхөн авьяас хуваалцах баяр баясгалангаар ажилладаг.</string>
+    <string name="collaboration_title">Хэрхэн Хамтран Ажиллаж Байна Вэ?</string>
+    <string name="collaboration_description">Бид чөлөөт харилцааг зорьдог. Тогтмол хурал байдаггүй. Онлайн сувгаар санал бодлоо хуваалцдаг. Хүн бүр өөрийн боломжоор оролцож болно.</string>
 </resources>

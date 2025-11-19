@@ -47,6 +47,19 @@ object AppTextStyles {
         Font(R.font.cookierun_black) // 한국어용 이탤릭 폰트
     )
 
+    // CookieRun 폰트 패밀리 추가
+    private val cookieRunRegularFamily = FontFamily(
+        Font(R.font.cookierun_regular)
+    )
+
+    private val cookieRunBoldFamily = FontFamily(
+        Font(R.font.cookierun_bold)
+    )
+
+    private val cookieRunBlackFamily = FontFamily(
+        Font(R.font.cookierun_black)
+    )
+
     /**
      * Pretendard 폰트 스타일 정의
      * 주로 본문, 정보 텍스트, 상세 설명 등에 사용됩니다.
@@ -209,5 +222,43 @@ object AppTextStyles {
         lineHeight = 48.sp,
         fontWeight = FontWeight.W700,
         fontFamily = sourGummyItalicFamily
+    )
+
+    /**
+     * CookieRun 폰트 스타일 정의
+     * 친근하고 귀여운 느낌을 주는 폰트로, 어린이 앱에 적합합니다.
+     */
+
+    /**
+     * CookieRun Regular 스타일
+     * 일반 텍스트, 설명 메시지 등에 적합합니다.
+     */
+    val cookieRunRegular = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        fontWeight = FontWeight.W400,
+        fontFamily = cookieRunRegularFamily
+    )
+
+    /**
+     * CookieRun Bold 스타일
+     * 강조 텍스트, 버튼 등에 적합합니다.
+     */
+    val cookieRunBold = TextStyle(
+        fontSize = 18.sp,
+        lineHeight = 26.sp,
+        fontWeight = FontWeight.W700,
+        fontFamily = cookieRunBoldFamily
+    )
+
+    /**
+     * CookieRun Black Regular 스타일
+     * 제목, 메인 헤더 등에 적합합니다.
+     */
+    val cookieRunBlackRegular = TextStyle(
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        fontWeight = FontWeight.W900,
+        fontFamily = cookieRunBlackFamily
     )
 }

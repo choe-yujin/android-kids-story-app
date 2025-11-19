@@ -1,5 +1,6 @@
 package com.timor.kidsstory.presentation.book.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -41,12 +42,25 @@ fun PageImageSection(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxHeight()) {
+        // 🔍 디버깅 로그 추가
+        if (state.imageUrl.isBlank()) {
+            Log.w("PageImageSection", "❌ Empty image URL for page ${state.pageNumber}")
+        } else {
+            Log.d("PageImageSection", "📷 Loading image: ${state.imageUrl}")
+        }
+        
         // 페이지 이미지 로드 및 표시
         AsyncImage(
             model = state.imageUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            onError = { error ->
+                Log.e("PageImageSection", "❌ Failed to load image: ${state.imageUrl}", error.result.throwable)
+            },
+            onSuccess = {
+                Log.d("PageImageSection", "✅ Successfully loaded image: ${state.imageUrl}")
+            }
         )
 
         // 뒤로가기 버튼 - 반투명 원형 배경 (반응형 크기, 2/3로 축소)
@@ -90,7 +104,7 @@ fun PageImageSectionPreview() {
     KidsStoryTheme {
         PageImageSection(
             state = PageUiState(
-                imageUrl = "file:///android_asset/images/801/book_801_page_1.jpg",
+                imageUrl = "file:///android_asset/images/801/book_801_page_1.webp",
                 texts = listOf(
                     "옛날 옛날에"
                 ),

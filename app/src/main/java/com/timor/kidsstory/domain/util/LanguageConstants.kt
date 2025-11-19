@@ -11,14 +11,14 @@ import com.timor.kidsstory.domain.model.Language
 object LanguageConstants {
     // 영어
     val ENGLISH = Language(
-        code = "en-ph",
+        code = "en",
         displayName = "English",
         flagResId = R.drawable.flag_en
     )
 
     // 한국어
     val KOREAN = Language(
-        code = "ko-kr",
+        code = "ko",
         displayName = "한국어",
         flagResId = R.drawable.flag_ko
     )
@@ -51,14 +51,13 @@ object LanguageConstants {
     val DEFAULT_LANGUAGE = ENGLISH
 
     /* 언어 코드를 다국어 리소스용 코드로 변환
-    * 앱 내부에서는 지역 정보 포함 코드를 사용하지만, 리소스 로드에는 표준 코드 사용
+    * 이미 단순화된 코드를 사용하므로 그대로 반환
     */
     fun getResourceLangCode(code: String): String {
-        return when {
-            code.startsWith("en") -> "en"
-            code.startsWith("ko") -> "ko"
-            code.startsWith("tet") -> "tet"
-            // code.startsWith("mn") -> "mn" // Added for Mongolian
+        return when (code) {
+            "en" -> "en"
+            "ko" -> "ko"
+            "tet" -> "tet"
             else -> "en" // 기본값
         }
     }

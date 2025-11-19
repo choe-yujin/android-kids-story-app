@@ -52,4 +52,10 @@ object NetworkModule {
     fun provideAppVersionNetworkService(httpClient: HttpClient): AppVersionNetworkService {
         return AppVersionNetworkServiceImpl(httpClient)
     }
+
+    @Provides
+    @Singleton
+    fun provideAiModelNetworkService(httpClient: HttpClient): com.timor.kidsstory.data.remote.network.AiModelNetworkService {
+        return com.timor.kidsstory.data.remote.network.AiModelNetworkService(httpClient)
+    }
 }

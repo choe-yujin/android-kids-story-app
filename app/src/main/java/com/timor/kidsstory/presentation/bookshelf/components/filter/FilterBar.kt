@@ -12,16 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.orhanobut.logger.Logger
 import com.timor.kidsstory.R
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarCategory
 import com.timor.kidsstory.presentation.bookshelf.model.FilterBarState
@@ -33,25 +31,35 @@ import com.timor.kidsstory.ui.theme.AppTextStyles
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 
 
-/*
-* 메인 - 필터바
-* Create by JaeYeon Kim
-* @since 2025.04.02
-* */
+/**
+ * 메인 - 필터바
+ * Create by JaeYeon Kim
+ * @since 2025.04.02
+ */
 @Composable
 fun FilterBar(
     filterBarState: FilterBarState = FilterBarState(),
+    currentLanguageCode: String = "en", // 현재 언어 코드
     onAllClick: () -> Unit = {},
     onStageClick: () -> Unit = {},
     onCategoryClick: () -> Unit = {},
     onLevelClick: (FilterLevel) -> Unit = {},
     onBookCategoryClick: (FilterBookCategory) -> Unit = {},
 ) {
+    // 화면 너비에 따른 동적 패딩 계산
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    
+    // 오른쪽 세로 바 너비 + 간격을 고려한 패딩
+    val horizontalPadding = when {
+        screenWidth >= 800 -> 48.dp // 태블릿
+        else -> 24.dp // 휴대폰
+    }
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp)
-            .height(58.dp), // Set fixed height
+            .padding(start = 48.dp, end = 16.dp), // 설정 아이콘 시작점에 맞춰서 고정
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
     ) {
@@ -60,7 +68,7 @@ fun FilterBar(
         }
 
         Box(
-            modifier = Modifier.height(42.dp), // Approx height of FilterBarButton
+            modifier = Modifier.height(42.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -77,12 +85,14 @@ fun FilterBar(
         LevelFilterBar(
             isExpanded = filterBarState.isStageFilterExpanded,
             selectedLevel = filterBarState.selectedStage,
-        ) { level ->
-            onLevelClick(level)
-        }
+            currentLanguageCode = currentLanguageCode,
+            onLevelSelected = { level ->
+                onLevelClick(level)
+            }
+        )
 
         Box(
-            modifier = Modifier.height(42.dp), // Approx height of FilterBarButton
+            modifier = Modifier.height(42.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -99,12 +109,13 @@ fun FilterBar(
         CategoryFilterBar(
             isExpanded = filterBarState.isCategoryFilterExpanded,
             selectedCategory = filterBarState.selectedCategory,
-        ) { bookCategory ->
-            onBookCategoryClick(bookCategory)
-        }
+            currentLanguageCode = currentLanguageCode,
+            onCategorySelected = { bookCategory ->
+                onBookCategoryClick(bookCategory)
+            }
+        )
     }
 }
-
 
 @Composable
 fun FilterBarButton(
@@ -118,7 +129,7 @@ fun FilterBarButton(
             modifier = Modifier
                 .background(AppColors.neutralWhite, shape = RoundedCornerShape(50.dp))
                 .border(width = 2.dp, color = AppColors.unknown200, shape = RoundedCornerShape(50.dp))
-                .noRippleClickable {
+                .clickable {
                     onClick()
                 }
         ) {
@@ -134,7 +145,7 @@ fun FilterBarButton(
         Box(
             modifier = Modifier
                 .background(AppColors.unknown300, shape = RoundedCornerShape(size = 50.dp))
-                .noRippleClickable {
+                .clickable {
                     onClick()
                 }
         ) {
@@ -166,8 +177,6 @@ fun FilterBarButtonPreview() {
         ) {
             FilterBarButton(textResId = R.string.filter_all, isSelected = false)
             FilterBarButton(textResId = R.string.filter_all, isSelected = true)
-
         }
-
     }
 }

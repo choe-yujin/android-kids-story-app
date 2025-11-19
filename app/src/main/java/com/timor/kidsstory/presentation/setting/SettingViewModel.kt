@@ -7,7 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.timor.kidsstory.domain.repository.UserPreferenceRepository
 import com.timor.kidsstory.domain.usecase.MusicSettingUseCase
+import com.timor.kidsstory.domain.usecase.preference.GetUserPreferenceUseCase
+import com.timor.kidsstory.domain.util.LanguageConstants
 import com.timor.kidsstory.domain.util.SoundEffectManager
+import com.timor.kidsstory.domain.manager.FirstRunManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +33,8 @@ class SettingViewModel @Inject constructor(
     private val musicSettingUseCase: MusicSettingUseCase,
     private val soundEffectManager: SoundEffectManager,
     private val userPreferenceRepository: UserPreferenceRepository,
+    private val getUserPreferenceUseCase: GetUserPreferenceUseCase,
+    private val firstRunManager: FirstRunManager,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
     // UI 상태 관리
@@ -55,14 +60,26 @@ class SettingViewModel @Inject constructor(
             }
         }
         
-        // 🔧 사용자 설정에서 효과음 설정 로드 및 즉시 SoundEffectManager와 동기화
+        // 🔧 사용자 설정에서 효과음 설정 및 언어 설정 로드
         viewModelScope.launch {
-            userPreferenceRepository.getUserPreferences().collect { preference ->
+            getUserPreferenceUseCase().collect { preference ->
+                // 언어 설정 로드
+                val languageCode = if (preference.languageCode.isBlank()) {
+                    LanguageConstants.DEFAULT_LANGUAGE.code
+                } else {
+                    preference.languageCode
+                }
+
+                val language = LanguageConstants.SUPPORTED_LANGUAGES.find {
+                    it.code == languageCode
+                } ?: LanguageConstants.DEFAULT_LANGUAGE
+
                 // UI 상태 업데이트
                 _state.update { 
                     it.copy(
                         isSoundEffectOn = preference.isSoundEffectOn,
-                        soundEffectVolume = preference.soundEffectVolume
+                        soundEffectVolume = preference.soundEffectVolume,
+                        currentLanguage = language // 현재 언어 추가
                     ) 
                 }
                 
@@ -77,7 +94,7 @@ class SettingViewModel @Inject constructor(
                 // 디버깅을 위한 로그
                 android.util.Log.d(
                     "SettingViewModel", 
-                    "🔄 Preference loaded: enabled=${preference.isSoundEffectOn}, volume=${preference.soundEffectVolume}"
+                    "🔄 Preference loaded: enabled=${preference.isSoundEffectOn}, volume=${preference.soundEffectVolume}, language=${language.code}"
                 )
             }
         }
@@ -168,6 +185,31 @@ class SettingViewModel @Inject constructor(
             // 일반적으로는 로그만 남기고 처리
         }
     }
+    
+    /**
+     * 🔧 디버깅용: 앱 데이터 초기화 (문제 해결 후 제거 예정)
+     */
+    private fun resetAppData() {
+        viewModelScope.launch {
+            try {
+                android.util.Log.w("SettingViewModel", "🔄 사용자 요청으로 앱 데이터 초기화 시작")
+                firstRunManager.resetAllPreferences()
+                android.util.Log.w("SettingViewModel", "✅ 앱 데이터 초기화 완료")
+                
+                // UI 상태 업데이트 알림
+                _state.update { it.copy(showResetConfirmation = true) }
+            } catch (e: Exception) {
+                android.util.Log.e("SettingViewModel", "❌ 앱 데이터 초기화 실패", e)
+            }
+        }
+    }
+    
+    /**
+     * 초기화 확인 다이얼로그 닫기
+     */
+    private fun dismissResetConfirmation() {
+        _state.update { it.copy(showResetConfirmation = false) }
+    }
 
     /**
      * UI 액션 처리
@@ -213,6 +255,13 @@ class SettingViewModel @Inject constructor(
                     soundEffectManager.playButtonClick()
                 }
                 setSoundEffectVolume(action.volume)
+            }
+            is SettingAction.ResetAppData -> {
+                soundEffectManager.playButtonClick()
+                resetAppData()
+            }
+            is SettingAction.DismissResetConfirmation -> {
+                dismissResetConfirmation()
             }
         }
     }

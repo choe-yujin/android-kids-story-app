@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -33,14 +35,12 @@ import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
 
 @Composable
-fun CreatedByCardContent(
-    scaleFactor: Float,
-    onAction: (SettingAction) -> Unit
-) {
+fun CreatedByCardContent(scaleFactor: Float, onAction: (SettingAction) -> Unit, isTablet: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding((16 * scaleFactor).dp),
+            .padding((8 * scaleFactor).dp)
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LocalizedText(
@@ -53,7 +53,7 @@ fun CreatedByCardContent(
 
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy((6 * scaleFactor).dp)
+            verticalArrangement = Arrangement.spacedBy(if (isTablet) (12 * scaleFactor).dp else (6 * scaleFactor).dp)
         ) {
             DeveloperRow(
                 roleResId = R.string.info_dev_yujin,
@@ -74,7 +74,13 @@ fun CreatedByCardContent(
                 onEmailClick = {}
             )
             DeveloperRow(
-                roleResId = R.string.info_des_yuni,
+                roleResId = R.string.info_edu_yuni,
+                flagResId = R.drawable.flag_ko,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            DeveloperRow(
+                roleResId = R.string.info_edu_jiyoung,
                 flagResId = R.drawable.flag_ko,
                 hasEmail = false,
                 onEmailClick = {}
@@ -85,19 +91,41 @@ fun CreatedByCardContent(
                 hasEmail = false,
                 onEmailClick = {}
             )
+            DeveloperRow(
+                roleResId = R.string.info_tl_rosalina,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            DeveloperRow(
+                roleResId = R.string.info_tl_helia,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            DeveloperRow(
+                roleResId = R.string.info_tl_lourenco,
+                flagResId = R.drawable.flag_tet,
+hasEmail = false,
+                onEmailClick = {}
+            )
+            DeveloperRow(
+                roleResId = R.string.info_tl_alexandrino,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
         }
     }
 }
 
 @Composable
-fun SmallCreatedByCardContent(
-    scaleFactor: Float,
-    onAction: (SettingAction) -> Unit
-) {
+fun SmallCreatedByCardContent(scaleFactor: Float, onAction: (SettingAction) -> Unit, isTablet: Boolean) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding((12 * scaleFactor).dp),
+            .fillMaxSize()
+            .padding((12 * scaleFactor).dp)
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LocalizedText(
@@ -106,7 +134,7 @@ fun SmallCreatedByCardContent(
             color = AppColors.neutral800
         )
 
-        Spacer(modifier = Modifier.height((8 * scaleFactor).dp))
+        Spacer(modifier = Modifier.height(if (isTablet) (16 * scaleFactor).dp else (8 * scaleFactor).dp))
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -131,7 +159,13 @@ fun SmallCreatedByCardContent(
                 onEmailClick = {}
             )
             SmallDeveloperRow(
-                roleResId = R.string.info_des_yuni,
+                roleResId = R.string.info_edu_yuni,
+                flagResId = R.drawable.flag_ko,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            SmallDeveloperRow(
+                roleResId = R.string.info_edu_jiyoung,
                 flagResId = R.drawable.flag_ko,
                 hasEmail = false,
                 onEmailClick = {}
@@ -142,19 +176,41 @@ fun SmallCreatedByCardContent(
                 hasEmail = false,
                 onEmailClick = {}
             )
+            SmallDeveloperRow(
+                roleResId = R.string.info_tl_rosalina,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            SmallDeveloperRow(
+                roleResId = R.string.info_tl_helia,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            SmallDeveloperRow(
+                roleResId = R.string.info_tl_lourenco,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            SmallDeveloperRow(
+                roleResId = R.string.info_tl_alexandrino,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
         }
     }
 }
 
 @Composable
-fun VerySmallCreatedByCardContent(
-    scaleFactor: Float,
-    onAction: (SettingAction) -> Unit
-) {
+fun VerySmallCreatedByCardContent(scaleFactor: Float, onAction: (SettingAction) -> Unit, isTablet: Boolean) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding((8 * scaleFactor).dp),
+            .fillMaxSize()
+            .padding((8 * scaleFactor).dp)
+            .verticalScroll(rememberScrollState()), // Add vertical scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LocalizedText(
@@ -163,7 +219,7 @@ fun VerySmallCreatedByCardContent(
             color = AppColors.neutral800
         )
 
-        Spacer(modifier = Modifier.height((6 * scaleFactor).dp))
+        Spacer(modifier = Modifier.height(if (isTablet) (12 * scaleFactor).dp else (6 * scaleFactor).dp))
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -188,7 +244,13 @@ fun VerySmallCreatedByCardContent(
                 onEmailClick = {}
             )
             VerySmallDeveloperRow(
-                roleResId = R.string.info_des_yuni,
+                roleResId = R.string.info_edu_yuni,
+                flagResId = R.drawable.flag_ko,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_edu_jiyoung,
                 flagResId = R.drawable.flag_ko,
                 hasEmail = false,
                 onEmailClick = {}
@@ -196,6 +258,30 @@ fun VerySmallCreatedByCardContent(
             VerySmallDeveloperRow(
                 roleResId = R.string.info_cm_jisu,
                 flagResId = R.drawable.flag_ko,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_tl_rosalina,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_tl_helia,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_tl_lourenco,
+                flagResId = R.drawable.flag_tet,
+                hasEmail = false,
+                onEmailClick = {}
+            )
+            VerySmallDeveloperRow(
+                roleResId = R.string.info_tl_alexandrino,
+                flagResId = R.drawable.flag_tet,
                 hasEmail = false,
                 onEmailClick = {}
             )
@@ -227,13 +313,13 @@ fun DeveloperRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LocalizedText(
-                resId = roleResId,
-                style = ResponsiveTextUtils.getDeveloperNameTextStyle(),
-                color = AppColors.neutral800,
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
+            Column(modifier = Modifier.weight(1f)) {
+                LocalizedText(
+                    resId = roleResId,
+                    style = ResponsiveTextUtils.getDeveloperNameTextStyle(),
+                    color = AppColors.neutral800,
+                )
+            }
 
             if (hasEmail) {
                 Card(
@@ -298,14 +384,15 @@ fun SmallDeveloperRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LocalizedText(
-                resId = roleResId,
-                style = ResponsiveTextUtils.getDeveloperNameTextStyle().copy(
-                    fontSize = ResponsiveTextUtils.getDeveloperNameTextStyle().fontSize * 0.75f
-                ),
-                color = AppColors.neutral800,
-                modifier = Modifier.weight(1f)
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                LocalizedText(
+                    resId = roleResId,
+                    style = ResponsiveTextUtils.getDeveloperNameTextStyle().copy(
+                        fontSize = ResponsiveTextUtils.getDeveloperNameTextStyle().fontSize * 0.75f
+                    ),
+                    color = AppColors.neutral800,
+                )
+            }
 
             if (hasEmail) {
                 Card(
@@ -370,14 +457,15 @@ fun VerySmallDeveloperRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            LocalizedText(
-                resId = roleResId,
-                style = ResponsiveTextUtils.getDeveloperNameTextStyle().copy(
-                    fontSize = ResponsiveTextUtils.getDeveloperNameTextStyle().fontSize * 0.65f
-                ),
-                color = AppColors.neutral800,
-                modifier = Modifier.weight(1f)
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                LocalizedText(
+                    resId = roleResId,
+                    style = ResponsiveTextUtils.getDeveloperNameTextStyle().copy(
+                        fontSize = ResponsiveTextUtils.getDeveloperNameTextStyle().fontSize * 0.65f
+                    ),
+                    color = AppColors.neutral800,
+                )
+            }
 
             if (hasEmail) {
                 Card(

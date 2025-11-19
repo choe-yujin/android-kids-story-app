@@ -1,0 +1,135 @@
+{
+  "bookId": 604,
+  "language": "ko",
+  "title": "햇님의 하루",
+  "summary": "이 책은 해님의 하루 동안의 모습을 통해 자연과 생명의 소중함을 아이들에게 느끼게 하는 이야기입니다.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["햇님의 하루"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": [
+        "[그림 작가]",
+        "동티모르 위니브루마 유치원 아동",
+        "Patrocino, Joel, Noel, Bernadete, Jenildo, Narlia, Monica cessy, Berta pinto, Teodoru, Vidal, Lindalva, Odilton",
+        "",
+        "그리고 유니 선생님"
+      ],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["안녕 난 햇님이야"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["바다를 넘어 하루를 시작하지"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["바다를 넘어 나무 위에 서 있지"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["내 덕분에 씨앗은 자라"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["자라서 꽃이 되기도 하고"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 7,
+      "texts": ["나무가 되기도 해"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 8,
+      "texts": ["이렇게 나무와 꽃들이 내 덕분에 많아지지"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 9,
+      "texts": ["난 산을 넘어 갈 수도 있어"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 10,
+      "texts": ["사람들이 있는 공원을 비추기도 해"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 11,
+      "texts": ["물에 사는 물고기도 나를 필요로 해"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 12,
+      "texts": ["이렇게 하루가 끝나면 난 다시 바다 밑으로 돌아가, 안녕"],
+      "pageType": "SPLIT"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "햇님은 하루를 어떻게 시작하나요?",
+        "keyConcepts": ["바다", "하루 시작"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "햇님이 하루 동안 하는 일들은 무엇인가요?",
+        "keyConcepts": ["씨앗 성장", "꽃과 나무", "사람과 물고기"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "햇님 하루 따라하기",
+      "description": "햇님처럼 하루 동안 자연 속에서 일어나는 일들을 관찰하고 그림이나 글로 표현해 보세요.",
+      "type": "TEXT_RESPONSE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "씨앗",
+      "definition": "식물이 자라기 위해 땅에 심는 작은 알",
+      "pageNumber": 5
+    },
+    {
+      "word": "꽃",
+      "definition": "식물에서 아름답게 피는 부분",
+      "pageNumber": 6
+    },
+    {
+      "word": "나무",
+      "definition": "땅에서 자라며 줄기와 잎을 가진 큰 식물",
+      "pageNumber": 7
+    },
+    {
+      "word": "공원",
+      "definition": "사람들이 쉬고 자연을 즐길 수 있는 공간",
+      "pageNumber": 10
+    },
+    {
+      "word": "물고기",
+      "definition": "물 속에서 사는 생물",
+      "pageNumber": 11
+    }
+  ],
+  "contributors": {
+    "글": ["유니 선생님"],
+    "삽화": ["동티모르 위니브루마 유치원 아동 - Patrocino, Joel, Noel, Bernadete, Jenildo, Narlia, Monica Cessy, Berta Pinto, Teodoru, Vidal, Lindalva, Odilton"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "위니브루마 유치원 & 유니 선생님",
+  "copyright": "is licensed under CC BY 4.0 by 위니브루마 유치원 & 유니 선생님"
+}

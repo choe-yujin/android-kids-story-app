@@ -70,6 +70,7 @@ object AppColors {
      */
     val green50 = Color(0xFFE9FCE9)  // 매우 밝은 녹색 배경
     val green100 = Color(0xFFC3F6C4) // 밝은 녹색 배경
+    val green500 = Color(0xFF47A714) // 중간 녹색
     val green600 = Color(0xFF2DA148) // 기본 성공 색상
     val green700 = Color(0xFF237D38) // 진한 성공 색상
 
@@ -108,5 +109,12 @@ object AppColors {
     val level4 = Color(0xFF791813)
     val level5 = Color(0xFF1F002C)
 
-
+    /**
+     * Grade 색상 - 필터 레벨 및 카테고리용
+     */
+    val grade1 = Color(0xFF47A714)
+    val grade2 = Color(0xFFC9A93B) 
+    val grade3 = Color(0xFFE38400)
+    val grade4 = Color(0xFFC52820)
+    val grade5 = Color(0xFF67387A)
 }

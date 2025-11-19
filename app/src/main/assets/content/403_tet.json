@@ -1,0 +1,107 @@
+{
+  "bookId": 403,
+  "language": "tet",
+  "title": "Laho-kiik no Leão",
+  "summary": "Livru ida ne'ebe hatudu historia amizade entre laho-kiik no leaun. Naroman ajuda no hirus sira, festa iha laran ho moris ne'ebé mak ajuda kmanek sira komprende.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["Laho-kiik no Leão"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": ["Laho-kiik ne'ebé hamlaha ida buka hahán iha ai-laran."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["Maibé saida maka laho-kiik hasoru ne'e la'ós hahán, maibé leão ida!", "Leão ne’ebé nia hasoru mós hamlaha uitoan."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["Leão ne'e namoron ho maka'as.", "Laho-kiik ne'e ko'alia ho nakdedar dehan,"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["\"Leão, favór ida keta han ha'u.", "Husik tiha ha'u ba.", "Loron ruma, ha'u sei ajuda ó.\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["Leão dehan,", "\"Laho-kiik ida hanesan ó ne'e dehan ajuda ha'u?", "Hanoin hanesan beik.", "Maibé ha'u ladún hamlaha liu, nune'e ha'u sei husik tiha ó.\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["Depois liu tiha loron hira, leão nia ain belit tiha ba arame, no nia labele book an."],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 7,
+      "texts": ["\"Ajuda lai!\"", "No leão neʼe hakilar hodi dehan:", "\"Ha'u labele book aan!\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 8,
+      "texts": ["Depois laho-kiik ne'e halai mai hodi dehan,", "\"Leão, ha'u sei ajuda tesi arame ho ha'u-nia nehan.\""],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 9,
+      "texts": ["Leão dehan,", "\"Obrigado barak, laho-kiik", "No ha'u deskulpa tanba hatún ó.\""],
+      "pageType": "SPLIT"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "Saida mak relasaun entre laho-kiik no leaun?",
+        "keyConcepts": ["laho-kiik", "leaun", "amizade", "ajuda"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "Kahak laho-kiik ajuda leaun?",
+        "keyConcepts": ["arame", "tesi", "ajuda", "obrigado"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "Kontadór amizade",
+      "description": "Hakarak historia kona-ba amizade no ajuda no leet buat ne'ebé ita sente kona-ba ne'e.",
+      "type": "TEXT_RESPONSE"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "Leaun",
+      "definition": "Animal boot ne'ebé naran leaun, mak moris iha rai ne'ebe foun.",
+      "pageNumber": 2
+    },
+    {
+      "word": "Hakilar",
+      "definition": "Fó sonor ruidosu no maka'as atu assusta ema ka animal.",
+      "pageNumber": 3
+    },
+    {
+      "word": "Obrigado",
+      "definition": "Fó dalan uitoan atu hatete naroman maka kontente.",
+      "pageNumber": 9
+    }
+  ],
+  "contributors": {
+    "Writer": ["Mary Malhotra"],
+    "Illustrator": ["Katie Kleinbaum"],
+    "Translator": ["Rosarina"],
+    "Proofreader": ["Jisu An", "Lia"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "originalCopyright": "is a derivative of 'The Mouse and the Lion' by Mary Malhotra and Katie Kleinbaum, used under CC BY 4.0.",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}

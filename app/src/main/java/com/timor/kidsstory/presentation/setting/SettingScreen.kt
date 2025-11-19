@@ -10,7 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.timor.kidsstory.presentation.setting.components.*
+import com.timor.kidsstory.presentation.setting.components.EmailDialog
+import com.timor.kidsstory.presentation.setting.components.WideScreenCardLayout
+import com.timor.kidsstory.presentation.setting.components.NormalScreenCardLayout
+import com.timor.kidsstory.presentation.setting.components.SettingHeader
+import com.timor.kidsstory.presentation.setting.components.SmallScreenCardLayout
+import com.timor.kidsstory.presentation.setting.components.VerySmallScreenCardLayout
 import com.timor.kidsstory.ui.theme.AppColors
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 import com.timor.kidsstory.ui.theme.ResponsiveTextUtils
@@ -32,6 +37,7 @@ fun SettingScreen(
     val isWideScreen = screenWidth >= 720 // 갤럭시 폴드 등 넓은 화면
     val isVerySmallScreen = screenWidth < 420 // 매우 작은 화면 (420dp 미만) - Pixel 폰 포함
     val isSmallScreen = screenWidth < 500 // 작은 화면 (500dp 미만)
+    val isTablet = screenWidth >= 600 // 태블릿 화면 여부
 
     Box(
         modifier = Modifier
@@ -50,28 +56,32 @@ fun SettingScreen(
                         state = state,
                         onAction = onAction,
                         scaleFactor = scaleFactor,
-                        screenWidth = screenWidth
+                        screenWidth = screenWidth,
+                        isTablet = isTablet
                     )
                 }
                 isVerySmallScreen -> {
                     VerySmallScreenCardLayout(
                         state = state,
                         onAction = onAction,
-                        scaleFactor = scaleFactor
+                        scaleFactor = scaleFactor,
+                        isTablet = isTablet
                     )
                 }
                 isSmallScreen -> {
                     SmallScreenCardLayout(
                         state = state,
                         onAction = onAction,
-                        scaleFactor = scaleFactor
+                        scaleFactor = scaleFactor,
+                        isTablet = isTablet
                     )
                 }
                 else -> {
                     NormalScreenCardLayout(
                         state = state,
                         onAction = onAction,
-                        scaleFactor = scaleFactor
+                        scaleFactor = scaleFactor,
+                        isTablet = isTablet
                     )
                 }
             }

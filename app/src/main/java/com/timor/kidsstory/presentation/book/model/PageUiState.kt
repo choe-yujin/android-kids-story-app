@@ -22,6 +22,7 @@ data class PageUiState(
     val texts: List<String>,
     val pageNumber: Int,   // 1부터 시작하는 페이지 번호 (화면에 표시)
     val totalPages: Int,    // 전체 페이지 수
+    val pageType: String = "SPLIT", // 페이지 레이아웃 타입
     val textSectionState: PageTextSectionUiState = PageTextSectionUiState(),
     val contributors: List<Contributor> = emptyList(),
     val sponsors: List<String>? = null,

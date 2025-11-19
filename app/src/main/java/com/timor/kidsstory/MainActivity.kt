@@ -18,13 +18,13 @@ import com.timor.kidsstory.presentation.bookshelf.components.AppUpdateDialog
 import androidx.compose.runtime.*
 import android.util.Log
 import kotlinx.coroutines.delay
-import com.timor.kidsstory.domain.util.LocaleHelper.getSystemLanguageCode
 import com.timor.kidsstory.domain.util.LocaleHelper.updateLanguage
 import com.timor.kidsstory.presentation.navigation.NavGraph
 import com.timor.kidsstory.ui.theme.KidsStoryTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 
 /**
  * 앱의 진입점 - 앱의 기본 설정을 담당
@@ -48,39 +48,11 @@ class MainActivity : ComponentActivity() {
         applyLanguageSetting {
             setContent {
                 KidsStoryTheme {
-                    var updateVersionInfo by remember { mutableStateOf<AppVersionInfo?>(null) }
-                    var showUpdateDialog by remember { mutableStateOf(false) }
-                    
-                    // 앱 시작 시 업데이트 체크
-                    LaunchedEffect(Unit) {
-                        checkForAppUpdates { versionInfo ->
-                            updateVersionInfo = versionInfo
-                            showUpdateDialog = versionInfo != null
-                        }
-                    }
-                    
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
                         NavGraph() // 내비게이션 그래프 설정
-                        
-                        // 업데이트 다이얼로그 표시
-                        if (showUpdateDialog && updateVersionInfo != null) {
-                            AppUpdateDialog(
-                                versionInfo = updateVersionInfo!!,
-                                onDismiss = {
-                                    showUpdateDialog = false
-                                    updateVersionInfo = null
-                                },
-                                onPostpone = {
-                                    // "나중에" 버튼 클릭 시 3일간 연기
-                                    handlePostponeUpdate(updateVersionInfo!!.latestVersionCode)
-                                    showUpdateDialog = false
-                                    updateVersionInfo = null
-                                }
-                            )
-                        }
                     }
                 }
             }
@@ -167,27 +139,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // 언어 설정 적용
+    /**
+     * 언어 설정 적용 (시스템 언어 무시하고 앱 설정 사용)
+     */
     private fun applyLanguageSetting(onLanguageApplied: () -> Unit) {
         val entryPoint = EntryPointAccessors.fromApplication(applicationContext, UseCaseEntryPoint::class.java)
         val loadLanguageUseCase = entryPoint.getUserPreferenceUseCase()
 
         lifecycleScope.launch {
-            loadLanguageUseCase().collect { userPref ->
-                Logger.e("설정 확인 1: $userPref")
-                val languageCode = if (userPref.languageCode.isBlank()) {
-                    // 저장된 언어가 없으면 시스템 언어 가져오기
-                    getSystemLanguageCode(this@MainActivity)
-                } else {
-                    userPref.languageCode
-                }
-
-                Logger.e("설정 확인 2: $languageCode")
-
-                // 언어 설정
-                updateLanguage(languageCode)
-                onLanguageApplied()     // 완료 콜백
+            // collect 대신 first() 사용하여 한 번만 실행
+            val userPref = loadLanguageUseCase().first()
+            Logger.e("🔍 MainActivity - 사용자 설정 확인: isFirstRun=${userPref.isFirstRun}, languageCode='${userPref.languageCode}', level=${userPref.selectedLevel}")
+            
+            // 첫 실행이 아니고 언어가 설정되어 있을 때만 언어 적용
+            if (!userPref.isFirstRun && userPref.languageCode.isNotBlank()) {
+                Logger.e("🌐 저장된 언어 적용: ${userPref.languageCode}")
+                updateLanguage(userPref.languageCode)
+            } else {
+                // 첫 실행이거나 언어가 설정되지 않은 경우 기본 언어 사용
+                Logger.e("🌐 기본 언어 사용: en (isFirstRun=${userPref.isFirstRun}, languageCode='${userPref.languageCode}')")
+                updateLanguage("en")
             }
+            
+            onLanguageApplied()
         }
     }
 }

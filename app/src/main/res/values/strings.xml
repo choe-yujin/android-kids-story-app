@@ -11,37 +11,22 @@
     <string name="filter_all">All</string>
     <string name="filter_stage">Stage</string>
     <string name="filter_category">Category</string>
-
-    <!-- Category Names -->
-    <string name="category_legend">Legend</string>
-    <string name="category_folktale">Folktale</string>
-    <string name="category_culture">Culture</string>
-    <string name="category_life">Life</string>
-    <string name="category_environment">Environment</string>
-    <string name="category_science">Science</string>
-    <string name="category_adventure">Adventure</string>
     
-    <!-- New Category Groups -->
-    <string name="category_folktales_history">Folktales/History</string>
-    <string name="category_culture_world">Culture/World</string>
+    <!-- Category Groups -->
+    <string name="category_environment_nature">Nature</string>
+    <string name="category_science_math">Science</string>
+    <string name="category_culture_world">Culture</string>
+    <string name="category_social_emotional">Emotion</string>
+    <string name="category_folktales_history">Stories</string>
     <string name="category_daily_life">Daily Life</string>
-    <string name="category_science_nature">Science/Nature</string>
-    <string name="category_social_emotional">Social/Emotion</string>
-    <string name="category_adventure_fantasy">Adventure/Fantasy</string>
+    <string name="category_adventure_fantasy">Adventure</string>
 
     <!-- Reading Levels -->
-    <string name="level_1">First Steps</string>
-    <string name="level_2">Early Reader</string>
-    <string name="level_3">Growing Reader</string>
-    <string name="level_4">Confident Reader</string>
-    <string name="level_5">Advanced Reader</string>
-    
-    <!-- Age Ranges -->
-    <string name="age_3_5">3-5 years</string>
-    <string name="age_5_7">5-7 years</string>
-    <string name="age_7_9">7-9 years</string>
-    <string name="age_9_11">9-11 years</string>
-    <string name="age_11_plus">11+ years</string>
+    <string name="level_1">Level 1</string>
+    <string name="level_2">Level 2</string>
+    <string name="level_3">Level 3</string>
+    <string name="level_4">Level 4</string>
+    <string name="level_5">Level 5</string>
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">No books available</string>
@@ -59,11 +44,16 @@
     <string name="info_off">Off</string>
     <string name="info_on">On</string>
     <string name="info_created_by">Created by</string>
-    <string name="info_dev_yujin">Dev/Yujin Choe</string>
-    <string name="info_dev_jaeyeon">Dev/JaeYeon Kim</string>
-    <string name="info_des_jinsung">Des/Jinsung Kuak</string>
-    <string name="info_des_yuni">Edu/Siyun Lee</string>
-    <string name="info_cm_jisu">CM/Jisu An</string>
+    <string name="info_dev_yujin">Dir/Dev | Yujin Choe</string>
+    <string name="info_dev_jaeyeon">Dev | Jaeyeon Kim</string>
+    <string name="info_des_jinsung">Des | Jinsung Kuak</string>
+    <string name="info_edu_yuni">Edu | Siyun Lee</string>
+    <string name="info_edu_jiyoung">Edu | Jiyoung Shon</string>
+    <string name="info_cm_jisu">MGMT | Jisu An</string>
+    <string name="info_tl_rosalina">Trans. | Rosalina Pereira de Carvalho</string>
+    <string name="info_tl_helia">Trans. | Hélia Venígia Úrsula Guterres</string>
+    <string name="info_tl_lourenco">Trans. | Lourenço Sina-Ily Monteiro Baptista</string>
+    <string name="info_tl_alexandrino">Trans. | Alexandrino Soares Lemos</string>
     <string name="info_about">About</string>
     <string name="info_version">Ver.</string>
     <string name="info_license">License</string>
@@ -79,4 +69,174 @@
     <string name="update_dialog_button_later">Later</string>
     <string name="update_dialog_button_update">Update</string>
     <string name="update_dialog_button_update_now">Update Now</string>
+
+    <!-- Reading Status Bar -->
+    <string name="reading_status_all">All</string>
+    <string name="reading_status_reading">Reading</string>
+    <string name="reading_status_read">Read</string>
+    <string name="reading_status_unread">Unread</string>
+    
+    <!-- Progress and Attendance -->
+    <string name="attendance_day">day</string>
+    <string name="attendance_days">days</string>
+    <string name="reading_progress_fraction">%1$d/%2$d</string>
+    
+    <!-- Book Completion -->
+    <string name="completion_title">Congratulations!</string>
+    <string name="completion_message">You have completed reading this book!</string>
+    <string name="completion_button">Back to Bookshelf</string>
+
+    <!-- Attendance Popup -->
+    <string name="attendance_popup_title_first">First Attendance!</string>
+    <string name="attendance_popup_title_consecutive">%1$d Days in a Row!</string>
+    <string name="attendance_popup_message_first">Grow by reading every day!</string>
+    <string name="attendance_popup_message_consecutive">Your reading habit is amazing!</string>
+    <string name="attendance_popup_streak_info">%1$d-day streak</string>
+    <string name="attendance_popup_button_ok">OK</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_title">Reading Level Test</string>
+    <string name="level_test_question_count">Question %1$d</string>
+    <string name="level_test_skip">SKIP</string>
+    <string name="level_test_next">Next</string>
+    <string name="level_test_result_title">Test Complete!</string>
+    <string name="level_test_recommendation">We recommend starting from Level %d!</string>
+    <string name="level_test_result_accuracy">Accuracy: %d%%</string>
+    <string name="level_test_result_questions">Questions answered: %d</string>
+    <string name="level_test_start_reading">Start Reading</string>
+    <string name="level_test_retake">Retake Test</string>
+    
+    <!-- Language Selection -->
+    <string name="language_selection_title">Choose Language</string>
+    
+    <!-- Management Mode -->
+    <string name="management_mode_button">Manage</string>
+    <string name="management_mode_done">Done</string>
+    <string name="management_tab_download">Download</string>
+    <string name="management_tab_update">Update</string>
+    <string name="management_tab_delete">Delete</string>
+    <string name="management_action_download">Download</string>
+    <string name="management_action_update">Update</string>
+    <string name="management_action_delete">Delete</string>
+    <string name="management_confirm_title_download">Download %d items</string>
+    <string name="management_confirm_title_update">Update %d items</string>
+    <string name="management_confirm_title_delete">Delete %d items</string>
+    <string name="management_confirm_size">Total size: %s</string>
+    <string name="management_confirm_warning">Large download (%s). Wi-Fi recommended.</string>
+    <string name="management_confirm_cancel">Cancel</string>
+    <string name="management_confirm_proceed">Proceed</string>
+    
+    <!-- Bookshelf Management Popup (New) -->
+    <string name="management_popup_download_title">Download %1$d items</string>
+    <string name="management_popup_update_title">Update %1$d items</string>
+    <string name="management_popup_delete_title">Delete %1$d items</string>
+    <string name="management_popup_total_size">Total size: %1$s</string>
+    <string name="management_popup_cancel">Cancel</string>
+    <string name="management_popup_download">Download</string>
+    <string name="management_popup_update">Update</string>
+    <string name="management_popup_delete">Delete</string>
+    <string name="management_popup_warning_large_download">Large download (%1$s). Wi-Fi recommended.</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_introduction">I\'ll create a one-of-a-kind bookshelf just for you! First, let\'s find out your reading level.</string>
+    <string name="level_test_start_button">Find out my reading level!</string>
+    <string name="level_test_skip_button">Skip</string>
+    <string name="level_test_complete_title">I found your reading level!</string>
+    <string name="level_test_result_level">You are a level %d reader!</string>
+    <string name="level_test_start_reading_button">Let\'s go to my own bookshelf!</string>
+    <string name="level_test_retry_button">Shall we try one more time?</string>
+    <string name="level_test_level_display">Level %d</string>
+    <string name="level_test_reading_adventure_title">Let\'s start a reading adventure!</string>
+    <string name="level_test_popup_message">Great job! You\'re a Level %1$d reader! Let\'s explore your new books!</string>
+    <string name="ai_speaking_feature_update_message">AI speaking feature will be updated soon.</string>
+    
+    <!-- Locked Book Dialog -->
+    <string name="locked_book_title">Book is locked</string>
+    <string name="locked_book_message">Read all available books to unlock this one!</string>
+    <string name="locked_book_button">OK</string>
+
+    <!-- Unlock Popup -->
+    <string name="unlock_popup_title">Congratulations!</string>
+    <string name="unlock_popup_message">You have unlocked new books in %1$s!</string>
+    <string name="unlock_popup_button">Awesome!</string>
+    
+    <!-- Admin Screen -->
+    <string name="admin_count_unit">items</string>
+    <string name="admin_selected">selected</string>
+    <string name="admin_download">Download</string>
+    <string name="admin_update">Update</string>
+    <string name="admin_delete">Delete</string>
+    
+    <!-- Story Info Dialog -->
+    <string name="story_info_dialog_title">Story Information</string>
+    <string name="story_summary_label">Summary:</string>
+    <string name="pre_questions_label">Pre-reading questions:</string>
+    <string name="post_questions_label">Post-reading questions:</string>
+    <string name="close_button">Close</string>
+    <string name="no_summary_available">No summary available</string>
+    <string name="no_pre_questions_available">No pre-reading questions</string>
+    <string name="no_post_questions_available">No post-reading questions</string>
+    
+    <!-- Action Completion Dialog -->
+    <string name="action_completion_download_title">Download Complete!</string>
+    <string name="action_completion_update_title">Update Complete!</string>
+    <string name="action_completion_delete_title">Delete Complete!</string>
+    <string name="action_completion_download_message">Successfully downloaded %d items</string>
+    <string name="action_completion_update_message">Successfully updated %d items</string>
+    <string name="action_completion_delete_message">Successfully deleted %d items</string>
+    <string name="action_completion_button_ok">OK</string>
+    
+    <!-- Download Progress Dialog -->
+    <string name="download_progress_title">Downloading…</string>
+    <string name="update_progress_title">Updating…</string>
+    <string name="delete_progress_title">Deleting…</string>
+    <string name="download_progress_message">Downloading %d items</string>
+    <string name="update_progress_message">Updating %d items</string>
+    <string name="delete_progress_message">Deleting %d items</string>
+    <string name="download_progress_wait_message">Please wait a moment…</string>
+
+    <!-- Side Project Information -->
+    <string name="side_project_title">Side Project Made Together</string>
+    <string name="side_project_description">TaleTail started from a small idea: \"I wish there was an app like this.\" What began as a personal project created in spare time has become a project for everyone as people who share our vision have joined us one by one.\n\nWe work purely for the joy of sharing talents, without ads or sponsorships. We value working with \'joy\' rather than \'obligation,\' each finding their own enjoyable way to contribute at their own pace.\n\nWe welcome contributions in various fields like illustration, translation, and education to make our stories richer. We are especially looking forward to new language translators so more children can meet fairy tales in their own language.\n\nPlease add your joyful energy!</string>
+    <string name="collaboration_title">How Are We Collaborating?</string>
+    <string name="collaboration_description">We collaborate in a free and horizontal way:\n\n• We aim for free communication.\nThere are no regular meetings or reporting procedures. We freely share opinions and add ideas whenever needed through online channels (KakaoTalk, Notion, Discord, etc.).\n\n• All processes are shared transparently.\nYou can become a new project leader who expands TaleTail\'s world through idea proposals (e.g., building new translation systems, creating educational content linked to fairy tales, planning \'I\'m Also a Writer\' contests). Progress is made public through Notion, making it easy to propose or participate in desired projects.\n\n• We respect each person\'s pace.\nThere are no strict deadlines or mandatory quotas. Real life comes first! We respect a culture where everyone participates as joyfully as they can according to their own schedule and condition.\n\n• You can participate proactively.\nThere\'s no one here who assigns tasks. If you have your own ideas you want to create with TaleTail, or if you want to proactively find and solve problems, you\'re always welcome. Please look around the ongoing projects first and let us hear your voice about what fun things we can do together.</string>
+
+    <!-- Management Mode - Plurals -->
+    <plurals name="management_confirm_title_download_plural">
+        <item quantity="one">Download %d item</item>
+        <item quantity="other">Download %d items</item>
+    </plurals>
+    <plurals name="management_confirm_title_update_plural">
+        <item quantity="one">Update %d item</item>
+        <item quantity="other">Update %d items</item>
+    </plurals>
+    <plurals name="management_confirm_title_delete_plural">
+        <item quantity="one">Delete %d item</item>
+        <item quantity="other">Delete %d items</item>
+    </plurals>
+    
+    <!-- Management Popup - Plurals -->
+    <plurals name="management_popup_download_title_plural">
+        <item quantity="one">Download %1$d item</item>
+        <item quantity="other">Download %1$d items</item>
+    </plurals>
+    <plurals name="management_popup_update_title_plural">
+        <item quantity="one">Update %1$d item</item>
+        <item quantity="other">Update %1$d items</item>
+    </plurals>
+    <plurals name="management_popup_delete_title_plural">
+        <item quantity="one">Delete %1$d item</item>
+        <item quantity="other">Delete %1$d items</item>
+    </plurals>
+    
+    <!-- TTS Download Dialog -->
+    <string name="tts_download_title">Download AI Voice Engine</string>
+    <string name="tts_download_message">To hear the book with AI voice, you need a voice engine (about 36MB). Download now?</string>
+    <string name="tts_downloading">Downloading…</string>
+    <string name="tts_download_button">Download</string>
+    <string name="tts_download_later">Later</string>
+    <string name="tts_download_progress">%d%%</string>
+    <string name="tts_download_error">Voice engine coming soon. Please try again later.</string>
+    <string name="tts_download_error_network">No internet connection. Please check your connection.</string>
+    <string name="tts_download_error_generic">AI voice engine coming soon. Please try again later.</string>
 </resources>

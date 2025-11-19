@@ -4,48 +4,34 @@
     <!-- Bookcover -->
     <string name="bookcover_download">다운로드</string>
     <string name="bookcover_downloading">다운로드 중…</string>
-    <string name="bookcover_retry">다시 시도</string>
+    <string name="bookcover_retry">재시도</string>
     <string name="bookcover_update">업데이트</string>
 
     <!-- Bookshelf Filter Bar -->
     <string name="filter_all">전체</string>
     <string name="filter_stage">단계</string>
-    <string name="filter_category">카테고리</string>
-
-    <!-- Category Names -->
-    <string name="category_legend">전설</string>
-    <string name="category_folktale">민담</string>
-    <string name="category_culture">문화</string>
-    <string name="category_life">일상</string>
-    <string name="category_environment">환경</string>
-    <string name="category_science">과학</string>
-    <string name="category_adventure">모험</string>
+    <string name="filter_category">주제</string>
     
-    <!-- New Category Groups -->
-    <string name="category_folktales_history">민담/역사</string>
+    <!-- Category Groups -->
+    <string name="category_environment_nature">환경/자연</string>
+    <string name="category_science_math">수학/과학</string>
     <string name="category_culture_world">문화/세계</string>
-    <string name="category_daily_life">일상/생활</string>
-    <string name="category_science_nature">과학/자연</string>
     <string name="category_social_emotional">사회/정서</string>
+    <string name="category_folktales_history">이야기/역사</string>
+    <string name="category_daily_life">일상/생활</string>
     <string name="category_adventure_fantasy">모험/판타지</string>
 
     <!-- Reading Levels -->
-    <string name="level_1">첫걸음</string>
-    <string name="level_2">초급 읽기</string>
-    <string name="level_3">중급 읽기</string>
-    <string name="level_4">숙련 읽기</string>
-    <string name="level_5">고급 읽기</string>
-    
-    <!-- Age Ranges -->
-    <string name="age_3_5">3-5세</string>
-    <string name="age_5_7">5-7세</string>
-    <string name="age_7_9">7-9세</string>
-    <string name="age_9_11">9-11세</string>
-    <string name="age_11_plus">11세 이상</string>
+    <string name="level_1">1단계</string>
+    <string name="level_2">2단계</string>
+    <string name="level_3">3단계</string>
+    <string name="level_4">4단계</string>
+    <string name="level_5">5단계</string>
+
 
     <!-- Empty State Messages -->
     <string name="empty_bookshelf_title">책이 없습니다</string>
-    <string name="empty_bookshelf_message">인터넷에 연결하여 새 책을 다운로드하세요</string>
+    <string name="empty_bookshelf_message">인터넷 연결을 확인하여 새로운 책을 다운로드하세요</string>
     <string name="empty_filter_title">검색 결과가 없습니다</string>
     <string name="empty_filter_message">필터 설정을 변경해 보세요</string>
     <string name="empty_downloading">새로운 책을 찾는 중…</string>
@@ -58,25 +44,192 @@
     <string name="info_sound_volume">효과음 볼륨</string>
     <string name="info_off">끄기</string>
     <string name="info_on">켜기</string>
-    <string name="info_created_by">제작진</string>
-    <string name="info_dev_yujin">개발/최유진</string>
-    <string name="info_dev_jaeyeon">개발/김재연</string>
-    <string name="info_des_jinsung">디자인/곽진성</string>
-    <string name="info_des_yuni">교육/이시윤</string>
-    <string name="info_cm_jisu">사업운영/안지수</string>
+    <string name="info_created_by">제작자</string>
+    <string name="info_dev_yujin">총괄/개발 | 최유진</string>
+    <string name="info_dev_jaeyeon">개발 | 김재연</string>
+    <string name="info_des_jinsung">디자인 | 곽진성</string>
+    <string name="info_edu_yuni">교육 | 이시윤</string>
+    <string name="info_edu_jiyoung">교육 | 손지영</string>
+    <string name="info_cm_jisu">서비스운영 | 안지수</string>
+    <string name="info_tl_rosalina">번역 | Rosalina Pereira de Carvalho</string>
+    <string name="info_tl_helia">번역 | Hélia Venígia Úrsula Guterres</string>
+    <string name="info_tl_lourenco">번역 | Lourenço Sina-Ily Monteiro Baptista</string>
+    <string name="info_tl_alexandrino">번역 | Alexandrino Soares Lemos</string>ㄹ
     <string name="info_about">정보</string>
     <string name="info_version">버전</string>
-    <string name="info_license">라이선스</string>
+    <string name="info_license">라이센스</string>
 
     <!-- Reading Screen -->
     <string name="reading_scroll_hint">스크롤하여 더 읽기</string>
 
     <!-- Update Dialog -->
-    <string name="update_dialog_title_optional">업데이트 알림</string>
+    <string name="update_dialog_title_optional">업데이트 가능</string>
     <string name="update_dialog_title_required">필수 업데이트</string>
     <string name="update_dialog_new_version">새 버전: %s</string>
-    <string name="update_dialog_release_notes">변경사항:</string>
+    <string name="update_dialog_release_notes">새로운 기능:</string>
     <string name="update_dialog_button_later">나중에</string>
     <string name="update_dialog_button_update">업데이트</string>
     <string name="update_dialog_button_update_now">지금 업데이트</string>
+
+    <!-- Reading Status Bar -->
+    <string name="reading_status_all">전체</string>
+    <string name="reading_status_reading">읽는 중</string>
+    <string name="reading_status_read">읽음</string>
+    <string name="reading_status_unread">안 읽음</string>
+    
+    <!-- Progress and Attendance -->
+    <string name="attendance_day">일</string>
+    <string name="attendance_days">일</string>
+    <string name="reading_progress_fraction">%1$d/%2$d</string>
+    
+    <!-- Book Completion -->
+    <string name="completion_title">축하합니다!</string>
+    <string name="completion_message">책을 다 읽었어요!</string>
+    <string name="completion_button">책장으로 돌아가기</string>
+
+    <!-- Attendance Popup -->
+    <string name="attendance_popup_title_first">첫 출석을 축하해요!</string>
+    <string name="attendance_popup_title_consecutive">연속 %1$d일째 출석!</string>
+    <string name="attendance_popup_message_first">매일 책을 읽으며 성장해보세요!</string>
+    <string name="attendance_popup_message_consecutive">꾸준한 독서 습관이 멋져요!</string>
+    <string name="attendance_popup_streak_info">%1$d일째 연속 출석</string>
+    <string name="attendance_popup_button_ok">확인</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_title">읽기 레벨 테스트</string>
+    <string name="level_test_question_count">문제 %1$d</string>
+    <string name="level_test_skip">건너뛰기</string>
+    <string name="level_test_next">다음</string>
+    <string name="level_test_result_title">테스트 완료!</string>
+    <string name="level_test_recommendation">Level %d부터 독서를 시작해보시는 것을 추천해요!</string>
+    <string name="level_test_result_accuracy">정답률: %d%%</string>
+    <string name="level_test_result_questions">답변한 문제: %d개</string>
+    <string name="level_test_start_reading">독서 시작하기</string>
+    <string name="level_test_retake">다시 테스트</string>
+    
+    <!-- Language Selection -->
+    <string name="language_selection_title">언어 선택</string>
+    
+    <!-- Management Mode -->
+    <string name="management_mode_button">관리</string>
+    <string name="management_mode_done">완료</string>
+    <string name="management_tab_download">다운로드</string>
+    <string name="management_tab_update">업데이트</string>
+    <string name="management_tab_delete">삭제</string>
+    <string name="management_action_download">다운로드</string>
+    <string name="management_action_update">업데이트</string>
+    <string name="management_action_delete">삭제</string>
+    <string name="management_confirm_title_download">%d개 항목 다운로드</string>
+    <string name="management_confirm_title_update">%d개 항목 업데이트</string>
+    <string name="management_confirm_title_delete">%d개 항목 삭제</string>
+    <string name="management_confirm_size">총 용량: %s</string>
+    <string name="management_confirm_warning">용량이 큽니다 (%s). Wi-Fi 연결을 권장합니다.</string>
+    <string name="management_confirm_cancel">취소</string>
+    <string name="management_confirm_proceed">진행</string>
+    
+    <!-- Bookshelf Management Popup (New) -->
+    <string name="management_popup_download_title">%1$d개 항목 다운로드</string>
+    <string name="management_popup_update_title">%1$d개 항목 업데이트</string>
+    <string name="management_popup_delete_title">%1$d개 항목 삭제</string>
+    <string name="management_popup_total_size">총 용량: %1$s</string>
+    <string name="management_popup_cancel">취소</string>
+    <string name="management_popup_download">다운로드</string>
+    <string name="management_popup_update">업데이트</string>
+    <string name="management_popup_delete">삭제</string>
+    <string name="management_popup_warning_large_download">용량이 큽니다 (%1$s). Wi-Fi 연결을 권장합니다.</string>
+    
+    <!-- Level Test -->
+    <string name="level_test_introduction">세상에 단 하나뿐인 너만의 책장을 만들어 줄게! 먼저 너의 독서 레벨을 알려줘.</string>
+    <string name="level_test_start_button">나의 독서 레벨 알아보기!</string>
+    <string name="level_test_skip_button">건너뛰기</string>
+    <string name="level_test_complete_title">너의 독서 레벨을 찾았어!</string>
+    <string name="level_test_result_level">너는 레벨 %d의 독서가야!</string>
+    <string name="level_test_start_reading_button">나만의 책장으로 출발!</string>
+    <string name="level_test_retry_button">한 번 더 해볼까?</string>
+    <string name="level_test_level_display">레벨 %d</string>
+    <string name="level_test_popup_message">정말 잘했어요! 당신은 레벨 %1$d 독서가! 새로운 책들을 탐험해 볼까요?</string>
+    <string name="level_test_reading_adventure_title">독서 모험을 시작해 볼까요!</string>
+    <string name="ai_speaking_feature_update_message">AI 음성 기능이 곧 업데이트될 예정입니다.</string>
+    
+    <!-- Locked Book Dialog -->
+    <string name="locked_book_title">책이 잠겨있어요</string>
+    <string name="locked_book_message">이 책은 아직 잠겨 있어요. 지금 읽을 수 있는 다른 책들을 모두 읽으면 이 책도 읽을 수 있답니다!</string>
+    <string name="locked_book_button">알겠어요!</string>
+
+    <!-- Unlock Popup -->
+    <string name="unlock_popup_title">축하해요!</string>
+    <string name="unlock_popup_message">와! %1$s의 새로운 책들이 열렸어요! 신나는 모험을 떠나볼까요?</string>
+    <string name="unlock_popup_button">신나요!</string>
+    
+    <!-- Admin Screen -->
+    <string name="admin_count_unit">개</string>
+    <string name="admin_selected">선택됨</string>
+    <string name="admin_download">다운로드</string>
+    <string name="admin_update">업데이트</string>
+    <string name="admin_delete">삭제</string>
+    
+    <!-- Story Info Dialog -->
+    <string name="story_info_dialog_title">동화 정보</string>
+    <string name="story_summary_label">줄거리:</string>
+    <string name="pre_questions_label">사전 질문:</string>
+    <string name="post_questions_label">사후 질문:</string>
+    <string name="close_button">닫기</string>
+    <string name="no_summary_available">줄거리 정보가 없습니다</string>
+    <string name="no_pre_questions_available">사전 질문이 없습니다</string>
+    <string name="no_post_questions_available">사후 질문이 없습니다</string>
+    
+    <!-- Management Mode - Plurals (한국어는 단복수 구분 없음) -->
+    <plurals name="management_confirm_title_download_plural">
+        <item quantity="other">%d개 항목 다운로드</item>
+    </plurals>
+    <plurals name="management_confirm_title_update_plural">
+        <item quantity="other">%d개 항목 업데이트</item>
+    </plurals>
+    <plurals name="management_confirm_title_delete_plural">
+        <item quantity="other">%d개 항목 삭제</item>
+    </plurals>
+    
+    <!-- Management Popup - Plurals -->
+    <plurals name="management_popup_download_title_plural">
+        <item quantity="other">%1$d개 항목 다운로드</item>
+    </plurals>
+    <plurals name="management_popup_update_title_plural">
+        <item quantity="other">%1$d개 항목 업데이트</item>
+    </plurals>
+    <plurals name="management_popup_delete_title_plural">
+        <item quantity="other">%1$d개 항목 삭제</item>
+    </plurals>
+    
+    <!-- 🆕 Action Completion Messages -->
+    <string name="action_completion_download_title">다운로드 완료!</string>
+    <string name="action_completion_update_title">업데이트 완료!</string>
+    <string name="action_completion_delete_title">삭제 완료!</string>
+    <string name="action_completion_download_message">성공적으로 %d개 항목을 다운로드했습니다</string>
+    <string name="action_completion_update_message">성공적으로 %d개 항목을 업데이트했습니다</string>
+    <string name="action_completion_delete_message">성공적으로 %d개 항목을 삭제했습니다</string>
+    <string name="action_completion_button_ok">확인</string>
+    
+    <!-- 🆕 Download Progress Dialog -->
+    <string name="download_progress_title">다운로드 중…</string>
+    <string name="update_progress_title">업데이트 중…</string>
+    <string name="delete_progress_title">삭제 중…</string>
+    <string name="download_progress_message">%d개 항목 다운로드 중</string>
+    <string name="update_progress_message">%d개 항목 업데이트 중</string>
+    <string name="delete_progress_message">%d개 항목 삭제 중</string>
+    <string name="download_progress_wait_message">잠시만 기다려 주세요…</string>
+    
+    <!-- 🆕 사이드 프로젝트 정보 -->
+    <string name="side_project_title">함께 만드는 사이드 프로젝트</string>
+    <string name="side_project_description">테일테일은 "이런 앱이 있으면 좋겠다"는 작은 생각에서 시작되었어요. 혼자 사부작거리며 남는 시간에 만들던 개인 프로젝트에, 취지에 공감하는 좋은 분들이 하나둘 모여 \'모두의 프로젝트\'가 되었습니다.\n\n그래서 저희는 광고나 기부 없이, 재능을 나누는 즐거움만으로 움직입니다. \'의무감\'이 아닌 \'즐거움\'으로, 각자 가능한 시간에 자신이 가장 즐겁게 기여할 수 있는 지점을 찾아 함께하는 방식을 가장 소중히 여깁니다.\n\n이야기를 더 풍성하게 만들어 줄 그림, 번역, 교육 등 다양한 분야의 참여를 기다립니다. 특히 더 많은 아이들이 자신의 언어로 동화를 만날 수 있도록, 새로운 언어 번역가의 참여를 기다리고 있습니다.\n\n당신의 즐거운 에너지를 보태주세요!</string>
+    <string name="collaboration_title">어떻게 함께하고 있나요?</string>
+    <string name="collaboration_description">저희는 다음과 같은 방식으로 자유롭고 수평적으로 협업합니다:\n\n• 자유로운 소통을 지향해요.\n정기적인 회의나 보고 절차는 없어요. 온라인 채널(카톡, 노션, 디스코드 등)을 통해 필요할 때마다 자유롭게 의견을 나누고 아이디어를 더합니다.\n\n• 모든 과정은 투명하게 공유돼요.\n아이디어 제안을 통해 \'테일테일\'의 세상을 넓히는 새로운 프로젝트 리더가 될 수 있습니다. (예: 새로운 번역 시스템 구축, 동화 연계 교육 콘텐츠 제작, \'나도 작가\' 공모전 기획 등) 진행 상황은 노션을 통해 공개되어, 원하는 프로젝트를 쉽게 제안하거나 참여할 수 있습니다.\n\n• 자신의 속도를 존중해요.\n엄격한 마감일이나 의무 할당량은 없습니다. 각자의 현생이 최우선! 자신의 스케줄과 컨디션에 맞춰 가장 즐겁게 참여할 수 있는 만큼만 함께하는 문화를 존중합니다.\n\n• 주도적으로 참여할 수 있어요.\n이곳에는 업무를 지시하는 사람이 없습니다. \'테일테일\'과 함께 만들어가고 싶은 자신만의 아이디어가 있거나, 주도적으로 문제를 찾아 해결하고 싶은 분들이라면 언제든 환영합니다. 먼저 진행 중인 프로젝트들을 둘러보시고, 어떤 재미있는 일을 함께할 수 있을지 당신의 목소리를 들려주세요.</string>
+    
+    <!-- TTS Download Dialog -->
+    <string name="tts_download_title">AI 음성 엔진 다운로드</string>
+    <string name="tts_download_message">AI 음성으로 책을 들으려면 음성 엔진이 필요합니다(36MB). 지금 다운로드하시겠습니까?</string>
+    <string name="tts_downloading">다운로드 중…</string>
+    <string name="tts_download_button">다운로드</string>
+    <string name="tts_download_later">나중에</string>
+    <string name="tts_download_progress">%d%%</string>
+    <string name="tts_download_error">음성 엔진이 곧 제공됩니다. 나중에 다시 시도해주세요.</string>
 </resources>

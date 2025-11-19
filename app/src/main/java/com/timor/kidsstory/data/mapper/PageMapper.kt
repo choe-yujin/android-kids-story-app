@@ -1,64 +1,76 @@
 package com.timor.kidsstory.data.mapper
 
 import android.util.Log
-import com.timor.kidsstory.data.dto.PageDto
+import com.timor.kidsstory.data.dto.UnifiedPageDto
+import com.timor.kidsstory.domain.manager.content.HybridContentManager
 import com.timor.kidsstory.domain.model.Page
 
 /**
- * PageDto를 도메인 모델로 변환하는 매퍼 클래스
- * - 데이터 계층(DTO)과 도메인 계층(Page) 간의 변환 담당
+ * 통합 메타데이터 구조 전용 PageMapper
+ * - UnifiedPageDto → Domain Page 변환만 지원
+ * - HybridContentManager를 통한 올바른 이미지 경로 결정
+ * - 이미지 파일명 자동 생성 규칙 적용
  */
 object PageMapper {
 
     private const val TAG = "PageMapper"
 
     /**
-     * PageDto를 도메인 Page 객체로 변환
-     * - 페이지 번호, 텍스트를 그대로 유지
-     * - 이미지 경로는 책의 출처(내장 또는 다운로드)에 따라 결정
-     *
-     * @param pageDto 변환할 페이지 DTO
-     * @param storyBaseId 책의 기본 ID (이미지 경로 생성에 사용)
-     * @param isDownloaded 다운로드된 책인지 여부 (기본값: false)
-     * @param imageFolderPath 다운로드된 책의 이미지 폴더 경로 (다운로드된 책일 경우에만 사용)
-     * @return 도메인 Page 객체
+     * 🆕 리팩토링된 UnifiedPageDto를 도메인 Page 객체로 변환 (비동기)
      */
-    fun mapToDomain(
-        pageDto: PageDto,
+    suspend fun fromUnified(
+        unifiedPage: UnifiedPageDto,
         storyBaseId: String,
-        isDownloaded: Boolean = false,
-        imageFolderPath: String? = null
+        languageCode: String,
+        hybridContentManager: HybridContentManager? = null
     ): Page {
-        // 이미지 파일명 생성 (예: "book_801_page_1.jpg")
-        val imageFileName = "book_${storyBaseId}_page_${pageDto.pageNumber}.jpg"
-
-        // 이미지 경로 - 다운로드된 책은 외부 저장소, 그 외는 assets 경로 사용
-        val imageUrl = if (isDownloaded && imageFolderPath != null) {
-            Log.d(TAG, "Using external storage path for image: file://${imageFolderPath}/${imageFileName}")
-            "file://${imageFolderPath}/${imageFileName}"
+        val bookId = storyBaseId.toIntOrNull() ?: 0
+        
+        // 🆕 이미지 파일명 자동 생성 규칙
+        val imageFileName = if (unifiedPage.image.isNotEmpty()) {
+            // JSON에 명시된 경우 (레거시 지원)
+            unifiedPage.image
         } else {
-            Log.d(TAG, "Using assets path for image: file:///android_asset/images/${storyBaseId}/${imageFileName}")
-            "file:///android_asset/images/${storyBaseId}/${imageFileName}"
+            // 🆕 규칙 기반 자동 생성
+            generateImageFileName(bookId, languageCode, unifiedPage.pageNumber)
+        }
+        Log.d(TAG, "Generated image file name: $imageFileName for page ${unifiedPage.pageNumber}")
+
+        // 🆕 이미지 경로 - HybridContentManager를 통해 DB 기반으로 결정
+        val imageUrl = if (hybridContentManager != null) {
+            val url = hybridContentManager.getImageUrl(bookId, imageFileName)
+            if (url != null) {
+                Log.d(TAG, "📷 Using hybrid path for image: $url")
+                url
+            } else {
+                Log.w(TAG, "📷 Image not found in hybrid storage: $imageFileName")
+                ""  // null 대신 빈 문자열
+            }
+        } else {
+            // Fallback: assets 경로 (하위 호환성)
+            val fallbackUrl = "file:///android_asset/images/${storyBaseId}/${imageFileName}"
+            Log.d(TAG, "📷 Using fallback assets path for image: $fallbackUrl")
+            fallbackUrl
         }
 
         return Page(
-            pageNumber = pageDto.pageNumber,
+            pageNumber = unifiedPage.pageNumber,
             imageUrl = imageUrl,
-            texts = pageDto.texts
+            texts = unifiedPage.texts,
+            pageType = unifiedPage.pageType
         )
     }
-
+    
     /**
-     * 페이지 리스트에 totalPages 정보 추가
-     * - 각 페이지 객체에 전체 페이지 수 정보를 포함시킴
-     *
-     * @param pages 기존 페이지 목록
-     * @return totalPages 정보가 추가된 페이지 목록
+     * 이미지 파일명 자동 생성 규칙
+     * 
+     * - book_{bookId}_page_{pageNumber}.webp (본문 페이지)
      */
-    fun addTotalPagesInfo(pages: List<Page>): List<Page> {
-        val totalPages = pages.size
-        return pages.map { page ->
-            page.copy(totalPages = totalPages)
-        }
+    private fun generateImageFileName(
+        bookId: Int,
+        languageCode: String,
+        pageNumber: Int
+    ): String {
+        return "book_${bookId}_page_${pageNumber}.webp"
     }
 }

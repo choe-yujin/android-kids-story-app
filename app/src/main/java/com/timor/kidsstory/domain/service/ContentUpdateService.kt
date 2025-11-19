@@ -1,0 +1,437 @@
+package com.timor.kidsstory.domain.service
+
+import android.content.Context
+import android.util.Log
+import com.timor.kidsstory.data.dto.HybridBooksMetadata
+import com.timor.kidsstory.data.dto.HybridBookMetadata
+import com.timor.kidsstory.data.remote.network.BookNetworkService
+import com.timor.kidsstory.domain.manager.content.HybridContentManager
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.util.zip.ZipInputStream
+import javax.inject.Inject
+import javax.inject.Singleton
+
+/**
+ * 콘텐츠 업데이트 서비스
+ * - GitHub에서 최신 메타데이터 확인
+ * - 개별 파일별 버전 체크 및 업데이트
+ * - 선택적 다운로드 (필요한 것만)
+ */
+@Singleton
+class ContentUpdateService @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val hybridContentManager: HybridContentManager,
+    private val networkService: BookNetworkService
+) {
+    
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
+    
+    /**
+     * 업데이트 체크 및 실행
+     * @param forceUpdate 강제 업데이트 여부
+     * @return 업데이트된 항목 수
+     */
+    suspend fun checkAndUpdateContent(forceUpdate: Boolean = false): Result<Int> {
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "🔍 Checking for content updates...")
+                
+                // 1. 원격 메타데이터 가져오기
+                val remoteMetadataResult = fetchRemoteMetadata()
+                if (remoteMetadataResult.isFailure) {
+                    Log.w(TAG, "Failed to fetch remote metadata, using local version")
+                    return@withContext Result.success(0)
+                }
+                
+                val remoteMetadata = remoteMetadataResult.getOrThrow()
+                
+                // 2. 로컬 메타데이터와 비교
+                val localMetadataResult = hybridContentManager.loadMetadata()
+                if (localMetadataResult.isFailure) {
+                    Log.w(TAG, "No local metadata found, performing full download")
+                    return@withContext performFullUpdate(remoteMetadata)
+                }
+                
+                val localMetadata = localMetadataResult.getOrThrow()
+                
+                // 3. 버전 비교
+                if (!forceUpdate && remoteMetadata.version <= localMetadata.version) {
+                    Log.d(TAG, "✅ Content is up to date (v${localMetadata.version})")
+                    return@withContext Result.success(0)
+                }
+                
+                // 4. 선택적 업데이트
+                val updateResult = performSelectiveUpdate(localMetadata, remoteMetadata)
+                val updatedCount = updateResult.getOrElse { 0 }
+                
+                Log.d(TAG, "✅ Update completed: $updatedCount items updated")
+                Result.success(updatedCount)
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Failed to check/update content", e)
+                Result.failure(e)
+            }
+        }
+    }
+    
+    /**
+     * 원격 메타데이터 가져오기 (GitHub)
+     */
+    private suspend fun fetchRemoteMetadata(): Result<HybridBooksMetadata> {
+        return try {
+            val metadataUrl = "https://raw.githubusercontent.com/choe-yujin/storybook-assets/master/books_metadata_hybrid.json"
+            val tempFile = File(context.cacheDir, "remote_metadata.json")
+            
+            val downloadSuccess = networkService.downloadFile(metadataUrl, tempFile)
+            if (!downloadSuccess) {
+                return Result.failure(Exception("Failed to download remote metadata"))
+            }
+            
+            val jsonString = tempFile.readText()
+            val metadata = json.decodeFromString<HybridBooksMetadata>(jsonString)
+            
+            tempFile.delete()
+            
+            Log.d(TAG, "📥 Fetched remote metadata v${metadata.version}")
+            Result.success(metadata)
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to fetch remote metadata", e)
+            Result.failure(e)
+        }
+    }
+    
+    /**
+     * 전체 업데이트 수행
+     */
+    private suspend fun performFullUpdate(remoteMetadata: HybridBooksMetadata): Result<Int> {
+        Log.d(TAG, "🔄 Performing full content update...")
+        
+        var updatedCount = 0
+        
+        // 메타데이터 업데이트
+        updateMetadata(remoteMetadata)
+        updatedCount++
+        
+        // 모든 콘텐츠 파일 업데이트
+        for (book in remoteMetadata.books) {
+            for ((languageCode, languageContent) in book.languages) {
+                val contentUpdated = updateContentFile(book.id, languageCode, languageContent.contentUrl)
+                if (contentUpdated) updatedCount++
+                
+                val coverUpdated = updateCoverImage(book.id, languageCode, languageContent.coverImageUrl)
+                if (coverUpdated) updatedCount++
+            }
+            
+            // 이미지 에셋 업데이트
+            val imagesUpdated = updateImageAssets(book.id, book.imageAssetsUrl)
+            if (imagesUpdated) updatedCount++
+        }
+        
+        return Result.success(updatedCount)
+    }
+    
+    /**
+     * 선택적 업데이트 수행
+     */
+    private suspend fun performSelectiveUpdate(
+        localMetadata: HybridBooksMetadata, 
+        remoteMetadata: HybridBooksMetadata
+    ): Result<Int> {
+        Log.d(TAG, "🔄 Performing selective content update...")
+        
+        var updatedCount = 0
+        
+        // 메타데이터 업데이트 (항상)
+        updateMetadata(remoteMetadata)
+        updatedCount++
+        
+        // 책별 업데이트 체크
+        for (remoteBook in remoteMetadata.books) {
+            val localBook = localMetadata.books.find { it.id == remoteBook.id }
+            
+            if (localBook == null) {
+                // 새로운 책 - 전체 다운로드
+                Log.d(TAG, "📚 New book found: ${remoteBook.id}")
+                updatedCount += downloadNewBook(remoteBook)
+                continue
+            }
+            
+            // 언어별 업데이트 체크
+            for ((languageCode, remoteLanguageContent) in remoteBook.languages) {
+                val localLanguageContent = localBook.languages[languageCode]
+                
+                if (localLanguageContent == null) {
+                    // 새로운 언어 버전
+                    Log.d(TAG, "🌍 New language found: ${remoteBook.id}/$languageCode")
+                    val contentUpdated = updateContentFile(remoteBook.id, languageCode, remoteLanguageContent.contentUrl)
+                    if (contentUpdated) updatedCount++
+                    
+                    val coverUpdated = updateCoverImage(remoteBook.id, languageCode, remoteLanguageContent.coverImageUrl)
+                    if (coverUpdated) updatedCount++
+                    continue
+                }
+                
+                // 콘텐츠 버전 체크
+                if (remoteLanguageContent.contentVersion > localLanguageContent.contentVersion) {
+                    Log.d(TAG, "📝 Content update: ${remoteBook.id}/$languageCode v${localLanguageContent.contentVersion} → v${remoteLanguageContent.contentVersion}")
+                    val updated = updateContentFile(remoteBook.id, languageCode, remoteLanguageContent.contentUrl)
+                    if (updated) updatedCount++
+                }
+                
+                // 커버 이미지 버전 체크
+                if (remoteLanguageContent.coverVersion > localLanguageContent.coverVersion) {
+                    Log.d(TAG, "🖼️ Cover update: ${remoteBook.id}/$languageCode v${localLanguageContent.coverVersion} → v${remoteLanguageContent.coverVersion}")
+                    val updated = updateCoverImage(remoteBook.id, languageCode, remoteLanguageContent.coverImageUrl)
+                    if (updated) updatedCount++
+                }
+            }
+            
+            // 이미지 에셋 버전 체크
+            if (remoteBook.imageAssetsVersion > localBook.imageAssetsVersion) {
+                Log.d(TAG, "🎨 Images update: ${remoteBook.id} v${localBook.imageAssetsVersion} → v${remoteBook.imageAssetsVersion}")
+                val updated = updateImageAssets(remoteBook.id, remoteBook.imageAssetsUrl)
+                if (updated) updatedCount++
+            }
+        }
+        
+        return Result.success(updatedCount)
+    }
+    
+    /**
+     * 새로운 책 전체 다운로드
+     */
+    private suspend fun downloadNewBook(bookMetadata: HybridBookMetadata): Int {
+        var downloadedCount = 0
+        
+        // 모든 언어 버전 다운로드
+        for ((languageCode, languageContent) in bookMetadata.languages) {
+            val contentUpdated = updateContentFile(bookMetadata.id, languageCode, languageContent.contentUrl)
+            if (contentUpdated) downloadedCount++
+            
+            val coverUpdated = updateCoverImage(bookMetadata.id, languageCode, languageContent.coverImageUrl)
+            if (coverUpdated) downloadedCount++
+        }
+        
+        // 이미지 에셋 다운로드
+        val imagesUpdated = updateImageAssets(bookMetadata.id, bookMetadata.imageAssetsUrl)
+        if (imagesUpdated) downloadedCount++
+        
+        return downloadedCount
+    }
+    
+    /**
+     * 메타데이터 업데이트
+     */
+    private suspend fun updateMetadata(metadata: HybridBooksMetadata) {
+        // HybridContentManager를 통해 내부저장소에 저장
+        hybridContentManager.initializeHybridContent()
+    }
+    
+    /**
+     * 콘텐츠 파일 업데이트
+     */
+    private suspend fun updateContentFile(bookId: Int, languageCode: String, remoteUrl: String): Boolean {
+        return try {
+            val fileName = "${bookId}_${languageCode}.json"
+            val localFile = File(context.filesDir, "hybrid_content/content/$fileName")
+            
+            val success = networkService.downloadFile(remoteUrl, localFile)
+            if (success) {
+                Log.d(TAG, "✅ Updated content: $fileName")
+            } else {
+                Log.w(TAG, "❌ Failed to update content: $fileName")
+            }
+            
+            success
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error updating content file: $bookId/$languageCode", e)
+            false
+        }
+    }
+    
+    /**
+     * 커버 이미지 업데이트
+     */
+    private suspend fun updateCoverImage(bookId: Int, languageCode: String, remoteUrl: String): Boolean {
+        return try {
+            val fileName = "cover_${bookId}_${languageCode}.webp"
+            val localFile = File(context.filesDir, "hybrid_content/images/$bookId/$fileName")
+            
+            localFile.parentFile?.mkdirs()
+            
+            val success = networkService.downloadFile(remoteUrl, localFile)
+            if (success) {
+                Log.d(TAG, "✅ Updated cover: $fileName")
+            } else {
+                Log.w(TAG, "❌ Failed to update cover: $fileName")
+            }
+            
+            success
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error updating cover image: $bookId/$languageCode", e)
+            false
+        }
+    }
+    
+    /**
+     * 이미지 에셋 업데이트
+     */
+    private suspend fun updateImageAssets(bookId: Int, remoteUrl: String): Boolean {
+        if (remoteUrl.isBlank() || !remoteUrl.endsWith(".zip")) {
+            Log.w(TAG, "No valid image assets zip URL for book $bookId")
+            return false
+        }
+
+        return try {
+            val tempZipFile = File(context.cacheDir, "temp_images_$bookId.zip")
+            val downloadSuccess = networkService.downloadFile(remoteUrl, tempZipFile)
+
+            if (!downloadSuccess) {
+                Log.e(TAG, "Failed to download image assets for book $bookId from $remoteUrl")
+                tempZipFile.delete()
+                return false
+            }
+
+            val outputDir = File(context.filesDir, "hybrid_content/images/$bookId")
+            if (!outputDir.exists()) {
+                outputDir.mkdirs()
+            }
+
+            // Unzip logic
+            ZipInputStream(tempZipFile.inputStream()).use { zis ->
+                var zipEntry = zis.nextEntry
+                while (zipEntry != null) {
+                    val newFile = File(outputDir, zipEntry.name)
+                    // Create directories for sub-folders in zip
+                    if (zipEntry.isDirectory) {
+                        newFile.mkdirs()
+                    } else {
+                        // Ensure parent directory exists
+                        File(newFile.parent).mkdirs()
+                        newFile.outputStream().use { fos ->
+                            zis.copyTo(fos)
+                        }
+                    }
+                    zipEntry = zis.nextEntry
+                }
+            }
+
+            tempZipFile.delete()
+            Log.d(TAG, "✅ Successfully downloaded and unzipped image assets for book $bookId")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error updating image assets for book $bookId", e)
+            false
+        }
+    }
+    
+    /**
+     * 업데이트 가능한 책 목록 조회
+     * @return Pair<책ID, 업데이트 가능한 컴포넌트 목록>
+     */
+    suspend fun getUpdatableBooks(): Result<Map<String, List<UpdateType>>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                // 원격 메타데이터 가져오기
+                val remoteMetadataResult = fetchRemoteMetadata()
+                if (remoteMetadataResult.isFailure) {
+                    return@withContext Result.failure(remoteMetadataResult.exceptionOrNull()!!)
+                }
+                
+                val remoteMetadata = remoteMetadataResult.getOrThrow()
+                
+                // 로컬 메타데이터 가져오기
+                val localMetadataResult = hybridContentManager.loadMetadata()
+                if (localMetadataResult.isFailure) {
+                    return@withContext Result.success(emptyMap())
+                }
+                
+                val localMetadata = localMetadataResult.getOrThrow()
+                val updatableBooks = mutableMapOf<String, List<UpdateType>>()
+                
+                // 책별 업데이트 체크
+                for (remoteBook in remoteMetadata.books) {
+                    val localBook = localMetadata.books.find { it.id == remoteBook.id } ?: continue
+                    val updateTypes = mutableListOf<UpdateType>()
+                    
+                    // 언어별 콘텐츠/커버 체크
+                    for ((languageCode, remoteLanguageContent) in remoteBook.languages) {
+                        val localLanguageContent = localBook.languages[languageCode] ?: continue
+                        
+                        if (remoteLanguageContent.contentVersion > localLanguageContent.contentVersion) {
+                            updateTypes.add(UpdateType.Content(languageCode))
+                        }
+                        
+                        if (remoteLanguageContent.coverVersion > localLanguageContent.coverVersion) {
+                            updateTypes.add(UpdateType.Cover(languageCode))
+                        }
+                    }
+                    
+                    // 이미지 에셋 체크
+                    if (remoteBook.imageAssetsVersion > localBook.imageAssetsVersion) {
+                        updateTypes.add(UpdateType.ImageAssets)
+                    }
+                    
+                    if (updateTypes.isNotEmpty()) {
+                        updatableBooks["${remoteBook.id}"] = updateTypes
+                    }
+                }
+                
+                Log.d(TAG, "📊 Updatable books: ${updatableBooks.size}")
+                Result.success(updatableBooks)
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Failed to get updatable books", e)
+                Result.failure(e)
+            }
+        }
+    }
+    
+    /**
+     * 다운로드 가능한 새로운 책 목록 조회
+     */
+    suspend fun getDownloadableBooks(existingBookIds: Set<Int>): Result<List<HybridBookMetadata>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val remoteMetadataResult = fetchRemoteMetadata()
+                if (remoteMetadataResult.isFailure) {
+                    return@withContext Result.failure(remoteMetadataResult.exceptionOrNull()!!)
+                }
+                
+                val remoteMetadata = remoteMetadataResult.getOrThrow()
+                
+                // 로컬에 없는 새로운 책들 필터링
+                val newBooks = remoteMetadata.books.filter { it.id !in existingBookIds }
+                
+                Log.d(TAG, "📦 Downloadable books: ${newBooks.size}")
+                Result.success(newBooks)
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Failed to get downloadable books", e)
+                Result.failure(e)
+            }
+        }
+    }
+    
+    /**
+     * 업데이트 타입
+     */
+    sealed class UpdateType {
+        data class Content(val languageCode: String) : UpdateType()
+        data class Cover(val languageCode: String) : UpdateType()
+        data object ImageAssets : UpdateType()
+    }
+    
+    companion object {
+        private const val TAG = "ContentUpdateService"
+        
+    }
+}

@@ -1,0 +1,116 @@
+{
+  "bookId": 105,
+  "language": "tet",
+  "title": "Liafuan ida ne'ebe sura",
+  "summary": "Livru ida ne'e hatudu buat ruma ne'ebé kmanek sira hanorin hodi konta hamutuk ho liu. Page kada-nia hatudu familiadu termu kona-ba buat ruma ne'ebé kmanek atende no aprende tan numeru no unidader sira.",
+  "pages": [
+    {
+      "pageNumber": 0,
+      "texts": ["Liafuan ida ne'ebe sura"],
+      "pageType": "SPLIT"
+    },
+    {
+      "pageNumber": 1,
+      "texts": ["Cocacola butir ida"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 2,
+      "texts": ["Jus kopu rua"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 3,
+      "texts": ["Ronda tolu husi paja"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 4,
+      "texts": ["Labarik na'in haat"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 5,
+      "texts": ["Suratahan-kores tahan lima"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 6,
+      "texts": ["Mina lema turu neen"],
+      "pageType": "FULL_IMAGE"
+    },
+    {
+      "pageNumber": 7,
+      "texts": ["Busa iha hitu"],
+      "pageType": "FULL_IMAGE"
+    }
+  ],
+  "comprehensionChecks": {
+    "preQuestions": [
+      {
+        "question": "Saida mak lia-sein?",
+        "keyConcepts": ["numeru", "unidade", "kontagem"]
+      }
+    ],
+    "postQuestions": [
+      {
+        "question": "Kahak ita konta buat sira ho numeru no unidade?",
+        "keyConcepts": ["butir", "kopu", "ronda", "busa", "gota"]
+      }
+    ]
+  },
+  "missions": [
+    {
+      "title": "Konta buat ruma ne'ebé imi gosta",
+      "description": "Konta buat ruma ne'ebé ita-nia familia ou kolega gosta ho numeru no unidade.",
+      "type": "ACTIVITY_LOG"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "Butir",
+      "definition": "Unidade ne'ebé uza ba konta buat balun, hanesan botilha ka buton.",
+      "pageNumber": 1
+    },
+    {
+      "word": "Kopu",
+      "definition": "Unidade ne'ebé uza ba konta buat ruma iha forma kopu ou taça.",
+      "pageNumber": 2
+    },
+    {
+      "word": "Ronda",
+      "definition": "Unidade ne'ebé uza ba konta buat balun ne'ebé flat, hanesan pizza ou kake.",
+      "pageNumber": 3
+    },
+    {
+      "word": "Labarik na'in",
+      "definition": "Unidade ne'ebé uza ba konta buat ema, hanesan labarik ka moris manes.",
+      "pageNumber": 4
+    },
+    {
+      "word": "Suratahan-kores",
+      "definition": "Kertas koloradu ne'ebé uza ba buat ruma naklebsik no dekorasaun.",
+      "pageNumber": 5
+    },
+    {
+      "word": "Pasiensia gota",
+      "definition": "Unidade ne'ebé uza ba konta gota sira husi buat ruma likido, hanesan azeite kmanek.",
+      "pageNumber": 6
+    },
+    {
+      "word": "Busa",
+      "definition": "Unidade ne'ebé uza ba konta animal sira, hanesan katakou fukun.",
+      "pageNumber": 7
+    }
+  ],
+  "contributors": {
+    "Writer": ["Eunpa Kim"],
+    "Illustrator": ["Ho"],
+    "Translator": ["Helia"],
+    "Proofreader": ["Lia"]
+  },
+  "sourceLanguage": "ko",
+  "license": "CC BY 4.0",
+  "copyrightHolder": "Enuma, Inc. & The Foundation SeeArt for Book Culture",
+  "copyright": "is licensed under CC BY 4.0 by Enuma, Inc. & The Foundation SeeArt for Book Culture."
+}

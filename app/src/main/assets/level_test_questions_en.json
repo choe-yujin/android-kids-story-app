@@ -1,0 +1,141 @@
+{
+  "version": 100,
+  "language": "en",
+  "levels": {
+    "1": [
+      {
+        "question": "Which animal says 'moo'?",
+        "options": ["Sheep", "Cow", "Chicken"],
+        "answerIndex": 1
+      },
+      {
+        "question": "What color is the sun?",
+        "options": ["Blue", "Yellow", "Green"],
+        "answerIndex": 1
+      },
+      {
+        "question": "What do you use to write?",
+        "options": ["Pencil", "Ball", "Chair"],
+        "answerIndex": 0
+      },
+      {
+        "question": "What is the opposite of 'hot'?",
+        "options": ["Cold", "Big", "Fast"],
+        "answerIndex": 0
+      },
+      {
+        "question": "Which one is a fruit?",
+        "options": ["Carrot", "Broccoli", "Apple"],
+        "answerIndex": 2
+      }
+    ],
+    "2": [
+      {
+        "question": "In 'The cat sleeps on the mat.', where is the cat sleeping?",
+        "options": ["Under the mat", "In the mat", "On the mat"],
+        "answerIndex": 2
+      },
+      {
+        "question": "It started to rain, so I opened my umbrella. Why did I open my umbrella?",
+        "options": ["Because it was sunny", "Because it was raining", "Because I was hungry"],
+        "answerIndex": 1
+      },
+      {
+        "question": "What does it mean to be 'happy'?",
+        "options": ["Feeling sad and tired", "Feeling joyful and good", "Feeling angry and upset"],
+        "answerIndex": 1
+      },
+      {
+        "question": "In 'I see a big, red ball.', what color is the ball?",
+        "options": ["Big", "See", "Red"],
+        "answerIndex": 2
+      },
+      {
+        "question": "What do you do before you go to sleep at night?",
+        "options": ["Wake up", "Eat breakfast", "Brush your teeth"],
+        "answerIndex": 2
+      }
+    ],
+    "3": [
+      {
+        "question": "In the sentence 'She couldn't go to the park because she had to finish her homework.', why couldn't she go to the park?",
+        "options": ["Because she was tired", "Because she had to do homework", "Because the park was closed"],
+        "answerIndex": 1
+      },
+      {
+        "question": "If a character 'finally' reached the mountaintop, what does this suggest?",
+        "options": ["The journey was easy and quick.", "The journey involved a lot of effort.", "Someone carried them to the top."],
+        "answerIndex": 1
+      },
+      {
+        "question": "What does it mean to 'share' toys with a friend?",
+        "options": ["To take all the toys for yourself", "To play with the toys together", "To hide the toys from your friend"],
+        "answerIndex": 1
+      },
+      {
+        "question": "In 'The brave knight fought the dragon.', what kind of person is a knight?",
+        "options": ["A coward", "A courageous person", "A lazy person"],
+        "answerIndex": 1
+      },
+      {
+        "question": "What is the most likely thing to happen next? 'The ice cream was left in the hot sun.'",
+        "options": ["It will freeze.", "It will melt.", "It will grow bigger."],
+        "answerIndex": 1
+      }
+    ],
+    "4": [
+      {
+        "question": "What does the word 'ancient' mean in the phrase 'an ancient pyramid'?",
+        "options": ["Very new", "Very beautiful", "Very old"],
+        "answerIndex": 2
+      },
+      {
+        "question": "If a story says a character 'hesitated' before making a choice, what were they feeling?",
+        "options": ["Excitement and joy", "Uncertainty and doubt", "Anger and frustration"],
+        "answerIndex": 1
+      },
+      {
+        "question": "What is the main purpose of a 'map' in an adventure story?",
+        "options": ["To show the weather", "To provide a guide to a location", "To list the characters"],
+        "answerIndex": 1
+      },
+      {
+        "question": "In 'The tiny boat was tossed by the furious storm.', what does 'furious' suggest about the storm?",
+        "options": ["It was a weak and gentle storm.", "It was a very powerful and violent storm.", "It was a quick and short storm."],
+        "answerIndex": 1
+      },
+      {
+        "question": "Which of these is an 'opinion' rather than a 'fact'?",
+        "options": ["The Earth is a planet.", "Chocolate ice cream is the best flavor.", "Water is made of hydrogen and oxygen."],
+        "answerIndex": 1
+      }
+    ],
+    "5": [
+      {
+        "question": "What does the phrase 'a double-edged sword' mean?",
+        "options": ["Something that is very sharp", "Something that has both positive and negative consequences", "Something that is twice as good as usual"],
+        "answerIndex": 1
+      },
+      {
+        "question": "If an author writes with a 'nostalgic' tone, what are they expressing?",
+        "options": ["A feeling of anger about the past", "A desire for the future", "A sentimental longing for the past"],
+        "answerIndex": 2
+      },
+      {
+        "question": "What is the 'theme' of a story?",
+        "options": ["The sequence of events that happen", "The main idea or underlying message", "The list of characters and places"],
+        "answerIndex": 1
+      },
+      {
+        "question": "What does the idiom 'bite the bullet' mean?",
+        "options": ["To eat something very quickly", "To endure a difficult situation with courage", "To avoid a problem"],
+        "answerIndex": 1
+      },
+      {
+        "question": "If a character's actions are 'ambiguous', what does this mean?",
+        "options": ["Their actions are heroic and clear.", "Their actions are open to more than one interpretation.", "Their actions are evil and destructive."],
+        "answerIndex": 1
+      }
+    ]
+  }
+}
