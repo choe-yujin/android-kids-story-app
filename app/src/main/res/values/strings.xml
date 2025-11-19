@@ -65,7 +65,7 @@
     <string name="update_dialog_title_optional">Update Available</string>
     <string name="update_dialog_title_required">Required Update</string>
     <string name="update_dialog_new_version">New version: %s</string>
-    <string name="update_dialog_release_notes">What's New:</string>
+    <string name="update_dialog_release_notes">What\'s New:</string>
     <string name="update_dialog_button_later">Later</string>
     <string name="update_dialog_button_update">Update</string>
     <string name="update_dialog_button_update_now">Update Now</string>
@@ -138,16 +138,16 @@
     <string name="management_popup_warning_large_download">Large download (%1$s). Wi-Fi recommended.</string>
     
     <!-- Level Test -->
-    <string name="level_test_introduction">I'll create a one-of-a-kind bookshelf just for you! First, let's find out your reading level.</string>
+    <string name="level_test_introduction">I\'ll create a one-of-a-kind bookshelf just for you! First, let\'s find out your reading level.</string>
     <string name="level_test_start_button">Find out my reading level!</string>
     <string name="level_test_skip_button">Skip</string>
     <string name="level_test_complete_title">I found your reading level!</string>
     <string name="level_test_result_level">You are a level %d reader!</string>
-    <string name="level_test_start_reading_button">Let's go to my own bookshelf!</string>
+    <string name="level_test_start_reading_button">Let\'s go to my own bookshelf!</string>
     <string name="level_test_retry_button">Shall we try one more time?</string>
     <string name="level_test_level_display">Level %d</string>
-    <string name="level_test_reading_adventure_title">Let's start a reading adventure!</string>
-    <string name="level_test_popup_message">Great job! You're a Level %1$d reader! Let's explore your new books!</string>
+    <string name="level_test_reading_adventure_title">Let\'s start a reading adventure!</string>
+    <string name="level_test_popup_message">Great job! You\'re a Level %1$d reader! Let\'s explore your new books!</string>
     <string name="ai_speaking_feature_update_message">AI speaking feature will be updated soon.</string>
     
     <!-- Locked Book Dialog -->
@@ -199,7 +199,7 @@
     <string name="side_project_title">Side Project Made Together</string>
     <string name="side_project_description">TaleTail started from a small idea: \"I wish there was an app like this.\" What began as a personal project created in spare time has become a project for everyone as people who share our vision have joined us one by one.\n\nWe work purely for the joy of sharing talents, without ads or sponsorships. We value working with \'joy\' rather than \'obligation,\' each finding their own enjoyable way to contribute at their own pace.\n\nWe welcome contributions in various fields like illustration, translation, and education to make our stories richer. We are especially looking forward to new language translators so more children can meet fairy tales in their own language.\n\nPlease add your joyful energy!</string>
     <string name="collaboration_title">How Are We Collaborating?</string>
-    <string name="collaboration_description">We collaborate in a free and horizontal way:\n\n• We aim for free communication.\nThere are no regular meetings or reporting procedures. We freely share opinions and add ideas whenever needed through online channels (KakaoTalk, Notion, Discord, etc.).\n\n• All processes are shared transparently.\nYou can become a new project leader who expands TaleTail's world through idea proposals (e.g., building new translation systems, creating educational content linked to fairy tales, planning \'I'm Also a Writer\' contests). Progress is made public through Notion, making it easy to propose or participate in desired projects.\n\n• We respect each person's pace.\nThere are no strict deadlines or mandatory quotas. Real life comes first! We respect a culture where everyone participates as joyfully as they can according to their own schedule and condition.\n\n• You can participate proactively.\nThere's no one here who assigns tasks. If you have your own ideas you want to create with TaleTail, or if you want to proactively find and solve problems, you're always welcome. Please look around the ongoing projects first and let us hear your voice about what fun things we can do together.</string>
+    <string name="collaboration_description">We collaborate in a free and horizontal way:\n\n• We aim for free communication.\nThere are no regular meetings or reporting procedures. We freely share opinions and add ideas whenever needed through online channels (KakaoTalk, Notion, Discord, etc.).\n\n• All processes are shared transparently.\nYou can become a new project leader who expands TaleTail\'s world through idea proposals (e.g., building new translation systems, creating educational content linked to fairy tales, planning \'I\'m Also a Writer\' contests). Progress is made public through Notion, making it easy to propose or participate in desired projects.\n\n• We respect each person\'s pace.\nThere are no strict deadlines or mandatory quotas. Real life comes first! We respect a culture where everyone participates as joyfully as they can according to their own schedule and condition.\n\n• You can participate proactively.\nThere\'s no one here who assigns tasks. If you have your own ideas you want to create with TaleTail, or if you want to proactively find and solve problems, you\'re always welcome. Please look around the ongoing projects first and let us hear your voice about what fun things we can do together.</string>
 
     <!-- Management Mode - Plurals -->
     <plurals name="management_confirm_title_download_plural">
