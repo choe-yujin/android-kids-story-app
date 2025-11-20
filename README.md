@@ -122,9 +122,6 @@ Access the [translation](https://docs.google.com/spreadsheets/d/15ATv7NLafQUndAM
 - SiYoon-Lee - Environmental storybook creation
 - Francisco Mendosa - English/Tetum translation
 
-## 기획 및 발표 자료
-- [2025 새싹 해커톤 AI 기능 추가 기획 자료](./docs/README.md)
-
 ## Contact Us
 ### General Inquiries / Bug Reports
 - GitHub Issues: [Project Issues Page](https://github.com/choe-yujin/android-kids-story-app/issues)
